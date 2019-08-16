@@ -146,7 +146,7 @@ throw \Glitch::ECompletelyMadeUpMeaning([
 ]);
 ```
 
-Catch a Glitch in the normal using whichever scope you require
+Catch a Glitch in the normal way using whichever scope you require:
 
 ```php
 try {
