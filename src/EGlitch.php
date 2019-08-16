@@ -4,8 +4,8 @@
  * @license http://opensource.org/licenses/MIT
  */
 
-//use Df\Lang\Stack\Frame;
-//use Df\Lang\Stack\Trace;
+use Glitch\Stack\Frame;
+use Glitch\Stack\Trace;
 
 interface EGlitch
 {
@@ -15,8 +15,6 @@ interface EGlitch
     public function setHttpCode(?int $code);
     public function getHttpCode(): ?int;
 
-    /*
     public function getStackFrame(): Frame;
     public function getStackTrace(): Trace;
-    */
 }

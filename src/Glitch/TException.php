@@ -6,6 +6,9 @@
 declare(strict_types=1);
 namespace Glitch;
 
+use Glitch\Stack\Frame;
+use Glitch\Stack\Trace;
+
 /**
  * Main root exception inheritance
  * This trait is automatically rolled into the generated exception
@@ -94,8 +97,7 @@ trait TException
     public function getStackTrace(): Trace
     {
         if (!$this->stackTrace) {
-            die('Create stack trace');
-            //$this->stackTrace = Trace::fromException($this, $this->rewind + 2);
+            $this->stackTrace = Trace::fromException($this, $this->rewind + 2);
         }
 
         return $this->stackTrace;
@@ -136,8 +138,7 @@ trait TException
 
 
         // Trace
-        //$output['trace'] = $this->getStackTrace();
-
+        $output['stackTrace'] = $this->getStackTrace();
         return $output;
     }
 }

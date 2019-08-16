@@ -9,9 +9,8 @@ use Glitch\Factory;
 
 /**
  * This is just a facade.
- * See lang\error
  */
-class Glitch
+final class Glitch
 {
     const TYPE = null;
 
