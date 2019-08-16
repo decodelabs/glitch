@@ -69,7 +69,7 @@ class Amazeballs {
 
     public function doStuff() {
         throw \Glitch::{'ENotFound,EFailedService'}(
-            'Server "doStuff" cannot be found'
+            'Service "doStuff" cannot be found'
         );
     }
 }
@@ -145,6 +145,19 @@ throw \Glitch::ECompletelyMadeUpMeaning([
     'http' => 501
 ]);
 ```
+
+Catch a Glitch in the normal using whichever scope you require
+
+```php
+try {
+    throw \Glitch::{'ENotFound,EBadMethodCall'}(
+        'Didn\'t find a thing, couldn\'t call the other thing'
+    );
+} catch(\EGlitch | \ENotFound | MyLibrary\EGlitch | MyLibrary\AThingThatDoesStuff\EBadMethodCall $e) {
+    // All these types will catch
+}
+```
+
 
 
 ## Licensing
