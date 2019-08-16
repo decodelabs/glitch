@@ -187,8 +187,7 @@ class Factory
         }
 
         if (empty($this->namespace)) {
-            dd($this->params);
-            //$this->namespace = '\\Df';
+            $this->namespace = null;
         }
 
         $this->buildDefinitions($interfaces);
@@ -219,8 +218,12 @@ class Factory
 
     protected function buildDefinitions(array $interfaces): void
     {
-        $namespace = ltrim($this->namespace, '\\');
-        $namespaces = [$namespace];
+        $namespaces = [];
+
+        if ($this->namespace !== null) {
+            $namespaces[] = ltrim($this->namespace, '\\');
+        }
+
         $directType = null;
         $this->traits[] = 'Glitch\\TException';
 

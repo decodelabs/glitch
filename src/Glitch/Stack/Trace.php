@@ -6,6 +6,8 @@
 declare(strict_types=1);
 namespace Glitch\Stack;
 
+use Glitch\PathHandler;
+
 /**
  * Represents a normalized stack trace
  */
@@ -168,12 +170,14 @@ class Trace implements \IteratorAggregate
 
         foreach ($frames as $i => $frame) {
             if ($i === 0) {
-                //$output[($count + 1).': Df\\Error()'] = Df\stripBasePath($frame->getFile()).' : '.$frame->getLine();
-                $output[($count + 1).': Df\\Error()'] = $frame->getFile().' : '.$frame->getLine();
+                $output[($count + 1).': Glitch'] = [
+                    'file' => PathHandler::normalizePath($frame->getFile()).' : '.$frame->getLine()
+                ];
             }
 
-            //$output[($count - $i).': '.$frame->getSignature(true)] = Df\stripBasePath($frame->getCallingFile()).' : '.$frame->getCallingLine();
-            $output[($count - $i).': '.$frame->getSignature(true)] = $frame->getCallingFile().' : '.$frame->getCallingLine();
+            $output[($count - $i).': '.$frame->getSignature(true)] = [
+                'file' => PathHandler::normalizePath($frame->getCallingFile()).' : '.$frame->getCallingLine()
+            ];
         }
 
         return $output;

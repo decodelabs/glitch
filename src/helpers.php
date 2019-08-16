@@ -26,4 +26,9 @@ namespace
             $data
         );
     }
+
+    function test()
+    {
+        throw Glitch('test');
+    }
 }

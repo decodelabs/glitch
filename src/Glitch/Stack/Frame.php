@@ -6,6 +6,8 @@
 declare(strict_types=1);
 namespace Glitch\Stack;
 
+use Glitch\PathHandler;
+
 /**
  * Represents a single entry in a stack trace
  */
@@ -218,7 +220,6 @@ class Frame
             $part = trim(array_shift($parts));
 
             if (preg_match('/^class@anonymous(.+)(\(([0-9]+)\))/', $part, $matches)) {
-                //$name[] = core\fs\Dir::stripPathLocation($matches[1]).' : '.($matches[3] ?? null);
                 $name[] = $matches[1].' : '.($matches[3] ?? null);
             } elseif (preg_match('/^eval\(\)\'d/', $part)) {
                 $name = ['eval[ '.implode(' : ', $name).' ]'];
@@ -377,7 +378,7 @@ class Frame
     public function toArray(): array
     {
         return [
-            'file' => $this->getFile(),
+            'file' => PathHandler::normalizePath($this->getFile()),
             'line' => $this->getLine(),
             'function' => $this->function,
             'class' => $this->className,
