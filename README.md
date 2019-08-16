@@ -129,7 +129,7 @@ becomes
 
 ### Usage
 
-Throw Glitches rather than Exceptions, passing mixed in interfaces as the method name (error interfaces must begin with E)
+Throw Glitches rather than Exceptions, passing mixed in interfaces as the method name (generated error interfaces must begin with E)
 
 ```php
 throw \Glitch::EOutOfBounds('This is out of bounds');
@@ -139,11 +139,16 @@ throw \Glitch::{'ENotFound,EBadMethodCall'}(
 );
 
 // You can associate a http code too..
-throw \Glitch::ECompletelyMadeUpMeaning([
-    'message' => 'My message',
+throw \Glitch::ECompletelyMadeUpMeaning('My message', [
     'code' => 1234,
     'http' => 501
 ]);
+
+throw \Glitch::{'EInvalidArgument,Psr\\Cache\\InvalidArgumentException'}(
+    'Cache items must implement Cache\\IItem',
+    ['http' => 500],  // params
+    $item             // data 
+);
 ```
 
 Catch a Glitch in the normal way using whichever scope you require:
