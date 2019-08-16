@@ -107,7 +107,7 @@ class Factory
             ]
     ];
 
-    const REWIND = 5;
+    const REWIND = 3;
 
     private static $instances = [];
 
@@ -166,7 +166,7 @@ class Factory
         $this->params['rewind'] = $rewind = max((int)($this->params['rewind'] ?? 0), 0);
         $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $rewind + static::REWIND);
         $lastTrace = array_pop($trace);
-        $key = $rewind + static::REWIND - 2;
+        $key = $rewind + static::REWIND;
 
         if (isset($this->params['namespace'])) {
             $this->namespace = $this->params['namespace'];
@@ -176,8 +176,7 @@ class Factory
 
             if (!empty($this->namespace)) {
                 if (false !== strpos($this->namespace, 'class@anon')) {
-                    dd($this->namespace);
-                //$this->namespace = '\\Df';
+                    $this->namespace = null;
                 } else {
                     $parts = explode('\\', $this->namespace);
                     $className = array_pop($parts);
@@ -219,6 +218,7 @@ class Factory
     protected function buildDefinitions(array $interfaces): void
     {
         $namespaces = [];
+        $namespace = null;
 
         if ($this->namespace !== null) {
             $namespaces[] = ltrim($this->namespace, '\\');
@@ -238,7 +238,7 @@ class Factory
 
             $interface = ltrim($interface, '\\');
 
-            if (false === strpos($interface, '\\')) {
+            if ($namespace !== null && false === strpos($interface, '\\')) {
                 $interface = $namespace.'\\'.$interface;
             }
 
@@ -303,7 +303,7 @@ class Factory
         $name = array_pop($parts);
         $output = null;
 
-        if (!preg_match('/^(E)[A-Z][a-zA-Z0-9_]+$/', $name)) {
+        if (empty($parts) || !preg_match('/^(E)[A-Z][a-zA-Z0-9_]+$/', $name)) {
             return null;
         }
 

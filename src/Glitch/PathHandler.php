@@ -37,15 +37,9 @@ class PathHandler
 
     public static function normalizePath(string $path): string
     {
-        if (static::$aliases === null) {
-            static::$aliases = [
-                'glitch' => dirname(dirname(__DIR__))
-            ];
-        }
-
         foreach (self::$aliases as $name => $test) {
             if (0 === strpos($path, $test)) {
-                return $name.substr($path, strlen($test));
+                return '{'.$name.'}'.substr($path, strlen($test));
             }
         }
 
