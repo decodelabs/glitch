@@ -21,6 +21,9 @@ trait TException
     protected $rewind;
     protected $stackTrace;
 
+    /**
+     * Override the standard Exception constructor to simplify instantiation
+     */
     public function __construct($message, array $params=[])
     {
         parent::__construct(

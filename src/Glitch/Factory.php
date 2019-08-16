@@ -6,6 +6,10 @@
 declare(strict_types=1);
 namespace Glitch;
 
+/**
+ * Automatically generate Exceptions on the fly based on scope and
+ * requested interface types
+ */
 class Factory
 {
     const STANDARD = [
