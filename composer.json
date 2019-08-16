@@ -1,0 +1,16 @@
+{
+    "name": "decodelabs/glitch",
+    "description": "Better exceptions for PHP",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tom Wright",
+            "email": "tom@inflatablecookie.com"
+        }
+    ],
+    "require": {
+        "php": "^7.1.3",
+        "decodelabs/df-base": "dev-develop"
+    }
+}
