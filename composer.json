@@ -11,7 +11,10 @@
     ],
     "require": {
         "php": "^7.1.3",
-        "decodelabs/df-base": "dev-develop"
+        "symfony/polyfill-php72": "~1.7",
+        "symfony/polyfill-mbstring": "~1.7",
+
+        "symfony/var-dumper": "~4.1.0",
     },
     "autoload": {
         "psr-4": {
