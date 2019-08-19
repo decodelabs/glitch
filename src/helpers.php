@@ -12,7 +12,6 @@ declare(strict_types=1);
 namespace
 {
     use Glitch\Factory;
-    use Glitch\PathHandler;
 
     /**
      * Direct facade for generating IError based exceptions
@@ -27,6 +26,4 @@ namespace
             $data
         );
     }
-
-    PathHandler::registerAlias('glitch', __DIR__);
 }

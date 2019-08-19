@@ -115,7 +115,7 @@ composer require decodelabs/glitch
 Register base paths for easier reading of file names
 
 ```php
-\Glitch\PathHandler::registerAlias('app', '/path/to/my/app');
+\Glitch\Context::getDefault()->registerPathAlias('app', '/path/to/my/app');
 
 /*
 /path/to/my/app/models/MyModel.php
@@ -147,7 +147,7 @@ throw \Glitch::ECompletelyMadeUpMeaning('My message', [
 throw \Glitch::{'EInvalidArgument,Psr\\Cache\\InvalidArgumentException'}(
     'Cache items must implement Cache\\IItem',
     ['http' => 500],  // params
-    $item             // data 
+    $item             // data
 );
 ```
 

@@ -6,7 +6,7 @@
 declare(strict_types=1);
 namespace Glitch\Stack;
 
-use Glitch\PathHandler;
+use Glitch\Context;
 
 /**
  * Represents a single entry in a stack trace
@@ -378,7 +378,7 @@ class Frame
     public function toArray(): array
     {
         return [
-            'file' => PathHandler::normalizePath($this->getFile()),
+            'file' => Context::getDefault()->normalizePath($this->getFile()),
             'line' => $this->getLine(),
             'function' => $this->function,
             'class' => $this->className,

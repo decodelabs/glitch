@@ -136,7 +136,7 @@ trait TException
 
         $output['types'] = array_merge($types, array_values(class_implements($this)));
         sort($output['types']);
-        $output['file'] = PathHandler::normalizePath($this->file).' : '.$this->line;
+        $output['file'] = Context::getDefault()->normalizePath($this->file).' : '.$this->line;
 
 
         // Trace
