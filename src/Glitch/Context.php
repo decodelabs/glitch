@@ -6,7 +6,10 @@
 declare(strict_types=1);
 namespace Glitch;
 
-use Glitch\Stack\Frame as StackFrame;
+use Glitch\Stack\Frame;
+use Glitch\Stack\Trace;
+use Glitch\Dumper\Inspector;
+use Glitch\Dumper\Dump;
 
 class Context implements IContext
 {
@@ -15,6 +18,7 @@ class Context implements IContext
     protected $startTime;
     protected $runMode = 'development';
     protected $pathAliases = [];
+    protected $objectInspectors = [];
 
 
     /**
@@ -106,17 +110,17 @@ class Context implements IContext
     /**
      * Send variables to dump, carry on execution
      */
-    public function dump(array $vars, int $rewind=null): void
+    public function dump(array $values, int $rewind=null): void
     {
-        $this->tempHandler()->dump(array_shift($vars), ...$vars);
+        $this->tempHandler()->dump(array_shift($values), ...$values);
     }
 
     /**
      * Send variables to dump, exit and render
      */
-    public function dumpDie(array $vars, int $rewind=null): void
+    public function dumpDie(array $values, int $rewind=null): void
     {
-        $this->tempHandler()->dumpDie(array_shift($vars), ...$vars);
+        $this->tempHandler()->dumpDie(array_shift($values), ...$values);
     }
 
 
@@ -132,9 +136,21 @@ class Context implements IContext
     }
 
 
-    public function dd2(array $vars, int $rewind=null): void
+    public function dd2(array $values, int $rewind=null): void
     {
-        dd($vars, $rewind);
+        $trace = Trace::create($rewind + 1);
+        $inspector = new Inspector($this);
+
+        $dump = new Dump(
+            $trace,
+            microtime(true) - $this->getStartTime(),
+            memory_get_peak_usage()
+        );
+
+        foreach ($values as $value) {
+            $dump->addEntity($inspector->inspectValue($value));
+        }
+        dd($dump);
     }
 
     /**
@@ -142,7 +158,7 @@ class Context implements IContext
      */
     public function incomplete($data=null, int $rewind=null): void
     {
-        $frame = StackFrame::create($rewind + 1);
+        $frame = Frame::create($rewind + 1);
 
         throw \Glitch::EImplementation(
             $frame->getSignature().' has not been implemented yet',
@@ -236,5 +252,24 @@ class Context implements IContext
         }
 
         return $path;
+    }
+
+
+
+    /**
+     * Register callable inspector for a specific class
+     */
+    public function registerObjectInspector(string $class, callable $inspector): IContext
+    {
+        $this->objectInspectors[$class] = $inspector;
+        return $this;
+    }
+
+    /**
+     * Get list of registered inspectors
+     */
+    public function getObjectInspectors(): array
+    {
+        return $this->objectInspectors;
     }
 }

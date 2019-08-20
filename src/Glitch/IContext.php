@@ -39,4 +39,9 @@ interface IContext
     public function registerPathAliases(array $aliases): IContext;
     public function getPathAliases(): array;
     public function normalizePath(string $path): string;
+
+
+    // Object inspectors
+    public function registerObjectInspector(string $class, callable $inspector): IContext;
+    public function getObjectInspectors(): array;
 }

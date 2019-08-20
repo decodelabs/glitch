@@ -171,12 +171,12 @@ class Trace implements \IteratorAggregate
         foreach ($frames as $i => $frame) {
             if ($i === 0) {
                 $output[($count + 1).': Glitch'] = [
-                    'file' => GlitchContext::getDefault()->normalizePath($frame->getFile()).' : '.$frame->getLine()
+                    'file' => Context::getDefault()->normalizePath($frame->getFile()).' : '.$frame->getLine()
                 ];
             }
 
             $output[($count - $i).': '.$frame->getSignature(true)] = [
-                'file' => GlitchContext::getDefault()->normalizePath($frame->getCallingFile()).' : '.$frame->getCallingLine()
+                'file' => Context::getDefault()->normalizePath($frame->getCallingFile()).' : '.$frame->getCallingLine()
             ];
         }
 
