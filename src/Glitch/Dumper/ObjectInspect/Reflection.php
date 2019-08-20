@@ -16,6 +16,14 @@ class Reflection
      */
     public static function inspectReflectionClass(\ReflectionClass $reflection, Entity $entity, Inspector $inspector): void
     {
+        $entity->setDefinition(Reflection::getClassDefinition($reflection));
+
+        if (!$reflection->isInternal()) {
+            $entity
+                ->setFile($reflection->getFileName())
+                ->setStartLine($reflection->getStartLine())
+                ->setEndLine($reflection->getEndLine());
+        }
     }
 
     /**
@@ -23,6 +31,11 @@ class Reflection
      */
     public static function inspectReflectionClassConstant(\ReflectionClassConstant $reflection, Entity $entity, Inspector $inspector): void
     {
+        $entity
+            ->setDefinition(Reflection::getConstantDefinition($reflection))
+            ->setProperties([
+                'class' => $reflection->class
+            ]);
     }
 
     /**
@@ -30,6 +43,12 @@ class Reflection
      */
     public static function inspectReflectionZendExtension(\ReflectionZendExtension $reflection, Entity $entity, Inspector $inspector): void
     {
+        $entity->setProperties($inspector->inspectValues([
+            'version' => $reflection->getVersion(),
+            'author' => $reflection->getAuthor(),
+            'copyright' => $reflection->getCopyright(),
+            'url' => $reflection->getURL()
+        ]));
     }
 
     /**
@@ -37,13 +56,28 @@ class Reflection
      */
     public static function inspectReflectionExtension(\ReflectionExtension $reflection, Entity $entity, Inspector $inspector): void
     {
+        $entity->setProperties($inspector->inspectValues([
+            'version' => $reflection->getVersion(),
+            'dependencies' => $reflection->getDependencies(),
+            'iniEntries' => $reflection->getIniEntries(),
+            'isPersistent' => $reflection->isPersistent(),
+            'isTemporary' => $reflection->isTemporary(),
+            'constants' => $reflection->getConstants(),
+            'functions' => $reflection->getFunctions(),
+            'classes' => $reflection->getClasses()
+        ]));
     }
 
     /**
      * Inspect ReflectionFunction
      */
-    public static function inspectReflectionFunction(\ReflectionFunction $reflection, Entity $entity, Inspector $inspector): void
+    public static function inspectReflectionFunction(\ReflectionFunctionAbstract $reflection, Entity $entity, Inspector $inspector): void
     {
+        $entity
+            ->setDefinition(Reflection::getFunctionDefinition($reflection))
+            ->setFile($reflection->getFileName())
+            ->setStartLine($reflection->getStartLine())
+            ->setEndLine($reflection->getEndLine());
     }
 
     /**
@@ -51,6 +85,11 @@ class Reflection
      */
     public static function inspectReflectionMethod(\ReflectionMethod $reflection, Entity $entity, Inspector $inspector): void
     {
+        self::inspectReflectionFunction($reflection, $entity, $inspector);
+
+        $entity->setProperties([
+            'class' => $reflection->getDeclaringClass()->getName()
+        ]);
     }
 
     /**
@@ -58,6 +97,7 @@ class Reflection
      */
     public static function inspectReflectionParameter(\ReflectionParameter $reflection, Entity $entity, Inspector $inspector): void
     {
+        $entity->setDefinition(self::getParameterDefinition($reflection));
     }
 
     /**
@@ -65,6 +105,11 @@ class Reflection
      */
     public static function inspectReflectionProperty(\ReflectionProperty $reflection, Entity $entity, Inspector $inspector): void
     {
+        $entity
+            ->setDefinition(self::getPropertyDefinition($reflection))
+            ->setProperties([
+                'class' => $reflection->getDeclaringClass()->getName()
+            ]);
     }
 
     /**
@@ -72,6 +117,11 @@ class Reflection
      */
     public static function inspectReflectionType(\ReflectionType $reflection, Entity $entity, Inspector $inspector): void
     {
+        $entity->setProperties([
+            'name' => $reflection->getName(),
+            'allowsNull' => $reflection->allowsNull(),
+            'isBuiltin' => $reflection->isBuiltin()
+        ]);
     }
 
     /**
@@ -79,8 +129,105 @@ class Reflection
      */
     public static function inspectReflectionGenerator(\ReflectionGenerator $reflection, Entity $entity, Inspector $inspector): void
     {
+        $function = $reflection->getFunction();
+
+        $entity
+            ->setDefinition(Reflection::getFunctionDefinition($function))
+            ->setFile($function->getFileName())
+            ->setStartLine($function->getStartLine())
+            ->setEndLine($function->getEndLine());
     }
 
+
+
+
+    /**
+     * Export class definitoin
+     */
+    public static function getClassDefinition(\ReflectionClass $reflection): string
+    {
+        $output = 'class ';
+        $name = $reflection->getName();
+
+        if (0 === strpos($name, "class@anonymous\x00")) {
+            $output .= '() ';
+        } else {
+            $output .= $name.' ';
+        }
+
+        if ($parent = $reflection->getParentClass()) {
+            $output .= 'extends '.$parent->getName();
+        }
+
+        $interfaces = [];
+
+        foreach ($reflection->getInterfaces() as $interface) {
+            $interfaces[] = $interface->getName();
+        }
+
+        if (!empty($interfaces)) {
+            $output .= 'implements '.implode(', ', $interfaces).' ';
+        }
+
+        $output .= '{'."\n";
+
+        foreach ($reflection->getReflectionConstants() as $const) {
+            $output .= '    '.self::getConstantDefinition($const)."\n";
+        }
+
+        foreach ($reflection->getProperties() as $property) {
+            $output .= '    '.self::getPropertyDefinition($property)."\n";
+        }
+
+        foreach ($reflection->getMethods() as $method) {
+            $output .= '    '.self::getFunctionDefinition($method)."\n";
+        }
+
+        $output .= '}';
+
+        return $output;
+    }
+
+
+    /**
+     * Export property definition
+     */
+    public static function getPropertyDefinition(\ReflectionProperty $reflection): string
+    {
+        $output = implode(' ', \Reflection::getModifierNames($reflection->getModifiers()));
+        $name = $reflection->getName();
+        $output .= ' $'.$name.' = ';
+        $reflection->setAccessible(true);
+        $props = $reflection->getDeclaringClass()->getDefaultProperties();
+        $value = $prop[$name] ?? null;
+
+        if (is_array($value)) {
+            $output .= '[...]';
+        } else {
+            $output .= Inspector::scalarToString($value);
+        }
+
+        return $output;
+    }
+
+
+    /**
+     * Export class constant definition
+     */
+    public static function getConstantDefinition(\ReflectionClassConstant $reflection): string
+    {
+        $output = implode(' ', \Reflection::getModifierNames($reflection->getModifiers()));
+        $output .= ' const '.$reflection->getName().' = ';
+        $value = $reflection->getValue();
+
+        if (is_array($value)) {
+            $output .= '[...]';
+        } else {
+            $output .= Inspector::scalarToString($value);
+        }
+
+        return $output;
+    }
 
 
     /**
@@ -91,7 +238,7 @@ class Reflection
         $output = '';
 
         if ($reflection instanceof \ReflectionMethod) {
-            $output = implode(' ', $reflection->getModifiers());
+            $output = implode(' ', \Reflection::getModifierNames($reflection->getModifiers()));
 
             if (!empty($output)) {
                 $output .= ' ';
@@ -124,7 +271,7 @@ class Reflection
                 $output .= '?';
             }
 
-            $output .= (string)$returnType;
+            $output .= $returnType->getName();
         }
 
         return $output;
@@ -142,7 +289,7 @@ class Reflection
         }
 
         if ($type = $parameter->getType()) {
-            $output .= (string)$type.' ';
+            $output .= $type->getName().' ';
         }
 
         if ($parameter->isPassedByReference()) {
