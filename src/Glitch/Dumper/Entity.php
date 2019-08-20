@@ -22,6 +22,7 @@ class Entity
     protected $endLine;
 
     protected $text;
+    protected $definition;
 
     protected $length;
     protected $meta;
@@ -260,6 +261,26 @@ class Entity
     {
         return $this->text;
     }
+
+
+
+    /**
+     * Set definition code
+     */
+    public function setDefinition(?string $definition): Entity
+    {
+        $this->definition = $definition;
+        return $this;
+    }
+
+    /**
+     * Get definition code
+     */
+    public function getDefinition(): ?string
+    {
+        return $this->definition;
+    }
+
 
 
     /**

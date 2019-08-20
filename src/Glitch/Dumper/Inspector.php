@@ -16,8 +16,23 @@ use Glitch\Dumper\ObjectInspect as Obj;
 class Inspector
 {
     const OBJECTS = [
-        'Closure' => [Obj\Reflection::class, 'inspectClosure'],
-        'Generator' => [Obj\Reflection::class, 'inspectGenerator']
+        // Core
+        'Closure' => [Obj\Core::class, 'inspectClosure'],
+        'Generator' => [Obj\Core::class, 'inspectGenerator'],
+        '__PHP_Incomplete_Class' => [Obj\Core::class, 'inspectIncompleteClass'],
+
+        // Reflection
+        'ReflectionClass' => [Obj\Reflection::class, 'inspectReflectionClass'],
+        'ReflectionClassConstant' => [Obj\Reflection::class, 'inspectReflectionClassConstant'],
+        'ReflectionZendExtension' => [Obj\Reflection::class, 'inspectReflectionZendExtension'],
+        'ReflectionExtension' => [Obj\Reflection::class, 'inspectReflectionExtension'],
+        'ReflectionFunction' => [Obj\Reflection::class, 'inspectReflectionFunction'],
+        'ReflectionFunctionAbstract' => [Obj\Reflection::class, 'inspectReflectionFunction'],
+        'ReflectionMethod' => [Obj\Reflection::class, 'inspectReflectionMethod'],
+        'ReflectionParameter' => [Obj\Reflection::class, 'inspectReflectionParameter'],
+        'ReflectionProperty' => [Obj\Reflection::class, 'inspectReflectionProperty'],
+        'ReflectionType' => [Obj\Reflection::class, 'inspectReflectionType'],
+        'ReflectionGenerator' => [Obj\Reflection::class, 'inspectReflectionGenerator'],
     ];
 
     protected $objectInspectors = [];
@@ -407,6 +422,31 @@ class Inspector
 
             $value = $property->getValue($object);
             $entity->setProperty($name, $this->inspectValue($value));
+        }
+    }
+
+
+    /**
+     * Convert a scalar value to a string
+     */
+    public static function scalarToString($value): ?string
+    {
+        switch (true) {
+            case $value === null:
+                return 'null';
+
+            case is_bool($value):
+                return $value ? 'true' : 'false';
+
+            case is_int($value):
+            case is_float($value):
+                return (string)$value;
+
+            case is_string($value):
+                return '"'.$value.'"';
+
+            default:
+                return (string)$value;
         }
     }
 }
