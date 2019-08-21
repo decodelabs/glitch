@@ -15,6 +15,7 @@
         "symfony/polyfill-mbstring": "~1.7",
 
         "components/jquery": "~3.3",
+        "components/bootstrap": "~4.3",
 
         "symfony/var-dumper": "~4.1.0"
     },
