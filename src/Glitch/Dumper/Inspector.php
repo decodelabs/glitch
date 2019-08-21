@@ -11,31 +11,167 @@ use Glitch\IContext;
 use Glitch\IInspectable;
 use Glitch\Stack\Trace;
 
-use Glitch\Dumper\ObjectInspect as Obj;
+use Glitch\Dumper\Inspect;
 
 class Inspector
 {
     const OBJECTS = [
         // Core
-        'Closure' => [Obj\Core::class, 'inspectClosure'],
-        'Generator' => [Obj\Core::class, 'inspectGenerator'],
-        '__PHP_Incomplete_Class' => [Obj\Core::class, 'inspectIncompleteClass'],
+        'Closure' => [Inspect\Core::class, 'inspectClosure'],
+        'Generator' => [Inspect\Core::class, 'inspectGenerator'],
+        '__PHP_Incomplete_Class' => [Inspect\Core::class, 'inspectIncompleteClass'],
 
         // Reflection
-        'ReflectionClass' => [Obj\Reflection::class, 'inspectReflectionClass'],
-        'ReflectionClassConstant' => [Obj\Reflection::class, 'inspectReflectionClassConstant'],
-        'ReflectionZendExtension' => [Obj\Reflection::class, 'inspectReflectionZendExtension'],
-        'ReflectionExtension' => [Obj\Reflection::class, 'inspectReflectionExtension'],
-        'ReflectionFunction' => [Obj\Reflection::class, 'inspectReflectionFunction'],
-        'ReflectionFunctionAbstract' => [Obj\Reflection::class, 'inspectReflectionFunction'],
-        'ReflectionMethod' => [Obj\Reflection::class, 'inspectReflectionMethod'],
-        'ReflectionParameter' => [Obj\Reflection::class, 'inspectReflectionParameter'],
-        'ReflectionProperty' => [Obj\Reflection::class, 'inspectReflectionProperty'],
-        'ReflectionType' => [Obj\Reflection::class, 'inspectReflectionType'],
-        'ReflectionGenerator' => [Obj\Reflection::class, 'inspectReflectionGenerator'],
+        'ReflectionClass' => [Inspect\Reflection::class, 'inspectReflectionClass'],
+        'ReflectionClassConstant' => [Inspect\Reflection::class, 'inspectReflectionClassConstant'],
+        'ReflectionZendExtension' => [Inspect\Reflection::class, 'inspectReflectionZendExtension'],
+        'ReflectionExtension' => [Inspect\Reflection::class, 'inspectReflectionExtension'],
+        'ReflectionFunction' => [Inspect\Reflection::class, 'inspectReflectionFunction'],
+        'ReflectionFunctionAbstract' => [Inspect\Reflection::class, 'inspectReflectionFunction'],
+        'ReflectionMethod' => [Inspect\Reflection::class, 'inspectReflectionMethod'],
+        'ReflectionParameter' => [Inspect\Reflection::class, 'inspectReflectionParameter'],
+        'ReflectionProperty' => [Inspect\Reflection::class, 'inspectReflectionProperty'],
+        'ReflectionType' => [Inspect\Reflection::class, 'inspectReflectionType'],
+        'ReflectionGenerator' => [Inspect\Reflection::class, 'inspectReflectionGenerator'],
+    ];
+
+    const RESOURCES = [
+        // Bzip
+        'bzip2' => null,
+
+        // Cubrid
+        'cubrid connection' => null,
+        'persistent cubrid connection' => null,
+        'cubrid request' => null,
+        'cubrid lob' => null,
+        'cubrid lob2' => null,
+
+        // Curl
+        'curl' => [Inspect\Curl::class, 'inspectCurl'],
+
+        // Dba
+        'dba' => [Inspect\Dba::class, 'inspectDba'],
+        'dba persistent' => [Inspect\Dba::class, 'inspectDba'],
+
+        // Dbase
+        'dbase' => null,
+
+        // DBX
+        'dbx_link_object' => null,
+        'dbx_result_object' => null,
+
+        // Firebird
+        'fbsql link' => null,
+        'fbsql plink' => null,
+        'fbsql result' => null,
+
+        // FDF
+        'fdf' => null,
+
+        // FTP
+        'ftp' => null,
+
+        // GD
+        'gd' => [Inspect\Gd::class, 'inspectGd'],
+        'gd font' => [Inspect\Gd::class, 'inspectGdFont'],
+
+        // Imap
+        'imap' => null,
+
+        // Ingres
+        'ingres' => null,
+        'ingres persistent' => null,
+
+        // Interbase
+        'interbase link' => null,
+        'interbase link persistent' => null,
+        'interbase query' => null,
+        'interbase result' => null,
+
+        // Ldap
+        'ldap link' => null,
+        'ldap result' => null,
+
+        // mSQL
+        'msql link' => null,
+        'msql link persistent' => null,
+        'msql query' => null,
+
+        // msSQL
+        'mssql link' => null,
+        'mssql link persistent' => null,
+        'mssql result' => null,
+
+        // Oci8
+        'oci8 collection' => null,
+        'oci8 connection' => null,
+        'oci8 lob' => null,
+        'oci8 statement' => null,
+
+        // Odbc
+        'odbc link' => null,
+        'odbc link persistent' => null,
+        'odbc result' => null,
+
+        // OpenSSL
+        'OpenSSL key' => null,
+        'OpenSSL X.509' => null,
+
+        // PDF
+        'pdf document' => null,
+        'pdf image' => null,
+        'pdf object' => null,
+        'pdf outline' => null,
+
+        // PgSQL
+        'pgsql large object' => null,
+        'pgsql link' => null,
+        'pgsql link persistent' => null,
+        'pgsql result' => null,
+
+        // Process
+        'process' => [Inspect\Process::class, 'inspectProcess'],
+
+        // Pspell
+        'pspell' => null,
+        'pspell config' => null,
+
+        // Shmop
+        'shmop' => null,
+
+        // Stream
+        'stream' => [Inspect\Stream::class, 'inspectStream'],
+
+        // Socket
+        'socket' => null,
+
+        // Sybase
+        'sybase-db link' => null,
+        'sybase-db link persistent' => null,
+        'sybase-db result' => null,
+        'sybase-ct link' => null,
+        'sybase-ct link persistent' => null,
+        'sybase-ct result' => null,
+
+        // Sysv
+        'sysvsem' => null,
+        'sysvshm' => null,
+
+        // Wddx
+        'wddx' => null,
+
+        // Xml
+        'xml' => [Inspect\Xml::class, 'inspectXmlResource'],
+
+        // Zlib
+        'zlib' => null,
+        'zlib.deflate' => null,
+        'zlib.inflate' => null
     ];
 
     protected $objectInspectors = [];
+    protected $resourceInspectors = [];
+
     protected $objectRefs = [];
     protected $arrayRefs = [];
     protected $arrayIds = [];
@@ -46,10 +182,24 @@ class Inspector
      */
     public function __construct(IContext $context)
     {
-        $this->objectInspectors = static::OBJECTS;
+        foreach (static::OBJECTS as $class => $inspector) {
+            if ($inspector !== null) {
+                $this->objectInspectors[$class] = $inspector;
+            }
+        }
+
+        foreach (static::RESOURCES as $type => $inspector) {
+            if ($inspector !== null) {
+                $this->resourceInspectors[$type] = $inspector;
+            }
+        }
 
         foreach ($context->getObjectInspectors() as $class => $inspector) {
             $this->objectInspectors[$class] = $inspector;
+        }
+
+        foreach ($context->getResourceInspectors() as $type => $inspector) {
+            $this->resourceInspectors[$type] = $inspector;
         }
     }
 
@@ -136,143 +286,19 @@ class Inspector
      */
     public function inspectResource($resource): Entity
     {
-        $output = (new Entity('resource'))
+        $entity = (new Entity('resource'))
             ->setName((string)$resource)
             ->setClass($rType = get_resource_type($resource));
 
         $typeName = str_replace(' ', '', ucwords($rType));
         $method = 'inspect'.ucfirst($typeName).'Resource';
 
-        if (method_exists($this, $method)) {
-            $this->{$method}($resource, $output);
+        if (isset($this->resourceInspectors[$rType])) {
+            call_user_func($this->resourceInspectors[$rType], $resource, $entity, $this);
         }
 
-        return $output;
+        return $entity;
     }
-
-    /**
-     * Inspect curl resource
-     */
-    public function inspectCurlResource($resource, Entity $entity): void
-    {
-        foreach (curl_getinfo($resource) as $key => $value) {
-            $entity->setMeta($key, $this->inspectValue($value));
-        }
-    }
-
-    /**
-     * Inspect dba resource
-     */
-    public function inspectDbaResource($resource, Entity $entity): void
-    {
-        $list = dba_list();
-        $entity->setMeta('file', $this->inspectValue($list[(int)$resource]));
-    }
-
-    /**
-     * Inspect dba persistent resource
-     */
-    public function inspectDbaPersistentResource($resource, Entity $entity): void
-    {
-        $this->inspectDbaResource($resource, $entity);
-    }
-
-    /**
-     * Inspect gd resource
-     */
-    public function inspectGdResource($resource, Entity $entity): void
-    {
-        $entity
-            ->setMeta('width', $this->inspectValue(imagesx($resource)))
-            ->setMeta('height', $this->inspectValue(imagesy($resource)));
-    }
-
-    /**
-     * Inspect pgsql resource
-     */
-    public function inspectPgsqlLinkResource($resource, Entity $entity): void
-    {
-    }
-
-    /**
-     * Inspect pgsql persistent resource
-     */
-    public function inspectPgsqlPersistentLinkResource($resource, Entity $entity): void
-    {
-    }
-
-    /**
-     * Inspect pgsql large object resource
-     */
-    public function inspectPgsqlLargeObjectResource($resource, Entity $entity): void
-    {
-    }
-
-    /**
-     * Inspect pgsql result resource
-     */
-    public function inspectPgsqlResultResource($resource, Entity $entity): void
-    {
-    }
-
-    /**
-     * Inspect process resource
-     */
-    public function inspectProcessResource($resource, Entity $entity): void
-    {
-        foreach (proc_get_status($resource) as $key => $value) {
-            $entity->setMeta($key, $this->inspectValue($value));
-        }
-    }
-
-    /**
-     * Inspect stream resource
-     */
-    public function inspectStreamResource($resource, Entity $entity): void
-    {
-        foreach (stream_get_meta_data($resource) as $key => $value) {
-            $entity->setMeta($key, $this->inspectValue($value));
-        }
-
-        $this->inspectStreamContextResource($resource, $entity);
-    }
-
-    /**
-     * Inspect persistent stream resource
-     */
-    public function inspectPersistentStreamResource($resource, Entity $entity): void
-    {
-        $this->inspectStreamResource($resource, $entity);
-    }
-
-    /**
-     * Inspect stream context resource
-     */
-    public function inspectStreamContextResource($resource, Entity $entity): void
-    {
-        if (!$params = @stream_context_get_params($resource)) {
-            return;
-        }
-
-        foreach ($params as $key => $value) {
-            $entity->setMeta($key, $this->inspectValue($value));
-        }
-    }
-
-    /**
-     * Inspect xml resource
-     */
-    public function inspectXmlResource($resource, Entity $entity): void
-    {
-        $entity
-            ->setMeta('current_byte_index', $this->inspectValue(xml_get_current_byte_index($resource)))
-            ->setMeta('current_column_number', $this->inspectValue(xml_get_current_column_number($resource)))
-            ->setMeta('current_line_number', $this->inspectValue(xml_get_current_line_number($resource)))
-            ->setMeta('error_code', $this->inspectValue(xml_get_error_code($resource)));
-    }
-
-
-
 
 
 

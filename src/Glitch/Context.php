@@ -18,7 +18,9 @@ class Context implements IContext
     protected $startTime;
     protected $runMode = 'development';
     protected $pathAliases = [];
+
     protected $objectInspectors = [];
+    protected $resourceInspectors = [];
 
 
     /**
@@ -271,5 +273,23 @@ class Context implements IContext
     public function getObjectInspectors(): array
     {
         return $this->objectInspectors;
+    }
+
+
+    /**
+     * Register callable inspector for a specific resource type
+     */
+    public function registerResourceInspector(string $type, callable $inspector): IContext
+    {
+        $this->resourceInspectors[$type] = $inspector;
+        return $this;
+    }
+
+    /**
+     * Get list of registered inspectors
+     */
+    public function getResourceInspectors(): array
+    {
+        return $this->resourceInspectors;
     }
 }

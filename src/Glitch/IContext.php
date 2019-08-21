@@ -41,7 +41,9 @@ interface IContext
     public function normalizePath(string $path): string;
 
 
-    // Object inspectors
+    // Inspectors
     public function registerObjectInspector(string $class, callable $inspector): IContext;
     public function getObjectInspectors(): array;
+    public function registerResourceInspector(string $type, callable $inspector): IContext;
+    public function getResourceInspectors(): array;
 }

@@ -4,7 +4,7 @@
  * @license http://opensource.org/licenses/MIT
  */
 declare(strict_types=1);
-namespace Glitch\Dumper\ObjectInspect;
+namespace Glitch\Dumper\Inspect;
 
 use Glitch\Dumper\Entity;
 use Glitch\Dumper\Inspector;
