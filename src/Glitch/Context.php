@@ -11,7 +11,9 @@ use Glitch\Stack\Trace;
 use Glitch\Dumper\Inspector;
 use Glitch\Dumper\Dump;
 
-class Context implements IContext
+use Composer\Autoload\ClassLoader;
+
+class Context
 {
     protected static $default;
 
@@ -19,14 +21,18 @@ class Context implements IContext
     protected $runMode = 'development';
     protected $pathAliases = [];
 
+    protected $statGatherers = [];
+
     protected $objectInspectors = [];
     protected $resourceInspectors = [];
+
+    protected $dumpRenderer;
 
 
     /**
      * Create / fetch default context
      */
-    public static function getDefault(): IContext
+    public static function getDefault(): Context
     {
         if (!self::$default) {
             self::setDefault(new self());
@@ -38,7 +44,7 @@ class Context implements IContext
     /**
      * Set custom default context
      */
-    public static function setDefault(IContext $default): void
+    public static function setDefault(Context $default): void
     {
         self::$default = $default;
     }
@@ -51,6 +57,8 @@ class Context implements IContext
     {
         $this->startTime = microtime(true);
         $this->pathAliases['glitch'] = dirname(__DIR__);
+
+        $this->dumpRenderer = new \Glitch\Dumper\Renderer\Html($this);
     }
 
 
@@ -58,7 +66,7 @@ class Context implements IContext
     /**
      * Set active run mode
      */
-    public function setRunMode(string $mode): IContext
+    public function setRunMode(string $mode): Context
     {
         switch ($mode) {
             case 'production':
@@ -141,19 +149,105 @@ class Context implements IContext
     public function dd2(array $values, int $rewind=null): void
     {
         $trace = Trace::create($rewind + 1);
+        $frame = $trace->getFirstFrame();
         $inspector = new Inspector($this);
 
-        $dump = new Dump(
-            $trace,
-            microtime(true) - $this->getStartTime(),
-            memory_get_peak_usage()
+        $dump = new Dump($trace);
+
+
+        $dump->addStats(
+            // Time
+            (new Stat('time', 'Running time', microtime(true) - $this->getStartTime()))
+                ->applyClass(function ($value) {
+                    switch (true) {
+                        case $value > 0.1:
+                            return 'danger';
+
+                        case $value > 0.01:
+                            return 'warning';
+
+                        default:
+                            return 'success';
+                    }
+                })
+                ->setRenderer('text', function ($time) {
+                    return self::formatMicrotime($time);
+                }),
+
+            // Memory
+            (new Stat('memory', 'Memory usage', memory_get_usage()))
+                ->applyClass($memApp = function ($value) {
+                    $mb = 1024 * 1024;
+
+                    switch (true) {
+                        case $value > (10 * $mb):
+                            return 'danger';
+
+                        case $value > (5 * $mb):
+                            return 'warning';
+
+                        default:
+                            return 'success';
+                    }
+                })
+                ->setRenderer('text', function ($memory) {
+                    return self::formatFilesize($memory);
+                }),
+
+            // Peak memory
+            (new Stat('peakMemory', 'Peak memory usage', memory_get_peak_usage()))
+                ->applyClass($memApp)
+                ->setRenderer('text', function ($memory) {
+                    return self::formatFilesize($memory);
+                }),
+
+            // Location
+            (new Stat('location', 'Dump location', $frame))
+                ->setRenderer('text', function ($frame) {
+                    return $this->normalizePath($frame->getFile()).' : '.$frame->getLine();
+                })
         );
+
+
+        foreach ($this->statGatherers as $gatherer) {
+            $gatherer($dump, $this);
+        }
 
         foreach ($values as $value) {
             $dump->addEntity($inspector->inspectValue($value));
         }
-        dd($dump);
+
+
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+
+
+        echo $this->dumpRenderer->render($dump, true);
+        exit;
     }
+
+
+    /**
+     * TODO: move these to a shared location
+     */
+    private static function formatFilesize($bytes)
+    {
+        $units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB'];
+
+        for ($i = 0; $bytes > 1024; $i++) {
+            $bytes /= 1024;
+        }
+
+        return round($bytes, 2).' '.$units[$i];
+    }
+
+    private static function formatMicrotime($time)
+    {
+        return number_format($time * 1000, 2).' ms';
+    }
+
+
 
     /**
      * Quit a stubbed method
@@ -184,7 +278,7 @@ class Context implements IContext
     /**
      * Override app start time
      */
-    public function setStartTime(float $time): IContext
+    public function setStartTime(float $time): Context
     {
         $this->startTime = $time;
         return $this;
@@ -205,7 +299,7 @@ class Context implements IContext
     /**
      * Register path replacement alias
      */
-    public function registerPathAlias(string $name, string $path): IContext
+    public function registerPathAlias(string $name, string $path): Context
     {
         $this->pathAliases[$name] = $path;
 
@@ -219,7 +313,7 @@ class Context implements IContext
     /**
      * Register list of path replacement aliases
      */
-    public function registerPathAliases(array $aliases): IContext
+    public function registerPathAliases(array $aliases): Context
     {
         foreach ($aliases as $name => $path) {
             $this->pathAliases[$name] = $path;
@@ -259,9 +353,28 @@ class Context implements IContext
 
 
     /**
+     * Register stat gatherer
+     */
+    public function registerStatGatherer(string $name, callable $gatherer): Context
+    {
+        $this->statGatherers[$name] = $gatherer;
+        return $this;
+    }
+
+    /**
+     * Get stat gatherers
+     */
+    public function getStatGatherers(): array
+    {
+        return $this->statGatherers;
+    }
+
+
+
+    /**
      * Register callable inspector for a specific class
      */
-    public function registerObjectInspector(string $class, callable $inspector): IContext
+    public function registerObjectInspector(string $class, callable $inspector): Context
     {
         $this->objectInspectors[$class] = $inspector;
         return $this;
@@ -279,7 +392,7 @@ class Context implements IContext
     /**
      * Register callable inspector for a specific resource type
      */
-    public function registerResourceInspector(string $type, callable $inspector): IContext
+    public function registerResourceInspector(string $type, callable $inspector): Context
     {
         $this->resourceInspectors[$type] = $inspector;
         return $this;
@@ -291,5 +404,23 @@ class Context implements IContext
     public function getResourceInspectors(): array
     {
         return $this->resourceInspectors;
+    }
+
+
+
+
+    /**
+     * Get composer vendor path
+     */
+    public function getVendorPath(): string
+    {
+        static $output;
+
+        if (!isset($output)) {
+            $ref = new \ReflectionClass(ClassLoader::class);
+            $output = dirname(dirname($ref->getFileName()));
+        }
+
+        return $output;
     }
 }

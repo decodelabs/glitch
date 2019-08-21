@@ -7,7 +7,6 @@ declare(strict_types=1);
 namespace Glitch\Dumper;
 
 use Glitch\Context;
-use Glitch\IContext;
 use Glitch\IInspectable;
 use Glitch\Stack\Trace;
 
@@ -180,7 +179,7 @@ class Inspector
     /**
      * Construct with context to generate object inspectors
      */
-    public function __construct(IContext $context)
+    public function __construct(Context $context)
     {
         foreach (static::OBJECTS as $class => $inspector) {
             if ($inspector !== null) {
@@ -308,10 +307,11 @@ class Inspector
     public function inspectArray(array $array): ?Entity
     {
         $hash = $this->hashArray($array);
-        $isRef = isset($this->arrayRefs[$hash]);
+        $isRef = $hash !== null && isset($this->arrayRefs[$hash]);
 
         $entity = (new Entity($isRef ? 'arrayReference' : 'array'))
             ->setClass('array')
+            ->setLength(count($array))
             ->setHash($hash);
 
         if ($isRef) {
@@ -320,12 +320,13 @@ class Inspector
                 ->setObjectId($this->arrayIds[$hash]);
         }
 
-        $this->arrayRefs[$hash] = $entity->getId();
-        $this->arrayIds[$hash] = $id = count($this->arrayIds) + 1;
+        if ($hash !== null) {
+            $this->arrayRefs[$hash] = $entity->getId();
+            $this->arrayIds[$hash] = $id = count($this->arrayIds) + 1;
+            $entity->setObjectId($id);
+        }
 
         $entity
-            ->setObjectId($id)
-            ->setLength(count($array))
             ->setValues($this->inspectValues($array));
 
         return $entity;
@@ -472,6 +473,8 @@ class Inspector
                     $prefix = '!';
                     break;
             }
+
+            $name = $prefix.$name;
 
             if ($entity->hasProperty($name)) {
                 continue;

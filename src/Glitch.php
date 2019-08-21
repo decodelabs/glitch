@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 use Glitch\Factory;
 use Glitch\Context;
-use Glitch\IContext;
 
 /**
  * This is just a facade.
@@ -31,7 +30,7 @@ final class Glitch
     /**
      * Shortcut to Context
      */
-    public static function getContext(): IContext
+    public static function getContext(): Context
     {
         return Context::getDefault();
     }
