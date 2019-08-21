@@ -36,6 +36,9 @@ class Inspector
     ];
 
     protected $objectInspectors = [];
+    protected $objectRefs = [];
+    protected $arrayRefs = [];
+    protected $arrayIds = [];
 
 
     /**
@@ -278,10 +281,28 @@ class Inspector
      */
     public function inspectArray(array $array): ?Entity
     {
-        return (new Entity('array'))
+        $hash = $this->hashArray($array);
+        $isRef = isset($this->arrayRefs[$hash]);
+
+        $entity = (new Entity($isRef ? 'arrayReference' : 'array'))
             ->setClass('array')
+            ->setHash($hash);
+
+        if ($isRef) {
+            return $entity
+                ->setId($this->arrayRefs[$hash])
+                ->setObjectId($this->arrayIds[$hash]);
+        }
+
+        $this->arrayRefs[$hash] = $entity->getId();
+        $this->arrayIds[$hash] = $id = count($this->arrayIds) + 1;
+
+        $entity
+            ->setObjectId($id)
             ->setLength(count($array))
             ->setValues($this->inspectValues($array));
+
+        return $entity;
     }
 
 
@@ -291,12 +312,23 @@ class Inspector
      */
     public function inspectObject(object $object): ?Entity
     {
+        $id = spl_object_id($object);
         $reflection = new \ReflectionObject($object);
+        $className = $reflection->getName();
+        $isRef = isset($this->objectRefs[$id]);
 
-        $entity = (new Entity('object'))
+        $entity = (new Entity($isRef ? 'objectReference' : 'object'))
             ->setName($reflection->getShortName())
-            ->setClass($this->normalizeClassName($className = $reflection->getName(), $reflection))
-            ->setObjectId(spl_object_id($object));
+            ->setClass($this->normalizeClassName($className, $reflection))
+            ->setObjectId($id)
+            ->setHash(spl_object_hash($object));
+
+        if ($isRef) {
+            $entity->setId($this->objectRefs[$id]);
+            return $entity;
+        }
+
+        $this->objectRefs[$id] = $entity->getId();
 
         if (!$reflection->isInternal()) {
             $entity
@@ -312,7 +344,6 @@ class Inspector
         ] + $parents;
 
         $this->inspectObjectProperties($object, $reflections, $entity);
-
         return $entity;
     }
 
@@ -448,5 +479,19 @@ class Inspector
             default:
                 return (string)$value;
         }
+    }
+
+
+
+    /**
+     * Dirty way to get a hash for an array
+     */
+    public static function hashArray(array $array): ?string
+    {
+        if (empty($array)) {
+            return null;
+        }
+
+        return md5(serialize($array));
     }
 }

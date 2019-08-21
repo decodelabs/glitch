@@ -13,6 +13,7 @@ class Entity
     protected $id;
 
     protected $objectId;
+    protected $hash;
     protected $class;
     protected $parents;
     protected $interfaces;
@@ -103,6 +104,23 @@ class Entity
     public function getObjectId(): ?int
     {
         return $this->objectId;
+    }
+
+    /**
+     * Set object / array hash
+     */
+    public function setHash(?string $hash): Entity
+    {
+        $this->hash = $hash;
+        return $this;
+    }
+
+    /**
+     * Get object / array hash
+     */
+    public function getHash(): ?string
+    {
+        return $this->hash;
     }
 
 
