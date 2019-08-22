@@ -10,7 +10,6 @@ use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Stack\Trace;
 
 use DecodeLabs\Glitch\Inspectable;
-use DecodeLabs\Glitch\Dumper\Inspector;
 use DecodeLabs\Glitch\Dumper\Entity;
 
 /**
@@ -151,13 +150,13 @@ trait TException
     /**
      * Inspect for Glitch
      */
-    public function glitchInspect(Entity $entity, Inspector $inspector): void
+    public function glitchInspect(Entity $entity, callable $inspector): void
     {
         $entity
             ->setText($this->message)
-            ->setProperty('*code', $inspector->inspect($this->code))
-            ->setProperty('*http', $inspector->inspect($this->http))
-            ->setValues($inspector->inspect($this->data))
+            ->setProperty('*code', $inspector($this->code))
+            ->setProperty('*http', $inspector($this->http))
+            ->setValues($inspector($this->data))
             ->setFile($this->file)
             ->setStartLine($this->line)
             ->setStackTrace($this->getStackTrace());

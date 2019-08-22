@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace DecodeLabs\Glitch\Dumper\Renderer;
 
 use DecodeLabs\Glitch\Context;
+use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Dumper\Renderer;
 use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Dumper\Entity;
@@ -62,6 +63,13 @@ class Html implements Renderer
                 $this->renderScalar($value);
             }
 
+            $this->output[] = '</samp>';
+        }
+
+
+        if ($traceEntity = $dump->getTraceEntity()) {
+            $this->output[] = '<samp class="dump trace">';
+            $this->renderEntity($traceEntity);
             $this->output[] = '</samp>';
         }
 
@@ -533,9 +541,16 @@ class Html implements Renderer
     {
         $id = $entity->getId();
         $this->output[] = '<div id="stack-'.$id.'" class="collapse show inner"><div class="stack">';
-        $this->output[] = '<ul class="stack">';
+        $this->renderStackList($entity->getStackTrace());
+        $this->output[] = '</div></div>';
+    }
 
-        $trace = $entity->getStackTrace();
+    /**
+     * Render entity stack list
+     */
+    protected function renderStackList(Trace $trace): void
+    {
+        $this->output[] = '<ul class="stack">';
         $count = count($trace);
 
         foreach ($trace as $i => $frame) {
@@ -548,7 +563,6 @@ class Html implements Renderer
         }
 
         $this->output[] = '</ul>';
-        $this->output[] = '</div></div>';
     }
 
 

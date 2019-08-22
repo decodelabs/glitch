@@ -136,8 +136,12 @@ class Context
         }
 
         foreach ($values as $value) {
-            $dump->addEntity($inspector->inspectValue($value));
+            $dump->addEntity($inspector($value));
         }
+
+        $dump->setTraceEntity($inspector($trace, function ($entity) {
+            $entity->setOpen(false);
+        }));
 
         $packet = $this->getDumpRenderer()->render($dump, true);
         $this->getTransport()->sendDump($packet);
