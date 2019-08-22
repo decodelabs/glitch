@@ -153,16 +153,6 @@ class Context
     }
 
 
-    /**
-     * Temporary Symfony dump handler
-     */
-    public function dd2(array $values, int $rewind=null): void
-    {
-        (new \Glitch\Dumper\Symfony())->dumpDie(array_shift($values), ...$values);
-    }
-
-
-
 
     /**
      * Quit a stubbed method

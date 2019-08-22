@@ -66,15 +66,6 @@ namespace
 
 
     /**
-     * Temporary dump handler
-     */
-    function dd2($var, ...$vars): void
-    {
-        Context::getDefault()->dd2(func_get_args(), 1);
-    }
-
-
-    /**
      * Direct facade for generating IError based exceptions
      */
     function Glitch($message, ?array $params=[], $data=null): \EGlitch
