@@ -64,17 +64,25 @@ samp.dump {
 .string.identifier {
     color: var(--orange);
 }
-.string.multi-line {
+.string.m {
     padding-right: 1rem;
     display: inline;
     white-space: pre;
 }
-.string:before, .string:after {
+.string > .length {
+    color: var(--teal);
+    margin-left: 0.5em;
+    display: none;
+}
+.string:hover > .length {
+    display: inline;
+}
+.string.s > .line:before, .string.s > .line:after {
     content: '"';
     color: var(--gray);
     opacity: 0.5;
 }
-.string.multi-line:before, .string.multi-line:after {
+.string.m:before, .string.m:after {
     content: '"""';
     color: var(--gray);
     opacity: 0.5;
@@ -82,10 +90,10 @@ samp.dump {
 .string.identifier:before, .string.identifier:after {
     display: none;
 }
-.string > .line {
+.string.m > .line {
     padding-left: 1rem;
 }
-.string > .line:after {
+.string.m > .line:after {
     content: '⏎';
     color: var(--gray);
     opacity: 0.5;
@@ -93,7 +101,7 @@ samp.dump {
     line-height: 1;
     margin-left: 0.2em;
 }
-.string > .line:last-child:after {
+.string.m > .line:last-child:after {
     display: none;
 }
 

@@ -252,7 +252,7 @@ class Html implements IRenderer
             $parts = explode("\n", $string);
 
             $output = [];
-            $output[] = '<div class="string multi-line" title="'.mb_strlen($string).' characters">';
+            $output[] = '<div class="string m"><span class="length">'.mb_strlen($string).'</span>';
 
             foreach ($parts as $part) {
                 $output[] = '<div class="line">'.$this->esc($part).'</div>';
@@ -261,7 +261,7 @@ class Html implements IRenderer
             $output[] = '</div>';
             return implode('', $output);
         } else {
-            return '<span class="string" title="Length: '.mb_strlen($string).' characters">'.$this->esc($string).'</span>';
+            return '<span class="string s"><span class="line">'.$this->esc($string).'</span><span class="length">'.mb_strlen($string).'</span></span>';
         }
     }
 
