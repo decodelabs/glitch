@@ -9,6 +9,10 @@ namespace Glitch;
 use Glitch\Stack\Frame;
 use Glitch\Stack\Trace;
 
+use Glitch\IInspectable;
+use Glitch\Dumper\Inspector;
+use Glitch\Dumper\Entity;
+
 /**
  * Main root exception inheritance
  * This trait is automatically rolled into the generated exception
@@ -91,7 +95,7 @@ trait TException
      */
     public function getStackFrame(): Frame
     {
-        return $this->getStackTrace()->getFirstCall();
+        return $this->getStackTrace()->getFirstFrame();
     }
 
     /**
@@ -100,7 +104,7 @@ trait TException
     public function getStackTrace(): Trace
     {
         if (!$this->stackTrace) {
-            $this->stackTrace = Trace::fromException($this, $this->rewind + 2);
+            $this->stackTrace = Trace::fromException($this, $this->rewind + 1);
         }
 
         return $this->stackTrace;
@@ -142,5 +146,20 @@ trait TException
         // Trace
         $output['stackTrace'] = $this->getStackTrace();
         return $output;
+    }
+
+    /**
+     * Inspect for Glitch
+     */
+    public function glitchInspect(Entity $entity, Inspector $inspector): void
+    {
+        $entity
+            ->setText($this->message)
+            ->setProperty('*code', $inspector->inspect($this->code))
+            ->setProperty('*http', $inspector->inspect($this->http))
+            ->setValues($inspector->inspect($this->data))
+            ->setFile($this->file)
+            ->setStartLine($this->line)
+            ->setStackTrace($this->getStackTrace());
     }
 }

@@ -6,6 +6,8 @@
 declare(strict_types=1);
 namespace Glitch\Dumper;
 
+use Glitch\Stack\Trace;
+
 class Entity
 {
     protected $type;
@@ -33,6 +35,7 @@ class Entity
     protected $showValueKeys = true;
 
     protected $properties;
+    protected $stackTrace;
 
     /**
      * Construct with required info
@@ -374,8 +377,10 @@ class Entity
      */
     public function setValues(?array $values): Entity
     {
-        foreach ($values as $value) {
-            $this->checkValidity($value);
+        if ($values !== null) {
+            foreach ($values as $value) {
+                $this->checkValidity($value);
+            }
         }
 
         $this->values = $values;
@@ -459,6 +464,25 @@ class Entity
         }
 
         return array_key_exists($key, $this->properties);
+    }
+
+
+
+    /**
+     * Set stack trace
+     */
+    public function setStackTrace(Trace $trace): Entity
+    {
+        $this->stackTrace = $trace;
+        return $this;
+    }
+
+    /**
+     * Get stack trace
+     */
+    public function getStackTrace(): ?Trace
+    {
+        return $this->stackTrace;
     }
 
 

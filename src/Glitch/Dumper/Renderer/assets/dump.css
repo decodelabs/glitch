@@ -113,7 +113,7 @@ samp.dump {
     display: none;
 }
 .string.m > .line {
-    margin-left: 0.9rem;
+    margin-left: -0.1rem;
     padding-left: 0.1rem;
     border-left: 1px solid #F5F5F5;
 }
@@ -218,7 +218,7 @@ div.inner > .inner {
 }
 
 div.inner.body {
-    display: inline-block;
+    border-left: 1px solid #F5F5F5;
 }
 
 ul.list {
@@ -263,11 +263,17 @@ ul.list > li > .identifier.key {
 ul.list > li > .identifier.key:before {
     content: 'ⓟ';
     color: var(--green);
-    opacity: 0;
+    opacity: 1;
+    /*
     position: absolute;
     display: block;
     margin-left: -1.5em;
+    */
+
+    display: none;
+    position: relative;
     margin-top: 0.3em;
+    margin-right: 0.6em;
     font-size: 0.8em;
 }
 
@@ -282,6 +288,7 @@ ul.list.info > li > .identifier.key:before {
     content: 'ⓘ';
     color: var(--cyan);
     opacity: 0.8;
+    display: inline;
 }
 
 
@@ -296,6 +303,7 @@ ul.list.meta > li > .identifier.key:before {
     content: 'ⓜ';
     color: var(--red);
     opacity: 0.8;
+    display: inline;
 }
 
 ul.list.properties > li > .identifier.key {
@@ -306,23 +314,55 @@ ul.list.properties > li > .identifier.key {
 ul.list.properties > li > .identifier.key:before {
     content: 'ⓟ';
     color: var(--green);
+    display: inline;
 }
 ul.list.properties > li > .identifier.key.protected:before {
     color: var(--yellow);
-    opacity: 1;
 }
 ul.list.properties > li > .identifier.key.private:before {
     color: var(--red);
-    opacity: 1;
+    display: inline;
 }
 ul.list.properties > li > .identifier.key.public:before {
     color: var(--green);
-    opacity: 1;
+    display: inline;
 }
 ul.list.properties > li > .identifier.key.virtual:before {
     content: 'ⓥ';
     color: var(--purple);
-    opacity: 1;
+    display: inline;
+}
+
+
+ul.stack {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+ul.stack li span.number {
+    width: 1rem;
+    display: inline-block;
+}
+ul.stack li span.signature {
+    color: var(--orange);
+}
+ul.stack li span.signature:after {
+    content: "\A";
+    white-space: pre;
+}
+ul.stack li span.file {
+    color: var(--green);
+    opacity: 0.75;
+    margin-left: 2rem;
+    filter: grayscale(0.75);
+}
+ul.stack li span.file:after {
+    content: ' :';
+    color: var(--gray);
+    opacity: 0.5;
+}
+ul.stack li span.line {
+    color: var(--pink);
 }
 
 .inner > div.text {

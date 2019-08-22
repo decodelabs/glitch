@@ -260,10 +260,11 @@ class Html implements IRenderer
         $id = $linkId = $entity->getId();
         $name = $this->esc($entity->getName() ?? $entity->getType());
         $showInfo = true;
-        $isRef = false;
+        $isRef = $showClass = false;
         $hasText = $entity->getText() !== null;
         $hasProperties = (bool)$entity->getProperties();
         $hasValues = (bool)$entity->getValues();
+        $hasStack = (bool)$entity->getStackTrace();
         $open = $entity->isOpen();
 
         switch ($entity->getType()) {
@@ -280,6 +281,13 @@ class Html implements IRenderer
             case 'resource':
                 $showInfo = false;
                 break;
+
+            case 'class':
+            case 'interface':
+            case 'trait':
+                $showClass = true;
+                $showInfo = false;
+                break;
         }
 
         $this->output[] = '<div class="entity title" id="'.$linkId.'">';
@@ -294,6 +302,12 @@ class Html implements IRenderer
         // Length
         if (null !== ($length = $entity->getLength())) {
             $this->output[] = '<span class="length">'.$length.'</span>';
+        }
+
+        // Class
+        if ($showClass) {
+            $this->output[] = '<span class="pointer">:</span>';
+            $this->output[] = '<span class="class">'.$this->esc($entity->getClass()).'</span>';
         }
 
         // Info
@@ -321,8 +335,15 @@ class Html implements IRenderer
             $this->output[] = '<a data-target="#values-'.$linkId.'" class="values body badge badge-warning"><i>v</i></a>';
         }
 
+        // Stack
+        if ($hasStack) {
+            $this->output[] = '<a data-target="#stack-'.$linkId.'" class="stack body badge badge-dark"><i>s</i></a>';
+        }
+
         // Bracket
-        $this->output[] = '<span class="g">{</span>';
+        if ($hasBody = ($showInfo || $showMeta || $hasText || $hasProperties || $hasValues || $hasStack)) {
+            $this->output[] = '<span class="g">{</span>';
+        }
 
         // Object id
         if (null !== ($objectId = $entity->getObjectId())) {
@@ -350,8 +371,8 @@ class Html implements IRenderer
 
 
         // Body
-        if ($hasText || $hasProperties || $hasValues) {
-            $this->output[] = '<div id="body-'.$linkId.'" class="collapse'.($open ? ' show' : null).' inner">';
+        if ($hasText || $hasProperties || $hasValues || $hasStack) {
+            $this->output[] = '<div id="body-'.$linkId.'" class="collapse'.($open ? ' show' : null).' inner body">';
 
             // Text
             if ($hasText) {
@@ -368,13 +389,20 @@ class Html implements IRenderer
                 $this->renderValuesBlock($entity);
             }
 
+            // Stack
+            if ($hasStack) {
+                $this->renderStackBlock($entity);
+            }
+
             $this->output[] = '</div>';
         }
 
         // Footer
-        $this->output[] = '<div class="entity footer">';
-        $this->output[] = '<span class="g">}</span>';
-        $this->output[] = '</div>';
+        if ($hasBody) {
+            $this->output[] = '<div class="entity footer">';
+            $this->output[] = '<span class="g">}</span>';
+            $this->output[] = '</div>';
+        }
     }
 
     /**
@@ -400,6 +428,9 @@ class Html implements IRenderer
         switch ($type) {
             case 'object':
             case 'array':
+            case 'class':
+            case 'interface':
+            case 'trait':
                 break;
 
             default:
@@ -492,6 +523,31 @@ class Html implements IRenderer
         $id = $entity->getId();
         $this->output[] = '<div id="values-'.$id.'" class="collapse show inner"><div class="values">';
         $this->renderList($entity->getValues(), 'values');
+        $this->output[] = '</div></div>';
+    }
+
+    /**
+     * Render entity stack trace block
+     */
+    protected function renderStackBlock(Entity $entity): void
+    {
+        $id = $entity->getId();
+        $this->output[] = '<div id="stack-'.$id.'" class="collapse show inner"><div class="stack">';
+        $this->output[] = '<ul class="stack">';
+
+        $trace = $entity->getStackTrace();
+        $count = count($trace);
+
+        foreach ($trace as $i => $frame) {
+            $this->output[] = '<li>';
+            $this->output[] = '<span class="number">'.($count - $i).'</span>';
+            $this->output[] = '<span class="signature">'.$frame->getSignature(true).'</span>';
+            $this->output[] = '<span class="file">'.$this->context->normalizePath($frame->getCallingFile()).'</span>';
+            $this->output[] = '<span class="line">'.$frame->getCallingLine().'</span>';
+            $this->output[] = '</li>';
+        }
+
+        $this->output[] = '</ul>';
         $this->output[] = '</div></div>';
     }
 

@@ -168,7 +168,7 @@ class Factory
     protected function build(string $message, array $interfaces): \EGlitch
     {
         $this->params['rewind'] = $rewind = max((int)($this->params['rewind'] ?? 0), 0);
-        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $rewind + static::REWIND);
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $rewind + static::REWIND + 2);
         $lastTrace = array_pop($trace);
         $key = $rewind + static::REWIND;
 
@@ -192,6 +192,8 @@ class Factory
         if (empty($this->namespace)) {
             $this->namespace = null;
         }
+
+        $interfaces[] = '\\Glitch\\IInspectable';
 
         $this->buildDefinitions($interfaces);
 
@@ -260,7 +262,7 @@ class Factory
 
         // Sort inheritance list
         foreach ($this->interfaces as $interface => $info) {
-            if ($info !== null) {
+            if (!empty($info)) {
                 $this->defineInterface($interface, $info);
             }
         }
@@ -269,6 +271,7 @@ class Factory
         if ($this->type === null) {
             $this->type = \Exception::class;
         }
+
 
         if (empty($this->interfaces)) {
             $this->interfaces['\\EGlitch'] = [];
@@ -307,7 +310,7 @@ class Factory
         $name = array_pop($parts);
         $output = null;
 
-        if (empty($parts) || !preg_match('/^(E)[A-Z][a-zA-Z0-9_]+$/', $name)) {
+        if (!preg_match('/^(E)[A-Z][a-zA-Z0-9_]+$/', $name)) {
             return null;
         }
 
@@ -378,6 +381,10 @@ class Factory
     protected function defineInterface(string $interface, array $info): void
     {
         $parent = '\\EGlitch';
+
+        if ($interface === $parent) {
+            return;
+        }
 
         if (isset($info['extend'])) {
             $parent = [];

@@ -8,10 +8,14 @@ namespace Glitch\Stack;
 
 use Glitch\Context;
 
+use Glitch\IInspectable;
+use Glitch\Dumper\Inspector;
+use Glitch\Dumper\Entity;
+
 /**
  * Represents a normalized stack trace
  */
-class Trace implements \IteratorAggregate
+class Trace implements \IteratorAggregate, \Countable, IInspectable
 {
     protected $frames = [];
 
@@ -157,6 +161,14 @@ class Trace implements \IteratorAggregate
         }, $this->frames);
     }
 
+    /**
+     * Count frames
+     */
+    public function count(): int
+    {
+        return count($this->frames);
+    }
+
 
 
     /**
@@ -169,17 +181,20 @@ class Trace implements \IteratorAggregate
         $count = count($frames);
 
         foreach ($frames as $i => $frame) {
-            if ($i === 0) {
-                $output[($count + 1).': Glitch'] = [
-                    'file' => Context::getDefault()->normalizePath($frame->getFile()).' : '.$frame->getLine()
-                ];
-            }
-
             $output[($count - $i).': '.$frame->getSignature(true)] = [
                 'file' => Context::getDefault()->normalizePath($frame->getCallingFile()).' : '.$frame->getCallingLine()
             ];
         }
 
         return $output;
+    }
+
+
+    /**
+     * Inspect for Glitch
+     */
+    public function glitchInspect(Entity $entity, Inspector $inspector): void
+    {
+        $entity->setStackTrace($this);
     }
 }

@@ -210,7 +210,7 @@ class Inspector
     {
         $output = $this->inspectValue($value);
 
-        if ($output instanceof Entity) {
+        if ($output instanceof Entity && $entityCallback) {
             $entityCallback($output, $value, $this);
         }
 
@@ -296,6 +296,11 @@ class Inspector
             return (new Entity('interface'))
                 ->setClass($string);
 
+        // Trait name
+        } elseif (trait_exists($string)) {
+            return (new Entity('trait'))
+                ->setClass($string);
+
 
         // Standard string
         } else {
@@ -368,8 +373,8 @@ class Inspector
         $isRef = isset($this->objectRefs[$id]);
 
         $entity = (new Entity($isRef ? 'objectReference' : 'object'))
-            ->setName($reflection->getShortName())
-            ->setClass($this->normalizeClassName($className, $reflection))
+            ->setName($this->normalizeClassName($reflection->getShortName(), $reflection))
+            ->setClass($className)
             ->setObjectId($id)
             ->setHash(spl_object_hash($object));
 
@@ -428,10 +433,16 @@ class Inspector
             $reflectionBase = $ref;
         }
 
+        ksort($parents);
+        $interfaces = $reflection->getInterfaceNames();
+        sort($interfaces);
+        $traits = $reflection->getTraitNames();
+        sort($traits);
+
         $entity
             ->setParentClasses(...array_keys($parents))
-            ->setInterfaces(...$reflection->getInterfaceNames())
-            ->setTraits(...$reflection->getTraitNames());
+            ->setInterfaces(...$interfaces)
+            ->setTraits(...$traits);
 
         return $parents;
     }
