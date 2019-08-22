@@ -204,6 +204,29 @@ class Inspector
 
 
     /**
+     * Inspect and report
+     */
+    public function inspect($value, callable $entityCallback=null)
+    {
+        $output = $this->inspectValue($value);
+
+        if ($output instanceof Entity) {
+            $entityCallback($output, $value, $this);
+        }
+
+        return $output;
+    }
+
+    /**
+     * Invoke wrapper
+     */
+    public function __invoke($value, callable $entityCallback=null)
+    {
+        return $this->inspect($value, $entityCallback);
+    }
+
+
+    /**
      * Inspect single value
      */
     public function inspectValue($value)
@@ -491,7 +514,7 @@ class Inspector
             if ($propValue instanceof Entity) {
                 $propValue->setOpen($open);
             }
-            
+
             $entity->setProperty($name, $propValue);
         }
     }

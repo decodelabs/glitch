@@ -69,6 +69,25 @@ samp.dump {
     display: inline;
     white-space: pre;
 }
+.string.m.large:not(.show) {
+    cursor: s-resize;
+}
+.string.m.large.show {
+    cursor: n-resize;
+}
+.string.m.large:not(.show) > .line {
+    position: relative;
+}
+.string.m.large:not(.show) > .line:nth-child(1n+11) {
+    display: none;
+}
+.string.m.large:not(.show) > .line:nth-child(9) {
+    opacity: 0.6;
+}
+.string.m.large:not(.show) > .line:nth-child(10) {
+    opacity: 0.3;
+}
+
 .string > .length {
     color: var(--teal);
     margin-left: 0.5em;
@@ -86,6 +105,9 @@ samp.dump {
     content: '"""';
     color: var(--gray);
     opacity: 0.5;
+}
+.string.m:not(.show):after {
+    content: '""" show more';
 }
 .string.identifier:before, .string.identifier:after {
     display: none;
@@ -128,7 +150,7 @@ samp.dump {
     margin-right: 0.5em;
 }
 .entity.title .name {
-    color: var(--green);
+    color: var(--green) !important;
     cursor: pointer;
     text-decoration: none;
 }
@@ -147,10 +169,6 @@ samp.dump {
     content: ':';
     color: var(--gray);
     opacity: 0.5;
-}
-.entity.title .badge {
-    cursor: help;
-    font-size: 0.9em;
 }
 .popup {
     position: absolute;
@@ -192,10 +210,13 @@ div.inner {
     padding: 0 0 0 2rem;
     display: block;
 }
-div.inner > .card {
-    max-width: 40rem;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.9em;
+
+div.inner > .inner {
+    padding: 0;
+}
+
+div.inner.body {
+    display: inline-block;
 }
 
 ul.list {
@@ -209,7 +230,10 @@ ul.list > li > ul.list {
 }
 ul.list.inline {
     display: inline-block;
-    margin: 0 !important;
+    margin: 0 0 0 2rem !important;
+}
+ul.list > li > .g {
+    margin-right: -2rem;
 }
 
 
@@ -289,6 +313,11 @@ ul.list.properties > li > .identifier.key.private:before {
     color: var(--red);
     opacity: 1;
 }
+ul.list.properties > li > .identifier.key.virtual:before {
+    content: 'ⓥ';
+    color: var(--purple);
+    opacity: 1;
+}
 
 .inner > div.text {
     color: var(--red);
@@ -296,4 +325,35 @@ ul.list.properties > li > .identifier.key.private:before {
 .inner > div.text.binary > i {
     margin-right: 0.5em;
     color: var(--indigo);
+}
+
+a.badge {
+    cursor: help;
+    font-size: 0.9em;
+    color: white !important;
+}
+.badge.collapsed {
+    opacity: 0.3;
+}
+
+
+a.badge i {
+    font-style: normal;
+    position: relative;
+}
+a.badge.info i {
+    top: 0.05em;
+}
+a.badge.text i {
+    top: 0.05em;
+}
+a.badge.properties i {
+    top: -0.08em;
+}
+
+a.name.collapsed ~ a.badge.body {
+    opacity: 0.1;
+}
+a.name.collapsed ~ a.badge.body.values {
+    opacity: 0.3;
 }

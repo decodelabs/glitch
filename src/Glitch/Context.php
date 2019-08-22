@@ -58,6 +58,7 @@ class Context
         $this->startTime = microtime(true);
         $this->pathAliases['glitch'] = dirname(__DIR__);
 
+        $this->registerStatGatherer('default', [$this, 'gatherDefaultStats']);
         $this->dumpRenderer = new \Glitch\Dumper\Renderer\Html($this);
     }
 
@@ -117,96 +118,19 @@ class Context
 
 
 
+
+
+
+
     /**
      * Send variables to dump, carry on execution
      */
     public function dump(array $values, int $rewind=null): void
     {
-        $this->tempHandler()->dump(array_shift($values), ...$values);
-    }
-
-    /**
-     * Send variables to dump, exit and render
-     */
-    public function dumpDie(array $values, int $rewind=null): void
-    {
-        $this->tempHandler()->dumpDie(array_shift($values), ...$values);
-    }
-
-
-    protected function tempHandler()
-    {
-        static $output;
-
-        if (!isset($output)) {
-            $output = new \Glitch\Dumper\Symfony();
-        }
-
-        return $output;
-    }
-
-
-    public function dd2(array $values, int $rewind=null): void
-    {
         $trace = Trace::create($rewind + 1);
-        $frame = $trace->getFirstFrame();
         $inspector = new Inspector($this);
 
         $dump = new Dump($trace);
-
-
-        $dump->addStats(
-            // Time
-            (new Stat('time', 'Running time', microtime(true) - $this->getStartTime()))
-                ->applyClass(function ($value) {
-                    switch (true) {
-                        case $value > 0.1:
-                            return 'danger';
-
-                        case $value > 0.025:
-                            return 'warning';
-
-                        default:
-                            return 'success';
-                    }
-                })
-                ->setRenderer('text', function ($time) {
-                    return self::formatMicrotime($time);
-                }),
-
-            // Memory
-            (new Stat('memory', 'Memory usage', memory_get_usage()))
-                ->applyClass($memApp = function ($value) {
-                    $mb = 1024 * 1024;
-
-                    switch (true) {
-                        case $value > (10 * $mb):
-                            return 'danger';
-
-                        case $value > (5 * $mb):
-                            return 'warning';
-
-                        default:
-                            return 'success';
-                    }
-                })
-                ->setRenderer('text', function ($memory) {
-                    return self::formatFilesize($memory);
-                }),
-
-            // Peak memory
-            (new Stat('peakMemory', 'Peak memory usage', memory_get_peak_usage()))
-                ->applyClass($memApp)
-                ->setRenderer('text', function ($memory) {
-                    return self::formatFilesize($memory);
-                }),
-
-            // Location
-            (new Stat('location', 'Dump location', $frame))
-                ->setRenderer('text', function ($frame) {
-                    return $this->normalizePath($frame->getFile()).' : '.$frame->getLine();
-                })
-        );
 
 
         foreach ($this->statGatherers as $gatherer) {
@@ -217,14 +141,25 @@ class Context
             $dump->addEntity($inspector->inspectValue($value));
         }
 
-
-        while (ob_get_level()) {
-            ob_end_clean();
-        }
-
-
         echo $this->dumpRenderer->render($dump, true);
-        exit;
+    }
+
+    /**
+     * Send variables to dump, exit and render
+     */
+    public function dumpDie(array $values, int $rewind=null): void
+    {
+        $this->dump($values, $rewind + 1);
+        exit(1);
+    }
+
+
+    /**
+     * Temporary Symfony dump handler
+     */
+    public function dd2(array $values, int $rewind=null): void
+    {
+        (new \Glitch\Dumper\Symfony())->dumpDie(array_shift($values), ...$values);
     }
 
 
@@ -367,6 +302,67 @@ class Context
     public function getStatGatherers(): array
     {
         return $this->statGatherers;
+    }
+
+    /**
+     * Default stat gatherer
+     */
+    public function gatherDefaultStats(Dump $dump, Context $context): void
+    {
+        $frame = $dump->getTrace()->getFirstFrame();
+
+        $dump->addStats(
+            // Time
+            (new Stat('time', 'Running time', microtime(true) - $this->getStartTime()))
+                ->applyClass(function ($value) {
+                    switch (true) {
+                        case $value > 0.1:
+                            return 'danger';
+
+                        case $value > 0.025:
+                            return 'warning';
+
+                        default:
+                            return 'success';
+                    }
+                })
+                ->setRenderer('text', function ($time) {
+                    return self::formatMicrotime($time);
+                }),
+
+            // Memory
+            (new Stat('memory', 'Memory usage', memory_get_usage()))
+                ->applyClass($memApp = function ($value) {
+                    $mb = 1024 * 1024;
+
+                    switch (true) {
+                        case $value > (10 * $mb):
+                            return 'danger';
+
+                        case $value > (5 * $mb):
+                            return 'warning';
+
+                        default:
+                            return 'success';
+                    }
+                })
+                ->setRenderer('text', function ($memory) {
+                    return self::formatFilesize($memory);
+                }),
+
+            // Peak memory
+            (new Stat('peakMemory', 'Peak memory usage', memory_get_peak_usage()))
+                ->applyClass($memApp)
+                ->setRenderer('text', function ($memory) {
+                    return self::formatFilesize($memory);
+                }),
+
+            // Location
+            (new Stat('location', 'Dump location', $frame))
+                ->setRenderer('text', function ($frame) {
+                    return $this->normalizePath($frame->getFile()).' : '.$frame->getLine();
+                })
+        );
     }
 
 

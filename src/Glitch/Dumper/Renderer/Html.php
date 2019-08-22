@@ -15,9 +15,6 @@ class Html implements IRenderer
 {
     const SPACES = 2;
 
-    protected $headerRendered = false;
-    protected $fullRender = true;
-
     protected $output = [];
     protected $context;
 
@@ -28,10 +25,6 @@ class Html implements IRenderer
     public function __construct(Context $context)
     {
         $this->context = $context;
-
-        if (headers_sent()) {
-            $this->fullRender = false;
-        }
     }
 
 
@@ -44,9 +37,7 @@ class Html implements IRenderer
         $space = str_repeat(' ', self::SPACES);
 
         // Header
-        if (!$this->headerRendered) {
-            $this->renderHeader();
-        }
+        $this->renderHeader();
 
 
         // Stats
@@ -78,10 +69,8 @@ class Html implements IRenderer
 
 
         // Footer
-        if ($isFinal && $this->fullRender) {
-            $this->output[] = '</body>';
-            $this->output[] = '</html>';
-        }
+        $this->output[] = '</body>';
+        $this->output[] = '</html>';
 
         $html = implode("\n", $this->output);
         $this->output = [];
@@ -93,7 +82,8 @@ class Html implements IRenderer
         $output = [];
         $output[] = '<iframe id="'.$id.'" frameborder="0" class="glitch-dump"></iframe>';
         $output[] = '<style>';
-        $output[] = '.glitch-dump { width: 100%; height: calc(100% - 8px); border: none; }';
+        $output[] = '.glitch-dump { width: 100%; height: 30rem; border: 1px solid #EEE; }';
+        $output[] = '.glitch-dump:only-of-type { height: calc(100% - 8px); border: none; }';
         $output[] = '</style>';
         $output[] = '<script>';
         $output[] = 'var doc = document.getElementById(\''.$id.'\').contentWindow.document';
@@ -109,11 +99,9 @@ class Html implements IRenderer
      */
     protected function renderHeader(): void
     {
-        if (!$sent = headers_sent()) {
-            $this->output[] = '<!doctype html>';
-            $this->output[] = '<html lang="en">';
-            $this->output[] = '<head>';
-        }
+        $this->output[] = '<!doctype html>';
+        $this->output[] = '<html lang="en">';
+        $this->output[] = '<head>';
 
         $vendor = $this->context->getVendorPath();
 
@@ -124,7 +112,7 @@ class Html implements IRenderer
         ];
 
         $js = [
-            'jQuery' => $vendor.'/components/jquery/jquery.slim.min.js',
+            'jQuery' => $vendor.'/components/jquery/jquery.min.js',
             'bootstrap' => $vendor.'/components/bootstrap/js/bootstrap.bundle.min.js',
             'glitch' => __DIR__.'/assets/dump.js'
         ];
@@ -149,12 +137,8 @@ class Html implements IRenderer
         }
 
 
-        if (!$sent) {
-            $output[] = '</head>';
-            $output[] = '<body>';
-        }
-
-        $this->headerRendered = true;
+        $output[] = '</head>';
+        $output[] = '<body>';
     }
 
 
@@ -250,9 +234,10 @@ class Html implements IRenderer
         } elseif ($isMultiLine) {
             $string = str_replace("\r", '', $string);
             $parts = explode("\n", $string);
+            $count = count($parts);
 
             $output = [];
-            $output[] = '<div class="string m"><span class="length">'.mb_strlen($string).'</span>';
+            $output[] = '<div class="string m'.($count > 10 ? ' large' : null).'"><span class="length">'.mb_strlen($string).'</span>';
 
             foreach ($parts as $part) {
                 $output[] = '<div class="line">'.$this->esc($part).'</div>';
@@ -276,6 +261,10 @@ class Html implements IRenderer
         $name = $this->esc($entity->getName() ?? $entity->getType());
         $showInfo = true;
         $isRef = false;
+        $hasText = $entity->getText() !== null;
+        $hasProperties = (bool)$entity->getProperties();
+        $hasValues = (bool)$entity->getValues();
+        $open = $entity->isOpen();
 
         switch ($entity->getType()) {
             case 'arrayReference':
@@ -297,9 +286,9 @@ class Html implements IRenderer
 
         // Name
         if ($isRef) {
-            $this->output[] = '<a class="name code ref" href="#'.$id.'">'.$name.'</a>';
+            $this->output[] = '<a class="name code'.($open ? null : ' collapsed').' ref" href="#'.$id.'">'.$name.'</a>';
         } else {
-            $this->output[] = '<a class="name code" data-toggle="collapse" href="#body-'.$linkId.'">'.$name.'</a>';
+            $this->output[] = '<a class="name code'.($open ? null : ' collapsed').'" data-target="#body-'.$linkId.'">'.$name.'</a>';
         }
 
         // Length
@@ -309,12 +298,27 @@ class Html implements IRenderer
 
         // Info
         if ($showInfo) {
-            $this->output[] = '<a href="#info-'.$linkId.'" data-toggle="collapse" class="info badge badge-info">i</a>';
+            $this->output[] = '<a data-target="#info-'.$linkId.'" class="info badge badge-info collapsed"><i>i</i></a>';
         }
 
         // Meta
         if ($showMeta = (bool)$entity->getAllMeta()) {
-            $this->output[] = '<a href="#meta-'.$linkId.'" data-toggle="collapse" class="meta badge badge-danger">m</a>';
+            $this->output[] = '<a data-target="#meta-'.$linkId.'" class="meta badge badge-secondary collapsed"><i>m</i></a>';
+        }
+
+        // Text
+        if ($hasText) {
+            $this->output[] = '<a data-target="#text-'.$linkId.'" class="text body badge badge-danger"><i>t</i></a>';
+        }
+
+        // Properties
+        if ($hasProperties) {
+            $this->output[] = '<a data-target="#properties-'.$linkId.'" class="properties body badge badge-primary"><i>p</i></a>';
+        }
+
+        // Values
+        if ($hasValues) {
+            $this->output[] = '<a data-target="#values-'.$linkId.'" class="values body badge badge-warning"><i>v</i></a>';
         }
 
         // Bracket
@@ -323,7 +327,7 @@ class Html implements IRenderer
         // Object id
         if (null !== ($objectId = $entity->getObjectId())) {
             if ($isRef) {
-                $this->output[] = '<a href="#'.$id.'" class="oid">'.$this->esc((string)$objectId).'</a>';
+                $this->output[] = '<a href="#'.$id.'" class="ref oid">'.$this->esc((string)$objectId).'</a>';
             } else {
                 $this->output[] = '<span class="oid">'.$this->esc((string)$objectId).'</span>';
             }
@@ -344,19 +348,27 @@ class Html implements IRenderer
             $this->renderMetaBlock($entity);
         }
 
-        // Text
-        if ($entity->getText() !== null) {
-            $this->renderTextBlock($entity);
-        }
 
-        // Properties
-        if ((bool)$entity->getProperties()) {
-            $this->renderPropertiesBlock($entity);
-        }
+        // Body
+        if ($hasText || $hasProperties || $hasValues) {
+            $this->output[] = '<div id="body-'.$linkId.'" class="collapse'.($open ? ' show' : null).' inner">';
 
-        // Values
-        if ((bool)$entity->getValues()) {
-            $this->renderValuesBlock($entity);
+            // Text
+            if ($hasText) {
+                $this->renderTextBlock($entity);
+            }
+
+            // Properties
+            if ($hasProperties) {
+                $this->renderPropertiesBlock($entity);
+            }
+
+            // Values
+            if ($hasValues) {
+                $this->renderValuesBlock($entity);
+            }
+
+            $this->output[] = '</div>';
         }
 
         // Footer
@@ -449,14 +461,13 @@ class Html implements IRenderer
         $id = $entity->getId();
         $type = $entity->getType();
 
-        $open = $entity->getOpen();
-        $this->output[] = '<div id="text-'.$id.'" class="collapse'.($open ? ' show' : null).' inner"><div class="text '.$type.'">';
+        $this->output[] = '<div id="text-'.$id.'" class="collapse show inner"><div class="text '.$type.'">';
 
         if ($type === 'binary') {
             $chunks = trim(chunk_split($entity->getText(), 2, "\n"));
             $this->output[] = '<i>'.str_replace("\n", '</i><i>', $chunks).'</i>';
         } else {
-            $this->output[] = $this->esc($entity->getText());
+            $this->renderScalar($entity->getText());
         }
 
         $this->output[] = '</div></div>';
@@ -468,8 +479,7 @@ class Html implements IRenderer
     protected function renderPropertiesBlock(Entity $entity): void
     {
         $id = $entity->getId();
-        $open = $entity->getOpen();
-        $this->output[] = '<div id="body-'.$id.'" class="collapse'.($open ? ' show' : null).' inner"><div class="properties">';
+        $this->output[] = '<div id="properties-'.$id.'" class="collapse show inner"><div class="properties">';
         $this->renderList($entity->getProperties(), 'properties');
         $this->output[] = '</div></div>';
     }
@@ -480,8 +490,7 @@ class Html implements IRenderer
     protected function renderValuesBlock(Entity $entity): void
     {
         $id = $entity->getId();
-        $open = $entity->getOpen();
-        $this->output[] = '<div id="body-'.$id.'" class="collapse'.($open ? ' show' : null).' inner"><div class="values">';
+        $this->output[] = '<div id="values-'.$id.'" class="collapse show inner"><div class="values">';
         $this->renderList($entity->getValues(), 'values');
         $this->output[] = '</div></div>';
     }
@@ -523,6 +532,9 @@ class Html implements IRenderer
                     } elseif ($first == '!') {
                         $key = substr($key, 1);
                         $mod = 'private';
+                    } elseif ($first == '%') {
+                        $key = substr($key, 1);
+                        $mod = 'virtual';
                     }
                 }
 

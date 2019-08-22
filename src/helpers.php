@@ -13,6 +13,7 @@ namespace
 {
     use Glitch\Factory;
     use Glitch\Context;
+    use Glitch\Stack\Frame;
 
     use Symfony\Component\VarDumper\VarDumper;
 
@@ -35,8 +36,31 @@ namespace
             Context::getDefault()->dump(func_get_args(), 1);
         }
     } elseif (class_exists(VarDumper::class)) {
-        VarDumper::setHandler(function ($var, ...$vars) {
-            Context::getDefault()->dump(func_get_args(), 1);
+        VarDumper::setHandler(function ($var) {
+            /**
+             * We have to do some silly juggling here to combine all the dump args into one
+             * Symfony blindly calls dump for each var, which doesn't work for us
+             * Instead we grab all args from the stack trace and then skip the following calls
+             */
+            static $skip;
+
+            if (!$skip) {
+                $frame = Frame::create(2);
+                $func = $frame->getFunctionName();
+                $type = $frame->getType();
+
+                if (($func == 'dd' || $func == 'dump') && $type == 'globalFunction') {
+                    $args = $frame->getArgs();
+                    $skip = count($args) - 1;
+                } else {
+                    $args = func_get_args();
+                }
+
+                Context::getDefault()->dump($args, 2);
+            } else {
+                $skip--;
+                return;
+            }
         });
     }
 
@@ -46,7 +70,7 @@ namespace
      */
     function dd2($var, ...$vars): void
     {
-        Context::getDefault()->dd2(func_get_args());
+        Context::getDefault()->dd2(func_get_args(), 1);
     }
 
 

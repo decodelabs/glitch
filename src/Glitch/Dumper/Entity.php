@@ -83,7 +83,7 @@ class Entity
     /**
      * Get default open state
      */
-    public function getOpen(): bool
+    public function isOpen(): bool
     {
         return $this->open;
     }
