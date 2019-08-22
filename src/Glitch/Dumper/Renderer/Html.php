@@ -272,32 +272,35 @@ class Html implements IRenderer
      */
     protected function renderEntity(Entity $entity): void
     {
-        $id = $entity->getId();
+        $id = $linkId = $entity->getId();
         $name = $this->esc($entity->getName() ?? $entity->getType());
         $showInfo = true;
         $isRef = false;
 
         switch ($entity->getType()) {
             case 'arrayReference':
-                $name = '<span class="ref">array</span>';
-                $isRef = true;
-                break;
+                $name = 'array';
 
+                // no break
             case 'objectReference':
+                $linkId = 'ref-'.$id;
                 $name = '<span class="ref">'.$name.'</span>';
                 $isRef = true;
                 break;
 
-            case 'array':
             case 'resource':
                 $showInfo = false;
                 break;
         }
 
-        $this->output[] = '<div class="entity title" id="'.$id.'">';
+        $this->output[] = '<div class="entity title" id="'.$linkId.'">';
 
         // Name
-        $this->output[] = '<a class="name code" data-toggle="collapse" href="#body-'.$id.'">'.$name.'</a>';
+        if ($isRef) {
+            $this->output[] = '<a class="name code" href="#'.$id.'">'.$name.'</a>';
+        } else {
+            $this->output[] = '<a class="name code" data-toggle="collapse" href="#body-'.$linkId.'">'.$name.'</a>';
+        }
 
         // Length
         if (null !== ($length = $entity->getLength())) {
@@ -306,12 +309,12 @@ class Html implements IRenderer
 
         // Info
         if ($showInfo) {
-            $this->output[] = '<a href="#info-'.$id.'" data-toggle="collapse" class="info badge badge-info">i</a>';
+            $this->output[] = '<a href="#info-'.$linkId.'" data-toggle="collapse" class="info badge badge-info">i</a>';
         }
 
         // Meta
         if ($showMeta = (bool)$entity->getAllMeta()) {
-            $this->output[] = '<a href="#meta-'.$id.'" data-toggle="collapse" class="meta badge badge-danger">m</a>';
+            $this->output[] = '<a href="#meta-'.$linkId.'" data-toggle="collapse" class="meta badge badge-danger">m</a>';
         }
 
         // Bracket
@@ -367,15 +370,29 @@ class Html implements IRenderer
      */
     protected function renderInfoBlock(Entity $entity): void
     {
-        $id = $entity->getId();
-        $this->output[] = '<div id="info-'.$id.'" class="collapse inner"><div class="info">';
+        $id = $linkId = $entity->getId();
+
+        switch ($entity->getType()) {
+            case 'arrayReference':
+            case 'objectReference':
+                $linkId = 'ref-'.$id;
+                break;
+        }
+
+        $this->output[] = '<div id="info-'.$linkId.'" class="collapse inner"><div class="info">';
 
         $type = $entity->getType();
         $info = [];
 
         // Type
-        if ($type !== 'object') {
-            $info['type'] = $type;
+        switch ($type) {
+            case 'object':
+            case 'array':
+                break;
+
+            default:
+                $info['type'] = $type;
+                break;
         }
 
         // Class

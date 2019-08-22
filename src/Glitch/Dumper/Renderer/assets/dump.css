@@ -65,16 +65,24 @@ samp.dump {
     color: var(--orange);
 }
 .string.multi-line {
-    display: inline-block;
     padding-right: 1rem;
+    display: inline;
 }
 .string:before, .string:after {
     content: '"';
     color: var(--gray);
     opacity: 0.5;
 }
+.string.multi-line:before, .string.multi-line:after {
+    content: '"""';
+    color: var(--gray);
+    opacity: 0.5;
+}
 .string.identifier:before, .string.identifier:after {
     display: none;
+}
+.string > .line {
+    padding-left: 1rem;
 }
 .string > .line:after {
     content: '⏎';
@@ -142,6 +150,9 @@ samp.dump {
     opacity: 0.5;
     margin-right: 0.2em;
 }
+a.oid:before {
+    content: '&';
+}
 
 .entity:target > .oid {
     background: var(--purple);
@@ -206,6 +217,7 @@ ul.list.inline > li:last-child:after {
 
 ul.list > li > .identifier.key {
     position: relative;
+    white-space: pre;
 }
 ul.list > li > .identifier.key:before {
     content: 'ⓟ';
