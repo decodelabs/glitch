@@ -8,7 +8,7 @@ namespace Glitch\Dumper;
 
 use Glitch\Context;
 
-interface IRenderer
+interface Renderer
 {
     public function render(Dump $dump, bool $isFinal=false): string;
 }

@@ -9,7 +9,7 @@ namespace Glitch;
 use Glitch\Dumper\Entity;
 use Glitch\Dumper\Inspector;
 
-interface IInspectable
+interface Inspectable
 {
     public function glitchInspect(Entity $entity, Inspector $inspector): void;
 }

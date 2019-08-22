@@ -9,7 +9,7 @@ namespace Glitch;
 use Glitch\Stack\Frame;
 use Glitch\Stack\Trace;
 
-use Glitch\IInspectable;
+use Glitch\Inspectable;
 use Glitch\Dumper\Inspector;
 use Glitch\Dumper\Entity;
 

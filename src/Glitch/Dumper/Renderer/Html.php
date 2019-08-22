@@ -7,11 +7,11 @@ declare(strict_types=1);
 namespace Glitch\Dumper\Renderer;
 
 use Glitch\Context;
-use Glitch\Dumper\IRenderer;
+use Glitch\Dumper\Renderer;
 use Glitch\Dumper\Dump;
 use Glitch\Dumper\Entity;
 
-class Html implements IRenderer
+class Html implements Renderer
 {
     const SPACES = 2;
 

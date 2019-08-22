@@ -11,7 +11,6 @@ use Glitch\Stack\Trace;
 use Glitch\Dumper\Inspector;
 use Glitch\Dumper\Dump;
 
-use Glitch\Dumper\IRenderer;
 use Glitch\Dumper\Renderer;
 use Glitch\Transport;
 
@@ -424,7 +423,7 @@ class Context
     /**
      * Set dump renderer
      */
-    public function setDumpRenderer(IRenderer $renderer): Context
+    public function setDumpRenderer(Renderer $renderer): Context
     {
         $this->dumpRenderer = $renderer;
         return $this;
@@ -433,7 +432,7 @@ class Context
     /**
      * Get dump renderer
      */
-    public function getDumpRenderer(): IRenderer
+    public function getDumpRenderer(): Renderer
     {
         if (!$this->dumpRenderer) {
             $this->dumpRenderer = new Renderer\Html($this);
@@ -446,7 +445,7 @@ class Context
     /**
      * Set transport
      */
-    public function setTransport(ITransport $transport): Context
+    public function setTransport(Transport $transport): Context
     {
         $this->transport = $transport;
         return $this;
@@ -455,7 +454,7 @@ class Context
     /**
      * Get transport
      */
-    public function getTransport(): ITransport
+    public function getTransport(): Transport
     {
         if (!$this->transport) {
             $this->transport = new \Glitch\Transport\Stdout($this);

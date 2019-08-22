@@ -6,9 +6,9 @@
 declare(strict_types=1);
 namespace Glitch\Transport;
 
-use Glitch\ITransport;
+use Glitch\Transport;
 
-class Stdout implements ITransport
+class Stdout implements Transport
 {
     /**
      * Send dump straight to output

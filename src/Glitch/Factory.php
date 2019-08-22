@@ -193,7 +193,7 @@ class Factory
             $this->namespace = null;
         }
 
-        $interfaces[] = '\\Glitch\\IInspectable';
+        $interfaces[] = '\\Glitch\\Inspectable';
 
         $this->buildDefinitions($interfaces);
 

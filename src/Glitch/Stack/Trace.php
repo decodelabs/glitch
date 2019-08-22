@@ -8,14 +8,14 @@ namespace Glitch\Stack;
 
 use Glitch\Context;
 
-use Glitch\IInspectable;
+use Glitch\Inspectable;
 use Glitch\Dumper\Inspector;
 use Glitch\Dumper\Entity;
 
 /**
  * Represents a normalized stack trace
  */
-class Trace implements \IteratorAggregate, \Countable, IInspectable
+class Trace implements \IteratorAggregate, \Countable, Inspectable
 {
     protected $frames = [];
 

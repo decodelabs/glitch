@@ -7,7 +7,7 @@ declare(strict_types=1);
 namespace Glitch\Dumper;
 
 use Glitch\Context;
-use Glitch\IInspectable;
+use Glitch\Inspectable;
 use Glitch\Stack\Trace;
 
 use Glitch\Dumper\Inspect;
@@ -460,7 +460,7 @@ class Inspector
             return;
 
         // Inspectable
-        } elseif ($object instanceof IInspectable) {
+        } elseif ($object instanceof Inspectable) {
             $object->glitchInspect($entity, $this);
             return;
 

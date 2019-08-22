@@ -6,7 +6,7 @@
 declare(strict_types=1);
 namespace Glitch;
 
-interface ITransport
+interface Transport
 {
     public function sendDump(string $packet): void;
 }
