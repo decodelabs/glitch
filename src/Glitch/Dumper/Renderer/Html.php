@@ -86,7 +86,7 @@ class Html implements IRenderer
         $output[] = '.glitch-dump:only-of-type { height: calc(100% - 8px); border: none; }';
         $output[] = '</style>';
         $output[] = '<script>';
-        $output[] = 'var doc = document.getElementById(\''.$id.'\').contentWindow.document';
+        $output[] = 'var doc = document.getElementById(\''.$id.'\').contentWindow.document;';
         $output[] = 'doc.open();doc.write('.json_encode($html).');doc.close();';
         $output[] = '</script>';
 
