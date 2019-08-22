@@ -433,7 +433,7 @@ class Html implements IRenderer
         }
 
         // Hash
-        if ($hash = $entity->getHash()) {
+        if (($hash = $entity->getHash()) || $type == 'array') {
             $info['hash'] = $hash;
         }
 

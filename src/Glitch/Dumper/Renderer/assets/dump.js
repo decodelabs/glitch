@@ -4,11 +4,12 @@ $(function() {
     $(document).on('click', '[data-target]', function(e) {
         e.preventDefault();
         var $badge = $(this),
+            $entity = $badge.closest('.entity'),
             isName = $badge.hasClass('name'),
             $target = $($badge.attr('data-target')),
             isCollapsed = !$target.hasClass('show'),
             isBody = $badge.hasClass('body'),
-            $name = $badge.closest('.entity').find('a.name'),
+            $name = $entity.find('a.name'),
             $body = $($name.attr('data-target')),
             isBodyCollapsed = !$body.hasClass('show'),
             otherChildren = $body.children('div.collapse.show').not($badge.attr('data-target')).length;
@@ -44,7 +45,13 @@ $(function() {
             $badge.toggleClass('collapsed', !isCollapsed);
 
             if(isName && isCollapsed && !otherChildren) {
-                $badge.closest('.entity').find('a.body:first').click();
+                var $first = $entity.find('a.body:first');
+
+                if(!$first.length) {
+                    $first = $entity.find('a.badge:first');
+                }
+
+                $first.click();
             } else {
                 $target.collapse('toggle');
             }

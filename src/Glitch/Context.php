@@ -11,6 +11,10 @@ use Glitch\Stack\Trace;
 use Glitch\Dumper\Inspector;
 use Glitch\Dumper\Dump;
 
+use Glitch\Dumper\IRenderer;
+use Glitch\Dumper\Renderer;
+use Glitch\Transport;
+
 use Composer\Autoload\ClassLoader;
 
 class Context
@@ -27,6 +31,7 @@ class Context
     protected $resourceInspectors = [];
 
     protected $dumpRenderer;
+    protected $transport;
 
 
     /**
@@ -59,7 +64,6 @@ class Context
         $this->pathAliases['glitch'] = dirname(__DIR__);
 
         $this->registerStatGatherer('default', [$this, 'gatherDefaultStats']);
-        $this->dumpRenderer = new \Glitch\Dumper\Renderer\Html($this);
     }
 
 
@@ -119,9 +123,6 @@ class Context
 
 
 
-
-
-
     /**
      * Send variables to dump, carry on execution
      */
@@ -129,9 +130,7 @@ class Context
     {
         $trace = Trace::create($rewind + 1);
         $inspector = new Inspector($this);
-
         $dump = new Dump($trace);
-
 
         foreach ($this->statGatherers as $gatherer) {
             $gatherer($dump, $this);
@@ -141,7 +140,8 @@ class Context
             $dump->addEntity($inspector->inspectValue($value));
         }
 
-        echo $this->dumpRenderer->render($dump, true);
+        $packet = $this->getDumpRenderer()->render($dump, true);
+        $this->getTransport()->sendDump($packet);
     }
 
     /**
@@ -162,25 +162,6 @@ class Context
         (new \Glitch\Dumper\Symfony())->dumpDie(array_shift($values), ...$values);
     }
 
-
-    /**
-     * TODO: move these to a shared location
-     */
-    private static function formatFilesize($bytes)
-    {
-        $units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB'];
-
-        for ($i = 0; $bytes > 1024; $i++) {
-            $bytes /= 1024;
-        }
-
-        return round($bytes, 2).' '.$units[$i];
-    }
-
-    private static function formatMicrotime($time)
-    {
-        return number_format($time * 1000, 2).' ms';
-    }
 
 
 
@@ -365,6 +346,25 @@ class Context
         );
     }
 
+    /**
+     * TODO: move these to a shared location
+     */
+    private static function formatFilesize($bytes)
+    {
+        $units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB'];
+
+        for ($i = 0; $bytes > 1024; $i++) {
+            $bytes /= 1024;
+        }
+
+        return round($bytes, 2).' '.$units[$i];
+    }
+
+    private static function formatMicrotime($time)
+    {
+        return number_format($time * 1000, 2).' ms';
+    }
+
 
 
     /**
@@ -418,5 +418,49 @@ class Context
         }
 
         return $output;
+    }
+
+
+    /**
+     * Set dump renderer
+     */
+    public function setDumpRenderer(IRenderer $renderer): Context
+    {
+        $this->dumpRenderer = $renderer;
+        return $this;
+    }
+
+    /**
+     * Get dump renderer
+     */
+    public function getDumpRenderer(): IRenderer
+    {
+        if (!$this->dumpRenderer) {
+            $this->dumpRenderer = new Renderer\Html($this);
+        }
+
+        return $this->dumpRenderer;
+    }
+
+
+    /**
+     * Set transport
+     */
+    public function setTransport(ITransport $transport): Context
+    {
+        $this->transport = $transport;
+        return $this;
+    }
+
+    /**
+     * Get transport
+     */
+    public function getTransport(): ITransport
+    {
+        if (!$this->transport) {
+            $this->transport = new \Glitch\Transport\Stdout($this);
+        }
+
+        return $this->transport;
     }
 }
