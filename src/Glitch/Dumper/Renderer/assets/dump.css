@@ -313,6 +313,10 @@ ul.list.properties > li > .identifier.key.private:before {
     color: var(--red);
     opacity: 1;
 }
+ul.list.properties > li > .identifier.key.public:before {
+    color: var(--green);
+    opacity: 1;
+}
 ul.list.properties > li > .identifier.key.virtual:before {
     content: 'ⓥ';
     color: var(--purple);
