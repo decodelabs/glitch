@@ -67,6 +67,7 @@ samp.dump {
 .string.multi-line {
     padding-right: 1rem;
     display: inline;
+    white-space: pre;
 }
 .string:before, .string:after {
     content: '"';
@@ -122,6 +123,12 @@ samp.dump {
     color: var(--green);
     cursor: pointer;
     text-decoration: none;
+}
+.entity.title .name.ref:before {
+    content: '&';
+    color: var(--gray);
+    opacity: 0.5;
+    margin-right: 0.2em;
 }
 .entity.title .length {
     cursor: pointer;

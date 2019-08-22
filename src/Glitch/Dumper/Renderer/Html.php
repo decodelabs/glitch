@@ -297,7 +297,7 @@ class Html implements IRenderer
 
         // Name
         if ($isRef) {
-            $this->output[] = '<a class="name code" href="#'.$id.'">'.$name.'</a>';
+            $this->output[] = '<a class="name code ref" href="#'.$id.'">'.$name.'</a>';
         } else {
             $this->output[] = '<a class="name code" data-toggle="collapse" href="#body-'.$linkId.'">'.$name.'</a>';
         }
@@ -449,7 +449,8 @@ class Html implements IRenderer
         $id = $entity->getId();
         $type = $entity->getType();
 
-        $this->output[] = '<div id="text-'.$id.'" class="collapse show inner"><div class="text '.$type.'">';
+        $open = $entity->getOpen();
+        $this->output[] = '<div id="text-'.$id.'" class="collapse'.($open ? ' show' : null).' inner"><div class="text '.$type.'">';
 
         if ($type === 'binary') {
             $chunks = trim(chunk_split($entity->getText(), 2, "\n"));
@@ -467,7 +468,8 @@ class Html implements IRenderer
     protected function renderPropertiesBlock(Entity $entity): void
     {
         $id = $entity->getId();
-        $this->output[] = '<div id="body-'.$id.'" class="collapse show inner"><div class="properties">';
+        $open = $entity->getOpen();
+        $this->output[] = '<div id="body-'.$id.'" class="collapse'.($open ? ' show' : null).' inner"><div class="properties">';
         $this->renderList($entity->getProperties(), 'properties');
         $this->output[] = '</div></div>';
     }
@@ -478,7 +480,8 @@ class Html implements IRenderer
     protected function renderValuesBlock(Entity $entity): void
     {
         $id = $entity->getId();
-        $this->output[] = '<div id="body-'.$id.'" class="collapse show inner"><div class="values">';
+        $open = $entity->getOpen();
+        $this->output[] = '<div id="body-'.$id.'" class="collapse'.($open ? ' show' : null).' inner"><div class="values">';
         $this->renderList($entity->getValues(), 'values');
         $this->output[] = '</div></div>';
     }

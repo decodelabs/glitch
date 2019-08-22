@@ -11,6 +11,7 @@ class Entity
     protected $type;
     protected $name;
     protected $id;
+    protected $open = true;
 
     protected $objectId;
     protected $hash;
@@ -67,6 +68,24 @@ class Entity
     public function getName(): ?string
     {
         return $this->name;
+    }
+
+
+    /**
+     * Set default open state
+     */
+    public function setOpen(bool $open): Entity
+    {
+        $this->open = $open;
+        return $this;
+    }
+
+    /**
+     * Get default open state
+     */
+    public function getOpen(): bool
+    {
+        return $this->open;
     }
 
 

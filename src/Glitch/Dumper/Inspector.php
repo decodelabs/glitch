@@ -463,6 +463,7 @@ class Inspector
             $property->setAccessible(true);
             $name = $property->getName();
             $prefix = null;
+            $open = false;
 
             switch (true) {
                 case $property->isProtected():
@@ -471,6 +472,10 @@ class Inspector
 
                 case $property->isPrivate():
                     $prefix = '!';
+                    break;
+
+                default:
+                    $open = true;
                     break;
             }
 
@@ -481,7 +486,13 @@ class Inspector
             }
 
             $value = $property->getValue($object);
-            $entity->setProperty($name, $this->inspectValue($value));
+            $propValue = $this->inspectValue($value);
+
+            if ($propValue instanceof Entity) {
+                $propValue->setOpen($open);
+            }
+            
+            $entity->setProperty($name, $propValue);
         }
     }
 
@@ -521,6 +532,24 @@ class Inspector
             return null;
         }
 
+        $array = self::smashArray($array);
+
         return md5(serialize($array));
+    }
+
+    /**
+     * Normalize values for serialize
+     */
+    public static function smashArray(array $array): array
+    {
+        foreach ($array as $key => $value) {
+            if (is_object($value)) {
+                $array[$key] = spl_object_id($value);
+            } elseif (is_array($value)) {
+                $array[$key] = self::smashArray($value);
+            }
+        }
+
+        return $array;
     }
 }

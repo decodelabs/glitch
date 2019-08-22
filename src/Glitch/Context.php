@@ -163,7 +163,7 @@ class Context
                         case $value > 0.1:
                             return 'danger';
 
-                        case $value > 0.01:
+                        case $value > 0.025:
                             return 'warning';
 
                         default:
