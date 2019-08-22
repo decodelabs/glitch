@@ -106,14 +106,16 @@ samp.dump {
     color: var(--gray);
     opacity: 0.5;
 }
-.string.m:not(.show):after {
+.string.m.large:not(.show):after {
     content: '""" show more';
 }
 .string.identifier:before, .string.identifier:after {
     display: none;
 }
 .string.m > .line {
-    padding-left: 1rem;
+    margin-left: 0.9rem;
+    padding-left: 0.1rem;
+    border-left: 1px solid #F5F5F5;
 }
 .string.m > .line:after {
     content: '⏎';
