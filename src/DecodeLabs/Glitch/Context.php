@@ -4,15 +4,15 @@
  * @license http://opensource.org/licenses/MIT
  */
 declare(strict_types=1);
-namespace Glitch;
+namespace DecodeLabs\Glitch;
 
-use Glitch\Stack\Frame;
-use Glitch\Stack\Trace;
-use Glitch\Dumper\Inspector;
-use Glitch\Dumper\Dump;
+use DecodeLabs\Glitch\Stack\Frame;
+use DecodeLabs\Glitch\Stack\Trace;
+use DecodeLabs\Glitch\Dumper\Inspector;
+use DecodeLabs\Glitch\Dumper\Dump;
 
-use Glitch\Dumper\Renderer;
-use Glitch\Transport;
+use DecodeLabs\Glitch\Dumper\Renderer;
+use DecodeLabs\Glitch\Transport;
 
 use Composer\Autoload\ClassLoader;
 
@@ -447,7 +447,7 @@ class Context
     public function getTransport(): Transport
     {
         if (!$this->transport) {
-            $this->transport = new \Glitch\Transport\Stdout($this);
+            $this->transport = new Transport\Stdout($this);
         }
 
         return $this->transport;

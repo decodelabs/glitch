@@ -4,8 +4,9 @@
  * @license http://opensource.org/licenses/MIT
  */
 declare(strict_types=1);
-namespace Glitch\Dumper\Inspect;
+namespace DecodeLabs\Glitch;
 
-class Spl
+interface Transport
 {
+    public function sendDump(string $packet): void;
 }

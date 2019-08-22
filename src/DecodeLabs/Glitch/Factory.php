@@ -4,7 +4,7 @@
  * @license http://opensource.org/licenses/MIT
  */
 declare(strict_types=1);
-namespace Glitch;
+namespace DecodeLabs\Glitch;
 
 /**
  * Automatically generate Exceptions on the fly based on scope and
@@ -193,7 +193,7 @@ class Factory
             $this->namespace = null;
         }
 
-        $interfaces[] = '\\Glitch\\Inspectable';
+        $interfaces[] = '\\DecodeLabs\\Glitch\\Inspectable';
 
         $this->buildDefinitions($interfaces);
 
@@ -231,7 +231,7 @@ class Factory
         }
 
         $directType = null;
-        $this->traits[] = 'Glitch\\TException';
+        $this->traits[] = 'DecodeLabs\\Glitch\\TException';
 
 
         // Create initial interface list

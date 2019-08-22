@@ -4,13 +4,13 @@
  * @license http://opensource.org/licenses/MIT
  */
 declare(strict_types=1);
-namespace Glitch\Stack;
+namespace DecodeLabs\Glitch\Stack;
 
-use Glitch\Context;
+use DecodeLabs\Glitch\Context;
 
-use Glitch\Inspectable;
-use Glitch\Dumper\Inspector;
-use Glitch\Dumper\Entity;
+use DecodeLabs\Glitch\Inspectable;
+use DecodeLabs\Glitch\Dumper\Inspector;
+use DecodeLabs\Glitch\Dumper\Entity;
 
 /**
  * Represents a normalized stack trace
@@ -88,7 +88,7 @@ class Trace implements \IteratorAggregate, \Countable, Inspectable
         foreach ($frames as $frame) {
             if (!$frame instanceof Frame) {
                 throw \Glitch::EUnexpectedValue([
-                    'message' => 'Trace frame is not an instance of Glitch\\Frame',
+                    'message' => 'Trace frame is not an instance of DecodeLabs\\Glitch\\Frame',
                     'data' => $frame
                 ]);
             }

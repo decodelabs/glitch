@@ -4,9 +4,9 @@
  * @license http://opensource.org/licenses/MIT
  */
 declare(strict_types=1);
-namespace Glitch\Dumper;
+namespace DecodeLabs\Glitch\Dumper;
 
-use Glitch\Context;
+use DecodeLabs\Glitch\Context;
 
 interface Renderer
 {

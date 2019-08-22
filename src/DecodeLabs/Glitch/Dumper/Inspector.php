@@ -4,13 +4,13 @@
  * @license http://opensource.org/licenses/MIT
  */
 declare(strict_types=1);
-namespace Glitch\Dumper;
+namespace DecodeLabs\Glitch\Dumper;
 
-use Glitch\Context;
-use Glitch\Inspectable;
-use Glitch\Stack\Trace;
+use DecodeLabs\Glitch\Context;
+use DecodeLabs\Glitch\Inspectable;
+use DecodeLabs\Glitch\Stack\Trace;
 
-use Glitch\Dumper\Inspect;
+use DecodeLabs\Glitch\Dumper\Inspect;
 
 class Inspector
 {

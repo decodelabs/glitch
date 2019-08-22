@@ -4,14 +4,14 @@
  * @license http://opensource.org/licenses/MIT
  */
 declare(strict_types=1);
-namespace Glitch;
+namespace DecodeLabs\Glitch;
 
-use Glitch\Stack\Frame;
-use Glitch\Stack\Trace;
+use DecodeLabs\Glitch\Stack\Frame;
+use DecodeLabs\Glitch\Stack\Trace;
 
-use Glitch\Inspectable;
-use Glitch\Dumper\Inspector;
-use Glitch\Dumper\Entity;
+use DecodeLabs\Glitch\Inspectable;
+use DecodeLabs\Glitch\Dumper\Inspector;
+use DecodeLabs\Glitch\Dumper\Entity;
 
 /**
  * Main root exception inheritance

@@ -4,9 +4,9 @@
  * @license http://opensource.org/licenses/MIT
  */
 declare(strict_types=1);
-namespace Glitch\Transport;
+namespace DecodeLabs\Glitch\Transport;
 
-use Glitch\Transport;
+use DecodeLabs\Glitch\Transport;
 
 class Stdout implements Transport
 {

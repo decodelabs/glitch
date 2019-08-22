@@ -4,10 +4,10 @@
  * @license http://opensource.org/licenses/MIT
  */
 declare(strict_types=1);
-namespace Glitch;
+namespace DecodeLabs\Glitch;
 
-use Glitch\Dumper\Entity;
-use Glitch\Dumper\Inspector;
+use DecodeLabs\Glitch\Dumper\Entity;
+use DecodeLabs\Glitch\Dumper\Inspector;
 
 interface Inspectable
 {

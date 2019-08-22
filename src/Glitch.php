@@ -5,8 +5,8 @@
  */
 declare(strict_types=1);
 
-use Glitch\Factory;
-use Glitch\Context;
+use DecodeLabs\Glitch\Factory;
+use DecodeLabs\Glitch\Context;
 
 /**
  * This is just a facade.

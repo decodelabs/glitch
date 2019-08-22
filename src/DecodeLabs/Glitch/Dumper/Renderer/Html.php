@@ -4,12 +4,12 @@
  * @license http://opensource.org/licenses/MIT
  */
 declare(strict_types=1);
-namespace Glitch\Dumper\Renderer;
+namespace DecodeLabs\Glitch\Dumper\Renderer;
 
-use Glitch\Context;
-use Glitch\Dumper\Renderer;
-use Glitch\Dumper\Dump;
-use Glitch\Dumper\Entity;
+use DecodeLabs\Glitch\Context;
+use DecodeLabs\Glitch\Dumper\Renderer;
+use DecodeLabs\Glitch\Dumper\Dump;
+use DecodeLabs\Glitch\Dumper\Entity;
 
 class Html implements Renderer
 {

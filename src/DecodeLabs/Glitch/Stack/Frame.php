@@ -4,9 +4,9 @@
  * @license http://opensource.org/licenses/MIT
  */
 declare(strict_types=1);
-namespace Glitch\Stack;
+namespace DecodeLabs\Glitch\Stack;
 
-use Glitch\Context;
+use DecodeLabs\Glitch\Context;
 
 /**
  * Represents a single entry in a stack trace

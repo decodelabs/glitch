@@ -4,11 +4,12 @@
  * @license http://opensource.org/licenses/MIT
  */
 declare(strict_types=1);
-namespace Glitch\Dumper;
+namespace DecodeLabs\Glitch\Dumper;
 
 use \ArrayIterator;
-use Glitch\Stat;
-use Glitch\Stack\Trace;
+
+use DecodeLabs\Glitch\Stat;
+use DecodeLabs\Glitch\Stack\Trace;
 
 class Dump implements \IteratorAggregate
 {

@@ -11,9 +11,9 @@ declare(strict_types=1);
  */
 namespace
 {
-    use Glitch\Factory;
-    use Glitch\Context;
-    use Glitch\Stack\Frame;
+    use DecodeLabs\Glitch\Factory;
+    use DecodeLabs\Glitch\Context;
+    use DecodeLabs\Glitch\Stack\Frame;
 
     use Symfony\Component\VarDumper\VarDumper;
 
