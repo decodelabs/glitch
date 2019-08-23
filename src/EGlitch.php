@@ -4,10 +4,10 @@
  * @license http://opensource.org/licenses/MIT
  */
 
-use Glitch\Stack\Frame;
-use Glitch\Stack\Trace;
+use DecodeLabs\Glitch\Stack\Frame;
+use DecodeLabs\Glitch\Stack\Trace;
 
-interface EGlitch
+interface EGlitch extends \Throwable
 {
     public function setData($data);
     public function getData();

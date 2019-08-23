@@ -4,9 +4,9 @@
  * @license http://opensource.org/licenses/MIT
  */
 declare(strict_types=1);
-namespace Glitch\Stack;
+namespace DecodeLabs\Glitch\Stack;
 
-use Glitch\PathHandler;
+use DecodeLabs\Glitch\Context;
 
 /**
  * Represents a single entry in a stack trace
@@ -94,6 +94,13 @@ class Frame
 
         if (isset($frame['args'])) {
             $this->args = (array)$frame['args'];
+        }
+
+
+        // Glitch specific
+        if ($this->className == 'Glitch' && $this->function == '__callStatic') {
+            $this->function = array_shift($this->args);
+            $this->args = $this->args[0];
         }
     }
 
@@ -224,7 +231,8 @@ class Frame
             } elseif (preg_match('/^eval\(\)\'d/', $part)) {
                 $name = ['eval[ '.implode(' : ', $name).' ]'];
             } else {
-                $name[] = $part;
+                $el = explode('\\', $part);
+                $name[] = array_pop($el);
             }
         }
 
@@ -286,7 +294,7 @@ class Frame
             } elseif (is_array($arg)) {
                 $arg = '['.count($arg).']';
             } elseif (is_object($arg)) {
-                $arg = self::normalizeClassName(get_class($arg)).' Object';
+                $arg = self::normalizeClassName(get_class($arg));
             } elseif (is_bool($arg)) {
                 $arg = $arg ? 'true' : 'false';
             } elseif (is_null($arg)) {
@@ -303,11 +311,11 @@ class Frame
     /**
      * Generate a full frame signature
      */
-    public function getSignature(?bool $argString=false): string
+    public function getSignature(?bool $argString=false, bool $namespace=true): string
     {
         $output = '';
 
-        if ($this->namespace !== null) {
+        if ($namespace && $this->namespace !== null) {
             $output = $this->namespace.'\\';
         }
 
@@ -319,7 +327,11 @@ class Frame
             $output .= $this->getInvokeType();
         }
 
-        $output .= $this->function;
+        if (false !== strpos($this->function, '{closure}')) {
+            $output .= '{closure}';
+        } else {
+            $output .= $this->function;
+        }
 
         if ($argString) {
             $output .= $this->getArgString();
@@ -378,7 +390,7 @@ class Frame
     public function toArray(): array
     {
         return [
-            'file' => PathHandler::normalizePath($this->getFile()),
+            'file' => Context::getDefault()->normalizePath($this->getFile()),
             'line' => $this->getLine(),
             'function' => $this->function,
             'class' => $this->className,

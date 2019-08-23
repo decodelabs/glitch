@@ -4,14 +4,17 @@
  * @license http://opensource.org/licenses/MIT
  */
 declare(strict_types=1);
-namespace Glitch\Stack;
+namespace DecodeLabs\Glitch\Stack;
 
-use Glitch\PathHandler;
+use DecodeLabs\Glitch\Context;
+
+use DecodeLabs\Glitch\Inspectable;
+use DecodeLabs\Glitch\Dumper\Entity;
 
 /**
  * Represents a normalized stack trace
  */
-class Trace implements \IteratorAggregate
+class Trace implements \IteratorAggregate, \Countable, Inspectable
 {
     protected $frames = [];
 
@@ -84,7 +87,7 @@ class Trace implements \IteratorAggregate
         foreach ($frames as $frame) {
             if (!$frame instanceof Frame) {
                 throw \Glitch::EUnexpectedValue([
-                    'message' => 'Trace frame is not an instance of Glitch\\Frame',
+                    'message' => 'Trace frame is not an instance of DecodeLabs\\Glitch\\Frame',
                     'data' => $frame
                 ]);
             }
@@ -157,6 +160,14 @@ class Trace implements \IteratorAggregate
         }, $this->frames);
     }
 
+    /**
+     * Count frames
+     */
+    public function count(): int
+    {
+        return count($this->frames);
+    }
+
 
 
     /**
@@ -169,17 +180,20 @@ class Trace implements \IteratorAggregate
         $count = count($frames);
 
         foreach ($frames as $i => $frame) {
-            if ($i === 0) {
-                $output[($count + 1).': Glitch'] = [
-                    'file' => PathHandler::normalizePath($frame->getFile()).' : '.$frame->getLine()
-                ];
-            }
-
             $output[($count - $i).': '.$frame->getSignature(true)] = [
-                'file' => PathHandler::normalizePath($frame->getCallingFile()).' : '.$frame->getCallingLine()
+                'file' => Context::getDefault()->normalizePath($frame->getCallingFile()).' : '.$frame->getCallingLine()
             ];
         }
 
         return $output;
+    }
+
+
+    /**
+     * Inspect for Glitch
+     */
+    public function glitchInspect(Entity $entity, callable $inspector): void
+    {
+        $entity->setStackTrace($this);
     }
 }

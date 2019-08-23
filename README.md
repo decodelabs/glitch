@@ -69,7 +69,7 @@ class Amazeballs {
 
     public function doStuff() {
         throw \Glitch::{'ENotFound,EFailedService'}(
-            'Server "doStuff" cannot be found'
+            'Service "doStuff" cannot be found'
         );
     }
 }
@@ -115,7 +115,7 @@ composer require decodelabs/glitch
 Register base paths for easier reading of file names
 
 ```php
-\Glitch\PathHandler::registerAlias('app', '/path/to/my/app');
+\Glitch\Context::getDefault()->registerPathAlias('app', '/path/to/my/app');
 
 /*
 /path/to/my/app/models/MyModel.php
@@ -129,7 +129,7 @@ becomes
 
 ### Usage
 
-Throw Glitches rather than Exceptions, passing mixed in interfaces as the method name (error interfaces must begin with E)
+Throw Glitches rather than Exceptions, passing mixed in interfaces as the method name (generated error interfaces must begin with E)
 
 ```php
 throw \Glitch::EOutOfBounds('This is out of bounds');
@@ -139,12 +139,30 @@ throw \Glitch::{'ENotFound,EBadMethodCall'}(
 );
 
 // You can associate a http code too..
-throw \Glitch::ECompletelyMadeUpMeaning([
-    'message' => 'My message',
+throw \Glitch::ECompletelyMadeUpMeaning('My message', [
     'code' => 1234,
     'http' => 501
 ]);
+
+throw \Glitch::{'EInvalidArgument,Psr\\Cache\\InvalidArgumentException'}(
+    'Cache items must implement Cache\\IItem',
+    ['http' => 500],  // params
+    $item             // data
+);
 ```
+
+Catch a Glitch in the normal way using whichever scope you require:
+
+```php
+try {
+    throw \Glitch::{'ENotFound,EBadMethodCall'}(
+        'Didn\'t find a thing, couldn\'t call the other thing'
+    );
+} catch(\EGlitch | \ENotFound | MyLibrary\EGlitch | MyLibrary\AThingThatDoesStuff\EBadMethodCall $e) {
+    // All these types will catch
+}
+```
+
 
 
 ## Licensing

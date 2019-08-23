@@ -4,10 +4,13 @@
  * @license http://opensource.org/licenses/MIT
  */
 declare(strict_types=1);
-namespace Glitch;
+namespace DecodeLabs\Glitch;
 
-use Glitch\Stack\Frame;
-use Glitch\Stack\Trace;
+use DecodeLabs\Glitch\Stack\Frame;
+use DecodeLabs\Glitch\Stack\Trace;
+
+use DecodeLabs\Glitch\Inspectable;
+use DecodeLabs\Glitch\Dumper\Entity;
 
 /**
  * Main root exception inheritance
@@ -21,6 +24,9 @@ trait TException
     protected $rewind;
     protected $stackTrace;
 
+    /**
+     * Override the standard Exception constructor to simplify instantiation
+     */
     public function __construct($message, array $params=[])
     {
         parent::__construct(
@@ -88,7 +94,7 @@ trait TException
      */
     public function getStackFrame(): Frame
     {
-        return $this->getStackTrace()->getFirstCall();
+        return $this->getStackTrace()->getFirstFrame();
     }
 
     /**
@@ -97,7 +103,7 @@ trait TException
     public function getStackTrace(): Trace
     {
         if (!$this->stackTrace) {
-            $this->stackTrace = Trace::fromException($this, $this->rewind + 2);
+            $this->stackTrace = Trace::fromException($this, $this->rewind + 1);
         }
 
         return $this->stackTrace;
@@ -133,11 +139,26 @@ trait TException
 
         $output['types'] = array_merge($types, array_values(class_implements($this)));
         sort($output['types']);
-        $output['file'] = PathHandler::normalizePath($this->file).' : '.$this->line;
+        $output['file'] = Context::getDefault()->normalizePath($this->file).' : '.$this->line;
 
 
         // Trace
         $output['stackTrace'] = $this->getStackTrace();
         return $output;
+    }
+
+    /**
+     * Inspect for Glitch
+     */
+    public function glitchInspect(Entity $entity, callable $inspector): void
+    {
+        $entity
+            ->setText($this->message)
+            ->setProperty('*code', $inspector($this->code))
+            ->setProperty('*http', $inspector($this->http))
+            ->setValues($inspector($this->data))
+            ->setFile($this->file)
+            ->setStartLine($this->line)
+            ->setStackTrace($this->getStackTrace());
     }
 }

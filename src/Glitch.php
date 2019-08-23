@@ -5,7 +5,8 @@
  */
 declare(strict_types=1);
 
-use Glitch\Factory;
+use DecodeLabs\Glitch\Factory;
+use DecodeLabs\Glitch\Context;
 
 /**
  * This is just a facade.
@@ -14,6 +15,9 @@ final class Glitch
 {
     const TYPE = null;
 
+    /**
+     * Redirect type list to Factory
+     */
     public static function __callStatic(string $method, array $args): \EGlitch
     {
         return Factory::create(
@@ -23,6 +27,41 @@ final class Glitch
         );
     }
 
+    /**
+     * Shortcut to Context
+     */
+    public static function getContext(): Context
+    {
+        return Context::getDefault();
+    }
+
+    /**
+     * Shortcut to incomplete context method
+     */
+    public static function incomplete($data=null)
+    {
+        Context::getDefault()->incomplete($data, 1);
+    }
+
+    /**
+     * Shortcut to normalizePath context method
+     */
+    public static function normalizePath(string $path): string
+    {
+        return Context::getDefault()->normalizePath($path);
+    }
+
+    /**
+     * Shortcut to logException context method
+     */
+    public function logException(\Throwable $e): void
+    {
+        Context::getDefault()->logException($e);
+    }
+
+    /**
+     * Private instanciation
+     */
     private function __construct()
     {
     }
