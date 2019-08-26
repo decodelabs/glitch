@@ -281,7 +281,7 @@ class Html implements Renderer
 
                 // no break
             case 'objectReference':
-                $linkId = 'ref-'.$id;
+                $linkId = 'ref-'.$id.'-'.spl_object_id($entity);
                 $name = '<span class="ref">'.$name.'</span>';
                 $isRef = true;
                 break;
@@ -423,7 +423,7 @@ class Html implements Renderer
         switch ($entity->getType()) {
             case 'arrayReference':
             case 'objectReference':
-                $linkId = 'ref-'.$id;
+                $linkId = 'ref-'.$id.'-'.spl_object_id($entity);
                 break;
         }
 
