@@ -4,11 +4,11 @@
  * @license http://opensource.org/licenses/MIT
  */
 declare(strict_types=1);
-namespace DecodeLabs\Glitch\Dumper\Renderer;
+namespace DecodeLabs\Glitch\Renderer;
 
 use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Stack\Trace;
-use DecodeLabs\Glitch\Dumper\Renderer;
+use DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Dumper\Entity;
 
@@ -32,7 +32,7 @@ class Html implements Renderer
     /**
      * Convert Dump object to HTML string
      */
-    public function render(Dump $dump, bool $isFinal=false): string
+    public function renderDump(Dump $dump, bool $isFinal=false): string
     {
         $this->output = [];
         $space = str_repeat(' ', self::SPACES);

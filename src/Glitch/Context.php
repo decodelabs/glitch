@@ -11,7 +11,7 @@ use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Dumper\Inspector;
 use DecodeLabs\Glitch\Dumper\Dump;
 
-use DecodeLabs\Glitch\Dumper\Renderer;
+use DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Glitch\Transport;
 
 use Composer\Autoload\ClassLoader;
@@ -143,7 +143,7 @@ class Context
             $entity->setOpen(false);
         }));
 
-        $packet = $this->getDumpRenderer()->render($dump, true);
+        $packet = $this->getRenderer()->renderDump($dump, true);
         $this->getTransport()->sendDump($packet);
     }
 
@@ -417,7 +417,7 @@ class Context
     /**
      * Set dump renderer
      */
-    public function setDumpRenderer(Renderer $renderer): Context
+    public function setRenderer(Renderer $renderer): Context
     {
         $this->dumpRenderer = $renderer;
         return $this;
@@ -426,7 +426,7 @@ class Context
     /**
      * Get dump renderer
      */
-    public function getDumpRenderer(): Renderer
+    public function getRenderer(): Renderer
     {
         if (!$this->dumpRenderer) {
             $this->dumpRenderer = new Renderer\Html($this);

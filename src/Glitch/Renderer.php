@@ -4,11 +4,12 @@
  * @license http://opensource.org/licenses/MIT
  */
 declare(strict_types=1);
-namespace DecodeLabs\Glitch\Dumper;
+namespace DecodeLabs\Glitch;
 
 use DecodeLabs\Glitch\Context;
+use DecodeLabs\Glitch\Dumper\Dump;
 
 interface Renderer
 {
-    public function render(Dump $dump, bool $isFinal=false): string;
+    public function renderDump(Dump $dump, bool $isFinal=false): string;
 }
