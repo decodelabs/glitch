@@ -21,9 +21,9 @@
             "DecodeLabs": "src/"
         },
         "files": [
-            "src/EGlitch.php"
+            "src/EGlitch.php",
             "src/Glitch.php",
-            "src/helpers.php",
+            "src/helpers.php"
         ]
     }
 }
