@@ -73,7 +73,7 @@ class Html implements Renderer
             $this->output[] = '<samp class="dump trace">';
             $this->renderEntity(
                 (new Entity('stack'))
-                    ->setName('Stack')
+                    ->setName('stack')
                     ->setStackTrace($trace)
                     ->setOpen(false)
                     ->setLength($trace->count())
@@ -614,7 +614,7 @@ class Html implements Renderer
             $this->renderStackList($trace);
         } else {
             $newEntity = (new Entity('stack'))
-                ->setName('Stack')
+                ->setName('stack')
                 ->setStackTrace($trace)
                 ->setLength($trace->count());
 

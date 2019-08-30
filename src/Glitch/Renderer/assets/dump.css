@@ -173,6 +173,9 @@ samp.dump.trace {
     opacity: 0.5;
     margin-right: 0.2em;
 }
+.entity.title.type-stack .name {
+    color: var(--gray) !important;
+}
 
 .entity:target > .name {
     background: var(--green);
@@ -183,7 +186,6 @@ samp.dump.trace {
 }
 
 .entity.title .length {
-    cursor: pointer;
     color: var(--teal);
     margin-left: -0.5em;
 }
@@ -289,7 +291,7 @@ ul.list > li > .identifier.key:before {
     display: none;
     position: relative;
     margin-top: 0.3em;
-    margin-right: 0.6em;
+    margin-right: 0.75em;
     font-size: 0.8em;
 }
 
