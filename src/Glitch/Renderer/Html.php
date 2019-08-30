@@ -435,7 +435,9 @@ class Html implements Renderer
         // Type
         switch ($type) {
             case 'object':
+            case 'objectReference':
             case 'array':
+            case 'arrayReference':
             case 'class':
             case 'interface':
             case 'trait':
@@ -447,7 +449,7 @@ class Html implements Renderer
         }
 
         // Class
-        if ($type == 'object') {
+        if ($type == 'object' || $type == 'objectReference') {
             $info['class'] = $entity->getClass();
         }
 

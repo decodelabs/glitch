@@ -378,12 +378,6 @@ class Inspector
             ->setObjectId($id)
             ->setHash(spl_object_hash($object));
 
-        if ($isRef) {
-            $entity->setId($this->objectRefs[$id]);
-            return $entity;
-        }
-
-        $this->objectRefs[$id] = $entity->getId();
 
         if (!$reflection->isInternal()) {
             $entity
@@ -393,6 +387,13 @@ class Inspector
         }
 
         $parents = $this->inspectObjectParents($reflection, $entity);
+
+        if ($isRef) {
+            $entity->setId($this->objectRefs[$id]);
+            return $entity;
+        } else {
+            $this->objectRefs[$id] = $entity->getId();
+        }
 
         $reflections = [
             $className => $reflection

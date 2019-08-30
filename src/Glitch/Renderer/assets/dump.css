@@ -168,6 +168,15 @@ samp.dump.trace {
     opacity: 0.5;
     margin-right: 0.2em;
 }
+
+.entity:target > .name {
+    background: var(--green);
+    color: white !important;
+    border-radius: 0.3em;
+    padding: 0 0.3em;
+    margin: 0 0.4em 0 -0.3em;
+}
+
 .entity.title .length {
     cursor: pointer;
     color: var(--teal);
