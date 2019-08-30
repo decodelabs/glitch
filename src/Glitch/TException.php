@@ -156,7 +156,7 @@ trait TException
             ->setText($this->message)
             ->setProperty('*code', $inspector($this->code))
             ->setProperty('*http', $inspector($this->http))
-            ->setValues($inspector($this->data))
+            ->setProperty('*data', $inspector($this->data))
             ->setFile($this->file)
             ->setStartLine($this->line)
             ->setStackTrace($this->getStackTrace());

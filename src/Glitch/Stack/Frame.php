@@ -218,8 +218,12 @@ class Frame
     /**
      * Normalize a classname
      */
-    public static function normalizeClassName(string $class): string
+    public static function normalizeClassName(string $class, bool $alias=true): string
     {
+        if ($alias && false !== strpos($class, 'Glitch/Factory.php')) {
+            return 'EGlitch';
+        }
+
         $name = [];
         $parts = explode(':', $class);
 
@@ -227,7 +231,7 @@ class Frame
             $part = trim(array_shift($parts));
 
             if (preg_match('/^class@anonymous(.+)(\(([0-9]+)\))/', $part, $matches)) {
-                $name[] = $matches[1].' : '.($matches[3] ?? null);
+                $name[] = Context::getDefault()->normalizePath(trim($matches[1])).' : '.($matches[3] ?? null);
             } elseif (preg_match('/^eval\(\)\'d/', $part)) {
                 $name = ['eval[ '.implode(' : ', $name).' ]'];
             } else {

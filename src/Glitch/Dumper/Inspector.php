@@ -204,6 +204,18 @@ class Inspector
 
 
     /**
+     * Invoke wrapper
+     */
+    public function __invoke($value, callable $entityCallback=null, bool $asList=false)
+    {
+        if ($asList) {
+            return $this->inspectList((array)$value, $entityCallback);
+        } else {
+            return $this->inspect($value, $entityCallback);
+        }
+    }
+
+    /**
      * Inspect and report
      */
     public function inspect($value, callable $entityCallback=null)
@@ -218,12 +230,19 @@ class Inspector
     }
 
     /**
-     * Invoke wrapper
+     * Inspect values list
      */
-    public function __invoke($value, callable $entityCallback=null)
+    public function inspectList(array $values, callable $entityCallback=null): array
     {
-        return $this->inspect($value, $entityCallback);
+        $output = [];
+
+        foreach ($values as $key => $value) {
+            $output[$key] = $this->inspect($value, $entityCallback);
+        }
+
+        return $output;
     }
+
 
 
     /**
@@ -259,19 +278,6 @@ class Inspector
         }
     }
 
-    /**
-     * Inspect values list
-     */
-    public function inspectValues(array $values): array
-    {
-        $output = [];
-
-        foreach ($values as $key => $value) {
-            $output[$key] = $this->inspectValue($value);
-        }
-
-        return $output;
-    }
 
 
     /**
@@ -355,7 +361,7 @@ class Inspector
         }
 
         $entity
-            ->setValues($this->inspectValues($array));
+            ->setValues($this->inspectList($array));
 
         return $entity;
     }
@@ -408,7 +414,9 @@ class Inspector
      */
     protected function normalizeClassName(string $class, \ReflectionObject $reflection): string
     {
-        if (0 === strpos($class, "class@anonymous\x00")) {
+        if (false !== strpos($class, 'Glitch/Factory.php')) {
+            $class = 'EGlitch';
+        } elseif (0 === strpos($class, "class@anonymous\x00")) {
             $class = $reflection->getParentClass()->getShortName().'@anonymous';
         }
 
@@ -467,7 +475,7 @@ class Inspector
 
         // Debug info
         } elseif (method_exists($object, '__debugInfo')) {
-            $entity->setValues($this->inspectValues($object->__debugInfo()));
+            $entity->setValues($this->inspectList($object->__debugInfo()));
             return;
         }
 

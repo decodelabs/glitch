@@ -169,8 +169,8 @@ class Factory
     {
         $this->params['rewind'] = $rewind = max((int)($this->params['rewind'] ?? 0), 0);
         $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $rewind + static::REWIND + 2);
-        $lastTrace = array_pop($trace);
         $key = $rewind + static::REWIND;
+        $lastTrace = $trace[$key - 1];
 
         if (isset($this->params['namespace'])) {
             $this->namespace = $this->params['namespace'];

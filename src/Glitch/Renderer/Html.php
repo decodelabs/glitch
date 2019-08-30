@@ -8,6 +8,7 @@ namespace DecodeLabs\Glitch\Renderer;
 
 use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Stack\Trace;
+use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Dumper\Entity;
@@ -67,9 +68,17 @@ class Html implements Renderer
         }
 
 
-        if ($traceEntity = $dump->getTraceEntity()) {
+        // Trace
+        if ($trace = $dump->getTrace()) {
             $this->output[] = '<samp class="dump trace">';
-            $this->renderEntity($traceEntity);
+            $this->renderEntity(
+                (new Entity('stack'))
+                    ->setName('Stack')
+                    ->setStackTrace($trace)
+                    ->setOpen(false)
+                    ->setLength($trace->count())
+            );
+
             $this->output[] = '</samp>';
         }
 
@@ -238,7 +247,7 @@ class Html implements Renderer
         $isMultiLine = false !== strpos($string, "\n");
 
         if ($class !== null) {
-            return '<span class="string '.$class.'">'.$this->esc($string).'</span>';
+            return '<span class="string '.$class.'">'.$this->prepareStringLine($string).'</span>';
         } elseif ($isMultiLine) {
             $string = str_replace("\r", '', $string);
             $parts = explode("\n", $string);
@@ -248,14 +257,60 @@ class Html implements Renderer
             $output[] = '<div class="string m'.($count > 10 ? ' large' : null).'"><span class="length">'.mb_strlen($string).'</span>';
 
             foreach ($parts as $part) {
-                $output[] = '<div class="line">'.$this->esc($part).'</div>';
+                $output[] = '<div class="line">'.$this->prepareStringLine($part).'</div>';
             }
 
             $output[] = '</div>';
             return implode('', $output);
         } else {
-            return '<span class="string s"><span class="line">'.$this->esc($string).'</span><span class="length">'.mb_strlen($string).'</span></span>';
+            return '<span class="string s"><span class="line">'.$this->prepareStringLine($string).'</span><span class="length">'.mb_strlen($string).'</span></span>';
         }
+    }
+
+    /**
+     * Prepare string for rendering
+     */
+    protected function prepareStringLine(string $line): string
+    {
+        $output = $this->esc($line);
+
+        $output = preg_replace_callback('/[[:cntrl:]]/', function ($matches) {
+            $hex = implode(unpack("H*", $matches[0]));
+
+            switch ($hex) {
+                case '07':
+                    $output = '\\a';
+                    break;
+
+                case '1B':
+                    $output = '\\e';
+                    break;
+
+                case '0C':
+                    $output = '\\f';
+                    break;
+
+                case '0A':
+                    $output = '\\n';
+                    break;
+
+                case '0D':
+                    $output = '\\r';
+                    break;
+
+                case '09':
+                    $output = '\\t';
+                    break;
+
+                default:
+                    $output = '\\x'.$hex;
+                    break;
+            }
+
+            return '<span class="control">'.$output.'</span>';
+        }, $output);
+
+        return $output;
     }
 
 
@@ -275,7 +330,7 @@ class Html implements Renderer
         $hasStack = (bool)$entity->getStackTrace();
         $open = $entity->isOpen();
 
-        switch ($entity->getType()) {
+        switch ($type = $entity->getType()) {
             case 'arrayReference':
                 $name = 'array';
 
@@ -296,9 +351,14 @@ class Html implements Renderer
                 $showClass = true;
                 $showInfo = false;
                 break;
+
+            case 'stack':
+                $showInfo = false;
+                $showStack = false;
+                break;
         }
 
-        $this->output[] = '<div class="entity title" id="'.$linkId.'">';
+        $this->output[] = '<div class="entity title type-'.$type.'" id="'.$linkId.'">';
 
         // Name
         if ($isRef) {
@@ -345,7 +405,11 @@ class Html implements Renderer
 
         // Stack
         if ($hasStack) {
-            $this->output[] = '<a data-target="#stack-'.$linkId.'" class="stack body badge badge-dark"><i>s</i></a>';
+            if ($type === 'stack') {
+                $this->output[] = '<a data-target="#body-'.$linkId.'" class="stack badge badge-dark'.($open ? null : ' collapsed').'"><i>s</i></a>';
+            } else {
+                $this->output[] = '<a data-target="#stack-'.$linkId.'" class="stack body badge badge-dark"><i>s</i></a>';
+            }
         }
 
         // Bracket
@@ -532,7 +596,7 @@ class Html implements Renderer
     {
         $id = $entity->getId();
         $this->output[] = '<div id="values-'.$id.'" class="collapse show inner"><div class="values">';
-        $this->renderList($entity->getValues(), 'values');
+        $this->renderList($entity->getValues(), 'values', $entity->shouldShowKeys());
         $this->output[] = '</div></div>';
     }
 
@@ -542,8 +606,21 @@ class Html implements Renderer
     protected function renderStackBlock(Entity $entity): void
     {
         $id = $entity->getId();
-        $this->output[] = '<div id="stack-'.$id.'" class="collapse show inner"><div class="stack">';
-        $this->renderStackList($entity->getStackTrace());
+        $type = $entity->getType();
+        $trace = $entity->getStackTrace();
+        $this->output[] = '<div id="stack-'.$id.'" class="collapse show inner type-'.$type.'"><div class="stack">';
+
+        if ($type == 'stack') {
+            $this->renderStackList($trace);
+        } else {
+            $newEntity = (new Entity('stack'))
+                ->setName('Stack')
+                ->setStackTrace($trace)
+                ->setLength($trace->count());
+
+            $this->renderEntity($newEntity);
+        }
+
         $this->output[] = '</div></div>';
     }
 

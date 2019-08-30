@@ -125,9 +125,9 @@ class Context
     /**
      * Send variables to dump, carry on execution
      */
-    public function dump(array $values, int $rewind=null): void
+    public function dump(array $values, int $rewind=0): void
     {
-        $trace = Trace::create($rewind + 1);
+        $trace = Trace::create($rewind - 1);
         $inspector = new Inspector($this);
         $dump = new Dump($trace);
 
@@ -139,10 +139,6 @@ class Context
             $dump->addEntity($inspector($value));
         }
 
-        $dump->setTraceEntity($inspector($trace, function ($entity) {
-            $entity->setOpen(false);
-        }));
-
         $packet = $this->getRenderer()->renderDump($dump, true);
         $this->getTransport()->sendDump($packet);
     }
@@ -150,7 +146,7 @@ class Context
     /**
      * Send variables to dump, exit and render
      */
-    public function dumpDie(array $values, int $rewind=null): void
+    public function dumpDie(array $values, int $rewind=0): void
     {
         $this->dump($values, $rewind + 1);
         exit(1);
@@ -161,7 +157,7 @@ class Context
     /**
      * Quit a stubbed method
      */
-    public function incomplete($data=null, int $rewind=null): void
+    public function incomplete($data=null, int $rewind=0): void
     {
         $frame = Frame::create($rewind + 1);
 
@@ -251,8 +247,10 @@ class Context
         $path = str_replace('\\', '/', $path);
 
         foreach ($this->pathAliases as $name => $test) {
-            if (0 === strpos($path, $test)) {
-                return $name.'://'.ltrim(substr($path, strlen($test)), '/');
+            $len = strlen($test);
+
+            if (substr($path, 0, $len) == $test) {
+                return $name.'://'.ltrim(substr($path, $len), '/');
             }
         }
 
@@ -334,7 +332,7 @@ class Context
             // Location
             (new Stat('location', 'Dump location', $frame))
                 ->setRenderer('text', function ($frame) {
-                    return $this->normalizePath($frame->getFile()).' : '.$frame->getLine();
+                    return $this->normalizePath($frame->getCallingFile()).' : '.$frame->getCallingLine();
                 })
         );
     }

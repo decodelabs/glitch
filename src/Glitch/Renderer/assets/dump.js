@@ -55,6 +55,10 @@ $(function() {
             } else {
                 $target.collapse('toggle');
             }
+
+            if(isName && $entity.hasClass('type-stack')) {
+                $entity.find('.badge.stack').toggleClass('collapsed', !isCollapsed);
+            }
         }
     });
 

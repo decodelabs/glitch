@@ -50,18 +50,18 @@ samp.dump.trace {
     font-style: italic;
     font-weight: 600;
 }
-.int {
+.int, .float {
     color: var(--indigo);
+    font-weight: 600;
 }
-.float {
-    color: var(--indigo);
-}
+/*
 .float:before {
     content: 'f';
     color: var(--gray);
     opacity: 0.5;
     margin-right: 0.2em;
 }
+*/
 
 /* STRING */
 .string {
@@ -133,6 +133,11 @@ samp.dump.trace {
 }
 .string.m > .line:last-child:after {
     display: none;
+}
+
+.string span.control {
+    color: var(--orange);
+    opacity: 0.65;
 }
 
 
@@ -226,6 +231,7 @@ div.info div + h6 {
 div.inner {
     padding: 0 0 0 2rem;
     display: block;
+    position: relative;
 }
 
 div.inner > .inner {
@@ -279,11 +285,6 @@ ul.list > li > .identifier.key:before {
     content: 'ⓟ';
     color: var(--green);
     opacity: 1;
-    /*
-    position: absolute;
-    display: block;
-    margin-left: -1.5em;
-    */
 
     display: none;
     position: relative;
@@ -343,9 +344,19 @@ ul.list.properties > li > .identifier.key.public:before {
     display: inline;
 }
 ul.list.properties > li > .identifier.key.virtual:before {
-    content: 'ⓥ';
+    content: 'ⓧ';
     color: var(--purple);
     display: inline;
+}
+
+ul.list.values > li:before {
+    content: 'ⓥ';
+    color: var(--yellow);
+    position: relative;
+    margin-top: 0.3em;
+    font-size: 0.8em;
+    display: inline;
+    opacity: 0.75;
 }
 
 
@@ -380,9 +391,32 @@ ul.stack li span.line {
     color: var(--pink);
 }
 
+.inner > div.stack {
+}
+.inner:not(.type-stack) > div.stack:before {
+    content: 'ⓢ';
+    color: var(--dark);
+    opacity: 0.5;
+    position: relative;
+    margin-top: 0.3em;
+    font-size: 0.8em;
+}
+.inner.stack > div.stack:before {
+    display: none;
+}
+
 .inner > div.text {
     color: var(--red);
 }
+.inner > div.text:before {
+    content: 'ⓣ';
+    color: var(--gray);
+    opacity: 0.5;
+    position: relative;
+    margin-top: 0.3em;
+    font-size: 0.8em;
+}
+
 .inner > div.text.binary > i {
     margin-right: 0.5em;
     color: var(--indigo);

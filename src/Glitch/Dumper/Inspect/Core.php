@@ -53,6 +53,6 @@ class Core
         $vars = (array)$class;
         $entity->setDefinition($vars['__PHP_Incomplete_Class_Name']);
         unset($vars['__PHP_Incomplete_Class_Name']);
-        $entity->setValues($inspector->inspectValues($vars));
+        $entity->setValues($inspector->inspectList($vars));
     }
 }
