@@ -670,18 +670,11 @@ class Html implements Renderer
      */
     protected function renderStackFrameSignature(Frame $frame): void
     {
-        //$this->output[] = $frame->getSignature(true);
-
         $output = [];
 
-
         // Namespace
-        if (null !== ($namespace = $frame->getNamespace())) {
-            $output[] = '<i class="ns">'.$this->esc($namespace.'\\').'</i>';
-        }
-
-        // Class name
         if (null !== ($class = $frame->getClassName())) {
+            $output[] = '<i class="ns">'.$this->esc($frame->getNamespace().'\\').'</i>';
             $output[] = '<i class="cl">'.$this->esc($frame::normalizeClassName($class)).'</i>';
         }
 
