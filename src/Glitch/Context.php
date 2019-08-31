@@ -134,8 +134,11 @@ class Context
         }
 
         foreach ($values as $value) {
-            $dump->addEntity($inspector($value));
+            $dump->addEntity($inspector->inspectValue($value));
         }
+
+        $inspector->reset();
+        unset($inspector);
 
         $packet = $this->getRenderer()->renderDump($dump, true);
         $this->getTransport()->sendDump($packet);

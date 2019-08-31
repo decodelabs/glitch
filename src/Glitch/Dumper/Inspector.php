@@ -21,6 +21,12 @@ class Inspector
         'Generator' => [Inspect\Core::class, 'inspectGenerator'],
         '__PHP_Incomplete_Class' => [Inspect\Core::class, 'inspectIncompleteClass'],
 
+        // Date
+        'DateTime' => [Inspect\Date::class, 'inspectDateTime'],
+        'DateInterval' => [Inspect\Date::class, 'inspectDateInterval'],
+        'DateTimeZone' => [Inspect\Date::class, 'inspectDateTimeZone'],
+        'DatePeriod' => [Inspect\Date::class, 'inspectDatePeriod'],
+
         // Reflection
         'ReflectionClass' => [Inspect\Reflection::class, 'inspectReflectionClass'],
         'ReflectionClassConstant' => [Inspect\Reflection::class, 'inspectReflectionClassConstant'],
@@ -184,7 +190,13 @@ class Inspector
     protected $objectInspectors = [];
     protected $resourceInspectors = [];
 
+    protected $objectIds = [];
     protected $objectRefs = [];
+
+    protected $arrayIds = [];
+    protected $arrayObjectId = 0;
+    protected $arrayCookies = [];
+    protected $arrayCookieKey;
 
 
     /**
@@ -211,6 +223,23 @@ class Inspector
         foreach ($context->getResourceInspectors() as $type => $inspector) {
             $this->resourceInspectors[$type] = $inspector;
         }
+    }
+
+
+    /**
+     * Reset all references
+     */
+    public function reset(): Inspector
+    {
+        $this->objectIds = [];
+        $this->objectRefs = [];
+
+        $this->arrayIds = [];
+        $this->arrayObjectId = 0;
+        $this->arrayCookies = [];
+        $this->arrayCookieKey = null;
+        
+        return $this;
     }
 
 
@@ -399,11 +428,6 @@ class Inspector
 
 
 
-    protected $arrayIds = [];
-    protected $arrayObjectId = 0;
-    protected $arrayCookies = [];
-    protected $arrayCookieKey;
-
     /**
      * Convert array into Entity
      */
@@ -468,15 +492,15 @@ class Inspector
      */
     public function inspectObject(object $object): ?Entity
     {
-        $id = spl_object_id($object);
+        $objectId = spl_object_id($object);
         $reflection = new \ReflectionObject($object);
         $className = $reflection->getName();
-        $isRef = isset($this->objectRefs[$id]);
+        $isRef = isset($this->objectIds[$objectId]);
 
         $entity = (new Entity($isRef ? 'objectReference' : 'object'))
             ->setName($this->normalizeClassName($reflection->getShortName(), $reflection))
             ->setClass($className)
-            ->setObjectId($id)
+            ->setObjectId($objectId)
             ->setHash(spl_object_hash($object));
 
 
@@ -490,10 +514,11 @@ class Inspector
         $parents = $this->inspectObjectParents($reflection, $entity);
 
         if ($isRef) {
-            $entity->setId($this->objectRefs[$id]);
+            $entity->setId($this->objectIds[$objectId]);
             return $entity;
         } else {
-            $this->objectRefs[$id] = $entity->getId();
+            $this->objectRefs[$objectId] = $object;
+            $this->objectIds[$objectId] = $entity->getId();
         }
 
         $reflections = [
@@ -593,7 +618,7 @@ class Inspector
     /**
      * Inspect class members
      */
-    public function inspectClassMembers(object $object, \ReflectionClass $reflection, Entity $entity, array $blackList=[]): void
+    public function inspectClassMembers(object $object, \ReflectionClass $reflection, Entity $entity, array $blackList=[], bool $asMeta=false): void
     {
         foreach ($reflection->getProperties() as $property) {
             if ($property->isStatic()) {
@@ -624,9 +649,13 @@ class Inspector
                     break;
             }
 
-            $name = $prefix.$name;
+            if (!$asMeta) {
+                $name = $prefix.$name;
+            }
 
-            if ($entity->hasProperty($name)) {
+            if ($asMeta && $entity->hasMeta($name)) {
+                continue;
+            } elseif ($entity->hasProperty($name)) {
                 continue;
             }
 
@@ -637,7 +666,11 @@ class Inspector
                 $propValue->setOpen($open);
             }
 
-            $entity->setProperty($name, $propValue);
+            if ($asMeta) {
+                $entity->setMeta($name, $propValue);
+            } else {
+                $entity->setProperty($name, $propValue);
+            }
         }
     }
 
