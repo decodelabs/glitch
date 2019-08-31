@@ -242,12 +242,12 @@ class Html implements Renderer
     /**
      * Render standard string
      */
-    protected function renderString(string $string, ?string $class=null): string
+    protected function renderString(string $string, ?string $class=null, int $forceSingleLineMax=null): string
     {
-        $isMultiLine = false !== strpos($string, "\n");
+        $isMultiLine = $forceSingleLineMax === null && false !== strpos($string, "\n");
 
         if ($class !== null) {
-            return '<span class="string '.$class.'">'.$this->prepareStringLine($string).'</span>';
+            return '<span class="string '.$class.'">'.$this->prepareStringLine($string, $forceSingleLineMax).'</span>';
         } elseif ($isMultiLine) {
             $string = str_replace("\r", '', $string);
             $parts = explode("\n", $string);
@@ -263,15 +263,30 @@ class Html implements Renderer
             $output[] = '</div>';
             return implode('', $output);
         } else {
-            return '<span class="string s"><span class="line">'.$this->prepareStringLine($string).'</span><span class="length">'.mb_strlen($string).'</span></span>';
+            $output = '<span class="string s"><span class="line">'.$this->prepareStringLine($string, $forceSingleLineMax).'</span>';
+
+            if ($forceSingleLineMax === null) {
+                $output .= '<span class="length">'.mb_strlen($string).'</span>';
+            }
+
+            $output .= '</span>';
+
+            return $output;
         }
     }
 
     /**
      * Prepare string for rendering
      */
-    protected function prepareStringLine(string $line): string
+    protected function prepareStringLine(string $line, int $maxLength=null): string
     {
+        $shorten = false;
+
+        if ($maxLength !== null && strlen($line) > $maxLength) {
+            $shorten = true;
+            $line = substr($line, 0, $maxLength);
+        }
+
         $output = $this->esc($line);
 
         $output = preg_replace_callback('/[[:cntrl:]]/', function ($matches) {
@@ -309,6 +324,10 @@ class Html implements Renderer
 
             return '<span class="control">'.$output.'</span>';
         }, $output);
+
+        if ($shorten) {
+            $output .= '<span class="g">…</span>';
+        }
 
         return $output;
     }
@@ -635,13 +654,91 @@ class Html implements Renderer
         foreach ($trace as $i => $frame) {
             $this->output[] = '<li>';
             $this->output[] = '<span class="number">'.($count - $i).'</span>';
-            $this->output[] = '<span class="signature">'.$frame->getSignature(true).'</span>';
+            $this->output[] = '<span class="signature">';
+            $this->renderStackFrameSignature($frame);
+            $this->output[] = '</span>';
             $this->output[] = '<span class="file">'.$this->context->normalizePath($frame->getCallingFile()).'</span>';
             $this->output[] = '<span class="line">'.$frame->getCallingLine().'</span>';
             $this->output[] = '</li>';
         }
 
         $this->output[] = '</ul>';
+    }
+
+    /**
+     * Render stack frame signature
+     */
+    protected function renderStackFrameSignature(Frame $frame): void
+    {
+        //$this->output[] = $frame->getSignature(true);
+
+        $output = [];
+
+
+        // Namespace
+        if (null !== ($namespace = $frame->getNamespace())) {
+            $output[] = '<i class="ns">'.$this->esc($namespace.'\\').'</i>';
+        }
+
+        // Class name
+        if (null !== ($class = $frame->getClassName())) {
+            $output[] = '<i class="cl">'.$this->esc($frame::normalizeClassName($class)).'</i>';
+        }
+
+        // Type
+        if ($frame->getType() !== null) {
+            $output[] = '<i class="ty">'.$this->esc($frame->getInvokeType()).'</i>';
+        }
+
+        // Function
+        if (false !== strpos($function = $frame->getFunctionName(), '{closure}')) {
+            $output[] = '<i class="fn closure">closure</i>';
+        } else {
+            $output[] = '<i class="fn">'.$function.'</i>';
+        }
+
+        // Args
+        $output[] = '<i class="br">(</i>';
+        $args = [];
+
+        foreach ($frame->getArgs() as $arg) {
+            if (is_object($arg)) {
+                $args[] = '<i class="ob">'.$frame::normalizeClassName(get_class($arg)).'</i>';
+            } elseif (is_array($arg)) {
+                $args[] = '<span class="ar"><i class="br">[</i>'.count($arg).'<i class="br">]</i></span>';
+            } else {
+                switch (true) {
+                    case $arg === null:
+                        $args[] = $this->renderNull();
+                        break;
+
+                    case is_bool($arg):
+                        $args[] = $this->renderBool($arg);
+                        break;
+
+                    case is_int($arg):
+                        $args[] = $this->renderInt($arg);
+                        break;
+
+                    case is_float($arg):
+                        $args[] = $this->renderFloat($arg);
+                        break;
+
+                    case is_string($arg):
+                        $args[] = $this->renderString($arg, null, 16);
+                        break;
+
+                    default:
+                        $args[] = '';
+                        break;
+                }
+            }
+        }
+
+        $output[] = implode('<i class="cm">,</i> ', $args);
+        $output[] = '<i class="br">)</i>';
+
+        $this->output[] = implode('', $output);
     }
 
 

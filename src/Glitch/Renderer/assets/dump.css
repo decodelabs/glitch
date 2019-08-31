@@ -54,14 +54,6 @@ samp.dump.trace {
     color: var(--indigo);
     font-weight: 600;
 }
-/*
-.float:before {
-    content: 'f';
-    color: var(--gray);
-    opacity: 0.5;
-    margin-right: 0.2em;
-}
-*/
 
 /* STRING */
 .string {
@@ -139,6 +131,8 @@ samp.dump.trace {
     color: var(--orange);
     opacity: 0.65;
 }
+
+
 
 
 .pointer {
@@ -379,10 +373,10 @@ ul.stack li span.signature:after {
     white-space: pre;
 }
 ul.stack li span.file {
-    color: var(--green);
+    color: var(--orange);
     opacity: 0.75;
-    margin-left: 2rem;
-    filter: grayscale(0.75);
+    margin-left: 2.5em;
+    //filter: grayscale(0.75);
 }
 ul.stack li span.file:after {
     content: ' :';
@@ -453,4 +447,60 @@ a.name.collapsed ~ a.badge.body {
 }
 a.name.collapsed ~ a.badge.body.values {
     opacity: 0.3;
+}
+
+
+
+/* Stack sig */
+span.signature i {
+    font-style: normal;
+}
+span.signature i.ns {
+    color: var(--cyan);
+    filter: brightness(0.65);
+    opacity: 0.75;
+}
+span.signature i.cl {
+    color: var(--cyan);
+    filter: brightness(0.5);
+}
+span.signature i.ty {
+    color: var(--gray);
+    opacity: 0.6;
+}
+span.signature i.fn {
+    color: var(--blue);
+    filter: brightness(0.75);
+    font-weight: bold;
+}
+span.signature i.fn.closure {
+    font-style: italic;
+}
+span.signature i.fn.closure:before {
+    content: '{';
+}
+span.signature i.fn.closure:after {
+    content: '}';
+}
+span.signature i.fn.closure:before,
+span.signature i.fn.closure:after {
+    color: var(--gray);
+    opacity: 0.4;
+}
+span.signature i.br {
+    color: var(--gray);
+    opacity: 0.75;
+    font-style: normal;
+}
+span.signature span.ar {
+    color: var(--cyan);
+    font-style: italic;
+}
+span.signature span.ar i.br:first-child:after {
+    content: '…';
+    color: var(--gray);
+    opacity: 0.7;
+}
+span.signature i.ob {
+    color: var(--cyan);
 }
