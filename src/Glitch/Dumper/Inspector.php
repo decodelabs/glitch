@@ -16,6 +16,7 @@ class Inspector
 {
     const OBJECTS = [
         // Core
+        'Exception' => [Inspect\Core::class, 'inspectException'],
         'Closure' => [Inspect\Core::class, 'inspectClosure'],
         'Generator' => [Inspect\Core::class, 'inspectGenerator'],
         '__PHP_Incomplete_Class' => [Inspect\Core::class, 'inspectIncompleteClass'],
@@ -480,15 +481,17 @@ class Inspector
         }
 
 
-        // Members
+        // Parent object inspectors
         foreach (array_reverse($reflections) as $className => $reflection) {
-            // Parent object inspectors
             if (isset($this->objectInspectors[$className])) {
                 call_user_func($this->objectInspectors[$className], $object, $entity, $this);
-                continue;
+                return;
             }
+        }
 
-            // Reflection
+
+        // Reflection members
+        foreach (array_reverse($reflections) as $className => $reflection) {
             $this->inspectClassMembers($object, $reflection, $entity);
         }
     }
@@ -496,7 +499,7 @@ class Inspector
     /**
      * Inspect class members
      */
-    protected function inspectClassMembers(object $object, \ReflectionClass $reflection, Entity $entity): void
+    public function inspectClassMembers(object $object, \ReflectionClass $reflection, Entity $entity, array $blackList=[]): void
     {
         foreach ($reflection->getProperties() as $property) {
             if ($property->isStatic()) {
@@ -505,6 +508,11 @@ class Inspector
 
             $property->setAccessible(true);
             $name = $property->getName();
+
+            if (in_array($name, $blackList)) {
+                continue;
+            }
+
             $prefix = null;
             $open = false;
 

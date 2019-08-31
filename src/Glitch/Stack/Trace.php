@@ -23,7 +23,22 @@ class Trace implements \IteratorAggregate, \Countable, Inspectable
      */
     public static function fromException(\Throwable $e, int $rewind=0): self
     {
-        return self::fromArray($e->getTrace(), $rewind);
+        $output = self::fromArray($e->getTrace(), $rewind);
+
+        array_unshift($output->frames, new Frame([
+            'fromFile' => $e->getFile(),
+            'fromLine' => $e->getLine(),
+            'function' => '__construct',
+            'class' => get_class($e),
+            'type' => '->',
+            'args' => [
+                $e->getMessage(),
+                $e->getCode(),
+                $e->getPrevious()
+            ]
+        ]));
+
+        return $output;
     }
 
     /**

@@ -466,6 +466,15 @@ class Entity
         return array_key_exists($key, $this->properties);
     }
 
+    /**
+     * Remove property
+     */
+    public function removeProperty(string $key): Entity
+    {
+        unset($this->properties[$key]);
+        return $this;
+    }
+
 
 
     /**

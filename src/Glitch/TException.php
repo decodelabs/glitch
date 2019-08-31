@@ -157,6 +157,9 @@ trait TException
             ->setProperty('*code', $inspector($this->code))
             ->setProperty('*http', $inspector($this->http))
             ->setProperty('*data', $inspector($this->data))
+            ->setProperty('!previous', $inspector($this->getPrevious(), function ($entity) {
+                $entity->setOpen(false);
+            }))
             ->setFile($this->file)
             ->setStartLine($this->line)
             ->setStackTrace($this->getStackTrace());
