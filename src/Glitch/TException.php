@@ -11,6 +11,7 @@ use DecodeLabs\Glitch\Stack\Trace;
 
 use DecodeLabs\Glitch\Inspectable;
 use DecodeLabs\Glitch\Dumper\Entity;
+use DecodeLabs\Glitch\Dumper\Inspector;
 
 /**
  * Main root exception inheritance
@@ -150,7 +151,7 @@ trait TException
     /**
      * Inspect for Glitch
      */
-    public function glitchInspect(Entity $entity, callable $inspector): void
+    public function glitchInspect(Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setText($this->message)

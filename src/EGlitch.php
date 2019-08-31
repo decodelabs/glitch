@@ -3,7 +3,7 @@
  * This file is part of the Glitch package
  * @license http://opensource.org/licenses/MIT
  */
-
+    
 use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Stack\Trace;
 

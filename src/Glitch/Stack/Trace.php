@@ -10,6 +10,7 @@ use DecodeLabs\Glitch\Context;
 
 use DecodeLabs\Glitch\Inspectable;
 use DecodeLabs\Glitch\Dumper\Entity;
+use DecodeLabs\Glitch\Dumper\Inspector;
 
 /**
  * Represents a normalized stack trace
@@ -207,7 +208,7 @@ class Trace implements \IteratorAggregate, \Countable, Inspectable
     /**
      * Inspect for Glitch
      */
-    public function glitchInspect(Entity $entity, callable $inspector): void
+    public function glitchInspect(Entity $entity, Inspector $inspector): void
     {
         $entity->setStackTrace($this);
     }

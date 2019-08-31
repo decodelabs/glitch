@@ -345,7 +345,10 @@ class Factory
         }
 
         $extend = implode('\\', $parts).'\\EGlitch';
-        $this->interfaces[$interface]['extend'][] = $extend;
+
+        if (empty($this->interfaces[$interface]['extend'] ?? null) || $extend !== '\\EGlitch') {
+            $this->interfaces[$interface]['extend'][] = $extend;
+        }
 
         return $output;
     }

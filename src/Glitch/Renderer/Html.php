@@ -375,6 +375,16 @@ class Html implements Renderer
                 $showInfo = false;
                 $showStack = false;
                 break;
+
+            case 'flags':
+                $showInfo = false;
+                break;
+
+            case 'const':
+                $showInfo = false;
+                $const = $entity->getName();
+                $name = $this->renderConstName($const);
+                break;
         }
 
         $this->output[] = '<div class="entity title type-'.$type.'" id="'.$linkId.'">';
@@ -496,6 +506,46 @@ class Html implements Renderer
         }
     }
 
+
+    /**
+     * Split const name for rendering
+     */
+    protected function renderConstName(string $const): string
+    {
+        $parts = explode('::', $const, 2);
+        $const = array_pop($parts);
+
+        if (empty($parts)) {
+            $class = null;
+            $parts = explode('\\', $const);
+            $const = array_pop($parts);
+        } else {
+            $parts = explode('\\', array_shift($parts));
+            $class = array_pop($parts);
+        }
+
+        $namespace = implode('\\', $parts);
+
+        if (empty($namespace)) {
+            $namespace = '\\';
+        }
+
+        $output = [];
+        $output[] = '<span class="const signature">';
+
+        $output[] = '<i class="ns">'.$this->esc($namespace).'</i>';
+
+        if ($class !== null) {
+            $output[] = '<i class="cl">'.$this->esc($class).'</i>';
+            $output[] = '<i class="ty">::</i>';
+        }
+
+        $output[] = '<i class="co">'.$this->esc($const).'</i>';
+
+        $output[] = '</span>';
+        return implode('', $output);
+    }
+
     /**
      * Render entity info block
      */
@@ -514,11 +564,16 @@ class Html implements Renderer
 
         $type = $entity->getType();
         $info = [];
+        $showClass = false;
 
         // Type
         switch ($type) {
             case 'object':
             case 'objectReference':
+            case 'const':
+                $showClass = true;
+                break;
+
             case 'array':
             case 'arrayReference':
             case 'class':
@@ -532,8 +587,8 @@ class Html implements Renderer
         }
 
         // Class
-        if ($type == 'object' || $type == 'objectReference') {
-            $info['class'] = $entity->getClass();
+        if ($showClass && null !== ($class = $entity->getClass())) {
+            $info['class'] = $class;
         }
 
         // Location

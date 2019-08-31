@@ -170,6 +170,13 @@ samp.dump.trace {
 .entity.title.type-stack .name {
     color: var(--gray) !important;
 }
+.entity.title.type-flags .name {
+    color: var(--purple) !important;
+}
+.entity.title.type-const .name {
+    cursor: default;
+}
+
 
 .entity:target > .name {
     background: var(--green);
@@ -181,12 +188,13 @@ samp.dump.trace {
 
 .entity.title .length {
     color: var(--teal);
-    margin-left: -0.5em;
+    margin-left: -0.25em;
 }
 .entity.title .length:before {
     content: ':';
     color: var(--gray);
     opacity: 0.5;
+    margin-right: 0.25em;
 }
 .popup {
     position: absolute;
@@ -355,6 +363,11 @@ ul.list.values > li:before {
     opacity: 0.75;
 }
 
+.entity.title.type-flags ~ .body > .inner > .values > ul.list.values > li:before {
+    content: 'ⓒ';
+    color: var(--purple);
+}
+
 
 ul.stack {
     list-style: none;
@@ -376,7 +389,6 @@ ul.stack li span.file {
     color: var(--orange);
     opacity: 0.75;
     margin-left: 2.5em;
-    //filter: grayscale(0.75);
 }
 ul.stack li span.file:after {
     content: ' :';
@@ -503,4 +515,8 @@ span.signature span.ar i.br:first-child:after {
 }
 span.signature i.ob {
     color: var(--cyan);
+}
+span.signature i.co {
+    color: var(--purple);
+    font-weight: bold;
 }

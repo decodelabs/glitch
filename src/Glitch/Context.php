@@ -120,8 +120,6 @@ class Context
     }
 
 
-
-
     /**
      * Send variables to dump, carry on execution
      */
@@ -242,7 +240,7 @@ class Context
     /**
      * Lookup and replace path prefix
      */
-    public function normalizePath(string $path): string
+    public function normalizePath(?string $path): ?string
     {
         $path = str_replace('\\', '/', $path);
 
@@ -340,7 +338,7 @@ class Context
     /**
      * TODO: move these to a shared location
      */
-    private static function formatFilesize($bytes)
+    public static function formatFilesize($bytes)
     {
         $units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB'];
 
@@ -351,7 +349,7 @@ class Context
         return round($bytes, 2).' '.$units[$i];
     }
 
-    private static function formatMicrotime($time)
+    public static function formatMicrotime($time)
     {
         return number_format($time * 1000, 2).' ms';
     }

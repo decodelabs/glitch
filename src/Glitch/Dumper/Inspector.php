@@ -33,6 +33,18 @@ class Inspector
         'ReflectionProperty' => [Inspect\Reflection::class, 'inspectReflectionProperty'],
         'ReflectionType' => [Inspect\Reflection::class, 'inspectReflectionType'],
         'ReflectionGenerator' => [Inspect\Reflection::class, 'inspectReflectionGenerator'],
+
+        // Spl
+        'ArrayObject' => [Inspect\Spl::class, 'inspectArrayObject'],
+        'ArrayIterator' => [Inspect\Spl::class, 'inspectArrayIterator'],
+        'SplDoublyLinkedList' => [Inspect\Spl::class, 'inspectSplDoublyLinkedList'],
+        'SplHeap' => [Inspect\Spl::class, 'inspectSplHeap'],
+        'SplPriorityQueue' => [Inspect\Spl::class, 'inspectSplPriorityQueue'],
+        'SplFixedArray' => [Inspect\Spl::class, 'inspectSplFixedArray'],
+        'SplObjectStorage' => [Inspect\Spl::class, 'inspectSplObjectStorage'],
+
+        'SplFileInfo' => [Inspect\Spl::class, 'inspectSplFileInfo'],
+        'SplFileObject' => [Inspect\Spl::class, 'inspectSplFileObject'],
     ];
 
     const RESOURCES = [
@@ -173,8 +185,6 @@ class Inspector
     protected $resourceInspectors = [];
 
     protected $objectRefs = [];
-    protected $arrayRefs = [];
-    protected $arrayIds = [];
 
 
     /**
@@ -249,7 +259,7 @@ class Inspector
     /**
      * Inspect single value
      */
-    public function inspectValue($value)
+    public function inspectValue(&$value)
     {
         switch (true) {
             case $value === null:
@@ -337,36 +347,120 @@ class Inspector
 
 
     /**
-     * Convert array into Entity
+     * Create flag list
      */
-    public function inspectArray(array $array): ?Entity
+    public function inspectFlagSet(?int $flags, array $options): Entity
     {
-        $hash = $this->hashArray($array);
-        $isRef = $hash !== null && isset($this->arrayRefs[$hash]);
+        $entity = (new Entity('flags'))
+            ->setName($name ?? 'bitset');
 
-        $entity = (new Entity($isRef ? 'arrayReference' : 'array'))
-            ->setClass('array')
-            ->setLength(count($array))
-            ->setHash($hash);
+        $set = [];
 
-        if ($isRef) {
-            return $entity
-                ->setId($this->arrayRefs[$hash])
-                ->setObjectId($this->arrayIds[$hash]);
-        }
+        foreach ($options as $const) {
+            $value = constant($const);
 
-        if ($hash !== null) {
-            $this->arrayRefs[$hash] = $entity->getId();
-            $this->arrayIds[$hash] = $id = count($this->arrayIds) + 1;
-            $entity->setObjectId($id);
+            if (!is_int($value)) {
+                continue;
+            }
+
+            if (($flags & $value) === $value || ($flags === 0 && $value === 0)) {
+                $constEnt = $this->inspectConstant($const);
+
+                if ($flags === $value) {
+                    $set = [$constEnt];
+                    break;
+                }
+
+                $set[] = $constEnt;
+            }
         }
 
         $entity
-            ->setValues($this->inspectList($array));
+            ->setLength($flags)
+            ->setValues($set)
+            ->setShowKeys(false)
+            ->setOpen(false);
 
         return $entity;
     }
 
+
+    /**
+     * Inspect const by string
+     */
+    public function inspectConstant(string $const): Entity
+    {
+        $entity = (new Entity('const'))
+            ->setName($const)
+            ->setLength(constant($const));
+
+        return $entity;
+    }
+
+
+
+    protected $arrayIds = [];
+    protected $arrayObjectId = 0;
+    protected $arrayCookies = [];
+    protected $arrayCookieKey;
+
+    /**
+     * Convert array into Entity
+     */
+    public function inspectArray(array &$array): ?Entity
+    {
+        if (!isset($this->arrayCookieKey)) {
+            $this->arrayCookieKey = uniqid('__glitch_array_cookie_', true);
+        }
+
+        $empty = empty($array);
+
+        if (isset($array[$this->arrayCookieKey])) {
+            $isRef = true;
+            $id = $array[$this->arrayCookieKey];
+            [$hash, $objectId] = $this->arrayCookies[$id];
+        } else {
+            $isRef = false;
+            $hash = $objectId = null;
+            $id = str_replace('.', '-', uniqid('array-', true));
+
+            if (!$empty) {
+                $array[$this->arrayCookieKey] = false;
+                $hash = $this->hashArray($array);
+                $array[$this->arrayCookieKey] = $id;
+                $objectId = $this->arrayObjectId++;
+            }
+
+            $this->arrayCookies[$id] = [$hash, $objectId];
+        }
+
+        $entity = (new Entity($isRef ? 'arrayReference' : 'array'))
+            ->setClass('array')
+            ->setLength($empty ? 0 : count($array) - 1)
+            ->setHash($hash)
+            ->setId($id)
+            ->setObjectId($objectId);
+
+
+        if ($isRef) {
+            return $entity;
+        }
+
+
+        $values = [];
+
+        foreach ($array as $key => &$value) {
+            if ($key === $this->arrayCookieKey) {
+                continue;
+            }
+
+            $values[$key] = $this->inspectValue($value);
+        }
+
+        $entity->setValues($values);
+
+        return $entity;
+    }
 
 
     /**
@@ -476,7 +570,7 @@ class Inspector
 
         // Debug info
         } elseif (method_exists($object, '__debugInfo')) {
-            $entity->setValues($this->inspectList($object->__debugInfo()));
+            $entity->setValues($this->inspectList($info = $object->__debugInfo()));
             return;
         }
 
@@ -549,32 +643,6 @@ class Inspector
 
 
     /**
-     * Convert a scalar value to a string
-     */
-    public static function scalarToString($value): ?string
-    {
-        switch (true) {
-            case $value === null:
-                return 'null';
-
-            case is_bool($value):
-                return $value ? 'true' : 'false';
-
-            case is_int($value):
-            case is_float($value):
-                return (string)$value;
-
-            case is_string($value):
-                return '"'.$value.'"';
-
-            default:
-                return (string)$value;
-        }
-    }
-
-
-
-    /**
      * Dirty way to get a hash for an array
      */
     public static function hashArray(array $array): ?string
@@ -583,24 +651,12 @@ class Inspector
             return null;
         }
 
-        $array = self::smashArray($array);
+        $exp = print_r($array, true);
 
-        return md5(serialize($array));
-    }
-
-    /**
-     * Normalize values for serialize
-     */
-    public static function smashArray(array $array): array
-    {
-        foreach ($array as $key => $value) {
-            if (is_object($value)) {
-                $array[$key] = spl_object_id($value);
-            } elseif (is_array($value)) {
-                $array[$key] = self::smashArray($value);
-            }
+        if (false === strpos($exp, '*RECURSION*')) {
+            //$exp .= '#'.uniqid();
         }
 
-        return $array;
+        return md5($exp);
     }
 }
