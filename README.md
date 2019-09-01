@@ -1,12 +1,9 @@
 # Glitch
 ### Better exceptions for PHP.
 
-Glitch is a standalone PHP package designed to improve end-to-end error handling when developing your applications.
+Glitch is a standalone PHP package designed to improve end-to-end error handling and inspection when developing your applications.
 
-The initial release provides a radically enhanced Exception framework that decouples the _meaning_ of an Exception from the underlying _implementation_ functionality.
-
-Future releases will aim to also include a full suite of dump tools and exception handler interfaces to be used to inspect your code at run time during development.
-
+The initial release provides a radically enhanced Exception framework that decouples the _meaning_ of an Exception from the underlying _implementation_ functionality, alongside deep data inspection tools.
 
 ## Rationale
 PHP (and, as it happens, most modern languages) rely on a fairly rudimentary concept of Exceptions to handle errors at runtime. The principle is generally sound, however the implementation suffers from a handful of key flaws.
@@ -52,7 +49,7 @@ try {
 
 However interfaces alone cannot immediately infer where the problem originated as you still require a class to be defined for each context from which the Exception may be thrown.
 
-Also, this requires writing and loading **lot** of unneeded code to represent what are ultimately simple, static messages.
+Also, this requires writing and loading **lots** of boilerplate code to represent what are ultimately simple, static messages.
 
 
 ### Solution
@@ -160,6 +157,30 @@ try {
     );
 } catch(\EGlitch | \ENotFound | MyLibrary\EGlitch | MyLibrary\AThingThatDoesStuff\EBadMethodCall $e) {
     // All these types will catch
+}
+```
+
+
+### Traits
+
+Custom functionality can be mixed in to the generated Glitch by defining traits at the same level as any of the E* interfaces being generated.
+
+```php
+namespace MyLibrary;
+
+trait EBadThingTrait {
+
+    public function getCustomData(): ?string {
+        return $this->params['customData'] ?? null;
+    }
+}
+
+class Thing {
+    public function doAThing() {
+        throw \Glitch::EBadThing('A bad thing happened', [
+            'customData' => 'My custom info'
+        ]);
+    }
 }
 ```
 
