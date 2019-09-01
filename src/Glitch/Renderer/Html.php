@@ -742,6 +742,25 @@ class Html implements Renderer
         if (false !== strpos($function = $frame->getFunctionName(), '{closure}')) {
             $output[] = '<i class="fn closure">closure</i>';
         } else {
+            if (false !== strpos($function, ',')) {
+                $parts = explode(',', $function);
+                $parts = array_map('trim', $parts);
+                $function = [];
+                $fArgs = [];
+
+                $function[] = '<i class="br">{</i> ';
+
+                foreach ($parts as $part) {
+                    $fArgs[] = $this->renderString($part, 'identifier');
+                }
+
+                $function[] = implode(', ', $fArgs);
+                $function[] = ' <i class="br">}</i>';
+                $function = implode($function);
+            } else {
+                $function = $this->esc($function);
+            }
+
             $output[] = '<i class="fn">'.$function.'</i>';
         }
 

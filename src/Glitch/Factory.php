@@ -116,21 +116,31 @@ class Factory
     private static $instances = [];
 
     protected $type;
+    protected $message;
     protected $params = [];
 
-    protected $namespace;
+    protected $targetNamespace;
+    protected $namespaces = [];
 
     protected $interfaces = [];
     protected $traits = [];
 
-    protected $exceptionDef;
+
+    protected $interfaceIndex = [];
     protected $interfaceDefs = [];
+    protected $exceptionDef;
 
 
     /**
      * Generate a context specific, message oriented throwable error
      */
     public static function create(?string $type, array $interfaces=[], $message=null, ?array $params=[], $data=null): \EGlitch
+    {
+        return (new self($type, $interfaces, $message, $params, $data))->build();
+    }
+
+
+    protected function __construct(?string $type, array $interfaces=[], $message=null, ?array $params=[], $data=null)
     {
         if (is_array($message)) {
             $params = $message;
@@ -141,72 +151,42 @@ class Factory
             $message = 'Undefined error';
         }
 
-        if ($params === null) {
-            $params = [];
-        }
+        $this->type = $type;
+        $this->params = $params ?? [];
+        $this->message = $message;
 
         if ($data !== null) {
-            $params['data'] = $data;
+            $this->params['data'] = $data;
         }
 
-        return (new self($type, $params))
-            ->build($message, $interfaces);
-    }
-
-
-    protected function __construct(?string $type, array $params=[])
-    {
-        $this->type = $type;
-        $this->params = $params;
-    }
-
-
-
-    /**
-     * Build exception object
-     */
-    protected function build(string $message, array $interfaces): \EGlitch
-    {
         $this->params['rewind'] = $rewind = max((int)($this->params['rewind'] ?? 0), 0);
         $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $rewind + static::REWIND + 2);
         $key = $rewind + static::REWIND;
         $lastTrace = $trace[$key - 1];
 
         if (isset($this->params['namespace'])) {
-            $this->namespace = $this->params['namespace'];
+            $this->targetNamespace = $this->params['namespace'];
             unset($this->params['namespace']);
         } elseif (isset($trace[$key])) {
-            $this->namespace = $trace[$key]['class'] ?? null;
+            $this->targetNamespace = $trace[$key]['class'] ?? null;
 
-            if (!empty($this->namespace)) {
-                if (false !== strpos($this->namespace, 'class@anon')) {
-                    $this->namespace = null;
+            if (!empty($this->targetNamespace)) {
+                if (false !== strpos($this->targetNamespace, 'class@anon')) {
+                    $this->targetNamespace = null;
                 } else {
-                    $parts = explode('\\', $this->namespace);
+                    $parts = explode('\\', $this->targetNamespace);
                     $className = array_pop($parts);
-                    $this->namespace = implode('\\', $parts);
+                    $this->targetNamespace = implode('\\', $parts);
                 }
             }
         }
 
-        if (empty($this->namespace)) {
-            $this->namespace = null;
-        }
+        $this->targetNamespace = ltrim($this->targetNamespace, '\\');
 
-        $interfaces[] = '\\DecodeLabs\\Glitch\\Inspectable';
-
-        $this->buildDefinitions($interfaces);
-
-        foreach ($this->interfaceDefs as $interface => $def) {
-            if (!interface_exists('\\'.$interface)) {
-                eval($def);
-            }
-        }
-
-        $hash = md5($this->exceptionDef);
-
-        if (!isset(self::$instances[$hash])) {
-            self::$instances[$hash] = eval($this->exceptionDef);
+        if (empty($this->targetNamespace)) {
+            $this->targetNamespace = null;
+        } else {
+            $this->targetNamespace = '\\'.$this->targetNamespace;
         }
 
         if (!isset($this->params['file'])) {
@@ -217,92 +197,101 @@ class Factory
             $this->params['line'] = $lastTrace['line'] ?? null;
         }
 
-        return new self::$instances[$hash]($message, $this->params);
+        $this->interfaces['\\DecodeLabs\\Glitch\\Inspectable'] = true;
+        $this->traits['\\DecodeLabs\\Glitch\\TException'] = true;
+
+        $this->prepareInterfaces($interfaces);
     }
 
 
-    protected function buildDefinitions(array $interfaces): void
+    /**
+     * Prepare interface list
+     */
+    protected function prepareInterfaces(array $interfaces): void
     {
-        $namespaces = [];
-        $namespace = null;
-
-        if ($this->namespace !== null) {
-            $namespaces[] = ltrim($this->namespace, '\\');
-        }
-
-        $directType = null;
-        $this->traits[] = 'DecodeLabs\\Glitch\\TException';
-
-
-        // Create initial interface list
-        foreach ($interfaces as $i => $interface) {
-            $direct = false !== strpos($interface, '\\');
+        foreach ($interfaces as $interface) {
+            $interface = trim($interface);
 
             if (false !== strpos($interface, '/')) {
-                $interface = str_replace('/', '\\', ltrim($interface, '/'));
+                // Path style
+                $interface = str_replace('/', '\\', $interface);
+
+                if (substr($interface, 0, 1) == '.') {
+                    $interface = $this->targetNamespace.'\\'.$interface;
+                }
+
+                $interface = '\\'.ltrim($interface, '\\');
+
+                if (false !== strpos($interface, '.')) {
+                    $parts = [];
+
+                    foreach (explode('\\', $interface) as $part) {
+                        if ($part == '.') {
+                            continue;
+                        } elseif ($part == '..') {
+                            array_pop($parts);
+                        } else {
+                            $parts[] = $part;
+                        }
+                    }
+
+                    $interface = implode('\\', $parts);
+                }
+            } else {
+                // Namespace style
+                if (substr($interface, 0, 1) !== '\\') {
+                    $interface = $this->targetNamespace.'\\'.$interface;
+                }
             }
 
-            $interface = ltrim($interface, '\\');
-
-            if ($namespace !== null && false === strpos($interface, '\\')) {
-                $interface = $namespace.'\\'.$interface;
-            }
-
-            if (null !== ($ns = $this->listInterface($interface, $direct))) {
-                $namespaces[] = $ns;
-            }
+            $this->interfaces[$interface] = true;
         }
-
-
-        // Create inheritance trees
-        foreach (array_unique($namespaces) as $namespace) {
-            $this->extractNamespaceInterfaces($namespace);
-        }
-
-
-        // Sort inheritance list
-        foreach ($this->interfaces as $interface => $info) {
-            if (!empty($info)) {
-                $this->defineInterface($interface, $info);
-            }
-        }
-
-        // Ensure defaults
-        if ($this->type === null) {
-            $this->type = \Exception::class;
-        }
-
-
-        if (empty($this->interfaces)) {
-            $this->interfaces['\\EGlitch'] = [];
-        }
-
-
-        // Build class def
-        $this->exceptionDef = 'return new class(\'\') extends '.$this->type;
-
-        if (!empty($this->interfaces)) {
-            $this->exceptionDef .= ' implements '.implode(',', array_keys($this->interfaces));
-        }
-
-        $this->exceptionDef .= ' {';
-
-        foreach (array_unique($this->traits) as $trait) {
-            $this->exceptionDef .= 'use '.$trait.';';
-        }
-
-        $this->exceptionDef .= '};';
     }
 
 
 
     /**
+     * Build exception object
+     */
+    protected function build(): \EGlitch
+    {
+        $this->indexInterfaces();
+        //dd($this);
+
+        $this->buildDefinitions();
+        $hash = $this->compileDefinitions();
+        return new self::$instances[$hash]($this->message, $this->params);
+    }
+
+
+    /**
+     * Extract namespaces from selected interface list
+     */
+    protected function indexInterfaces(): void
+    {
+        if ($this->targetNamespace !== null) {
+            $this->namespaces[$this->targetNamespace] = true;
+        }
+
+        foreach ($this->interfaces as $interface => $enabled) {
+            if (null !== ($ns = $this->indexInterface($interface))) {
+                $this->namespaces[$ns] = true;
+            }
+        }
+
+        foreach ($this->namespaces as $namespace => $enabled) {
+            $this->indexNamespaceInterfaces($namespace);
+        }
+    }
+
+
+    /**
      * Add interface info to class extend list
      */
-    protected function listInterface(string $interface, bool $direct=false): ?string
+    protected function indexInterface(string $interface): ?string
     {
-        if ($direct) {
-            $this->interfaces[$interface] = [];
+        if (interface_exists($interface)) {
+            $this->interfaceIndex[$interface] = [];
             return null;
         }
 
@@ -320,13 +309,13 @@ class Factory
             $standard = static::STANDARD[$name];
 
             if (isset($standard['extend'])) {
-                $standard['extend'] = [$standard['extend']];
+                $standard['extend'] = ['\\'.$standard['extend'] => true];
             }
 
-            $this->interfaces[$interface] = $standard;
+            $this->interfaceIndex[$interface] = $standard;
 
             if (count($parts) > 1) {
-                $this->interfaces[$name] = $standard;
+                $this->interfaceIndex[$name] = $standard;
             }
 
             if ($this->type === null && isset($standard['type'])) {
@@ -336,8 +325,8 @@ class Factory
             if (!isset($this->params['http']) && isset($standard['http'])) {
                 $this->params['http'] = $standard['http'];
             }
-        } elseif (!isset($this->interfaces[$interface])) {
-            $this->interfaces[$interface] = [];
+        } elseif (!isset($this->interfaceIndex[$interface])) {
+            $this->interfaceIndex[$interface] = [];
         }
 
         if ($name === 'EGlitch') {
@@ -346,8 +335,8 @@ class Factory
 
         $extend = implode('\\', $parts).'\\EGlitch';
 
-        if (empty($this->interfaces[$interface]['extend'] ?? null) || $extend !== '\\EGlitch') {
-            $this->interfaces[$interface]['extend'][] = $extend;
+        if (empty($this->interfaceIndex[$interface]['extend'] ?? null) || $extend !== '\\EGlitch') {
+            $this->interfaceIndex[$interface]['extend'][$extend] = true;
         }
 
         return $output;
@@ -355,12 +344,52 @@ class Factory
 
 
     /**
+     * Build interface definitions
+     */
+    protected function buildDefinitions(): void
+    {
+        // Create definitions for needed interfaces
+        foreach ($this->interfaceIndex as $interface => $info) {
+            if (!empty($info)) {
+                $this->defineInterface($interface, $info);
+            }
+        }
+
+        // Ensure defaults
+        if ($this->type === null) {
+            $this->type = \Exception::class;
+        }
+
+
+        if (empty($this->interfaceIndex)) {
+            $this->interfaceIndex['\\EGlitch'] = [];
+        }
+
+
+        // Build class def
+        $this->exceptionDef = 'return new class(\'\') extends '.$this->type;
+
+        if (!empty($this->interfaceIndex)) {
+            $this->exceptionDef .= ' implements '.implode(',', array_keys($this->interfaceIndex));
+        }
+
+        $this->exceptionDef .= ' {';
+
+        foreach ($this->traits as $trait => $enabled) {
+            $this->exceptionDef .= 'use '.$trait.';';
+        }
+
+        $this->exceptionDef .= '};';
+    }
+
+
+
+    /**
      * Create an interface tree back down to Df ns root
      */
-    protected function extractNamespaceInterfaces(string $namespace): void
+    protected function indexNamespaceInterfaces(string $namespace): void
     {
         $parts = explode('\\', $namespace);
-        $parts = array_slice($parts, 0, 4);
         $parent = null;
 
         foreach ($parts as $part) {
@@ -372,7 +401,7 @@ class Factory
 
             $interface = $ins.'\\EGlitch';
 
-            $this->listInterface($interface);
+            $this->indexInterface($interface);
             $parent = $ins;
         }
     }
@@ -392,20 +421,20 @@ class Factory
         if (isset($info['extend'])) {
             $parent = [];
 
-            foreach ($info['extend'] as $extend) {
+            foreach ($info['extend'] as $extend => $enabled) {
                 $parent[] = '\\'.ltrim($extend, '\\');
                 $parts = explode('\\', $extend);
                 $name = array_pop($parts);
 
-                if (isset($this->interfaces[$extend])) {
-                    $inner = $this->interfaces[$extend];
-                    unset($this->interfaces[$extend]);
+                if (isset($this->interfaceIndex[$extend])) {
+                    $inner = $this->interfaceIndex[$extend];
+                    unset($this->interfaceIndex[$extend]);
                     $this->defineInterface($extend, $inner);
                 } elseif (isset(static::STANDARD[$name])) {
                     $standard = static::STANDARD[$name];
 
                     if (isset($standard['extend'])) {
-                        $standard['extend'] = ['\\'.$standard['extend']];
+                        $standard['extend'] = ['\\'.$standard['extend'] => true];
                     }
 
                     if ($this->type === null && isset($standard['type'])) {
@@ -421,12 +450,30 @@ class Factory
 
         $parts = explode('\\', $interface);
         $name = array_pop($parts);
-        $traitName = implode('\\', $parts).'\\T'.substr($name, 1);
+        $traitName = implode('\\', $parts).'\\'.$name.'Trait';
+        array_shift($parts);
 
         if (trait_exists($traitName, true)) {
-            $this->traits[] = $traitName;
+            $this->traits[$traitName] = true;
         }
 
         $this->interfaceDefs[$interface] = 'namespace '.implode($parts, '\\').' {interface '.$name.' extends '.$parent.' {}}';
+    }
+
+
+    /**
+     * Compile definitions using eval()
+     */
+    protected function compileDefinitions(): string
+    {
+        $defs = implode("\n", $this->interfaceDefs);
+        eval($defs);
+        $hash = md5($this->exceptionDef);
+
+        if (!isset(self::$instances[$hash])) {
+            self::$instances[$hash] = eval($this->exceptionDef);
+        }
+
+        return $hash;
     }
 }

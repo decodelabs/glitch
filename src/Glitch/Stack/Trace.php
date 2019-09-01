@@ -26,18 +26,20 @@ class Trace implements \IteratorAggregate, \Countable, Inspectable
     {
         $output = self::fromArray($e->getTrace(), $rewind);
 
-        array_unshift($output->frames, new Frame([
-            'fromFile' => $e->getFile(),
-            'fromLine' => $e->getLine(),
-            'function' => '__construct',
-            'class' => get_class($e),
-            'type' => '->',
-            'args' => [
-                $e->getMessage(),
-                $e->getCode(),
-                $e->getPrevious()
-            ]
-        ]));
+        if (!$e instanceof \EGlitch) {
+            array_unshift($output->frames, new Frame([
+                'fromFile' => $e->getFile(),
+                'fromLine' => $e->getLine(),
+                'function' => '__construct',
+                'class' => get_class($e),
+                'type' => '->',
+                'args' => [
+                    $e->getMessage(),
+                    $e->getCode(),
+                    $e->getPrevious()
+                ]
+            ]));
+        }
 
         return $output;
     }
