@@ -8,9 +8,32 @@ namespace DecodeLabs\Glitch\Dumper\Inspect;
 
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
+use DecodeLabs\Glitch\Stack\Trace;
 
 class Core
 {
+    /**
+     * Inspect generic exception
+     */
+    public static function inspectException(\Throwable $exception, Entity $entity, Inspector $inspector): void
+    {
+        $entity
+            ->setText($exception->getMessage())
+            ->setProperty('*code', $inspector($exception->getCode()))
+            ->setProperty('!previous', $inspector($exception->getPrevious(), function ($entity) {
+                $entity->setOpen(false);
+            }))
+            ->setFile($exception->getFile())
+            ->setStartLine($exception->getLine())
+            ->setStackTrace(Trace::fromException($exception));
+
+        $reflection = new \ReflectionObject($exception);
+        $inspector->inspectClassMembers($exception, $reflection, $entity, [
+            'code', 'previous', 'message', 'file', 'line', 'trace'
+        ]);
+    }
+
+
     /**
      * Inspect Closure
      */
@@ -53,6 +76,6 @@ class Core
         $vars = (array)$class;
         $entity->setDefinition($vars['__PHP_Incomplete_Class_Name']);
         unset($vars['__PHP_Incomplete_Class_Name']);
-        $entity->setValues($inspector->inspectValues($vars));
+        $entity->setValues($inspector->inspectList($vars));
     }
 }

@@ -17,7 +17,6 @@ class Dump implements \IteratorAggregate
     protected $entities = [];
 
     protected $trace;
-    protected $traceEntity;
 
     /**
      * Construct with stack trace of invoking call
@@ -99,24 +98,6 @@ class Dump implements \IteratorAggregate
     public function getEntities(): array
     {
         return $this->entities;
-    }
-
-
-    /**
-     * Set trace entity
-     */
-    public function setTraceEntity(Entity $entity): Dump
-    {
-        $this->traceEntity = $entity;
-        return $this;
-    }
-
-    /**
-     * Get trace entity
-     */
-    public function getTraceEntity(): ?Entity
-    {
-        return $this->traceEntity;
     }
 
 

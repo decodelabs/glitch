@@ -11,6 +11,7 @@ use DecodeLabs\Glitch\Stack\Trace;
 
 use DecodeLabs\Glitch\Inspectable;
 use DecodeLabs\Glitch\Dumper\Entity;
+use DecodeLabs\Glitch\Dumper\Inspector;
 
 /**
  * Main root exception inheritance
@@ -150,13 +151,16 @@ trait TException
     /**
      * Inspect for Glitch
      */
-    public function glitchInspect(Entity $entity, callable $inspector): void
+    public function glitchInspect(Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setText($this->message)
             ->setProperty('*code', $inspector($this->code))
             ->setProperty('*http', $inspector($this->http))
-            ->setValues($inspector($this->data))
+            ->setProperty('*data', $inspector($this->data))
+            ->setProperty('!previous', $inspector($this->getPrevious(), function ($entity) {
+                $entity->setOpen(false);
+            }))
             ->setFile($this->file)
             ->setStartLine($this->line)
             ->setStackTrace($this->getStackTrace());

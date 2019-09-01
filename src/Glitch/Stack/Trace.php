@@ -10,6 +10,7 @@ use DecodeLabs\Glitch\Context;
 
 use DecodeLabs\Glitch\Inspectable;
 use DecodeLabs\Glitch\Dumper\Entity;
+use DecodeLabs\Glitch\Dumper\Inspector;
 
 /**
  * Represents a normalized stack trace
@@ -23,7 +24,24 @@ class Trace implements \IteratorAggregate, \Countable, Inspectable
      */
     public static function fromException(\Throwable $e, int $rewind=0): self
     {
-        return self::fromArray($e->getTrace(), $rewind);
+        $output = self::fromArray($e->getTrace(), $rewind);
+
+        if (!$e instanceof \EGlitch) {
+            array_unshift($output->frames, new Frame([
+                'fromFile' => $e->getFile(),
+                'fromLine' => $e->getLine(),
+                'function' => '__construct',
+                'class' => get_class($e),
+                'type' => '->',
+                'args' => [
+                    $e->getMessage(),
+                    $e->getCode(),
+                    $e->getPrevious()
+                ]
+            ]));
+        }
+
+        return $output;
     }
 
     /**
@@ -192,7 +210,7 @@ class Trace implements \IteratorAggregate, \Countable, Inspectable
     /**
      * Inspect for Glitch
      */
-    public function glitchInspect(Entity $entity, callable $inspector): void
+    public function glitchInspect(Entity $entity, Inspector $inspector): void
     {
         $entity->setStackTrace($this);
     }

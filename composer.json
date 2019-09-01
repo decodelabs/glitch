@@ -18,9 +18,11 @@
     },
     "autoload": {
         "psr-4": {
-            "": "src/"
+            "DecodeLabs\\Glitch\\": "src/Glitch"
         },
         "files": [
+            "src/EGlitch.php",
+            "src/Glitch.php",
             "src/helpers.php"
         ]
     }

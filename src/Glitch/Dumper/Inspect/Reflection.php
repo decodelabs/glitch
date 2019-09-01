@@ -43,7 +43,7 @@ class Reflection
      */
     public static function inspectReflectionZendExtension(\ReflectionZendExtension $reflection, Entity $entity, Inspector $inspector): void
     {
-        $entity->setProperties($inspector->inspectValues([
+        $entity->setProperties($inspector->inspectList([
             'version' => $reflection->getVersion(),
             'author' => $reflection->getAuthor(),
             'copyright' => $reflection->getCopyright(),
@@ -56,7 +56,7 @@ class Reflection
      */
     public static function inspectReflectionExtension(\ReflectionExtension $reflection, Entity $entity, Inspector $inspector): void
     {
-        $entity->setProperties($inspector->inspectValues([
+        $entity->setProperties($inspector->inspectList([
             'version' => $reflection->getVersion(),
             'dependencies' => $reflection->getDependencies(),
             'iniEntries' => $reflection->getIniEntries(),

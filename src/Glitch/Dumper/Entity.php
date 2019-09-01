@@ -370,6 +370,27 @@ class Entity
         return $this->meta;
     }
 
+    /**
+     * Has meta value
+     */
+    public function hasMeta(string $key): bool
+    {
+        if ($this->meta === null) {
+            return false;
+        }
+        
+        return array_key_exists($key, $this->meta);
+    }
+
+    /**
+     * Remove meta value
+     */
+    public function removeMeta(string $key): Entity
+    {
+        unset($this->meta[$key]);
+        return $this;
+    }
+
 
 
     /**
@@ -464,6 +485,15 @@ class Entity
         }
 
         return array_key_exists($key, $this->properties);
+    }
+
+    /**
+     * Remove property
+     */
+    public function removeProperty(string $key): Entity
+    {
+        unset($this->properties[$key]);
+        return $this;
     }
 
 

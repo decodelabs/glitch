@@ -16,9 +16,16 @@ class Inspector
 {
     const OBJECTS = [
         // Core
+        'Exception' => [Inspect\Core::class, 'inspectException'],
         'Closure' => [Inspect\Core::class, 'inspectClosure'],
         'Generator' => [Inspect\Core::class, 'inspectGenerator'],
         '__PHP_Incomplete_Class' => [Inspect\Core::class, 'inspectIncompleteClass'],
+
+        // Date
+        'DateTime' => [Inspect\Date::class, 'inspectDateTime'],
+        'DateInterval' => [Inspect\Date::class, 'inspectDateInterval'],
+        'DateTimeZone' => [Inspect\Date::class, 'inspectDateTimeZone'],
+        'DatePeriod' => [Inspect\Date::class, 'inspectDatePeriod'],
 
         // Reflection
         'ReflectionClass' => [Inspect\Reflection::class, 'inspectReflectionClass'],
@@ -32,6 +39,18 @@ class Inspector
         'ReflectionProperty' => [Inspect\Reflection::class, 'inspectReflectionProperty'],
         'ReflectionType' => [Inspect\Reflection::class, 'inspectReflectionType'],
         'ReflectionGenerator' => [Inspect\Reflection::class, 'inspectReflectionGenerator'],
+
+        // Spl
+        'ArrayObject' => [Inspect\Spl::class, 'inspectArrayObject'],
+        'ArrayIterator' => [Inspect\Spl::class, 'inspectArrayIterator'],
+        'SplDoublyLinkedList' => [Inspect\Spl::class, 'inspectSplDoublyLinkedList'],
+        'SplHeap' => [Inspect\Spl::class, 'inspectSplHeap'],
+        'SplPriorityQueue' => [Inspect\Spl::class, 'inspectSplPriorityQueue'],
+        'SplFixedArray' => [Inspect\Spl::class, 'inspectSplFixedArray'],
+        'SplObjectStorage' => [Inspect\Spl::class, 'inspectSplObjectStorage'],
+
+        'SplFileInfo' => [Inspect\Spl::class, 'inspectSplFileInfo'],
+        'SplFileObject' => [Inspect\Spl::class, 'inspectSplFileObject'],
     ];
 
     const RESOURCES = [
@@ -171,9 +190,13 @@ class Inspector
     protected $objectInspectors = [];
     protected $resourceInspectors = [];
 
+    protected $objectIds = [];
     protected $objectRefs = [];
-    protected $arrayRefs = [];
+
     protected $arrayIds = [];
+    protected $arrayObjectId = 0;
+    protected $arrayCookies = [];
+    protected $arrayCookieKey;
 
 
     /**
@@ -204,6 +227,35 @@ class Inspector
 
 
     /**
+     * Reset all references
+     */
+    public function reset(): Inspector
+    {
+        $this->objectIds = [];
+        $this->objectRefs = [];
+
+        $this->arrayIds = [];
+        $this->arrayObjectId = 0;
+        $this->arrayCookies = [];
+        $this->arrayCookieKey = null;
+        
+        return $this;
+    }
+
+
+    /**
+     * Invoke wrapper
+     */
+    public function __invoke($value, callable $entityCallback=null, bool $asList=false)
+    {
+        if ($asList) {
+            return $this->inspectList((array)$value, $entityCallback);
+        } else {
+            return $this->inspect($value, $entityCallback);
+        }
+    }
+
+    /**
      * Inspect and report
      */
     public function inspect($value, callable $entityCallback=null)
@@ -218,18 +270,25 @@ class Inspector
     }
 
     /**
-     * Invoke wrapper
+     * Inspect values list
      */
-    public function __invoke($value, callable $entityCallback=null)
+    public function inspectList(array $values, callable $entityCallback=null): array
     {
-        return $this->inspect($value, $entityCallback);
+        $output = [];
+
+        foreach ($values as $key => $value) {
+            $output[$key] = $this->inspect($value, $entityCallback);
+        }
+
+        return $output;
     }
+
 
 
     /**
      * Inspect single value
      */
-    public function inspectValue($value)
+    public function inspectValue(&$value)
     {
         switch (true) {
             case $value === null:
@@ -259,19 +318,6 @@ class Inspector
         }
     }
 
-    /**
-     * Inspect values list
-     */
-    public function inspectValues(array $values): array
-    {
-        $output = [];
-
-        foreach ($values as $key => $value) {
-            $output[$key] = $this->inspectValue($value);
-        }
-
-        return $output;
-    }
 
 
     /**
@@ -330,32 +376,52 @@ class Inspector
 
 
     /**
-     * Convert array into Entity
+     * Create flag list
      */
-    public function inspectArray(array $array): ?Entity
+    public function inspectFlagSet(?int $flags, array $options): Entity
     {
-        $hash = $this->hashArray($array);
-        $isRef = $hash !== null && isset($this->arrayRefs[$hash]);
+        $entity = (new Entity('flags'))
+            ->setName($name ?? 'bitset');
 
-        $entity = (new Entity($isRef ? 'arrayReference' : 'array'))
-            ->setClass('array')
-            ->setLength(count($array))
-            ->setHash($hash);
+        $set = [];
 
-        if ($isRef) {
-            return $entity
-                ->setId($this->arrayRefs[$hash])
-                ->setObjectId($this->arrayIds[$hash]);
-        }
+        foreach ($options as $const) {
+            $value = constant($const);
 
-        if ($hash !== null) {
-            $this->arrayRefs[$hash] = $entity->getId();
-            $this->arrayIds[$hash] = $id = count($this->arrayIds) + 1;
-            $entity->setObjectId($id);
+            if (!is_int($value)) {
+                continue;
+            }
+
+            if (($flags & $value) === $value || ($flags === 0 && $value === 0)) {
+                $constEnt = $this->inspectConstant($const);
+
+                if ($flags === $value) {
+                    $set = [$constEnt];
+                    break;
+                }
+
+                $set[] = $constEnt;
+            }
         }
 
         $entity
-            ->setValues($this->inspectValues($array));
+            ->setLength($flags)
+            ->setValues($set)
+            ->setShowKeys(false)
+            ->setOpen(false);
+
+        return $entity;
+    }
+
+
+    /**
+     * Inspect const by string
+     */
+    public function inspectConstant(string $const): Entity
+    {
+        $entity = (new Entity('const'))
+            ->setName($const)
+            ->setLength(constant($const));
 
         return $entity;
     }
@@ -363,27 +429,80 @@ class Inspector
 
 
     /**
+     * Convert array into Entity
+     */
+    public function inspectArray(array &$array): ?Entity
+    {
+        if (!isset($this->arrayCookieKey)) {
+            $this->arrayCookieKey = uniqid('__glitch_array_cookie_', true);
+        }
+
+        $empty = empty($array);
+
+        if (isset($array[$this->arrayCookieKey])) {
+            $isRef = true;
+            $id = $array[$this->arrayCookieKey];
+            [$hash, $objectId] = $this->arrayCookies[$id];
+        } else {
+            $isRef = false;
+            $hash = $objectId = null;
+            $id = str_replace('.', '-', uniqid('array-', true));
+
+            if (!$empty) {
+                $array[$this->arrayCookieKey] = false;
+                $hash = $this->hashArray($array);
+                $array[$this->arrayCookieKey] = $id;
+                $objectId = $this->arrayObjectId++;
+            }
+
+            $this->arrayCookies[$id] = [$hash, $objectId];
+        }
+
+        $entity = (new Entity($isRef ? 'arrayReference' : 'array'))
+            ->setClass('array')
+            ->setLength($empty ? 0 : count($array) - 1)
+            ->setHash($hash)
+            ->setId($id)
+            ->setObjectId($objectId);
+
+
+        if ($isRef) {
+            return $entity;
+        }
+
+
+        $values = [];
+
+        foreach ($array as $key => &$value) {
+            if ($key === $this->arrayCookieKey) {
+                continue;
+            }
+
+            $values[$key] = $this->inspectValue($value);
+        }
+
+        $entity->setValues($values);
+
+        return $entity;
+    }
+
+
+    /**
      * Convert object into Entity
      */
     public function inspectObject(object $object): ?Entity
     {
-        $id = spl_object_id($object);
+        $objectId = spl_object_id($object);
         $reflection = new \ReflectionObject($object);
         $className = $reflection->getName();
-        $isRef = isset($this->objectRefs[$id]);
+        $isRef = isset($this->objectIds[$objectId]);
 
         $entity = (new Entity($isRef ? 'objectReference' : 'object'))
             ->setName($this->normalizeClassName($reflection->getShortName(), $reflection))
             ->setClass($className)
-            ->setObjectId($id)
+            ->setObjectId($objectId)
             ->setHash(spl_object_hash($object));
 
-        if ($isRef) {
-            $entity->setId($this->objectRefs[$id]);
-            return $entity;
-        }
-
-        $this->objectRefs[$id] = $entity->getId();
 
         if (!$reflection->isInternal()) {
             $entity
@@ -393,6 +512,14 @@ class Inspector
         }
 
         $parents = $this->inspectObjectParents($reflection, $entity);
+
+        if ($isRef) {
+            $entity->setId($this->objectIds[$objectId]);
+            return $entity;
+        } else {
+            $this->objectRefs[$objectId] = $object;
+            $this->objectIds[$objectId] = $entity->getId();
+        }
 
         $reflections = [
             $className => $reflection
@@ -407,7 +534,9 @@ class Inspector
      */
     protected function normalizeClassName(string $class, \ReflectionObject $reflection): string
     {
-        if (0 === strpos($class, "class@anonymous\x00")) {
+        if (false !== strpos($class, 'Glitch/Factory.php')) {
+            $class = 'EGlitch';
+        } elseif (0 === strpos($class, "class@anonymous\x00")) {
             $class = $reflection->getParentClass()->getShortName().'@anonymous';
         }
 
@@ -466,20 +595,22 @@ class Inspector
 
         // Debug info
         } elseif (method_exists($object, '__debugInfo')) {
-            $entity->setValues($this->inspectValues($object->__debugInfo()));
+            $entity->setValues($this->inspectList($info = $object->__debugInfo()));
             return;
         }
 
 
-        // Members
+        // Parent object inspectors
         foreach (array_reverse($reflections) as $className => $reflection) {
-            // Parent object inspectors
             if (isset($this->objectInspectors[$className])) {
                 call_user_func($this->objectInspectors[$className], $object, $entity, $this);
-                continue;
+                return;
             }
+        }
 
-            // Reflection
+
+        // Reflection members
+        foreach (array_reverse($reflections) as $className => $reflection) {
             $this->inspectClassMembers($object, $reflection, $entity);
         }
     }
@@ -487,7 +618,7 @@ class Inspector
     /**
      * Inspect class members
      */
-    protected function inspectClassMembers(object $object, \ReflectionClass $reflection, Entity $entity): void
+    public function inspectClassMembers(object $object, \ReflectionClass $reflection, Entity $entity, array $blackList=[], bool $asMeta=false): void
     {
         foreach ($reflection->getProperties() as $property) {
             if ($property->isStatic()) {
@@ -496,6 +627,11 @@ class Inspector
 
             $property->setAccessible(true);
             $name = $property->getName();
+
+            if (in_array($name, $blackList)) {
+                continue;
+            }
+
             $prefix = null;
             $open = false;
 
@@ -513,9 +649,13 @@ class Inspector
                     break;
             }
 
-            $name = $prefix.$name;
+            if (!$asMeta) {
+                $name = $prefix.$name;
+            }
 
-            if ($entity->hasProperty($name)) {
+            if ($asMeta && $entity->hasMeta($name)) {
+                continue;
+            } elseif ($entity->hasProperty($name)) {
                 continue;
             }
 
@@ -526,35 +666,13 @@ class Inspector
                 $propValue->setOpen($open);
             }
 
-            $entity->setProperty($name, $propValue);
+            if ($asMeta) {
+                $entity->setMeta($name, $propValue);
+            } else {
+                $entity->setProperty($name, $propValue);
+            }
         }
     }
-
-
-    /**
-     * Convert a scalar value to a string
-     */
-    public static function scalarToString($value): ?string
-    {
-        switch (true) {
-            case $value === null:
-                return 'null';
-
-            case is_bool($value):
-                return $value ? 'true' : 'false';
-
-            case is_int($value):
-            case is_float($value):
-                return (string)$value;
-
-            case is_string($value):
-                return '"'.$value.'"';
-
-            default:
-                return (string)$value;
-        }
-    }
-
 
 
     /**
@@ -566,24 +684,12 @@ class Inspector
             return null;
         }
 
-        $array = self::smashArray($array);
+        $exp = print_r($array, true);
 
-        return md5(serialize($array));
-    }
-
-    /**
-     * Normalize values for serialize
-     */
-    public static function smashArray(array $array): array
-    {
-        foreach ($array as $key => $value) {
-            if (is_object($value)) {
-                $array[$key] = spl_object_id($value);
-            } elseif (is_array($value)) {
-                $array[$key] = self::smashArray($value);
-            }
+        if (false === strpos($exp, '*RECURSION*')) {
+            //$exp .= '#'.uniqid();
         }
 
-        return $array;
+        return md5($exp);
     }
 }

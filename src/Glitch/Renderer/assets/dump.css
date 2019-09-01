@@ -50,17 +50,9 @@ samp.dump.trace {
     font-style: italic;
     font-weight: 600;
 }
-.int {
+.int, .float {
     color: var(--indigo);
-}
-.float {
-    color: var(--indigo);
-}
-.float:before {
-    content: 'f';
-    color: var(--gray);
-    opacity: 0.5;
-    margin-right: 0.2em;
+    font-weight: 600;
 }
 
 /* STRING */
@@ -135,6 +127,13 @@ samp.dump.trace {
     display: none;
 }
 
+.string span.control {
+    color: var(--orange);
+    opacity: 0.65;
+}
+
+
+
 
 .pointer {
     color: var(--gray);
@@ -168,15 +167,34 @@ samp.dump.trace {
     opacity: 0.5;
     margin-right: 0.2em;
 }
+.entity.title.type-stack .name {
+    color: var(--gray) !important;
+}
+.entity.title.type-flags .name {
+    color: var(--purple) !important;
+}
+.entity.title.type-const .name {
+    cursor: default;
+}
+
+
+.entity:target > .name {
+    background: var(--green);
+    color: white !important;
+    border-radius: 0.3em;
+    padding: 0 0.3em;
+    margin: 0 0.4em 0 -0.3em;
+}
+
 .entity.title .length {
-    cursor: pointer;
     color: var(--teal);
-    margin-left: -0.5em;
+    margin-left: -0.25em;
 }
 .entity.title .length:before {
     content: ':';
     color: var(--gray);
     opacity: 0.5;
+    margin-right: 0.25em;
 }
 .popup {
     position: absolute;
@@ -217,6 +235,7 @@ div.info div + h6 {
 div.inner {
     padding: 0 0 0 2rem;
     display: block;
+    position: relative;
 }
 
 div.inner > .inner {
@@ -270,16 +289,11 @@ ul.list > li > .identifier.key:before {
     content: 'ⓟ';
     color: var(--green);
     opacity: 1;
-    /*
-    position: absolute;
-    display: block;
-    margin-left: -1.5em;
-    */
 
     display: none;
     position: relative;
     margin-top: 0.3em;
-    margin-right: 0.6em;
+    margin-right: 0.75em;
     font-size: 0.8em;
 }
 
@@ -334,9 +348,24 @@ ul.list.properties > li > .identifier.key.public:before {
     display: inline;
 }
 ul.list.properties > li > .identifier.key.virtual:before {
-    content: 'ⓥ';
+    content: 'ⓧ';
     color: var(--purple);
     display: inline;
+}
+
+ul.list.values > li:before {
+    content: 'ⓥ';
+    color: var(--yellow);
+    position: relative;
+    margin-top: 0.3em;
+    font-size: 0.8em;
+    display: inline;
+    opacity: 0.75;
+}
+
+.entity.title.type-flags ~ .body > .inner > .values > ul.list.values > li:before {
+    content: 'ⓒ';
+    color: var(--purple);
 }
 
 
@@ -357,10 +386,9 @@ ul.stack li span.signature:after {
     white-space: pre;
 }
 ul.stack li span.file {
-    color: var(--green);
+    color: var(--orange);
     opacity: 0.75;
-    margin-left: 2rem;
-    filter: grayscale(0.75);
+    margin-left: 2.5em;
 }
 ul.stack li span.file:after {
     content: ' :';
@@ -371,9 +399,32 @@ ul.stack li span.line {
     color: var(--pink);
 }
 
+.inner > div.stack {
+}
+.inner:not(.type-stack) > div.stack:before {
+    content: 'ⓢ';
+    color: var(--dark);
+    opacity: 0.5;
+    position: relative;
+    margin-top: 0.3em;
+    font-size: 0.8em;
+}
+.inner.stack > div.stack:before {
+    display: none;
+}
+
 .inner > div.text {
     color: var(--red);
 }
+.inner > div.text:before {
+    content: 'ⓣ';
+    color: var(--gray);
+    opacity: 0.5;
+    position: relative;
+    margin-top: 0.3em;
+    font-size: 0.8em;
+}
+
 .inner > div.text.binary > i {
     margin-right: 0.5em;
     color: var(--indigo);
@@ -408,4 +459,64 @@ a.name.collapsed ~ a.badge.body {
 }
 a.name.collapsed ~ a.badge.body.values {
     opacity: 0.3;
+}
+
+
+
+/* Stack sig */
+span.signature i {
+    font-style: normal;
+}
+span.signature i.ns {
+    color: var(--cyan);
+    filter: brightness(0.65);
+    opacity: 0.75;
+}
+span.signature i.cl {
+    color: var(--cyan);
+    filter: brightness(0.5);
+}
+span.signature i.ty {
+    color: var(--gray);
+    opacity: 0.6;
+}
+span.signature i.fn {
+    color: var(--blue);
+    filter: brightness(0.75);
+    font-weight: bold;
+}
+span.signature i.fn.closure {
+    font-style: italic;
+}
+span.signature i.fn.closure:before {
+    content: '{';
+}
+span.signature i.fn.closure:after {
+    content: '}';
+}
+span.signature i.fn.closure:before,
+span.signature i.fn.closure:after {
+    color: var(--gray);
+    opacity: 0.4;
+}
+span.signature i.br {
+    color: var(--gray);
+    opacity: 0.75;
+    font-style: normal;
+}
+span.signature span.ar {
+    color: var(--cyan);
+    font-style: italic;
+}
+span.signature span.ar i.br:first-child:after {
+    content: '…';
+    color: var(--gray);
+    opacity: 0.7;
+}
+span.signature i.ob {
+    color: var(--cyan);
+}
+span.signature i.co {
+    color: var(--purple);
+    font-weight: bold;
 }

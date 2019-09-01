@@ -5,7 +5,6 @@
  */
 declare(strict_types=1);
 
-
 /**
  * global helpers
  */
@@ -56,7 +55,7 @@ namespace
                     $args = func_get_args();
                 }
 
-                Context::getDefault()->dump($args, 2);
+                Context::getDefault()->dump($args, 3);
             } else {
                 $skip--;
                 return;

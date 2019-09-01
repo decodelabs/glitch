@@ -11,7 +11,7 @@ use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Dumper\Inspector;
 use DecodeLabs\Glitch\Dumper\Dump;
 
-use DecodeLabs\Glitch\Dumper\Renderer;
+use DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Glitch\Transport;
 
 use Composer\Autoload\ClassLoader;
@@ -120,14 +120,12 @@ class Context
     }
 
 
-
-
     /**
      * Send variables to dump, carry on execution
      */
-    public function dump(array $values, int $rewind=null): void
+    public function dump(array $values, int $rewind=0): void
     {
-        $trace = Trace::create($rewind + 1);
+        $trace = Trace::create($rewind - 1);
         $inspector = new Inspector($this);
         $dump = new Dump($trace);
 
@@ -136,21 +134,20 @@ class Context
         }
 
         foreach ($values as $value) {
-            $dump->addEntity($inspector($value));
+            $dump->addEntity($inspector->inspectValue($value));
         }
 
-        $dump->setTraceEntity($inspector($trace, function ($entity) {
-            $entity->setOpen(false);
-        }));
+        $inspector->reset();
+        unset($inspector);
 
-        $packet = $this->getDumpRenderer()->render($dump, true);
+        $packet = $this->getRenderer()->renderDump($dump, true);
         $this->getTransport()->sendDump($packet);
     }
 
     /**
      * Send variables to dump, exit and render
      */
-    public function dumpDie(array $values, int $rewind=null): void
+    public function dumpDie(array $values, int $rewind=0): void
     {
         $this->dump($values, $rewind + 1);
         exit(1);
@@ -161,7 +158,7 @@ class Context
     /**
      * Quit a stubbed method
      */
-    public function incomplete($data=null, int $rewind=null): void
+    public function incomplete($data=null, int $rewind=0): void
     {
         $frame = Frame::create($rewind + 1);
 
@@ -246,13 +243,15 @@ class Context
     /**
      * Lookup and replace path prefix
      */
-    public function normalizePath(string $path): string
+    public function normalizePath(?string $path): ?string
     {
         $path = str_replace('\\', '/', $path);
 
         foreach ($this->pathAliases as $name => $test) {
-            if (0 === strpos($path, $test)) {
-                return $name.'://'.ltrim(substr($path, strlen($test)), '/');
+            $len = strlen($test);
+
+            if (substr($path, 0, $len) == $test) {
+                return $name.'://'.ltrim(substr($path, $len), '/');
             }
         }
 
@@ -334,7 +333,7 @@ class Context
             // Location
             (new Stat('location', 'Dump location', $frame))
                 ->setRenderer('text', function ($frame) {
-                    return $this->normalizePath($frame->getFile()).' : '.$frame->getLine();
+                    return $this->normalizePath($frame->getCallingFile()).' : '.$frame->getCallingLine();
                 })
         );
     }
@@ -342,7 +341,7 @@ class Context
     /**
      * TODO: move these to a shared location
      */
-    private static function formatFilesize($bytes)
+    public static function formatFilesize($bytes)
     {
         $units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB'];
 
@@ -353,7 +352,7 @@ class Context
         return round($bytes, 2).' '.$units[$i];
     }
 
-    private static function formatMicrotime($time)
+    public static function formatMicrotime($time)
     {
         return number_format($time * 1000, 2).' ms';
     }
@@ -417,7 +416,7 @@ class Context
     /**
      * Set dump renderer
      */
-    public function setDumpRenderer(Renderer $renderer): Context
+    public function setRenderer(Renderer $renderer): Context
     {
         $this->dumpRenderer = $renderer;
         return $this;
@@ -426,7 +425,7 @@ class Context
     /**
      * Get dump renderer
      */
-    public function getDumpRenderer(): Renderer
+    public function getRenderer(): Renderer
     {
         if (!$this->dumpRenderer) {
             $this->dumpRenderer = new Renderer\Html($this);

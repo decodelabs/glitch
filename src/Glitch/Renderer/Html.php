@@ -4,11 +4,12 @@
  * @license http://opensource.org/licenses/MIT
  */
 declare(strict_types=1);
-namespace DecodeLabs\Glitch\Dumper\Renderer;
+namespace DecodeLabs\Glitch\Renderer;
 
 use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Stack\Trace;
-use DecodeLabs\Glitch\Dumper\Renderer;
+use DecodeLabs\Glitch\Stack\Frame;
+use DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Dumper\Entity;
 
@@ -32,7 +33,7 @@ class Html implements Renderer
     /**
      * Convert Dump object to HTML string
      */
-    public function render(Dump $dump, bool $isFinal=false): string
+    public function renderDump(Dump $dump, bool $isFinal=false): string
     {
         $this->output = [];
         $space = str_repeat(' ', self::SPACES);
@@ -67,9 +68,17 @@ class Html implements Renderer
         }
 
 
-        if ($traceEntity = $dump->getTraceEntity()) {
+        // Trace
+        if ($trace = $dump->getTrace()) {
             $this->output[] = '<samp class="dump trace">';
-            $this->renderEntity($traceEntity);
+            $this->renderEntity(
+                (new Entity('stack'))
+                    ->setName('stack')
+                    ->setStackTrace($trace)
+                    ->setOpen(false)
+                    ->setLength($trace->count())
+            );
+
             $this->output[] = '</samp>';
         }
 
@@ -233,12 +242,12 @@ class Html implements Renderer
     /**
      * Render standard string
      */
-    protected function renderString(string $string, ?string $class=null): string
+    protected function renderString(string $string, ?string $class=null, int $forceSingleLineMax=null): string
     {
-        $isMultiLine = false !== strpos($string, "\n");
+        $isMultiLine = $forceSingleLineMax === null && false !== strpos($string, "\n");
 
         if ($class !== null) {
-            return '<span class="string '.$class.'">'.$this->esc($string).'</span>';
+            return '<span class="string '.$class.'">'.$this->prepareStringLine($string, $forceSingleLineMax).'</span>';
         } elseif ($isMultiLine) {
             $string = str_replace("\r", '', $string);
             $parts = explode("\n", $string);
@@ -248,14 +257,79 @@ class Html implements Renderer
             $output[] = '<div class="string m'.($count > 10 ? ' large' : null).'"><span class="length">'.mb_strlen($string).'</span>';
 
             foreach ($parts as $part) {
-                $output[] = '<div class="line">'.$this->esc($part).'</div>';
+                $output[] = '<div class="line">'.$this->prepareStringLine($part).'</div>';
             }
 
             $output[] = '</div>';
             return implode('', $output);
         } else {
-            return '<span class="string s"><span class="line">'.$this->esc($string).'</span><span class="length">'.mb_strlen($string).'</span></span>';
+            $output = '<span class="string s"><span class="line">'.$this->prepareStringLine($string, $forceSingleLineMax).'</span>';
+
+            if ($forceSingleLineMax === null) {
+                $output .= '<span class="length">'.mb_strlen($string).'</span>';
+            }
+
+            $output .= '</span>';
+
+            return $output;
         }
+    }
+
+    /**
+     * Prepare string for rendering
+     */
+    protected function prepareStringLine(string $line, int $maxLength=null): string
+    {
+        $shorten = false;
+
+        if ($maxLength !== null && strlen($line) > $maxLength) {
+            $shorten = true;
+            $line = substr($line, 0, $maxLength);
+        }
+
+        $output = $this->esc($line);
+
+        $output = preg_replace_callback('/[[:cntrl:]]/', function ($matches) {
+            $hex = implode(unpack("H*", $matches[0]));
+
+            switch ($hex) {
+                case '07':
+                    $output = '\\a';
+                    break;
+
+                case '1B':
+                    $output = '\\e';
+                    break;
+
+                case '0C':
+                    $output = '\\f';
+                    break;
+
+                case '0A':
+                    $output = '\\n';
+                    break;
+
+                case '0D':
+                    $output = '\\r';
+                    break;
+
+                case '09':
+                    $output = '\\t';
+                    break;
+
+                default:
+                    $output = '\\x'.$hex;
+                    break;
+            }
+
+            return '<span class="control">'.$output.'</span>';
+        }, $output);
+
+        if ($shorten) {
+            $output .= '<span class="g">…</span>';
+        }
+
+        return $output;
     }
 
 
@@ -275,13 +349,13 @@ class Html implements Renderer
         $hasStack = (bool)$entity->getStackTrace();
         $open = $entity->isOpen();
 
-        switch ($entity->getType()) {
+        switch ($type = $entity->getType()) {
             case 'arrayReference':
                 $name = 'array';
 
                 // no break
             case 'objectReference':
-                $linkId = 'ref-'.$id;
+                $linkId = 'ref-'.$id.'-'.spl_object_id($entity);
                 $name = '<span class="ref">'.$name.'</span>';
                 $isRef = true;
                 break;
@@ -296,9 +370,24 @@ class Html implements Renderer
                 $showClass = true;
                 $showInfo = false;
                 break;
+
+            case 'stack':
+                $showInfo = false;
+                $showStack = false;
+                break;
+
+            case 'flags':
+                $showInfo = false;
+                break;
+
+            case 'const':
+                $showInfo = false;
+                $const = $entity->getName();
+                $name = $this->renderConstName($const);
+                break;
         }
 
-        $this->output[] = '<div class="entity title" id="'.$linkId.'">';
+        $this->output[] = '<div class="entity title type-'.$type.'" id="'.$linkId.'">';
 
         // Name
         if ($isRef) {
@@ -345,7 +434,11 @@ class Html implements Renderer
 
         // Stack
         if ($hasStack) {
-            $this->output[] = '<a data-target="#stack-'.$linkId.'" class="stack body badge badge-dark"><i>s</i></a>';
+            if ($type === 'stack') {
+                $this->output[] = '<a data-target="#body-'.$linkId.'" class="stack badge badge-dark'.($open ? null : ' collapsed').'"><i>s</i></a>';
+            } else {
+                $this->output[] = '<a data-target="#stack-'.$linkId.'" class="stack body badge badge-dark"><i>s</i></a>';
+            }
         }
 
         // Bracket
@@ -413,6 +506,46 @@ class Html implements Renderer
         }
     }
 
+
+    /**
+     * Split const name for rendering
+     */
+    protected function renderConstName(string $const): string
+    {
+        $parts = explode('::', $const, 2);
+        $const = array_pop($parts);
+
+        if (empty($parts)) {
+            $class = null;
+            $parts = explode('\\', $const);
+            $const = array_pop($parts);
+        } else {
+            $parts = explode('\\', array_shift($parts));
+            $class = array_pop($parts);
+        }
+
+        $namespace = implode('\\', $parts);
+
+        if (empty($namespace)) {
+            $namespace = '\\';
+        }
+
+        $output = [];
+        $output[] = '<span class="const signature">';
+
+        $output[] = '<i class="ns">'.$this->esc($namespace).'</i>';
+
+        if ($class !== null) {
+            $output[] = '<i class="cl">'.$this->esc($class).'</i>';
+            $output[] = '<i class="ty">::</i>';
+        }
+
+        $output[] = '<i class="co">'.$this->esc($const).'</i>';
+
+        $output[] = '</span>';
+        return implode('', $output);
+    }
+
     /**
      * Render entity info block
      */
@@ -423,7 +556,7 @@ class Html implements Renderer
         switch ($entity->getType()) {
             case 'arrayReference':
             case 'objectReference':
-                $linkId = 'ref-'.$id;
+                $linkId = 'ref-'.$id.'-'.spl_object_id($entity);
                 break;
         }
 
@@ -431,11 +564,18 @@ class Html implements Renderer
 
         $type = $entity->getType();
         $info = [];
+        $showClass = false;
 
         // Type
         switch ($type) {
             case 'object':
+            case 'objectReference':
+            case 'const':
+                $showClass = true;
+                break;
+
             case 'array':
+            case 'arrayReference':
             case 'class':
             case 'interface':
             case 'trait':
@@ -447,8 +587,8 @@ class Html implements Renderer
         }
 
         // Class
-        if ($type == 'object') {
-            $info['class'] = $entity->getClass();
+        if ($showClass && null !== ($class = $entity->getClass())) {
+            $info['class'] = $class;
         }
 
         // Location
@@ -530,7 +670,7 @@ class Html implements Renderer
     {
         $id = $entity->getId();
         $this->output[] = '<div id="values-'.$id.'" class="collapse show inner"><div class="values">';
-        $this->renderList($entity->getValues(), 'values');
+        $this->renderList($entity->getValues(), 'values', $entity->shouldShowKeys());
         $this->output[] = '</div></div>';
     }
 
@@ -540,8 +680,21 @@ class Html implements Renderer
     protected function renderStackBlock(Entity $entity): void
     {
         $id = $entity->getId();
-        $this->output[] = '<div id="stack-'.$id.'" class="collapse show inner"><div class="stack">';
-        $this->renderStackList($entity->getStackTrace());
+        $type = $entity->getType();
+        $trace = $entity->getStackTrace();
+        $this->output[] = '<div id="stack-'.$id.'" class="collapse show inner type-'.$type.'"><div class="stack">';
+
+        if ($type == 'stack') {
+            $this->renderStackList($trace);
+        } else {
+            $newEntity = (new Entity('stack'))
+                ->setName('stack')
+                ->setStackTrace($trace)
+                ->setLength($trace->count());
+
+            $this->renderEntity($newEntity);
+        }
+
         $this->output[] = '</div></div>';
     }
 
@@ -556,13 +709,103 @@ class Html implements Renderer
         foreach ($trace as $i => $frame) {
             $this->output[] = '<li>';
             $this->output[] = '<span class="number">'.($count - $i).'</span>';
-            $this->output[] = '<span class="signature">'.$frame->getSignature(true).'</span>';
+            $this->output[] = '<span class="signature">';
+            $this->renderStackFrameSignature($frame);
+            $this->output[] = '</span>';
             $this->output[] = '<span class="file">'.$this->context->normalizePath($frame->getCallingFile()).'</span>';
             $this->output[] = '<span class="line">'.$frame->getCallingLine().'</span>';
             $this->output[] = '</li>';
         }
 
         $this->output[] = '</ul>';
+    }
+
+    /**
+     * Render stack frame signature
+     */
+    protected function renderStackFrameSignature(Frame $frame): void
+    {
+        $output = [];
+
+        // Namespace
+        if (null !== ($class = $frame->getClassName())) {
+            $output[] = '<i class="ns">'.$this->esc($frame->getNamespace().'\\').'</i>';
+            $output[] = '<i class="cl">'.$this->esc($frame::normalizeClassName($class)).'</i>';
+        }
+
+        // Type
+        if ($frame->getType() !== null) {
+            $output[] = '<i class="ty">'.$this->esc($frame->getInvokeType()).'</i>';
+        }
+
+        // Function
+        if (false !== strpos($function = $frame->getFunctionName(), '{closure}')) {
+            $output[] = '<i class="fn closure">closure</i>';
+        } else {
+            if (false !== strpos($function, ',')) {
+                $parts = explode(',', $function);
+                $parts = array_map('trim', $parts);
+                $function = [];
+                $fArgs = [];
+
+                $function[] = '<i class="br">{</i> ';
+
+                foreach ($parts as $part) {
+                    $fArgs[] = $this->renderString($part, 'identifier');
+                }
+
+                $function[] = implode(', ', $fArgs);
+                $function[] = ' <i class="br">}</i>';
+                $function = implode($function);
+            } else {
+                $function = $this->esc($function);
+            }
+
+            $output[] = '<i class="fn">'.$function.'</i>';
+        }
+
+        // Args
+        $output[] = '<i class="br">(</i>';
+        $args = [];
+
+        foreach ($frame->getArgs() as $arg) {
+            if (is_object($arg)) {
+                $args[] = '<i class="ob">'.$frame::normalizeClassName(get_class($arg)).'</i>';
+            } elseif (is_array($arg)) {
+                $args[] = '<span class="ar"><i class="br">[</i>'.count($arg).'<i class="br">]</i></span>';
+            } else {
+                switch (true) {
+                    case $arg === null:
+                        $args[] = $this->renderNull();
+                        break;
+
+                    case is_bool($arg):
+                        $args[] = $this->renderBool($arg);
+                        break;
+
+                    case is_int($arg):
+                        $args[] = $this->renderInt($arg);
+                        break;
+
+                    case is_float($arg):
+                        $args[] = $this->renderFloat($arg);
+                        break;
+
+                    case is_string($arg):
+                        $args[] = $this->renderString($arg, null, 16);
+                        break;
+
+                    default:
+                        $args[] = '';
+                        break;
+                }
+            }
+        }
+
+        $output[] = implode('<i class="cm">,</i> ', $args);
+        $output[] = '<i class="br">)</i>';
+
+        $this->output[] = implode('', $output);
     }
 
 

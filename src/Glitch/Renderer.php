@@ -6,9 +6,10 @@
 declare(strict_types=1);
 namespace DecodeLabs\Glitch;
 
-use DecodeLabs\Glitch\Dumper\Entity;
+use DecodeLabs\Glitch\Context;
+use DecodeLabs\Glitch\Dumper\Dump;
 
-interface Inspectable
+interface Renderer
 {
-    public function glitchInspect(Entity $entity, callable $inspector): void;
+    public function renderDump(Dump $dump, bool $isFinal=false): string;
 }
