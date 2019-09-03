@@ -15,6 +15,8 @@ use DecodeLabs\Glitch\Dumper\Entity;
 
 class Html implements Renderer
 {
+    const SPACES = 0;
+
     use Base;
 
     /**
@@ -540,7 +542,7 @@ class Html implements Renderer
         $output[] = '<ul class="'.$class.'">';
 
         foreach ($lines as $line) {
-            $output[] = '<li>'.$line.'</li>';
+            $output[] = '<li>'."\n".$line."\n".'</li>';
         }
 
         return implode("\n", $output);

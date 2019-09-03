@@ -15,6 +15,8 @@ use DecodeLabs\Glitch\Dumper\Entity;
 
 trait Base
 {
+    //const SPACES = 2;
+
     protected $context;
 
     /**
@@ -64,11 +66,46 @@ trait Base
      */
     protected function renderStats(array $stats): string
     {
-        return implode(' | ', $stats);
+        $output = [];
+
+        foreach ($stats as $stat) {
+            $output[] = $stat->render('text');
+        }
+
+        return implode(' | ', $output);
     }
 
-    abstract protected function renderDumpEntities(Dump $dump): string;
-    abstract protected function renderTrace(Trace $trace): string;
+    /**
+     * Render main list of entities
+     */
+    protected function renderDumpEntities(Dump $dump): string
+    {
+        $output = [];
+
+        foreach ($dump->getEntities() as $value) {
+            if ($value instanceof Entity) {
+                $output[] = $this->renderEntity($value);
+            } else {
+                $output[] = $this->renderScalar($value);
+            }
+        }
+
+        return implode("\n", $output);
+    }
+
+    /**
+     * Render final trace
+     */
+    protected function renderTrace(Trace $trace): string
+    {
+        return $this->renderEntity(
+            (new Entity('stack'))
+                ->setName('stack')
+                ->setStackTrace($trace)
+                ->setOpen(false)
+                ->setLength($trace->count())
+        );
+    }
 
     /**
      * Render dump footer
@@ -83,7 +120,7 @@ trait Base
      */
     protected function exportBuffer(array $buffer): string
     {
-        return implode("\n", $buffer);
+        return implode("\n\n", $buffer);
     }
 
 
@@ -315,7 +352,7 @@ trait Base
      */
     protected function renderLineNumber(int $number): string
     {
-        return (string)$number;
+        return str_pad((string)$number, 2);
     }
 
     /**
@@ -674,12 +711,12 @@ trait Base
 
 
         $output = [];
-        $output[] = $this->wrapEntityHeader(implode($header), $type, $linkId);
+        $output[] = $this->wrapEntityHeader(implode(' ', array_filter($header)), $type, $linkId);
 
 
 
         // Body
-        if ($hasText || $hasProperties || $hasValues || $hasStack) {
+        if ($hasBodyContent = $hasText || $hasProperties || $hasValues || $hasStack) {
             $body = [];
 
             // Info
@@ -712,7 +749,7 @@ trait Base
                 $body[] = $this->renderStackBlock($entity);
             }
 
-            $output[] = $this->wrapEntityBody(implode("\n", $body), $open, $linkId);
+            $output[] = $this->wrapEntityBody(implode("\n", array_filter($body)), $open, $linkId);
         }
 
         // Footer
@@ -720,7 +757,7 @@ trait Base
             $output[] = $this->wrapEntityFooter($this->renderGrammar('}'));
         }
 
-        return implode("\n", $output);
+        return implode($hasBodyContent ? "\n" : ' ', $output);
     }
 
 
@@ -737,7 +774,7 @@ trait Base
      */
     protected function wrapReferenceName(string $name): string
     {
-        return $name;
+        return '&'.$name;
     }
 
     /**
@@ -763,7 +800,7 @@ trait Base
      */
     protected function renderEntityLength(int $length): string
     {
-        return $length;
+        return (string)$length;
     }
 
     /**
@@ -829,7 +866,7 @@ trait Base
      */
     protected function renderEntityOid(int $objectId, bool $isRef, string $id): string
     {
-        return $objectId;
+        return '#'.$objectId;
     }
 
 
@@ -903,7 +940,10 @@ trait Base
             $info['hash'] = $hash;
         }
 
-        $output = $this->renderList($info, 'info');
+        $output = $this->indent(
+            $this->renderList($info, 'info')
+        );
+
         return $this->wrapEntityBodyBlock($output, 'info', false, $linkId);
     }
 
@@ -913,7 +953,11 @@ trait Base
     protected function renderMetaBlock(Entity $entity): string
     {
         $id = $entity->getId();
-        $output = $this->renderList($entity->getAllMeta(), 'meta');
+
+        $output = $this->indent(
+            $this->renderList($entity->getAllMeta(), 'meta')
+        );
+
         return $this->wrapEntityBodyBlock($output, 'meta', false, $id);
     }
 
@@ -933,9 +977,13 @@ trait Base
                 $output[] = $this->renderBinaryStringChunk($chunk);
             }
 
-            $output = implode($output);
+            $output = $this->indent(
+                implode($output)
+            );
         } else {
-            $output = $this->renderScalar($entity->getText());
+            $output = $this->indent(
+                $this->renderScalar($entity->getText())
+            );
         }
 
         return $this->wrapEntityBodyBlock($output, 'text', true, $id);
@@ -947,7 +995,11 @@ trait Base
     protected function renderPropertiesBlock(Entity $entity): string
     {
         $id = $entity->getId();
-        $output = $this->renderList($entity->getProperties(), 'properties');
+
+        $output = $this->indent(
+            $this->renderList($entity->getProperties(), 'properties')
+        );
+
         return $this->wrapEntityBodyBlock($output, 'properties', true, $id);
     }
 
@@ -957,7 +1009,11 @@ trait Base
     protected function renderValuesBlock(Entity $entity): string
     {
         $id = $entity->getId();
-        $output = $this->renderList($entity->getValues(), 'values', $entity->shouldShowKeys());
+
+        $output = $this->indent(
+            $this->renderList($entity->getValues(), 'values', $entity->shouldShowKeys())
+        );
+
         return $this->wrapEntityBodyBlock($output, 'values', true, $id);
     }
 
@@ -979,12 +1035,15 @@ trait Base
                 $line = [];
                 $line[] = $this->renderLineNumber($count - $i);
                 $line[] = $this->wrapSignature($this->renderStackFrameSignature($frame));
+                $line[] = "\n   ";
                 $line[] = $this->renderSourceFile($this->context->normalizePath($frame->getCallingFile()));
                 $line[] = $this->renderSourceLine($frame->getCallingLine());
-                $lines[] = implode("\n", $line);
+                $lines[] = implode(' ', $line);
             }
 
-            $output = $this->renderBasicList($lines, 'stack');
+            $output = $this->indent(
+                $this->renderBasicList($lines, 'stack')
+            );
         } else {
             $newEntity = (new Entity('stack'))
                 ->setName('stack')
@@ -1030,7 +1089,6 @@ trait Base
      */
     protected function renderList(array $items, string $style, bool $includeKeys=true, string $class=null): string
     {
-        $output[] = '<ul class="list '.$style.' '.$class.'">';
         $lines = [];
         $pointer = '=>';
         $asIdentifier = $access = false;
@@ -1076,11 +1134,9 @@ trait Base
                 $line[] = $this->renderEntity($value);
             } elseif (is_array($value)) {
                 $isAssoc = $this->arrayIsAssoc($value);
-                $line[] = implode("\n", [
-                    $this->renderGrammar('{'),
-                    $this->renderList($value, $style, $isAssoc, $isAssoc ? 'map' : 'inline'),
-                    $this->renderGrammar('}')
-                ]);
+                $line[] = $this->renderGrammar('{');
+                $line[] = $this->renderList($value, $style, $isAssoc, $isAssoc ? 'map' : 'inline');
+                $line[] = $this->renderGrammar('}');
             } else {
                 $line[] = $this->renderScalar($value, $asIdentifier ? 'identifier' : null);
             }
@@ -1089,7 +1145,7 @@ trait Base
         }
 
 
-        return $this->renderBasicList($lines);
+        return $this->renderBasicList($lines, 'list '.$style.' '.$class);
     }
 
 
@@ -1101,6 +1157,19 @@ trait Base
         return implode("\n", $lines);
     }
 
+
+    /**
+     * Apply indents
+     */
+    protected function indent(string $lines): string
+    {
+        if (static::SPACES) {
+            $space = str_repeat(' ', static::SPACES);
+            $lines = $space.str_replace("\n", "\n".$space, $lines);
+        }
+
+        return $lines;
+    }
 
 
     /**
