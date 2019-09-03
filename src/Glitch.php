@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 use DecodeLabs\Glitch\Factory;
 use DecodeLabs\Glitch\Context;
+use DecodeLabs\Glitch\Stack\Trace;
 
 /**
  * This is just a facade.
@@ -54,9 +55,17 @@ final class Glitch
     /**
      * Shortcut to logException context method
      */
-    public function logException(\Throwable $e): void
+    public static function logException(\Throwable $e): void
     {
         Context::getDefault()->logException($e);
+    }
+
+    /**
+     * Create a stack trace
+     */
+    public static function stackTrace(): Trace
+    {
+        return Trace::create();
     }
 
     /**

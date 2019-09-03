@@ -16,6 +16,18 @@ use DecodeLabs\Glitch\Dumper\Entity;
 trait Base
 {
     //const SPACES = 2;
+    //const RENDER_CLOSED = true;
+    /*
+    const RENDER_SECTIONS = [
+        'info' => true,
+        'meta' => true,
+        'text' => true,
+        'properties' => true,
+        'values' => true,
+        'stack' => true
+    ];
+    */
+    //const RENDER_STACK = true;
 
     protected $context;
 
@@ -42,7 +54,7 @@ trait Base
         $output[] = $this->renderStats($dump->getStats());
         $output[] = $this->renderDumpEntities($dump);
 
-        if ($trace = $dump->getTrace()) {
+        if ((static::RENDER_STACK ?? true) && $trace = $dump->getTrace()) {
             $output[] = $this->renderTrace($trace);
         }
 
@@ -90,7 +102,7 @@ trait Base
             }
         }
 
-        return implode("\n", $output);
+        return implode("\n\n", $output);
     }
 
     /**
@@ -103,7 +115,8 @@ trait Base
                 ->setName('stack')
                 ->setStackTrace($trace)
                 ->setOpen(false)
-                ->setLength($trace->count())
+                ->setLength($trace->count()),
+            true
         );
     }
 
@@ -599,16 +612,16 @@ trait Base
     /**
      * Render an individual entity
      */
-    protected function renderEntity(Entity $entity): string
+    protected function renderEntity(Entity $entity, bool $forceOpen=false, int $level=0): string
     {
         $id = $linkId = $entity->getId();
         $name = $this->esc($entity->getName() ?? $entity->getType());
         $showInfo = true;
         $isRef = $showClass = false;
-        $hasText = $entity->getText() !== null;
-        $hasProperties = (bool)$entity->getProperties();
-        $hasValues = (bool)$entity->getValues();
-        $hasStack = (bool)$entity->getStackTrace();
+        $showText = $entity->getText() !== null;
+        $showProperties = (bool)$entity->getProperties();
+        $showValues = (bool)$entity->getValues();
+        $showStack = (bool)$entity->getStackTrace();
         $open = $entity->isOpen();
 
         switch ($type = $entity->getType()) {
@@ -634,8 +647,9 @@ trait Base
                 break;
 
             case 'stack':
-                $showInfo = false;
-                $showStack = false;
+                if (!$entity->getClass()) {
+                    $showInfo = false;
+                }
                 break;
 
             case 'flags':
@@ -648,6 +662,27 @@ trait Base
                 $name = $this->renderConstName($const);
                 break;
         }
+
+        if (!static::RENDER_SECTIONS['info'] ?? true) {
+            $showInfo = false;
+        }
+        if (!static::RENDER_SECTIONS['meta'] ?? true) {
+            $showMeta = false;
+        }
+        if (!static::RENDER_SECTIONS['text'] ?? true) {
+            $showText = false;
+        }
+        if (!static::RENDER_SECTIONS['properties'] ?? true) {
+            $showProperties = false;
+        }
+        if (!static::RENDER_SECTIONS['values'] ?? true) {
+            $showValues = false;
+        }
+        if (!static::RENDER_SECTIONS['stack'] ?? true && $type !== 'stack') {
+            $showStack = false;
+        }
+
+
 
         $header = [];
 
@@ -680,27 +715,27 @@ trait Base
         }
 
         // Text
-        if ($hasText) {
+        if ($showText) {
             $header[] = $this->renderEntityTextButton($linkId);
         }
 
         // Properties
-        if ($hasProperties) {
+        if ($showProperties) {
             $header[] = $this->renderEntityPropertiesButton($linkId);
         }
 
         // Values
-        if ($hasValues) {
+        if ($showValues) {
             $header[] = $this->renderEntityValuesButton($linkId);
         }
 
         // Stack
-        if ($hasStack) {
+        if ($showStack) {
             $header[] = $this->renderEntityStackButton($type, $open, $linkId);
         }
 
         // Bracket
-        if ($hasBody = ($showInfo || $showMeta || $hasText || $hasProperties || $hasValues || $hasStack)) {
+        if ($hasBody = ($showInfo || $showMeta || $showText || $showProperties || $showValues || $showStack)) {
             $header[] = $this->renderGrammar('{');
         }
 
@@ -714,39 +749,45 @@ trait Base
         $output[] = $this->wrapEntityHeader(implode(' ', array_filter($header)), $type, $linkId);
 
 
+        $hasBodyContent = $showText || $showProperties || $showValues || $showStack;
+        $renderClosed = static::RENDER_CLOSED ?? true;
+
+        if (!$open && !$renderClosed && !$forceOpen && $level > 4) {
+            $hasBodyContent = false;
+        }
 
         // Body
-        if ($hasBodyContent = $hasText || $hasProperties || $hasValues || $hasStack) {
+        if ($hasBodyContent) {
             $body = [];
 
             // Info
             if ($showInfo) {
-                $body[] = $this->renderInfoBlock($entity);
+                $body[] = $this->renderInfoBlock($entity, $level);
             }
 
             // Meta
             if ($showMeta) {
-                $body[] = $this->renderMetaBlock($entity);
+                $body[] = $this->renderMetaBlock($entity, $level);
             }
 
             // Text
-            if ($hasText) {
-                $body[] = $this->renderTextBlock($entity);
+            if ($showText) {
+                $body[] = $this->renderTextBlock($entity, $level);
             }
 
             // Properties
-            if ($hasProperties) {
-                $body[] = $this->renderPropertiesBlock($entity);
+            if ($showProperties) {
+                $body[] = $this->renderPropertiesBlock($entity, $level);
             }
 
             // Values
-            if ($hasValues) {
-                $body[] = $this->renderValuesBlock($entity);
+            if ($showValues) {
+                $body[] = $this->renderValuesBlock($entity, $level);
             }
 
             // Stack
-            if ($hasStack) {
-                $body[] = $this->renderStackBlock($entity);
+            if ($showStack) {
+                $body[] = $this->renderStackBlock($entity, $level);
             }
 
             $output[] = $this->wrapEntityBody(implode("\n", array_filter($body)), $open, $linkId);
@@ -875,7 +916,7 @@ trait Base
     /**
      * Render entity info block
      */
-    protected function renderInfoBlock(Entity $entity): string
+    protected function renderInfoBlock(Entity $entity, int $level=0): string
     {
         $id = $linkId = $entity->getId();
 
@@ -941,7 +982,7 @@ trait Base
         }
 
         $output = $this->indent(
-            $this->renderList($info, 'info')
+            $this->renderList($info, 'info', true, null, $level + 1)
         );
 
         return $this->wrapEntityBodyBlock($output, 'info', false, $linkId);
@@ -950,12 +991,12 @@ trait Base
     /**
      * Render entity meta block
      */
-    protected function renderMetaBlock(Entity $entity): string
+    protected function renderMetaBlock(Entity $entity, int $level=0): string
     {
         $id = $entity->getId();
 
         $output = $this->indent(
-            $this->renderList($entity->getAllMeta(), 'meta')
+            $this->renderList($entity->getAllMeta(), 'meta', true, null, $level + 1)
         );
 
         return $this->wrapEntityBodyBlock($output, 'meta', false, $id);
@@ -964,7 +1005,7 @@ trait Base
     /**
      * Render entity text block
      */
-    protected function renderTextBlock(Entity $entity): string
+    protected function renderTextBlock(Entity $entity, int $level=0): string
     {
         $id = $entity->getId();
         $type = $entity->getType();
@@ -986,18 +1027,18 @@ trait Base
             );
         }
 
-        return $this->wrapEntityBodyBlock($output, 'text', true, $id);
+        return $this->wrapEntityBodyBlock($output, 'text', true, $id, $type);
     }
 
     /**
      * Render entity properties block
      */
-    protected function renderPropertiesBlock(Entity $entity): string
+    protected function renderPropertiesBlock(Entity $entity, int $level=0): string
     {
         $id = $entity->getId();
 
         $output = $this->indent(
-            $this->renderList($entity->getProperties(), 'properties')
+            $this->renderList($entity->getProperties(), 'properties', true, null, $level + 1)
         );
 
         return $this->wrapEntityBodyBlock($output, 'properties', true, $id);
@@ -1006,12 +1047,12 @@ trait Base
     /**
      * Render entity values block
      */
-    protected function renderValuesBlock(Entity $entity): string
+    protected function renderValuesBlock(Entity $entity, int $level=0): string
     {
         $id = $entity->getId();
 
         $output = $this->indent(
-            $this->renderList($entity->getValues(), 'values', $entity->shouldShowKeys())
+            $this->renderList($entity->getValues(), 'values', $entity->shouldShowKeys(), null, $level + 1)
         );
 
         return $this->wrapEntityBodyBlock($output, 'values', true, $id);
@@ -1021,7 +1062,7 @@ trait Base
     /**
      * Render entity stack trace block
      */
-    protected function renderStackBlock(Entity $entity): string
+    protected function renderStackBlock(Entity $entity, int $level=0): string
     {
         $id = $entity->getId();
         $type = $entity->getType();
@@ -1045,12 +1086,13 @@ trait Base
                 $this->renderBasicList($lines, 'stack')
             );
         } else {
+            //die('oi2');
             $newEntity = (new Entity('stack'))
                 ->setName('stack')
                 ->setStackTrace($trace)
                 ->setLength($trace->count());
 
-            $output = $this->renderEntity($newEntity);
+            $output = $this->renderEntity($newEntity, false, $level + 1);
         }
 
         return $this->wrapEntityBodyBlock($output, 'stack', true, $id);
@@ -1069,7 +1111,7 @@ trait Base
     /**
      * Wrap entity body block
      */
-    protected function wrapEntityBodyBlock(string $block, string $type, bool $open, string $linkId): string
+    protected function wrapEntityBodyBlock(string $block, string $type, bool $open, string $linkId, ?string $class=null): string
     {
         return $block;
     }
@@ -1087,7 +1129,7 @@ trait Base
     /**
      * Render list
      */
-    protected function renderList(array $items, string $style, bool $includeKeys=true, string $class=null): string
+    protected function renderList(array $items, string $style, bool $includeKeys=true, string $class=null, int $level=0): string
     {
         $lines = [];
         $pointer = '=>';
@@ -1126,16 +1168,16 @@ trait Base
                     }
                 }
 
-                $line[] = $this->renderScalar($key, 'identifier key '.$mod);
+                $line[] = $this->renderScalar($key, 'identifier key '.$style.' '.$mod);
                 $line[] = $this->renderPointer($pointer);
             }
 
             if ($value instanceof Entity) {
-                $line[] = $this->renderEntity($value);
+                $line[] = $this->renderEntity($value, false, $level + 1);
             } elseif (is_array($value)) {
                 $isAssoc = $this->arrayIsAssoc($value);
                 $line[] = $this->renderGrammar('{');
-                $line[] = $this->renderList($value, $style, $isAssoc, $isAssoc ? 'map' : 'inline');
+                $line[] = $this->renderList($value, $style, $isAssoc, $isAssoc ? 'map' : 'inline', $level + 1);
                 $line[] = $this->renderGrammar('}');
             } else {
                 $line[] = $this->renderScalar($value, $asIdentifier ? 'identifier' : null);
@@ -1163,8 +1205,8 @@ trait Base
      */
     protected function indent(string $lines): string
     {
-        if (static::SPACES) {
-            $space = str_repeat(' ', static::SPACES);
+        if ($spaces = static::SPACES ?? 2) {
+            $space = str_repeat(' ', $spaces);
             $lines = $space.str_replace("\n", "\n".$space, $lines);
         }
 

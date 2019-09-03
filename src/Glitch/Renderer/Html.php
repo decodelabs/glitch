@@ -16,6 +16,18 @@ use DecodeLabs\Glitch\Dumper\Entity;
 class Html implements Renderer
 {
     const SPACES = 0;
+    const RENDER_CLOSED = true;
+
+    const RENDER_SECTIONS = [
+        'info' => true,
+        'meta' => true,
+        'text' => true,
+        'properties' => true,
+        'values' => true,
+        'stack' => true
+    ];
+
+    const RENDER_STACK = true;
 
     use Base;
 
@@ -204,7 +216,7 @@ class Html implements Renderer
 
 
     /**
-     * render a single identifier string
+     * Render a single identifier string
      */
     protected function renderIdentifierString(string $string, string $class, int $forceSingleLineMax=null): string
     {
@@ -212,7 +224,7 @@ class Html implements Renderer
     }
 
     /**
-     * render a standard multi line string
+     * Render a standard multi line string
      */
     protected function renderMultiLineString(string $string): string
     {
@@ -232,7 +244,7 @@ class Html implements Renderer
     }
 
     /**
-     * render a standard single line string
+     * Render a standard single line string
      */
     protected function renderSingleLineString(string $string, int $forceSingleLineMax=null): string
     {
@@ -248,7 +260,7 @@ class Html implements Renderer
     }
 
     /**
-     * render binary string chunk
+     * Render binary string chunk
      */
     protected function renderBinaryStringChunk(string $chunk): string
     {
@@ -257,7 +269,7 @@ class Html implements Renderer
 
 
     /**
-     * render a detected ascii control character
+     * Render a detected ascii control character
      */
     protected function wrapControlCharacter(string $control): string
     {
@@ -265,7 +277,7 @@ class Html implements Renderer
     }
 
     /**
-     * render structure grammer
+     * Render structure grammer
      */
     protected function renderGrammar(string $grammar): string
     {
@@ -273,7 +285,7 @@ class Html implements Renderer
     }
 
     /**
-     * render structure pointer
+     * Render structure pointer
      */
     protected function renderPointer(string $pointer): string
     {
@@ -517,9 +529,15 @@ class Html implements Renderer
     /**
      * Wrap entity body block
      */
-    protected function wrapEntityBodyBlock(string $block, string $type, bool $open, string $linkId): string
+    protected function wrapEntityBodyBlock(string $block, string $type, bool $open, string $linkId, ?string $class=null): string
     {
-        return '<div id="'.$type.'-'.$linkId.'" class="collapse'.($open ? ' show': null).' inner type-'.$type.'"><div class="'.$type.'">'."\n".
+        if ($class && $class !== $type) {
+            $class = $class.' '.$type;
+        } else {
+            $class = $type;
+        }
+
+        return '<div id="'.$type.'-'.$linkId.'" class="collapse'.($open ? ' show': null).' inner type-'.$type.'"><div class="'.$class.'">'."\n".
             $block."\n".
         '</div></div>';
     }
@@ -544,6 +562,8 @@ class Html implements Renderer
         foreach ($lines as $line) {
             $output[] = '<li>'."\n".$line."\n".'</li>';
         }
+
+        $output[] = '</ul>';
 
         return implode("\n", $output);
     }

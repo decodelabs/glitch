@@ -15,7 +15,19 @@ use DecodeLabs\Glitch\Dumper\Entity;
 
 class Text implements Renderer
 {
-    const SPACES = 2;
+    const SPACES = 0;
+    const RENDER_CLOSED = false;
+
+    const RENDER_SECTIONS = [
+        'info' => true,
+        'meta' => true,
+        'text' => true,
+        'properties' => true,
+        'values' => true,
+        'stack' => true
+    ];
+
+    const RENDER_STACK = true;
 
     use Base;
 
