@@ -42,8 +42,17 @@ class Entity
      */
     public function __construct(string $type)
     {
+        $this->setType($type);
+    }
+
+    /**
+     * Override type
+     */
+    public function setType(string $type): Entity
+    {
         $this->type = $type;
         $this->id = str_replace('.', '-', uniqid($type.'-', true));
+        return $this;
     }
 
     /**
@@ -378,7 +387,7 @@ class Entity
         if ($this->meta === null) {
             return false;
         }
-        
+
         return array_key_exists($key, $this->meta);
     }
 

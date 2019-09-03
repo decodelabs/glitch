@@ -212,6 +212,9 @@ class Trace implements \IteratorAggregate, \Countable, Inspectable
      */
     public function glitchInspect(Entity $entity, Inspector $inspector): void
     {
-        $entity->setStackTrace($this);
+        $entity
+            ->setType('stack')
+            ->setLength(count($this->frames))
+            ->setStackTrace($this);
     }
 }

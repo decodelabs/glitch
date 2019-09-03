@@ -45,7 +45,7 @@ $(function() {
             $badge.toggleClass('collapsed', !isCollapsed);
 
             if(isName && isCollapsed && !otherChildren) {
-                var $first = $entity.find('a.body:first');
+                var $first = $entity.find('a.primary:first');
 
                 if(!$first.length) {
                     $first = $entity.find('a.badge:first');

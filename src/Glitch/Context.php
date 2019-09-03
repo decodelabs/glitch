@@ -428,7 +428,11 @@ class Context
     public function getRenderer(): Renderer
     {
         if (!$this->dumpRenderer) {
-            $this->dumpRenderer = new Renderer\Html($this);
+            if (in_array(\PHP_SAPI, ['cli', 'phpdbg'])) {
+                $this->dumpRenderer = new Renderer\Cli($this);
+            } else {
+                $this->dumpRenderer = new Renderer\Html($this);
+            }
         }
 
         return $this->dumpRenderer;
