@@ -119,7 +119,7 @@ Register base paths for easier reading of file names
 
 becomes
 
-{app}/models/MyModel.php
+app://models/MyModel.php
 */
 ```
 
