@@ -102,10 +102,25 @@ Any functionality that the Exception then needs to convey the **state** of the e
 
 
 ## Installation
-Glitch can be installed via composer
+#### Glitch can be installed via composer
 
+First, add the asset-packagist repository to your composer.json: (https://asset-packagist.org/site/about)
+
+```json
+"repositories": [
+    {
+        "type": "composer",
+        "url": "https://asset-packagist.org"
+    }
+]
 ```
-composer require decodelabs/glitch
+
+Then add Glitch to your required packages list:
+
+```json
+"require": {
+    "decodelabs/glitch": "~1"
+}
 ```
 
 
