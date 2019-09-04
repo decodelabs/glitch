@@ -10101,6 +10101,11 @@ html.exception body header.title h1 {
   margin-bottom: 0.25rem;
 }
 
+html.exception body header.title h1 span.version {
+  font-size: 0.5em;
+  text-transform: none;
+}
+
 html.exception body header.stats {
   padding-bottom: 0.25rem;
 }
@@ -10143,8 +10148,13 @@ html.exception body section.exception samp.dump div.message {
   margin-bottom: 1rem;
 }
 
+html.exception body section.exception samp.dump div.message:last-child {
+  margin-bottom: 0;
+}
+
 html.exception body section.exception samp.dump div.message div.line {
   font-size: 2em;
+  border: none;
 }
 
 html.exception body section.exception samp.dump div.message div.string.m:before, html.exception body section.exception samp.dump div.message div.string.m:after {
@@ -10206,6 +10216,10 @@ html.exception body section.cols > div div.frame {
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+html.exception body section.cols > div.left {
+  background: #EEE;
 }
 
 html.exception body section.cols > div.left samp.dump {

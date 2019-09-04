@@ -40,6 +40,7 @@ html {
 html.exception {
     body {
         background: rgba(darken($red, 10%), 0.75);
+        //background: #9D929A;
         display: flex;
         flex-direction: column;
 
@@ -63,6 +64,11 @@ html.exception {
                 font-size: 1.75em;
                 line-height: 1;
                 margin-bottom: 0.25rem;
+
+                span.version {
+                    font-size: 0.5em;
+                    text-transform: none;
+                }
             }
         }
 
@@ -110,8 +116,13 @@ html.exception {
                 div.message {
                     margin-bottom: 1rem;
 
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
+
                     div.line {
                         font-size: 2em;
+                        border: none;
                     }
 
                     div.string.m {
@@ -174,6 +185,7 @@ html.exception {
                 }
 
                 &.left {
+                    background: #EEE;
                     samp.dump {
                         border: none;
                     }
