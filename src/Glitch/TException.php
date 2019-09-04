@@ -25,6 +25,11 @@ trait TException
     protected $rewind;
     protected $stackTrace;
 
+    protected $type;
+    protected $interfaces;
+
+    protected $params = [];
+
     /**
      * Override the standard Exception constructor to simplify instantiation
      */
@@ -52,6 +57,12 @@ trait TException
         if (isset($params['http'])) {
             $this->http = (int)$params['http'];
         }
+
+        $this->type = $params['type'] ?? null;
+        $this->interfaces = (array)($params['interfaces'] ?? []);
+
+        unset($params['data'], $params['rewind'], $params['http'], $params['type'], $params['interfaces']);
+        $this->params = $params;
     }
 
     /**
@@ -153,12 +164,41 @@ trait TException
      */
     public function glitchInspect(Entity $entity, Inspector $inspector): void
     {
+        $parts = [];
+
+        if (!empty($this->interfaces)) {
+            $parts = $this->interfaces;
+        }
+
+        if (isset($this->type) && $this->type !== 'Exception') {
+            $parts[] = $this->type;
+        }
+
+        if (!empty($parts)) {
+            foreach ($parts as $i => $part) {
+                $inner = explode('\\', $part);
+                $parts[$i] = array_pop($inner);
+            }
+
+            $parts = array_unique($parts);
+            $name = implode(' | ', $parts);
+        } else {
+            $name = $entity->getName();
+        }
+
         $entity
             ->setType('exception')
+            ->setName($name)
             ->setText($this->message)
             ->setClass('@EGlitch')
             ->setProperty('*code', $inspector($this->code))
-            ->setProperty('*http', $inspector($this->http))
+            ->setProperty('*http', $inspector($this->http));
+
+        foreach ($this->params as $key => $value) {
+            $entity->setProperty('*'.$key, $inspector($value));
+        }
+
+        $entity
             ->setProperty('!previous', $inspector($this->getPrevious(), function ($entity) {
                 $entity->setOpen(false);
             }))

@@ -765,7 +765,6 @@ trait Base
                 // no break
             case 'objectReference':
                 $linkId = 'ref-'.$id.'-'.spl_object_id($entity);
-                $name = $this->wrapReferenceName($name);
                 $isRef = true;
                 break;
 
@@ -819,9 +818,18 @@ trait Base
 
 
         $header = [];
+        $nameParts = explode('|', $name);
+
+        foreach ($nameParts as $i => $part) {
+            $nameParts[$i] = $this->renderEntityNamePart(trim($part));
+        }
+
+        $g = $this->renderGrammar('|');
+        $name = implode(' '.$g.' ', $nameParts);
 
         // Name
         if ($isRef) {
+            $name = $this->wrapReferenceName($name);
             $header[] = $this->wrapEntityNameReference($name, $open, $id);
         } else {
             $header[] = $this->wrapEntityName($name, $open, $linkId);
@@ -956,6 +964,15 @@ trait Base
      * Passthrough entity name
      */
     protected function wrapEntityName(string $name, bool $open, string $linkId): string
+    {
+        return $name;
+    }
+
+
+    /**
+     * Wrap entity name if reference
+     */
+    protected function renderEntityNamePart(string $name): string
     {
         return $name;
     }

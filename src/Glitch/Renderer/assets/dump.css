@@ -217,6 +217,14 @@ samp.dump.exception .attr .label:after {
     cursor: default;
 }
 
+.entity.title .name i {
+    font-style: normal;
+}
+.entity.title .name .g {
+    color: var(--blue);
+    opacity: 0.5;
+}
+
 
 
 .entity:target > .name {
@@ -337,7 +345,9 @@ ul.list > li > .identifier.key:before {
     margin-right: 0.75em;
     font-size: 0.8em;
 }
-
+ul.list.info {
+    max-width: 80em;
+}
 ul.list.info > li > .string.identifier {
     color: var(--cyan);
 }

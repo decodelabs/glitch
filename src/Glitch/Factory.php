@@ -197,6 +197,8 @@ class Factory
             $this->params['line'] = $lastTrace['line'] ?? null;
         }
 
+        $this->params['interfaces'] = [];
+
         $this->interfaces['\\DecodeLabs\\Glitch\\Inspectable'] = true;
         $this->traits['\\DecodeLabs\\Glitch\\TException'] = true;
 
@@ -245,6 +247,10 @@ class Factory
             }
 
             $this->interfaces[$interface] = true;
+
+            if ($interface !== '\\DecodeLabs\\Glitch\\Inspectable') {
+                $this->params['interfaces'][] = ltrim($interface, '\\');
+            }
         }
     }
 
@@ -256,10 +262,9 @@ class Factory
     protected function build(): \EGlitch
     {
         $this->indexInterfaces();
-        //dd($this);
-
         $this->buildDefinitions();
         $hash = $this->compileDefinitions();
+        $this->params['type'] = $this->type;
         return new self::$instances[$hash]($this->message, $this->params);
     }
 

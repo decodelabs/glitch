@@ -403,13 +403,14 @@ class Cli implements Renderer
     {
         return
             $this->format('&', 'white', null, 'dim').
-            $this->format($name, 'green', null, 'bold');
+            //$this->format($name, 'green', null, 'bold');
+            $name;
     }
 
     /**
-     * Wrap entity name link
+     * Wrap entity name if reference
      */
-    protected function wrapEntityName(string $name, bool $open, string $linkId): string
+    protected function renderEntityNamePart(string $name): string
     {
         return $this->format($name, 'green', null, 'bold');
     }

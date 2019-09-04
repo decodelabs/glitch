@@ -520,6 +520,14 @@ class Html implements Renderer
     }
 
     /**
+     * Wrap entity name if reference
+     */
+    protected function renderEntityNamePart(string $name): string
+    {
+        return '<i>'.$this->esc($name).'</i>';
+    }
+
+    /**
      * Wrap entity name link reference
      */
     protected function wrapEntityNameReference(string $name, bool $open, string $id): string
