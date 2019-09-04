@@ -17,11 +17,7 @@
     ],
     "require": {
         "php": "^7.2",
-        "symfony/polyfill-mbstring": "~1.7",
-
-        "bower-asset/jquery": "~3.3",
-        "bower-asset/bootstrap": "~4.3",
-        "bower-asset/google-code-prettify": "*"
+        "symfony/polyfill-mbstring": "~1.7"
     },
     "autoload": {
         "psr-4": {
