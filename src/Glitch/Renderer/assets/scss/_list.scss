@@ -30,6 +30,10 @@ ul.list {
                 font-size: 0.8em;
             }
         }
+
+        > *:last-child {
+            padding-right: 1rem;
+        }
     }
 
     &.info {
@@ -123,6 +127,7 @@ ul.list {
         margin: 0 0 0 2rem !important;
         display: inline-flex;
         flex-wrap: wrap;
+        white-space: normal;
 
         > li {
             &:after {

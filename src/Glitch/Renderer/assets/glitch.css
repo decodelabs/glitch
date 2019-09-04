@@ -9504,42 +9504,12 @@ samp.dump {
   display: block;
   font-size: 0.75rem;
   margin-bottom: 1rem;
-  min-width: 700px;
+  white-space: nowrap;
 }
 
 samp.dump.trace {
   padding: 1rem 0;
   border-top: 1px solid #EEE;
-}
-
-samp.dump.exception {
-  margin-bottom: 2rem;
-}
-
-samp.dump.exception div.message {
-  margin-bottom: 1rem;
-}
-
-samp.dump.exception div.message div.line {
-  font-size: 1.75em;
-}
-
-samp.dump.exception div.message div.string.m:before, samp.dump.exception div.message div.string.m:after {
-  content: '!!!';
-}
-
-samp.dump.exception .attr {
-  color: var(--pink);
-  font-weight: 600;
-}
-
-samp.dump.exception .attr .label {
-  color: var(--gray);
-  font-weight: normal;
-}
-
-samp.dump.exception .attr .label:after {
-  content: ':';
 }
 
 .null {
@@ -9598,7 +9568,7 @@ samp.dump.exception .attr .label:after {
 .string.m {
   padding-right: 1rem;
   display: inline;
-  white-space: pre;
+  white-space: pre-line;
 }
 
 .string.m:before, .string.m:after {
@@ -9878,6 +9848,10 @@ ul.list > li > .identifier.key:before {
   font-size: 0.8em;
 }
 
+ul.list > li > *:last-child {
+  padding-right: 1rem;
+}
+
 ul.list.info {
   max-width: 80em;
 }
@@ -9956,6 +9930,7 @@ ul.list.inline {
   margin: 0 0 0 2rem !important;
   display: inline-flex;
   flex-wrap: wrap;
+  white-space: normal;
 }
 
 ul.list.inline > li:after {
@@ -10075,9 +10050,177 @@ span.signature span.ar i.br:first-child:after {
 }
 
 body {
-  padding: 2rem 1rem;
+  padding: 0;
+  margin: 0;
+  height: 100% !important;
+  max-height: 100%;
 }
 
-header.stats {
+body > .container-fluid {
+  padding: 2rem;
+}
+
+body > .container-fluid header.stats > div.stats {
+  line-height: 1;
+}
+
+html {
+  height: 100%;
+}
+
+html.dump header.stats {
   margin-bottom: 2rem;
+}
+
+html.exception body {
+  background: rgba(189, 33, 48, 0.75);
+  display: flex;
+  flex-direction: column;
+}
+
+html.exception body > .container-fluid {
+  padding: 0.5rem;
+  flex: 1 1 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  max-height: 100vh;
+}
+
+html.exception body header.title {
+  color: white;
+}
+
+html.exception body header.title h1 {
+  margin: 0;
+  font-weight: 200;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 1.75em;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+html.exception body header.stats {
+  padding-bottom: 0.25rem;
+}
+
+html.exception body header.stats > div.stats span {
+  border: 1px solid rgba(255, 255, 255, 0.65);
+}
+
+html.exception body section {
+  display: flex;
+  margin-left: -0.25rem;
+  margin-right: -0.25rem;
+}
+
+html.exception body section > div {
+  display: flex;
+  background: white;
+  border-radius: 0.2rem;
+  margin: 0.25rem;
+  flex: 1 1 auto;
+}
+
+html.exception body section samp.dump {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  flex: 1 1 auto;
+  font-size: 0.8em;
+}
+
+html.exception body section samp.dump > h3:first-child {
+  font-size: 1.5em;
+  margin-bottom: 1em;
+}
+
+html.exception body section.exception samp.dump {
+  min-width: 0;
+}
+
+html.exception body section.exception samp.dump div.message {
+  margin-bottom: 1rem;
+}
+
+html.exception body section.exception samp.dump div.message div.line {
+  font-size: 2em;
+}
+
+html.exception body section.exception samp.dump div.message div.string.m:before, html.exception body section.exception samp.dump div.message div.string.m:after {
+  content: '!!!';
+}
+
+html.exception body section.exception samp.dump .attr {
+  color: var(--pink);
+  font-weight: 600;
+}
+
+html.exception body section.exception samp.dump .attr .label {
+  color: var(--gray);
+  font-weight: normal;
+}
+
+html.exception body section.exception samp.dump .attr .label:after {
+  content: ':';
+}
+
+html.exception body section.cols {
+  flex: 1 1 100%;
+  padding-bottom: 0;
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  margin-bottom: -0.25rem;
+  box-sizing: border-box;
+}
+
+html.exception body section.cols > div {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1 1 45%;
+  box-sizing: border-box;
+  position: relative;
+  min-height: 20rem;
+}
+
+@media screen and (min-width: 501px) {
+  html.exception body section.cols > div {
+    min-width: 30rem;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  html.exception body section.cols > div {
+    flex: 1 1 100%;
+  }
+}
+
+html.exception body section.cols > div div.frame {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+html.exception body section.cols > div.left samp.dump {
+  border: none;
+}
+
+html.exception body section.cols > div.right samp.dump {
+  border-bottom: 1px solid #DDD;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+
+html.exception body section.cols > div.right samp.dump:last-child {
+  border: none;
+  margin-bottom: 0;
+  flex: 1 1 100%;
 }

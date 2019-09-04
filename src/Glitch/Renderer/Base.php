@@ -78,7 +78,7 @@ trait Base
         $output[] = $this->renderDumpEntities($dump);
 
         if ((static::RENDER_STACK ?? true) && $trace = $dump->getTrace()) {
-            $output[] = $this->renderTrace($trace);
+            $output[] = $this->renderTrace($trace, false);
         }
 
         if (!empty($footer = $this->renderFooter())) {
@@ -111,7 +111,7 @@ trait Base
             $output[] = $this->renderExceptionEntity($entity);
 
             if ($trace = $dataDump->getTrace()) {
-                $output[] = $this->renderTrace($trace);
+                $output[] = $this->renderTrace($trace, true);
             }
         }
 
@@ -224,12 +224,13 @@ trait Base
     /**
      * Render final trace
      */
-    protected function renderTrace(Trace $trace): string
+    protected function renderTrace(Trace $trace, bool $open=false): string
     {
         return $this->renderEntity(
             (new Entity('stack'))
                 ->setName('stack')
                 ->setStackTrace($trace)
+                ->setOpen($open)
                 ->setLength($trace->count())
         );
     }
@@ -746,7 +747,7 @@ trait Base
     {
         $id = $linkId = $entity->getId();
         $name = $this->esc($entity->getName() ?? $entity->getType());
-        $isRef = $showClass = false;
+        $isRef = $showClass = $forceBody = false;
         $open = $entity->isOpen();
 
         $sections = [
@@ -791,6 +792,13 @@ trait Base
 
             case 'const':
                 $sections['info'] = false;
+                break;
+
+            case 'array':
+                if (!$entity->getLength()) {
+                    $sections['info'] = false;
+                    $forceBody = true;
+                }
                 break;
         }
 
@@ -881,7 +889,7 @@ trait Base
         }
 
         // Bracket
-        if ($hasBody = in_array(true, $sections, true)) {
+        if ($hasBody = $forceBody || in_array(true, $sections, true)) {
             $header[] = $this->renderGrammar('{');
         }
 

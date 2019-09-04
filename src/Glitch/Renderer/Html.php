@@ -12,6 +12,7 @@ use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Dumper\Entity;
+use DecodeLabs\Glitch\Dumper\Inspector;
 
 class Html implements Renderer
 {
@@ -75,6 +76,51 @@ class Html implements Renderer
 
     use Base;
 
+
+
+    /**
+     * Inspect handled exception
+     */
+    public function renderException(\Throwable $exception, Entity $entity, Dump $dataDump): string
+    {
+        $output = [];
+        $output[] = $this->renderHeader('exception');
+
+        if (!$this->shouldRender()) {
+            $output[] = $this->renderProductionExceptionMessage($exception);
+        } else {
+            $output[] = '<header class="title">';
+            $output[] = '<h1>Glitch</h1>';
+            $output[] = '</header>';
+            //$output[] = $this->renderStats($dataDump->getStats());
+
+            $output[] = '<section class="exception"><div class="exception">';
+            $http = $exception instanceof \EGlitch ? $exception->getHttpCode() : null;
+            $output[] = $this->renderExceptionMessage($exception->getMessage(), $exception->getCode(), $http);
+            $output[] = '</div></section>';
+
+            $output[] = '<section class="cols">';
+
+            $output[] = '<div class="left"><div class="frame">';
+            $output[] = $this->renderTrace($dataDump->getTrace(), true);
+            $output[] = '</div></div>';
+
+            $output[] = '<div class="right"><div class="frame">';
+            $output[] = $this->renderExceptionEntity($entity);
+            $output[] = $this->renderEnvironment($dataDump->getStats());
+            $output[] = '</div></div>';
+
+
+
+            $output[] = '</section>';
+        }
+
+        $output[] = $this->renderFooter();
+        return $this->exportExceptionBuffer($output);
+    }
+
+
+
     /**
      * Render scripts and styles
      */
@@ -82,29 +128,15 @@ class Html implements Renderer
     {
         $output = [];
         $output[] = '<!doctype html>';
-        $output[] = '<html lang="en">';
+        $output[] = '<html lang="en" class="'.$class.'">';
         $output[] = '<head>';
 
         $vendor = $this->context->getVendorPath();
         $isDev = is_link($vendor.'/decodelabs/glitch');
 
-
         $css = $scss = [];
-
-        /*
-        $css = [
-            'bootstrap' => $vendor.'/bower-asset/bootstrap/dist/css/bootstrap.min.css',
-            'glitch' => __DIR__.'/assets/dump.css'
-        ];
-        */
-
-        $css = [
-            'glitch' => $vendor.'/decodelabs/glitch/src/Glitch/Renderer/assets/glitch.css'
-        ];
-        $scss = [
-            'glitch' => $vendor.'/decodelabs/glitch/src/Glitch/Renderer/assets/glitch.scss'
-        ];
-
+        $css = ['glitch' => $vendor.'/decodelabs/glitch/src/Glitch/Renderer/assets/glitch.css'];
+        $scss = ['glitch' => $vendor.'/decodelabs/glitch/src/Glitch/Renderer/assets/glitch.scss'];
 
         $js = [
             'jQuery' => $vendor.'/bower-asset/jquery/dist/jquery.min.js',
@@ -118,7 +150,7 @@ class Html implements Renderer
 
 
         // Scss
-        if (static::DEV) {
+        if (static::DEV && $isDev) {
             foreach ($scss as $name => $path) {
                 if (!file_exists($path)) {
                     continue;
@@ -164,7 +196,8 @@ class Html implements Renderer
 
 
         $output[] = '</head>';
-        $output[] = '<body class="'.$class.'">';
+        $output[] = '<body>';
+        $output[] = '<div class="container-fluid">';
 
         return implode("\n", $output);
     }
@@ -176,7 +209,7 @@ class Html implements Renderer
     protected function renderStats(array $stats): string
     {
         $output = [];
-        $output[] = '<header class="stats container-fluid">';
+        $output[] = '<header class="stats"><div class="stats">';
 
         foreach ($stats as $key => $stat) {
             if (null === ($statString = $stat->render('html'))) {
@@ -186,7 +219,7 @@ class Html implements Renderer
             $output[] = '<span class="stat stat-'.$key.' badge badge-'.$stat->getClass().'" title="'.$this->esc($stat->getName()).'">'.$statString.'</span>';
         }
 
-        $output[] = '</header>';
+        $output[] = '</div></header>';
         return implode("\n", $output);
     }
 
@@ -196,7 +229,7 @@ class Html implements Renderer
     protected function renderExceptionMessage(string $message, ?int $code, ?int $httpCode): string
     {
         $output = [];
-        $output[] = '<div class="container-fluid"><samp class="dump exception">';
+        $output[] = '<samp class="dump exception">';
         $output[] = '<div class="message">'.$this->renderMultiLineString($message).'</div>';
 
         if ($code) {
@@ -211,7 +244,7 @@ class Html implements Renderer
             $output[] = '<div class="attr http"><span class="label">HTTP</span> '.$httpCode.'</div>';
         }
 
-        $output[] = '</samp></div>';
+        $output[] = '</samp>';
         return implode("\n", $output);
     }
 
@@ -221,7 +254,6 @@ class Html implements Renderer
     protected function renderDumpEntities(Dump $dump): string
     {
         $output = [];
-        $output[] = '<div class="container-fluid">';
 
         foreach ($dump->getEntities() as $value) {
             $output[] = '<samp class="dump">';
@@ -235,7 +267,6 @@ class Html implements Renderer
             $output[] = '</samp>';
         }
 
-        $output[] = '</div>';
         return implode("\n", $output);
     }
 
@@ -245,8 +276,8 @@ class Html implements Renderer
     protected function renderExceptionEntity(Entity $entity): string
     {
         $output = [];
-        $output[] = '<div class="container-fluid">';
         $output[] = '<samp class="dump">';
+        $output[] = '<h3>Exception object</h3>';
         $output[] = $this->renderEntity($entity, 0, [
             'info' => true,
             'meta' => false,
@@ -256,30 +287,73 @@ class Html implements Renderer
             'stack' => false
         ]);
         $output[] = '</samp>';
-        $output[] = '</div>';
 
+        return implode("\n", $output);
+    }
+
+    /**
+     * Render environment vars
+     */
+    protected function renderEnvironment(array $stats): string
+    {
+        $array = [];
+
+        foreach ($stats as $name => $stat) {
+            $array[$name] = $stat->render('text');
+        }
+
+        $array = array_merge($array, [
+            'php' => phpversion(),
+            'headers' => getallheaders(),
+            'includes' => array_map(function ($val) {
+                return $this->context->normalizePath($val);
+            }, get_included_files()),
+            '$_SERVER' => $_SERVER,
+            '$_GET' => $_GET,
+            '$_POST' => $_POST,
+            '$_FILES' => $_FILES,
+            '$_COOKIE' => $_COOKIE
+        ]);
+
+        $inspector = new Inspector($this->context);
+
+        foreach ($array as $key => $value) {
+            $array[$key] = $inspector($value, function ($entity) {
+                $entity->setOpen(false);
+            });
+        }
+
+        $output = [];
+        $output[] = '<samp class="dump environment">';
+        $output[] = '<h3>Environment</h3>';
+
+        $output[] = $this->renderList($array, 'meta');
+
+        $output[] = '</samp>';
         return implode("\n", $output);
     }
 
     /**
      * Render final stack trace
      */
-    protected function renderTrace(Trace $trace): string
+    protected function renderTrace(Trace $trace, bool $open=false): string
     {
         $output = [];
-        $output[] = '<div class="container-fluid">';
         $output[] = '<samp class="dump trace">';
+
+        if ($open) {
+            $output[] = '<h3>Stack trace</h3>';
+        }
 
         $output[] = $this->renderEntity(
             (new Entity('stack'))
                 ->setName('stack')
                 ->setStackTrace($trace)
-                ->setOpen(false)
+                ->setOpen($open)
                 ->setLength($trace->count())
         );
 
         $output[] = '</samp>';
-        $output[] = '</div>';
         return implode("\n", $output);
     }
 
@@ -289,6 +363,7 @@ class Html implements Renderer
     protected function renderFooter(): string
     {
         $output = [];
+        $output[] = '</div>';
         $output[] = '</body>';
         $output[] = '</html>';
 
@@ -306,8 +381,9 @@ class Html implements Renderer
         $output = [];
         $output[] = '<iframe id="'.$id.'" frameborder="0" class="glitch-dump"></iframe>';
         $output[] = '<style>';
+        $output[] = 'body { padding: 0; margin: 0; }';
         $output[] = '.glitch-dump { width: 100%; height: 30rem; border: 1px solid #EEE; }';
-        $output[] = '.glitch-dump:only-of-type { height: calc(100% - 8px); border: none; }';
+        $output[] = '.glitch-dump:only-of-type { height:100%; border: none; }';
         $output[] = '</style>';
         $output[] = '<script>';
         $output[] = 'var doc = document.getElementById(\''.$id.'\').contentWindow.document;';

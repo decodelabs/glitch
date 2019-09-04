@@ -55,7 +55,7 @@
     &.m {
         padding-right: 1rem;
         display: inline;
-        white-space: pre;
+        white-space: pre-line;
 
         &:before, &:after {
             content: '"""';
