@@ -9,12 +9,19 @@
             "email": "tom@inflatablecookie.com"
         }
     ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ],
     "require": {
         "php": "^7.2",
         "symfony/polyfill-mbstring": "~1.7",
 
         "components/jquery": "~3.3",
-        "components/bootstrap": "~4.3"
+        "components/bootstrap": "~4.3",
+        "bower-asset/google-code-prettify": "*"
     },
     "autoload": {
         "psr-4": {
