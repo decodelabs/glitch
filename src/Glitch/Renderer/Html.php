@@ -44,14 +44,13 @@ class Html implements Renderer
         $vendor = $this->context->getVendorPath();
 
         $css = [
-            //'bootstrap-reboot' => $vendor.'/components/bootstrap/css/bootstrap-reboot.min.css',
-            'bootstrap' => $vendor.'/components/bootstrap/css/bootstrap.min.css',
+            'bootstrap' => $vendor.'/bower-asset/bootstrap/dist/css/bootstrap.min.css',
             'glitch' => __DIR__.'/assets/dump.css'
         ];
 
         $js = [
-            'jQuery' => $vendor.'/components/jquery/jquery.min.js',
-            'bootstrap' => $vendor.'/components/bootstrap/js/bootstrap.bundle.min.js',
+            'jQuery' => $vendor.'/bower-asset/jquery/dist/jquery.min.js',
+            'bootstrap' => $vendor.'/bower-asset/bootstrap/dist/js/bootstrap.bundle.min.js',
             'glitch' => __DIR__.'/assets/dump.js'
         ];
 
