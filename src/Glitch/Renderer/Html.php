@@ -90,7 +90,7 @@ class Html implements Renderer
             $output[] = $this->renderProductionExceptionMessage($exception);
         } else {
             $output[] = '<header class="title">';
-            $output[] = '<h1>Glitch</h1>';
+            $output[] = '<h1>Glitch <span class="version">'.\Glitch::VERSION.'</span></h1>';
             $output[] = '</header>';
             //$output[] = $this->renderStats($dataDump->getStats());
 

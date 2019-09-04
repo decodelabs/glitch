@@ -14,7 +14,7 @@ use DecodeLabs\Glitch\Stack\Trace;
  */
 final class Glitch
 {
-    const TYPE = null;
+    const VERSION = 'v0.8.0';
 
     public static $autoRegister = true;
 
@@ -32,7 +32,7 @@ final class Glitch
     public static function __callStatic(string $method, array $args): \EGlitch
     {
         return Factory::create(
-            static::TYPE,
+            null,
             explode(',', $method),
             ...$args
         );
