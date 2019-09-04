@@ -1,0 +1,130 @@
+.null {
+    color: var(--pink);
+    font-weight: 600;
+}
+.bool {
+    color: var(--pink);
+    font-style: italic;
+    font-weight: 600;
+}
+.int, .float {
+    color: var(--indigo);
+    font-weight: 600;
+}
+
+.pointer {
+    color: var(--gray);
+    opacity: 0.5;
+}
+
+.g {
+    color: var(--gray);
+}
+
+.string {
+    color: var(--red);
+
+    > .length {
+        color: var(--teal);
+        margin-left: 0.5em;
+        display: none;
+    }
+
+    &:hover > .length {
+        display: inline;
+    }
+
+    &.identifier {
+        color: var(--orange);
+
+        &:before, &:after {
+            display: none;
+        }
+    }
+
+    &.s {
+        > .line {
+            &:before, &:after {
+                content: '"';
+                color: var(--gray);
+                opacity: 0.5;
+            }
+        }
+    }
+
+    &.m {
+        padding-right: 1rem;
+        display: inline;
+        white-space: pre;
+
+        &:before, &:after {
+            content: '"""';
+            color: var(--gray);
+            opacity: 0.5;
+        }
+
+        > .line {
+            margin-left: -0.1rem;
+            padding-left: 0.1rem;
+            border-left: 1px solid #F5F5F5;
+
+            &:after {
+                content: '⏎';
+                color: var(--gray);
+                opacity: 0.5;
+                font-size: 1.3em;
+                line-height: 1;
+                margin-left: 0.2em;
+            }
+
+            &:last-child:after {
+                display: none;
+            }
+        }
+
+        &.large {
+            &.show {
+                cursor: n-resize;
+            }
+
+            &:not(.show) {
+                cursor: s-resize;
+
+                &:after {
+                    content: '""" show more';
+                }
+
+                > .line {
+                    position: relative;
+
+                    &:nth-child(1n+11) {
+                        display: none;
+                    }
+
+                    &:nth-child(9) {
+                        opacity: 0.6;
+                    }
+
+                    &:nth-child(10) {
+                        opacity: 0.3;
+                    }
+                }
+            }
+        }
+
+        &.exception {
+            &:before, &:after {
+                content: '!!!';
+            }
+
+            div.line {
+                font-size: 1.4em;
+            }
+        }
+    }
+
+    span.control {
+        color: var(--orange);
+        opacity: 0.65;
+    }
+}

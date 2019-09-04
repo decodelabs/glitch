@@ -1,0 +1,70 @@
+span.signature {
+    i {
+        font-style: normal;
+
+        &.ns {
+            color: var(--cyan);
+            filter: brightness(0.65);
+            opacity: 0.75;
+        }
+
+        &.cl {
+            color: var(--cyan);
+            filter: brightness(0.5);
+        }
+
+        &.ty {
+            color: var(--gray);
+            opacity: 0.6;
+        }
+
+        &.fn {
+            color: var(--blue);
+            filter: brightness(0.75);
+            font-weight: bold;
+
+            &.closure {
+                font-style: italic;
+
+                &:before, &:after {
+                    color: var(--gray);
+                    opacity: 0.4;
+                }
+
+                &:before {
+                    content: '{';
+                }
+
+                &:after {
+                    content: '}';
+                }
+            }
+        }
+
+        &.br {
+            color: var(--gray);
+            opacity: 0.75;
+            font-style: normal;
+        }
+
+        &.ob {
+            color: var(--cyan);
+        }
+
+        &.co {
+            color: var(--purple);
+            font-weight: bold;
+        }
+    }
+
+    span.ar {
+        color: var(--cyan);
+        font-style: italic;
+
+        i.br:first-child:after {
+            content: '…';
+            color: var(--gray);
+            opacity: 0.7;
+        }
+    }
+}

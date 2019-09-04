@@ -1,0 +1,43 @@
+samp.dump {
+    display: block;
+    font-size: 0.75rem;
+    margin-bottom: 1rem;
+    min-width: 700px;
+
+    &.trace {
+        padding: 1rem 0;
+        border-top: 1px solid #EEE;
+    }
+
+    &.exception {
+        margin-bottom: 2rem;
+
+        div.message {
+            margin-bottom: 1rem;
+
+            div.line {
+                font-size: 1.75em;
+            }
+
+            div.string.m {
+                &:before, &:after {
+                    content: '!!!';
+                }
+            }
+        }
+
+        .attr {
+            color: var(--pink);
+            font-weight: 600;
+
+            .label {
+                color: var(--gray);
+                font-weight: normal;
+
+                &:after {
+                    content: ':';
+                }
+            }
+        }
+    }
+}

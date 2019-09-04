@@ -1,0 +1,34 @@
+ul.stack {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li span {
+        &.number {
+            width: 1rem;
+            display: inline-block;
+        }
+        &.signature {
+            color: var(--orange);
+
+            &:after {
+                content: "\A";
+                white-space: pre;
+            }
+        }
+        &.file {
+            color: var(--orange);
+            opacity: 0.75;
+            margin-left: 2.5em;
+
+            &:after {
+                content: ' :';
+                color: var(--gray);
+                opacity: 0.5;
+            }
+        }
+        &.line {
+            color: var(--pink);
+        }
+    }
+}

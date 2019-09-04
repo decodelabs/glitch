@@ -1,0 +1,157 @@
+div.entity {
+    &.title,
+    &.footer {
+        display: inline-flex;
+        align-items: center;
+        position: relative;
+    }
+
+    &.title {
+        > * {
+            margin-right: 0.5em;
+        }
+
+        .name {
+            color: var(--green) !important;
+            cursor: pointer;
+            text-decoration: none;
+
+            &.ref:before {
+                content: '&';
+                color: var(--gray);
+                opacity: 0.5;
+                margin-right: 0.2em;
+            }
+
+            i {
+                font-style: normal;
+            }
+
+            .g {
+                color: var(--gray);
+                opacity: 0.5;
+            }
+        }
+
+        &.type-stack .name {
+            color: var(--gray) !important;
+        }
+        &.type-flags {
+            .name {
+                color: var(--purple) !important;
+            }
+
+            ~ .body > .inner > .values > ul.list.values > li:before {
+                content: 'ⓒ';
+                color: var(--purple);
+            }
+        }
+        &.type-const .name {
+            cursor: default;
+        }
+
+
+        .length {
+            color: var(--teal);
+            margin-left: -0.25em;
+
+            &:before {
+                content: ':';
+                color: var(--gray);
+                opacity: 0.5;
+                margin-right: 0.25em;
+            }
+        }
+
+        .oid {
+            margin-right: 0 !important;
+            color: var(--gray);
+
+            &:before {
+                content: '#';
+                color: var(--gray);
+                opacity: 0.5;
+                margin-right: 0.2em;
+            }
+        }
+        a.oid:before {
+            content: '&';
+        }
+
+
+        &:target {
+            > .name {
+                background: var(--green);
+                color: white !important;
+                border-radius: 0.3em;
+                padding: 0 0.3em;
+                margin: 0 0.4em 0 -0.3em;
+            }
+
+            > .oid {
+                background: var(--purple);
+                color: white;
+                border-radius: 0.3em;
+                padding: 0 0.3em;
+                margin: 0 -0.3em;
+
+                &:before {
+                    color: white;
+                }
+            }
+        }
+    }
+}
+
+
+div.inner {
+    padding: 0 0 0 2rem;
+    display: block;
+    position: relative;
+
+    > .inner {
+        padding: 0;
+    }
+
+    &.body {
+        border-left: 1px solid #F5F5F5;
+    }
+
+    &.type-stack > div.stack:before {
+        content: 'ⓢ';
+        color: var(--dark);
+        opacity: 0.5;
+        position: relative;
+        margin-top: 0.3em;
+        font-size: 0.8em;
+    }
+    &.stack > div.stack:before {
+        display: none;
+    }
+
+    > div.text {
+        color: var(--red);
+
+        &:before {
+            content: 'ⓣ';
+            color: var(--gray);
+            opacity: 0.5;
+            position: relative;
+            margin-top: 0.3em;
+            font-size: 0.8em;
+        }
+
+        &.binary > i {
+            margin-right: 0.5em;
+            color: var(--indigo);
+        }
+    }
+}
+
+a.name.collapsed ~ a.badge.body {
+    opacity: 0.1;
+
+    &.values {
+        opacity: 0.3;
+    }
+}

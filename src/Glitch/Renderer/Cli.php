@@ -97,7 +97,7 @@ class Cli implements Renderer
 
                 case 'success':
                     $color = 'green';
-                    $options[] = 'bold';
+                    //$options[] = 'bold';
                     break;
             }
 

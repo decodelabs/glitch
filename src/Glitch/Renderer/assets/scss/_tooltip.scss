@@ -1,0 +1,20 @@
+.tooltip-inner {
+    background-color: #DCD9BB;
+    color: black;
+    max-width: 30rem;
+}
+
+.tooltip {
+    &.bs-tooltip-right .arrow:before {
+        border-right-color: #DCD9BB !important;
+    }
+    &.bs-tooltip-left .arrow:before {
+        border-left-color: #DCD9BB !important;
+    }
+    &.bs-tooltip-bottom .arrow:before {
+        border-bottom-color: #DCD9BB !important;
+    }
+    &.bs-tooltip-top .arrow:before {
+        border-top-color: #DCD9BB !important;
+    }
+}

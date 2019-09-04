@@ -30,6 +30,8 @@ class Html implements Renderer
 
     const RENDER_STACK = true;
 
+    const DEV = true;
+
     const HTTP_STATUSES = [
         100 => 'Continue',
         101 => 'Switching Protocols',
@@ -76,7 +78,7 @@ class Html implements Renderer
     /**
      * Render scripts and styles
      */
-    protected function renderHeader(): string
+    protected function renderHeader(string $class): string
     {
         $output = [];
         $output[] = '<!doctype html>';
@@ -84,22 +86,67 @@ class Html implements Renderer
         $output[] = '<head>';
 
         $vendor = $this->context->getVendorPath();
+        $isDev = is_link($vendor.'/decodelabs/glitch');
 
+
+        $css = $scss = [];
+
+        /*
         $css = [
             'bootstrap' => $vendor.'/bower-asset/bootstrap/dist/css/bootstrap.min.css',
             'glitch' => __DIR__.'/assets/dump.css'
         ];
+        */
+
+        $css = [
+            'glitch' => $vendor.'/decodelabs/glitch/src/Glitch/Renderer/assets/glitch.css'
+        ];
+        $scss = [
+            'glitch' => $vendor.'/decodelabs/glitch/src/Glitch/Renderer/assets/glitch.scss'
+        ];
+
 
         $js = [
             'jQuery' => $vendor.'/bower-asset/jquery/dist/jquery.min.js',
             'bootstrap' => $vendor.'/bower-asset/bootstrap/dist/js/bootstrap.bundle.min.js',
-            'glitch' => __DIR__.'/assets/dump.js'
+            'glitch' => __DIR__.'/assets/glitch.js'
         ];
 
 
         // Meta
         $output[] = '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">';
 
+
+        // Scss
+        if (static::DEV) {
+            foreach ($scss as $name => $path) {
+                if (!file_exists($path)) {
+                    continue;
+                }
+
+                $cssPath = $css[$name];
+                $build = false;
+
+                if (file_exists($cssPath)) {
+                    $cssTime = filemtime($cssPath);
+                    $scssTime = filemtime($path);
+
+                    if ($scssTime > $cssTime) {
+                        $build = true;
+                    }
+                } else {
+                    $build = true;
+                }
+
+                if ($build) {
+                    exec('cd '.$vendor.'; sassc --style=expanded '.$path.' '.$cssPath.' 2>&1', $execOut);
+
+                    if (!empty($execOut)) {
+                        die('<pre>'.print_r($execOut, true));
+                    }
+                }
+            }
+        }
 
         // Css
         foreach ($css as $name => $path) {
@@ -117,7 +164,7 @@ class Html implements Renderer
 
 
         $output[] = '</head>';
-        $output[] = '<body>';
+        $output[] = '<body class="'.$class.'">';
 
         return implode("\n", $output);
     }

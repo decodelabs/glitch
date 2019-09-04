@@ -1,0 +1,24 @@
+a.badge {
+    cursor: help;
+    font-size: 0.9em;
+    color: white !important;
+
+    &.collapsed {
+        opacity: 0.3;
+    }
+
+    i {
+        font-style: normal;
+        position: relative;
+    }
+
+    &.info i {
+        top: 0.05em;
+    }
+    &.text i {
+        top: 0.05em;
+    }
+    &.properties i {
+        top: -0.08em;
+    }
+}

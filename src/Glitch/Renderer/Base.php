@@ -70,7 +70,7 @@ trait Base
 
         $output = [];
 
-        if (!empty($header = $this->renderHeader())) {
+        if (!empty($header = $this->renderHeader('dump'))) {
             $output[] = $header;
         }
 
@@ -96,7 +96,7 @@ trait Base
     {
         $output = [];
 
-        if (!empty($header = $this->renderHeader())) {
+        if (!empty($header = $this->renderHeader('exception'))) {
             $output[] = $header;
         }
 
@@ -128,7 +128,7 @@ trait Base
     /**
      * Render dump header
      */
-    protected function renderHeader(): string
+    protected function renderHeader(string $class): string
     {
         return '';
     }
@@ -791,8 +791,6 @@ trait Base
 
             case 'const':
                 $sections['info'] = false;
-                $const = $entity->getName();
-                $name = $this->renderConstName($const);
                 break;
         }
 
@@ -818,14 +816,20 @@ trait Base
 
 
         $header = [];
-        $nameParts = explode('|', $name);
 
-        foreach ($nameParts as $i => $part) {
-            $nameParts[$i] = $this->renderEntityNamePart(trim($part));
+        if ($type === 'const') {
+            $name = $this->renderConstName($entity->getName());
+        } else {
+            $nameParts = explode('|', $name);
+
+            foreach ($nameParts as $i => $part) {
+                $nameParts[$i] = $this->renderEntityNamePart(trim($part));
+            }
+
+            $g = $this->renderGrammar('|');
+            $name = implode(' '.$g.' ', $nameParts);
         }
 
-        $g = $this->renderGrammar('|');
-        $name = implode(' '.$g.' ', $nameParts);
 
         // Name
         if ($isRef) {
