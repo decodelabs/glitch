@@ -18,6 +18,7 @@ class Core
     public static function inspectException(\Throwable $exception, Entity $entity, Inspector $inspector): void
     {
         $entity
+            ->setType('exception')
             ->setText($exception->getMessage())
             ->setProperty('*code', $inspector($exception->getCode()))
             ->setProperty('!previous', $inspector($exception->getPrevious(), function ($entity) {
@@ -29,7 +30,7 @@ class Core
 
         $reflection = new \ReflectionObject($exception);
         $inspector->inspectClassMembers($exception, $reflection, $entity, [
-            'code', 'previous', 'message', 'file', 'line', 'trace'
+            'code', 'previous', 'message', 'file', 'line', 'trace', 'string'
         ]);
     }
 

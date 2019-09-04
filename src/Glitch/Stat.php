@@ -81,14 +81,20 @@ class Stat
     /**
      * Render to string using stack of named renderers
      */
-    public function render(string $type): string
+    public function render(string $type): ?string
     {
         if (isset($this->renderers[$type])) {
-            return $this->renderers[$type]($this->value);
+            $output = $this->renderers[$type]($this->value);
         } elseif ($type !== 'text' && isset($this->renderers['text'])) {
-            return $this->renderers['text']($this->value);
+            $output = $this->renderers['text']($this->value);
         } else {
-            return (string)$this->value;
+            $output = $this->value;
+        }
+
+        if ($output === null) {
+            return null;
+        } else {
+            return (string)$output;
         }
     }
 }

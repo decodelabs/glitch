@@ -62,6 +62,10 @@ class Context
         $this->startTime = microtime(true);
         $this->pathAliases['glitch'] = dirname(__DIR__);
 
+        if (\Glitch::$autoRegister) {
+            $this->registerAsErrorHandler();
+        }
+
         $this->registerStatGatherer('default', [$this, 'gatherDefaultStats']);
     }
 
@@ -120,6 +124,9 @@ class Context
     }
 
 
+
+
+
     /**
      * Send variables to dump, carry on execution
      */
@@ -140,7 +147,7 @@ class Context
         $inspector->reset();
         unset($inspector);
 
-        $packet = $this->getRenderer()->renderDump($dump, true);
+        $packet = $this->getRenderer()->renderDump($dump);
         $this->getTransport()->sendDump($packet);
     }
 
@@ -198,6 +205,96 @@ class Context
         return $this->startTime;
     }
 
+
+
+    /**
+     * Register as error handler
+     */
+    public function registerAsErrorHandler(): Context
+    {
+        set_error_handler([$this, 'handleError']);
+        set_exception_handler([$this, 'handleException']);
+        register_shutdown_function([$this, 'handleShutdown']);
+
+        return $this;
+    }
+
+    /**
+     * Default ErrorException wrapper
+     */
+    public function handleError(int $level, string $message, string $file, int $line): bool
+    {
+        if (!$current = error_reporting()) {
+            return false;
+        }
+
+        throw new \ErrorException($message, 0, $level, $file, $line);
+    }
+
+    /**
+     * Last-ditch catch-all for exceptions
+     */
+    public function handleException(\Throwable $exception): void
+    {
+        if ($exception instanceof \EGlitch) {
+            $data = $exception->getData();
+            $trace = $exception->getStackTrace();
+        } else {
+            $data = null;
+            $trace = Trace::fromException($exception);
+        }
+
+        $inspector = new Inspector($this);
+        $dump = new Dump($trace);
+
+        foreach ($this->statGatherers as $gatherer) {
+            $gatherer($dump, $this);
+        }
+
+        $entity = $inspector->inspectValue($exception)
+            ->removeProperty('*code')
+            ->removeProperty('*http');
+
+        $inspector->reset();
+        unset($inspector);
+
+        $packet = $this->getRenderer()->renderException($exception, $entity, $dump);
+        $this->getTransport()->sendException($packet);
+        exit(1);
+    }
+
+    /**
+     * Try and do something about fatal errors after shutdown
+     */
+    public function handleShutdown(): void
+    {
+        $error = error_get_last();
+
+        if ($error && self::isErrorLevelFatal($error['type'])) {
+            $this->handleException(new \ErrorException(
+                $error['message'],
+                0,
+                $error['type'],
+                $error['file'],
+                $error['line']
+            ));
+        }
+    }
+
+    /**
+     * Is this error code fatal?
+     */
+    protected static function isErrorLevelFatal(int $level): bool
+    {
+        $errors = E_ERROR;
+        $errors |= E_PARSE;
+        $errors |= E_CORE_ERROR;
+        $errors |= E_CORE_WARNING;
+        $errors |= E_COMPILE_ERROR;
+        $errors |= E_COMPILE_WARNING;
+
+        return ($level & $errors) > 0;
+    }
 
 
 
@@ -333,7 +430,11 @@ class Context
             // Location
             (new Stat('location', 'Dump location', $frame))
                 ->setRenderer('text', function ($frame) {
-                    return $this->normalizePath($frame->getCallingFile()).' : '.$frame->getCallingLine();
+                    if (null === ($file = $frame->getCallingFile())) {
+                        return null;
+                    }
+
+                    return $this->normalizePath($file).' : '.$frame->getCallingLine();
                 })
         );
     }

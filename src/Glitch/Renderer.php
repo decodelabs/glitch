@@ -8,8 +8,10 @@ namespace DecodeLabs\Glitch;
 
 use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Dumper\Dump;
+use DecodeLabs\Glitch\Dumper\Entity;
 
 interface Renderer
 {
-    public function renderDump(Dump $dump, bool $isFinal=false): string;
+    public function renderDump(Dump $dump): string;
+    public function renderException(\Throwable $exception, Entity $entity, Dump $dataDump): string;
 }

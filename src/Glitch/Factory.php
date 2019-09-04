@@ -457,6 +457,10 @@ class Factory
             $this->traits[$traitName] = true;
         }
 
+        if (interface_exists($interface)) {
+            return;
+        }
+
         $this->interfaceDefs[$interface] = 'namespace '.implode($parts, '\\').' {interface '.$name.' extends '.$parent.' {}}';
     }
 
@@ -467,7 +471,7 @@ class Factory
     protected function compileDefinitions(): string
     {
         $defs = implode("\n", $this->interfaceDefs);
-        eval($defs);
+        @eval($defs);
         $hash = md5($this->exceptionDef);
 
         if (!isset(self::$instances[$hash])) {

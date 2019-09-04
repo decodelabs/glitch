@@ -17,4 +17,12 @@ class Stdout implements Transport
     {
         echo $packet;
     }
+
+    /**
+     * Send exception dump straight to output
+     */
+    public function sendException(string $packet): void
+    {
+        echo $packet;
+    }
 }

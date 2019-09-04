@@ -154,13 +154,16 @@ trait TException
     public function glitchInspect(Entity $entity, Inspector $inspector): void
     {
         $entity
+            ->setType('exception')
             ->setText($this->message)
+            ->setClass('@EGlitch')
             ->setProperty('*code', $inspector($this->code))
             ->setProperty('*http', $inspector($this->http))
-            ->setProperty('*data', $inspector($this->data))
             ->setProperty('!previous', $inspector($this->getPrevious(), function ($entity) {
                 $entity->setOpen(false);
             }))
+            ->setValues($this->data !== null ? ['data' => $inspector($this->data)] : null)
+            ->setShowKeys(false)
             ->setFile($this->file)
             ->setStartLine($this->line)
             ->setStackTrace($this->getStackTrace());

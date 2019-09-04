@@ -15,6 +15,7 @@ use DecodeLabs\Glitch\Dumper\Entity;
 
 class Html implements Renderer
 {
+    const RENDER_IN_PRODUCTION = false;
     const SPACES = 0;
     const RENDER_CLOSED = true;
 
@@ -28,6 +29,47 @@ class Html implements Renderer
     ];
 
     const RENDER_STACK = true;
+
+    const HTTP_STATUSES = [
+        100 => 'Continue',
+        101 => 'Switching Protocols',
+        200 => 'OK',
+        201 => 'Created',
+        202 => 'Accepted',
+        203 => 'Non-Authoritative Information',
+        204 => 'No Content',
+        205 => 'Reset Content',
+        206 => 'Partial Content',
+        300 => 'Multiple Choices',
+        302 => 'Found',
+        303 => 'See Other',
+        304 => 'Not Modified',
+        305 => 'Use Proxy',
+        400 => 'Bad Request',
+        401 => 'Unauthorized',
+        402 => 'Payment Required',
+        403 => 'Forbidden',
+        404 => 'Not Found',
+        405 => 'Method Not Allowed',
+        406 => 'Not Acceptable',
+        407 => 'Proxy Authentication Required',
+        408 => 'Request Timeout',
+        409 => 'Conflict',
+        410 => 'Gone',
+        411 => 'Length Required',
+        412 => 'Precondition Failed',
+        413 => 'Request Entity Too Large',
+        414 => 'Request-URI Too Long',
+        415 => 'Unsupported Media Type',
+        416 => 'Requested Range Not Satisfiable',
+        417 => 'Expectation Failed',
+        500 => 'Internal Server Error',
+        501 => 'Not Implemented',
+        502 => 'Bad Gateway',
+        503 => 'Service Unavailable',
+        504 => 'Gateway Timeout',
+        505 => 'HTTP Version Not Supported'
+    ];
 
     use Base;
 
@@ -90,10 +132,39 @@ class Html implements Renderer
         $output[] = '<header class="stats container-fluid">';
 
         foreach ($stats as $key => $stat) {
-            $output[] = '<span class="stat stat-'.$key.' badge badge-'.$stat->getClass().'" title="'.$this->esc($stat->getName()).'">'.$stat->render('html').'</span>';
+            if (null === ($statString = $stat->render('html'))) {
+                continue;
+            }
+
+            $output[] = '<span class="stat stat-'.$key.' badge badge-'.$stat->getClass().'" title="'.$this->esc($stat->getName()).'">'.$statString.'</span>';
         }
 
         $output[] = '</header>';
+        return implode("\n", $output);
+    }
+
+    /**
+     * Render exception message
+     */
+    protected function renderExceptionMessage(string $message, ?int $code, ?int $httpCode): string
+    {
+        $output = [];
+        $output[] = '<div class="container-fluid"><samp class="dump exception">';
+        $output[] = '<div class="message">'.$this->renderMultiLineString($message).'</div>';
+
+        if ($code) {
+            $output[] = '<span class="attr code"><span class="label">Code</span> '.$code.'</span>';
+        }
+
+        if ($httpCode) {
+            if (isset(static::HTTP_STATUSES[$httpCode])) {
+                $httpCode .= ' '.static::HTTP_STATUSES[$httpCode];
+            }
+
+            $output[] = '<div class="attr http"><span class="label">HTTP</span> '.$httpCode.'</div>';
+        }
+
+        $output[] = '</samp></div>';
         return implode("\n", $output);
     }
 
@@ -118,6 +189,28 @@ class Html implements Renderer
         }
 
         $output[] = '</div>';
+        return implode("\n", $output);
+    }
+
+    /**
+     * Render exception entity
+     */
+    protected function renderExceptionEntity(Entity $entity): string
+    {
+        $output = [];
+        $output[] = '<div class="container-fluid">';
+        $output[] = '<samp class="dump">';
+        $output[] = $this->renderEntity($entity, 0, [
+            'info' => true,
+            'meta' => false,
+            'text' => false,
+            'properties' => true,
+            'values' => true,
+            'stack' => false
+        ]);
+        $output[] = '</samp>';
+        $output[] = '</div>';
+
         return implode("\n", $output);
     }
 
@@ -158,7 +251,7 @@ class Html implements Renderer
     /**
      * Implode buffer and wrap it in JS iframe injector
      */
-    protected function exportBuffer(array $buffer): string
+    protected function exportDumpBuffer(array $buffer): string
     {
         $html = implode("\n", $buffer);
         $id = uniqid('glitch-dump');
@@ -225,14 +318,14 @@ class Html implements Renderer
     /**
      * Render a standard multi line string
      */
-    protected function renderMultiLineString(string $string): string
+    protected function renderMultiLineString(string $string, bool $asException=false): string
     {
         $string = str_replace("\r", '', $string);
         $parts = explode("\n", $string);
         $count = count($parts);
 
         $output = [];
-        $output[] = '<div class="string m'.($count > 10 ? ' large' : null).'"><span class="length">'.mb_strlen($string).'</span>';
+        $output[] = '<div class="string m'.($count > 10 ? ' large' : null).($asException ? ' exception' : null).'"><span class="length">'.mb_strlen($string).'</span>';
 
         foreach ($parts as $part) {
             $output[] = '<div class="line">'.$this->renderStringLine($part).'</div>';
@@ -564,7 +657,7 @@ class Html implements Renderer
 
         $output[] = '</ul>';
 
-        return implode("\n", $output);
+        return "\n".implode("\n", $output)."\n";
     }
 
 

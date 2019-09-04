@@ -16,6 +16,16 @@ final class Glitch
 {
     const TYPE = null;
 
+    public static $autoRegister = true;
+
+    /**
+     * Override auto-register of error handlers
+     */
+    public static function setAutoRegister(bool $register): void
+    {
+        self::$autoRegister = $register;
+    }
+
     /**
      * Redirect type list to Factory
      */

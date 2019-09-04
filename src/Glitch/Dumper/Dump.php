@@ -11,7 +11,7 @@ use \ArrayIterator;
 use DecodeLabs\Glitch\Stat;
 use DecodeLabs\Glitch\Stack\Trace;
 
-class Dump implements \IteratorAggregate
+class Dump implements \IteratorAggregate, \Countable
 {
     protected $stats = [];
     protected $entities = [];
@@ -98,6 +98,14 @@ class Dump implements \IteratorAggregate
     public function getEntities(): array
     {
         return $this->entities;
+    }
+
+    /**
+     * Count entities
+     */
+    public function count(): int
+    {
+        return count($this->entities);
     }
 
 

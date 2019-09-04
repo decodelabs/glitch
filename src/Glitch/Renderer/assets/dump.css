@@ -40,6 +40,36 @@ samp.dump.trace {
 }
 
 
+samp.dump.exception {
+    margin-bottom: 2rem;
+}
+
+samp.dump.exception div.message {
+    margin-bottom: 1rem;
+}
+samp.dump.exception div.string.m:before,
+samp.dump.exception div.string.m:after {
+    content: '!!!';
+}
+samp.dump.exception div.line {
+    font-size: 1.75em;
+}
+
+samp.dump.exception .attr {
+    color: var(--pink);
+    font-weight: 600;
+}
+
+samp.dump.exception .attr .label {
+    color: var(--gray);
+    font-weight: normal;
+}
+samp.dump.exception .attr .label:after {
+    content: ':';
+}
+
+
+
 /* SCALARS */
 .null {
     color: var(--pink);
@@ -127,6 +157,16 @@ samp.dump.trace {
     display: none;
 }
 
+
+.string.m.exception:before,
+.string.m.exception:after {
+    content: '!!!';
+}
+
+.string.m.exception div.line {
+    font-size: 1.4em;
+}
+
 .string span.control {
     color: var(--orange);
     opacity: 0.65;
@@ -176,6 +216,7 @@ samp.dump.trace {
 .entity.title.type-const .name {
     cursor: default;
 }
+
 
 
 .entity:target > .name {
@@ -401,7 +442,7 @@ ul.stack li span.line {
 
 .inner > div.stack {
 }
-.inner:not(.type-stack) > div.stack:before {
+.inner.type-stack > div.stack:before {
     content: 'ⓢ';
     color: var(--dark);
     opacity: 0.5;

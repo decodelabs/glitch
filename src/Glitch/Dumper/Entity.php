@@ -505,6 +505,15 @@ class Entity
         return $this;
     }
 
+    /**
+     * Remove all properties
+     */
+    public function clearProperties(): Entity
+    {
+        $this->properties = [];
+        return $this;
+    }
+
 
 
     /**
