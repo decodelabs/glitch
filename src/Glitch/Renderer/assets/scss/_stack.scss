@@ -39,4 +39,67 @@ ul.stack {
             }
         }
     }
+
+    &.source {
+        padding: 1rem;
+
+        > li {
+            background: white;
+            margin-bottom: 2px;
+
+            samp.dump.trace {
+                padding: 0.5rem 0.75rem;
+                cursor: n-resize;
+                transition: margin-top 0.2s, border-color 0.5s ease-out;
+
+                &.collapsed {
+                    cursor: s-resize;
+                    border-top: 3px solid transparent;
+                    border-left: 3px solid transparent;
+                    border-right: 3px solid transparent;
+                }
+
+                &:not(.collapsed) {
+                    border-top: 3px solid rgba(darken($red, 10%), 0.75);
+                    border-left: 3px solid rgba(darken($red, 10%), 0.75);
+                    border-right: 3px solid rgba(darken($red, 10%), 0.75);
+                    margin-top: 0.5em;
+                }
+            }
+
+            &:first-child samp.dump.trace {
+                margin-top: 0 !important;
+            }
+
+            > div.source {
+                margin-bottom: 0.5em;
+
+                samp.dump {
+                    border-left: 3px solid rgba(darken($red, 5%), 0.5) !important;
+                    border-right: 3px solid rgba(darken($red, 5%), 0.5) !important;
+                    border-bottom: 3px solid rgba(darken($red, 5%), 0.5) !important;
+                }
+            }
+
+            &:last-child {
+                margin-bottom: 0;
+
+                > div.source {
+                    margin-bottom: 0;
+                }
+            }
+
+            samp.dump.source {
+                padding: 0.5rem 0.75rem;
+                background: rgba(#EEE, 0.35);
+
+                &:before {
+                    content: '';
+                    display: block;
+                    width: 100%;
+                    border-top: 1px solid darken(#EEE, 3%) !important;
+                }
+            }
+        }
+    }
 }

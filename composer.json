@@ -12,7 +12,6 @@
     "require": {
         "php": "^7.2",
         "symfony/polyfill-mbstring": "~1.7",
-        "scrivo/highlight.php": "^9.15",
 
         "bower-asset/jquery": "~3.3",
         "bower-asset/bootstrap": "~4.3"

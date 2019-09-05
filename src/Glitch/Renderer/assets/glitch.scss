@@ -8,6 +8,7 @@
 @import "./scss/_list.scss";
 @import "./scss/_stack.scss";
 @import "./scss/_signature.scss";
+@import "./scss/_source.scss";
 
 body {
     padding: 0;
@@ -101,7 +102,7 @@ html.exception {
                 letter-spacing: 0.2em;
                 font-size: 1.25em;
                 line-height: 1;
-                background: #CCC;
+                background: linear-gradient(to bottom, #CCC, rgba(#BBB, 0.8));
                 color: white;
                 padding: 0.35rem 1rem;
                 position: relative;

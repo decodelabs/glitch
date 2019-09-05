@@ -104,10 +104,7 @@ trait Base
             $output[] = $this->renderProductionExceptionMessage($exception);
         } else {
             $output[] = $this->renderStats($dataDump->getStats());
-
-            $http = $exception instanceof \EGlitch ? $exception->getHttpCode() : null;
-            $output[] = $this->renderExceptionMessage($exception->getMessage(), $exception->getCode(), $http);
-
+            $output[] = $this->renderExceptionMessage($exception);
             $output[] = $this->renderExceptionEntity($entity);
 
             if ($trace = $dataDump->getTrace()) {
@@ -155,8 +152,12 @@ trait Base
     /**
      * Render exception message
      */
-    protected function renderExceptionMessage(string $message, ?int $code, ?int $httpCode): string
+    protected function renderExceptionMessage(\Throwable $exception): string
     {
+        $message = $exception->getMessage();
+        $code = $exception->getCode();
+        $httpCode = $exception instanceof \EGlitch ? $exception->getHttpCode() : null;
+
         $head = [];
 
         if ($code) {

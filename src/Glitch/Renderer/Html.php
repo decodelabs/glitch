@@ -10,6 +10,7 @@ use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Renderer;
+use DecodeLabs\Glitch\Renderer\Html\Highlighter;
 use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
@@ -92,17 +93,15 @@ class Html implements Renderer
             $output[] = '<header class="title">';
             $output[] = '<h1>Glitch <span class="version">'.\Glitch::VERSION.'</span></h1>';
             $output[] = '</header>';
-            //$output[] = $this->renderStats($dataDump->getStats());
 
             $output[] = '<section class="exception"><div class="exception">';
-            $http = $exception instanceof \EGlitch ? $exception->getHttpCode() : null;
-            $output[] = $this->renderExceptionMessage($exception->getMessage(), $exception->getCode(), $http);
+            $output[] = $this->renderExceptionMessage($exception);
             $output[] = '</div></section>';
 
             $output[] = '<section class="cols">';
 
             $output[] = '<div class="left"><div class="frame">';
-            $output[] = $this->renderTrace($dataDump->getTrace(), true);
+            $output[] = $this->renderExceptionTrace($dataDump->getTrace(), true);
             $output[] = '</div></div>';
 
             $output[] = '<div class="right"><div class="frame">';
@@ -151,6 +150,8 @@ class Html implements Renderer
 
         // Scss
         if (static::DEV && $isDev) {
+            $test = ['glitch' => ['_badge.scss', '_entity.scss', '_list.scss', '_samp.scss', '_scalars.scss', '_signature.scss', '_stack.scss', '_tooltip.scss', '_source.scss']];
+
             foreach ($scss as $name => $path) {
                 if (!file_exists($path)) {
                     continue;
@@ -168,6 +169,21 @@ class Html implements Renderer
                     }
                 } else {
                     $build = true;
+                }
+
+                if (!$build && isset($test[$name])) {
+                    foreach ($test[$name] as $testFileName) {
+                        $testFilePath = __DIR__.'/assets/scss/'.$testFileName;
+
+                        if (file_exists($testFilePath)) {
+                            $scssTime = filemtime($testFilePath);
+
+                            if ($scssTime > $cssTime) {
+                                $build = true;
+                                break;
+                            }
+                        }
+                    }
                 }
 
                 if ($build) {
@@ -226,11 +242,26 @@ class Html implements Renderer
     /**
      * Render exception message
      */
-    protected function renderExceptionMessage(string $message, ?int $code, ?int $httpCode): string
+    protected function renderExceptionMessage(\Throwable $exception): string
     {
+        $message = $exception->getMessage();
+        $code = $exception->getCode();
+        $httpCode = null;
+        $file = $this->context->normalizePath($exception->getFile());
+        $line = $exception->getLine();
+
+        if ($exception instanceof \EGlitch) {
+            $httpCode = $exception->getHttpCode();
+        }
+
+
         $output = [];
         $output[] = '<samp class="dump exception">';
         $output[] = '<div class="message">'.$this->renderMultiLineString($message).'</div>';
+
+        if ($file) {
+            $output[] = '<span class="attr file"><span class="label">File</span> '.$file.' <span class="g">:</span> '.$line.'</span>';
+        }
 
         if ($code) {
             $output[] = '<span class="attr code"><span class="label">Code</span> '.$code.'</span>';
@@ -343,7 +374,7 @@ class Html implements Renderer
         if ($open) {
             $output[] = '<h3>Stack trace</h3>';
         }
-        
+
         $output[] = '<samp class="dump trace">';
 
         $output[] = $this->renderEntity(
@@ -356,6 +387,66 @@ class Html implements Renderer
 
         $output[] = '</samp>';
         return implode("\n", $output);
+    }
+
+    /**
+     * Render final stack trace
+     */
+    protected function renderExceptionTrace(Trace $trace): string
+    {
+        $output = [];
+        $output[] = '<h3>Stack trace</h3>';
+        $count = count($trace);
+        $lines = [];
+        $stackId = uniqid();
+        $first = true;
+
+        foreach ($trace as $i => $frame) {
+            $line = $sig = [];
+            $sourceId = 'stack-'.$i.'-'.$stackId;
+            $line[] = '<samp class="dump trace'.($first ? null : ' collapsed').'" data-target="#'.$sourceId.'">';
+
+            $sig[] = $this->renderLineNumber($count - $i);
+            $sig[] = $this->wrapSignature($this->renderStackFrameSignature($frame));
+
+            if (null !== ($file = $frame->getCallingFile())) {
+                $sig[] = "\n   ";
+                $sig[] = $this->renderSourceFile($this->context->normalizePath($file));
+                $sig[] = $this->renderSourceLine($frame->getCallingLine());
+            }
+
+            $line[] = implode(' ', $sig);
+            $line[] = '</samp>';
+
+            if (null !== ($source = $this->renderFrameSource($frame))) {
+                $line[] = '<div id="'.$sourceId.'" class="source collapse'.($first ? ' show' : null).'"><samp class="dump source">';
+                $line[] = $source;
+                $line[] = '</samp></div>';
+            }
+
+            $lines[] = implode("\n", $line);
+            $first = false;
+        }
+
+        $output[] = $this->renderBasicList($lines, 'stack source');
+
+        return implode("\n", $output);
+    }
+
+    /**
+     * Render stack frame calling code from source file
+     */
+    protected function renderFrameSource(Frame $frame): ?string
+    {
+        if ($path = $frame->getCallingFile()) {
+            $line = $frame->getCallingLine();
+        } elseif ($path = $frame->getFile()) {
+            $line = $frame->getLine();
+        } else {
+            return null;
+        }
+
+        return (new Highlighter())->extractFile($path, $line);
     }
 
     /**

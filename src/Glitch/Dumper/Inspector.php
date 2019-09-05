@@ -238,7 +238,7 @@ class Inspector
         $this->arrayObjectId = 0;
         $this->arrayCookies = [];
         $this->arrayCookieKey = null;
-        
+
         return $this;
     }
 
@@ -325,6 +325,8 @@ class Inspector
      */
     public function inspectString(string $string)
     {
+        $isPossibleClass = preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $string);
+
         // Binary string
         if ($string !== '' && !preg_match('//u', $string)) {
             return (new Entity('binary'))
@@ -333,17 +335,17 @@ class Inspector
                 ->setLength(strlen($string));
 
         // Class name
-        } elseif (class_exists($string)) {
+        } elseif ($isPossibleClass && class_exists($string)) {
             return (new Entity('class'))
                 ->setClass($string);
 
         // Interface name
-        } elseif (interface_exists($string)) {
+        } elseif ($isPossibleClass && interface_exists($string)) {
             return (new Entity('interface'))
                 ->setClass($string);
 
         // Trait name
-        } elseif (trait_exists($string)) {
+        } elseif ($isPossibleClass && trait_exists($string)) {
             return (new Entity('trait'))
                 ->setClass($string);
 

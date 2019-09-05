@@ -9995,6 +9995,69 @@ ul.stack li span.line {
   padding-right: 1rem;
 }
 
+ul.stack.source {
+  padding: 1rem;
+}
+
+ul.stack.source > li {
+  background: white;
+  margin-bottom: 2px;
+}
+
+ul.stack.source > li samp.dump.trace {
+  padding: 0.5rem 0.75rem;
+  cursor: n-resize;
+  transition: margin-top 0.2s, border-color 0.5s ease-out;
+}
+
+ul.stack.source > li samp.dump.trace.collapsed {
+  cursor: s-resize;
+  border-top: 3px solid transparent;
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+}
+
+ul.stack.source > li samp.dump.trace:not(.collapsed) {
+  border-top: 3px solid rgba(189, 33, 48, 0.75);
+  border-left: 3px solid rgba(189, 33, 48, 0.75);
+  border-right: 3px solid rgba(189, 33, 48, 0.75);
+  margin-top: 0.5em;
+}
+
+ul.stack.source > li:first-child samp.dump.trace {
+  margin-top: 0 !important;
+}
+
+ul.stack.source > li > div.source {
+  margin-bottom: 0.5em;
+}
+
+ul.stack.source > li > div.source samp.dump {
+  border-left: 3px solid rgba(211, 37, 53, 0.5) !important;
+  border-right: 3px solid rgba(211, 37, 53, 0.5) !important;
+  border-bottom: 3px solid rgba(211, 37, 53, 0.5) !important;
+}
+
+ul.stack.source > li:last-child {
+  margin-bottom: 0;
+}
+
+ul.stack.source > li:last-child > div.source {
+  margin-bottom: 0;
+}
+
+ul.stack.source > li samp.dump.source {
+  padding: 0.5rem 0.75rem;
+  background: rgba(238, 238, 238, 0.35);
+}
+
+ul.stack.source > li samp.dump.source:before {
+  content: '';
+  display: block;
+  width: 100%;
+  border-top: 1px solid #e6e6e6 !important;
+}
+
 span.signature i {
   font-style: normal;
 }
@@ -10066,6 +10129,100 @@ span.signature span.ar i.br:first-child:after {
 
 span.signature span.string .line {
   padding-right: 0;
+}
+
+samp.dump.source {
+  display: block;
+  overflow-x: auto;
+  padding: 0 !important;
+  color: #777;
+  white-space: normal !important;
+}
+
+samp.dump.source span.line {
+  display: block;
+  width: 100%;
+  white-space: pre;
+  color: inherit;
+}
+
+samp.dump.source span.line:after {
+  content: '';
+  padding-right: 1rem;
+}
+
+samp.dump.source span.line.highlighted {
+  background: rgba(0, 123, 255, 0.1);
+}
+
+samp.dump.source span.line span.number {
+  color: #ae7247;
+  opacity: 0.3;
+  border-right: 1px solid #CCC;
+  width: 3em;
+  text-align: right;
+  padding-right: 0.3em;
+}
+
+samp.dump.source .keyword {
+  color: var(--green);
+}
+
+samp.dump.source .type {
+  color: var(--cyan);
+}
+
+samp.dump.source .cast {
+  color: var(--gray);
+  font-style: italic;
+}
+
+samp.dump.source .tag {
+  color: var(--red);
+  font-weight: bold;
+}
+
+samp.dump.source .operator {
+  color: var(--gray);
+}
+
+samp.dump.source .constant {
+  color: var(--purple);
+  font-weight: bold;
+}
+
+samp.dump.source .func {
+  color: var(--indigo);
+}
+
+samp.dump.source .var {
+  color: var(--gray);
+}
+
+samp.dump.source .string {
+  color: var(--red);
+}
+
+samp.dump.source .int, samp.dump.source .float {
+  color: var(--pink);
+  font-weight: bol;
+}
+
+samp.dump.source .g {
+  color: var(--gray);
+  opacity: 0.5;
+}
+
+samp.dump.source .comment {
+  color: #C69D82;
+}
+
+samp.dump.source .html {
+  color: var(--pink);
+}
+
+samp.dump.source .name {
+  color: #004a99;
 }
 
 body {
@@ -10155,7 +10312,7 @@ html.exception body section h3 {
   letter-spacing: 0.2em;
   font-size: 1.25em;
   line-height: 1;
-  background: #CCC;
+  background: linear-gradient(to bottom, #CCC, rgba(187, 187, 187, 0.8));
   color: white;
   padding: 0.35rem 1rem;
   position: relative;

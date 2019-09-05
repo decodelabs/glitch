@@ -110,8 +110,11 @@ class Cli implements Renderer
     /**
      * Render exception message
      */
-    protected function renderExceptionMessage(string $message, ?int $code, ?int $httpCode): string
+    protected function renderExceptionMessage(\Throwable $exception): string
     {
+        $message = $exception->getMessage();
+        $code = $exception->getCode();
+        $httpCode = $exception instanceof \EGlitch ? $exception->getHttpCode() : null;
         $head = [];
 
         if ($code) {
