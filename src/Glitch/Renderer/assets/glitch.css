@@ -9538,8 +9538,8 @@ samp.dump.trace {
   color: var(--gray);
 }
 
-.string {
-  color: var(--red);
+.string > .line {
+  color: var(--red) !important;
 }
 
 .string > .length {
@@ -9980,7 +9980,6 @@ ul.stack li span.signature > *:last-child {
 
 ul.stack li span.file {
   color: var(--orange);
-  opacity: 0.75;
   margin-left: 2.5em;
 }
 
@@ -10159,7 +10158,7 @@ samp.dump.source span.line span.number {
   color: #ae7247;
   opacity: 0.3;
   border-right: 1px solid #CCC;
-  width: 3em;
+  width: 3.65em;
   text-align: right;
   padding-right: 0.3em;
 }

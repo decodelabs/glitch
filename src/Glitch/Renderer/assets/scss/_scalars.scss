@@ -22,7 +22,9 @@
 }
 
 .string {
-    color: var(--red);
+    > .line {
+        color: var(--red) !important;
+    }
 
     > .length {
         color: var(--teal);
