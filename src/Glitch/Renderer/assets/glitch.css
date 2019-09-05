@@ -9996,11 +9996,13 @@ ul.stack li span.line {
 
 ul.stack.source {
   padding: 1rem;
+  background: linear-gradient(to bottom, #DDD 0, #EEE 12rem);
 }
 
 ul.stack.source > li {
   background: white;
   margin-bottom: 2px;
+  border-radius: 2px;
 }
 
 ul.stack.source > li samp.dump.trace {
@@ -10017,6 +10019,7 @@ ul.stack.source > li samp.dump.trace.collapsed {
 }
 
 ul.stack.source > li samp.dump.trace:not(.collapsed) {
+  border-radius: 2px 2px 0 0;
   border-top: 3px solid rgba(189, 33, 48, 0.75);
   border-left: 3px solid rgba(189, 33, 48, 0.75);
   border-right: 3px solid rgba(189, 33, 48, 0.75);
@@ -10029,9 +10032,11 @@ ul.stack.source > li:first-child samp.dump.trace {
 
 ul.stack.source > li > div.source {
   margin-bottom: 0.5em;
+  border-radius: 0 0 2px 2px;
 }
 
 ul.stack.source > li > div.source samp.dump {
+  border-radius: 0 0 2px 2px;
   border-left: 3px solid rgba(211, 37, 53, 0.5) !important;
   border-right: 3px solid rgba(211, 37, 53, 0.5) !important;
   border-bottom: 3px solid rgba(211, 37, 53, 0.5) !important;
@@ -10167,6 +10172,14 @@ samp.dump.source .keyword {
   color: var(--green);
 }
 
+samp.dump.source .keyword.return, samp.dump.source .keyword.break, samp.dump.source .keyword.continue, samp.dump.source .keyword.throw, samp.dump.source .keyword.if, samp.dump.source .keyword.else, samp.dump.source .keyword.elseif, samp.dump.source .keyword.endif, samp.dump.source .keyword.for, samp.dump.source .keyword.foreach, samp.dump.source .keyword.each, samp.dump.source .keyword.while, samp.dump.source .keyword.do {
+  font-weight: bold;
+}
+
+samp.dump.source .keyword.function + .name {
+  font-weight: bold;
+}
+
 samp.dump.source .type {
   color: var(--cyan);
 }
@@ -10198,6 +10211,10 @@ samp.dump.source .var {
   color: var(--gray);
 }
 
+samp.dump.source .var.this {
+  font-style: italic;
+}
+
 samp.dump.source .string {
   color: var(--red);
 }
@@ -10216,6 +10233,11 @@ samp.dump.source .int, samp.dump.source .float {
 samp.dump.source .g {
   color: var(--gray);
   opacity: 0.5;
+}
+
+samp.dump.source .g.double-colon + .class {
+  color: var(--cyan);
+  font-style: italic;
 }
 
 samp.dump.source .comment {
@@ -10317,7 +10339,7 @@ html.exception body section h3 {
   letter-spacing: 0.2em;
   font-size: 1.25em;
   line-height: 1;
-  background: linear-gradient(to bottom, #CCC, rgba(187, 187, 187, 0.8));
+  background: linear-gradient(to bottom, rgba(136, 136, 136, 0.8), rgba(102, 102, 102, 0.8));
   color: white;
   padding: 0.35rem 1rem;
   position: relative;
@@ -10336,11 +10358,15 @@ html.exception body section samp.dump > h3:first-child {
 }
 
 html.exception body section.exception {
-  border-bottom: 2px solid rgba(187, 187, 187, 0.86);
+  padding: 0 1rem 0.5rem;
+  border-bottom: 2px solid #888;
+  background: linear-gradient(to bottom, rgba(176, 31, 44, 0.75), rgba(176, 31, 44, 0.3));
 }
 
 html.exception body section.exception samp.dump {
+  background: white;
   min-width: 0;
+  border-radius: 2px;
 }
 
 html.exception body section.exception samp.dump div.message {
@@ -10425,32 +10451,21 @@ html.exception body section.cols > div samp.dump {
 }
 
 html.exception body section.cols > div.left {
+  flex-direction: column;
+}
+
+html.exception body section.cols > div.left > div {
   background: #EEE;
-}
-
-@media screen and (min-width: 961px) {
-  html.exception body section.cols > div.left {
-    border-right: 2px solid rgba(187, 187, 187, 0.7);
-  }
-}
-
-@media screen and (max-width: 960px) {
-  html.exception body section.cols > div.left {
-    border-bottom: 1px solid rgba(187, 187, 187, 0.7);
-  }
-}
-
-html.exception body section.cols > div.left samp.dump {
-  border: none;
+  position: relative;
+  height: 100%;
+  flex: 1 1 100%;
 }
 
 html.exception body section.cols > div.right samp.dump {
-  border-bottom: 2px solid rgba(187, 187, 187, 0.86);
   overflow-x: auto;
 }
 
 html.exception body section.cols > div.right samp.dump:last-child {
-  border: none;
   margin-bottom: 0;
   flex: 1 1 100%;
 }

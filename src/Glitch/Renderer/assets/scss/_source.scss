@@ -33,6 +33,26 @@ samp.dump.source {
 
     .keyword {
         color: var(--green);
+
+        &.return,
+        &.break,
+        &.continue,
+        &.throw,
+        &.if,
+        &.else,
+        &.elseif,
+        &.endif,
+        &.for,
+        &.foreach,
+        &.each,
+        &.while,
+        &.do {
+            font-weight: bold;
+        }
+
+        &.function + .name {
+            font-weight: bold;
+        }
     }
 
     .type {
@@ -64,6 +84,10 @@ samp.dump.source {
 
     .var {
         color: var(--gray);
+
+        &.this {
+            font-style: italic;
+        }
     }
 
     .string {
@@ -84,6 +108,15 @@ samp.dump.source {
     .g {
         color: var(--gray);
         opacity: 0.5;
+
+        &.double-colon + .class {
+            color: var(--cyan);
+            font-style: italic;
+        }
+
+        &.object-operator + .name {
+            //color: var(--gray);
+        }
     }
 
     .comment {

@@ -71,8 +71,9 @@ class Highlighter
                 }
 
                 $attrs = [];
+                $name = $this->normalizeName($origName = $name);
 
-                switch ($name) {
+                switch ($origName) {
                     case 'whitespace':
                         $source .= $token[1];
                         continue 2;
@@ -82,9 +83,15 @@ class Highlighter
                         $token[1] = substr($token[1], 1, -1);
                         $attrs['data-quote'] = $quote;
                         break;
+
+                    case 'variable':
+                        if ($token[1] === '$this') {
+                            $name .= ' this';
+                        }
+                        break;
                 }
 
-                $name = $this->normalizeName($name);
+
                 $inner = explode("\n", str_replace("\r", '', $token[1]));
 
                 foreach ($attrs as $key => $val) {

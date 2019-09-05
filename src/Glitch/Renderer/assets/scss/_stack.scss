@@ -42,10 +42,12 @@ ul.stack {
 
     &.source {
         padding: 1rem;
+        background: linear-gradient(to bottom, #DDD 0, #EEE 12rem);
 
         > li {
             background: white;
             margin-bottom: 2px;
+            border-radius: 2px;
 
             samp.dump.trace {
                 padding: 0.5rem 0.75rem;
@@ -60,6 +62,7 @@ ul.stack {
                 }
 
                 &:not(.collapsed) {
+                    border-radius: 2px 2px 0 0;
                     border-top: 3px solid rgba(darken($red, 10%), 0.75);
                     border-left: 3px solid rgba(darken($red, 10%), 0.75);
                     border-right: 3px solid rgba(darken($red, 10%), 0.75);
@@ -73,8 +76,10 @@ ul.stack {
 
             > div.source {
                 margin-bottom: 0.5em;
+                border-radius: 0 0 2px 2px;
 
                 samp.dump {
+                    border-radius: 0 0 2px 2px;
                     border-left: 3px solid rgba(darken($red, 5%), 0.5) !important;
                     border-right: 3px solid rgba(darken($red, 5%), 0.5) !important;
                     border-bottom: 3px solid rgba(darken($red, 5%), 0.5) !important;

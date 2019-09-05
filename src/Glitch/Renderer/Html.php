@@ -100,9 +100,9 @@ class Html implements Renderer
 
             $output[] = '<section class="cols">';
 
-            $output[] = '<div class="left"><div class="frame">';
+            $output[] = '<div class="left">';
             $output[] = $this->renderExceptionTrace($dataDump->getTrace(), true);
-            $output[] = '</div></div>';
+            $output[] = '</div>';
 
             $output[] = '<div class="right"><div class="frame">';
             $output[] = $this->renderExceptionEntity($entity);
@@ -396,6 +396,7 @@ class Html implements Renderer
     {
         $output = [];
         $output[] = '<h3>Stack trace</h3>';
+        $output[] = '<div><div class="frame">';
         $count = count($trace);
         $lines = [];
         $stackId = uniqid();
@@ -429,6 +430,7 @@ class Html implements Renderer
         }
 
         $output[] = $this->renderBasicList($lines, 'stack source');
+        $output[] = '</div></div>';
 
         return implode("\n", $output);
     }
