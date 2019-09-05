@@ -39,13 +39,15 @@ html {
 
 html.exception {
     body {
-        background: rgba(darken($red, 10%), 0.75);
-        //background: #9D929A;
         display: flex;
         flex-direction: column;
 
+        @media screen and (min-height: 550px) {
+            overflow: hidden;
+        }
+
         > .container-fluid {
-            padding: 0.5rem;
+            padding: 0;
             flex: 1 1 100%;
             display: flex;
             flex-direction: column;
@@ -55,6 +57,8 @@ html.exception {
 
         header.title {
             color: white;
+            padding: 0.5rem 0.9rem;
+            background: linear-gradient(to bottom, rgba(darken($red, 10%), 0.75), rgba(darken($red, 13%), 0.75));
 
             h1 {
                 margin: 0;
@@ -63,7 +67,6 @@ html.exception {
                 letter-spacing: 0.2em;
                 font-size: 1.75em;
                 line-height: 1;
-                margin-bottom: 0.25rem;
 
                 span.version {
                     font-size: 0.5em;
@@ -85,15 +88,23 @@ html.exception {
 
         section {
             display: flex;
-            margin-left: -0.25rem;
-            margin-right: -0.25rem;
 
             > div {
                 display: flex;
-                background: white;
-                border-radius: 0.2rem;
-                margin: 0.25rem;
                 flex: 1 1 auto;
+            }
+
+            h3 {
+                margin: 0;
+                font-weight: 200;
+                text-transform: uppercase;
+                letter-spacing: 0.2em;
+                font-size: 1.25em;
+                line-height: 1;
+                background: #CCC;
+                color: white;
+                padding: 0.35rem 1rem;
+                position: relative;
             }
 
             samp.dump {
@@ -110,6 +121,8 @@ html.exception {
         }
 
         section.exception {
+            border-bottom: 2px solid rgba(#BBB, 0.86);
+
             samp.dump {
                 min-width: 0;
 
@@ -148,14 +161,17 @@ html.exception {
             }
         }
 
+
         section.cols {
             flex: 1 1 100%;
             padding-bottom: 0;
             display: flex;
             align-items: stretch;
-            flex-wrap: wrap;
-            margin-bottom: -0.25rem;
             box-sizing: border-box;
+
+            @media screen and (max-width: 960px) {
+                flex-direction: column;
+            }
 
             > div {
                 box-sizing: border-box;
@@ -163,14 +179,15 @@ html.exception {
                 flex: 1 1 45%;
                 box-sizing: border-box;
                 position: relative;
-                min-height: 20rem;
 
-                @media screen and (min-width: 501px) {
-                    min-width: 30rem;
+                @media screen and (min-width: 961px) {
+                    min-height: 20rem;
                 }
+
                 @media screen and (max-width: 500px) {
                     flex: 1 1 100%;
                 }
+
 
                 div.frame {
                     position: absolute;
@@ -184,8 +201,20 @@ html.exception {
                     overflow-x: hidden;
                 }
 
+                samp.dump {
+                    padding: 1.25rem 2rem;
+                }
+
                 &.left {
                     background: #EEE;
+
+                    @media screen and (min-width: 961px) {
+                        border-right: 2px solid rgba(#BBB, 0.86);
+                    }
+                    @media screen and (max-width: 960px) {
+                        border-bottom: 1px solid rgba(#BBB, 0.86);
+                    }
+
                     samp.dump {
                         border: none;
                     }
@@ -193,9 +222,7 @@ html.exception {
 
                 &.right {
                     samp.dump {
-                        border-bottom: 1px solid #DDD;
-                        padding-bottom: 1.5rem;
-                        margin-bottom: 1rem;
+                        border-bottom: 2px solid rgba(#BBB, 0.86);
                         overflow-x: auto;
 
                         &:last-child {

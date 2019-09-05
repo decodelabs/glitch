@@ -40,6 +40,8 @@ ul.list {
         max-width: 80em;
 
         > li {
+            white-space: normal;
+
             > .identifier {
                 color: var(--cyan);
 
@@ -139,6 +141,10 @@ ul.list {
 
             &:last-child:after {
                 display: none;
+            }
+
+            > *:last-child {
+                padding: 0 !important;
             }
         }
     }

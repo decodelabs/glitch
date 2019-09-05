@@ -276,8 +276,8 @@ class Html implements Renderer
     protected function renderExceptionEntity(Entity $entity): string
     {
         $output = [];
-        $output[] = '<samp class="dump">';
         $output[] = '<h3>Exception object</h3>';
+        $output[] = '<samp class="dump">';
         $output[] = $this->renderEntity($entity, 0, [
             'info' => true,
             'meta' => false,
@@ -324,8 +324,8 @@ class Html implements Renderer
         }
 
         $output = [];
-        $output[] = '<samp class="dump environment">';
         $output[] = '<h3>Environment</h3>';
+        $output[] = '<samp class="dump environment">';
 
         $output[] = $this->renderList($array, 'meta');
 
@@ -339,11 +339,12 @@ class Html implements Renderer
     protected function renderTrace(Trace $trace, bool $open=false): string
     {
         $output = [];
-        $output[] = '<samp class="dump trace">';
 
         if ($open) {
             $output[] = '<h3>Stack trace</h3>';
         }
+        
+        $output[] = '<samp class="dump trace">';
 
         $output[] = $this->renderEntity(
             (new Entity('stack'))

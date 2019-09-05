@@ -3,32 +3,40 @@ ul.stack {
     padding: 0;
     margin: 0;
 
-    li span {
-        &.number {
-            width: 1rem;
-            display: inline-block;
-        }
-        &.signature {
-            color: var(--orange);
-
-            &:after {
-                content: "\A";
-                white-space: pre;
+    li {
+        span {
+            &.number {
+                width: 1rem;
+                display: inline-block;
             }
-        }
-        &.file {
-            color: var(--orange);
-            opacity: 0.75;
-            margin-left: 2.5em;
+            &.signature {
+                color: var(--orange);
+                padding-right: 1rem;
 
-            &:after {
-                content: ' :';
-                color: var(--gray);
-                opacity: 0.5;
+                &:after {
+                    content: "\A";
+                    white-space: pre;
+                }
+
+                > *:last-child {
+                    padding-right: 1rem;
+                }
             }
-        }
-        &.line {
-            color: var(--pink);
+            &.file {
+                color: var(--orange);
+                opacity: 0.75;
+                margin-left: 2.5em;
+
+                &:after {
+                    content: ' :';
+                    color: var(--gray);
+                    opacity: 0.5;
+                }
+            }
+            &.line {
+                color: var(--pink);
+                padding-right: 1rem;
+            }
         }
     }
 }

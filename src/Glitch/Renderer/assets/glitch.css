@@ -9505,6 +9505,7 @@ samp.dump {
   font-size: 0.75rem;
   margin-bottom: 1rem;
   white-space: nowrap;
+  line-height: 1.5;
 }
 
 samp.dump.trace {
@@ -9856,6 +9857,10 @@ ul.list.info {
   max-width: 80em;
 }
 
+ul.list.info > li {
+  white-space: normal;
+}
+
 ul.list.info > li > .identifier {
   color: var(--cyan);
 }
@@ -9944,6 +9949,10 @@ ul.list.inline > li:last-child:after {
   display: none;
 }
 
+ul.list.inline > li > *:last-child {
+  padding: 0 !important;
+}
+
 ul.stack {
   list-style: none;
   padding: 0;
@@ -9957,11 +9966,16 @@ ul.stack li span.number {
 
 ul.stack li span.signature {
   color: var(--orange);
+  padding-right: 1rem;
 }
 
 ul.stack li span.signature:after {
   content: "\A";
   white-space: pre;
+}
+
+ul.stack li span.signature > *:last-child {
+  padding-right: 1rem;
 }
 
 ul.stack li span.file {
@@ -9978,6 +9992,7 @@ ul.stack li span.file:after {
 
 ul.stack li span.line {
   color: var(--pink);
+  padding-right: 1rem;
 }
 
 span.signature i {
@@ -10049,6 +10064,10 @@ span.signature span.ar i.br:first-child:after {
   opacity: 0.7;
 }
 
+span.signature span.string .line {
+  padding-right: 0;
+}
+
 body {
   padding: 0;
   margin: 0;
@@ -10073,13 +10092,18 @@ html.dump header.stats {
 }
 
 html.exception body {
-  background: rgba(189, 33, 48, 0.75);
   display: flex;
   flex-direction: column;
 }
 
+@media screen and (min-height: 550px) {
+  html.exception body {
+    overflow: hidden;
+  }
+}
+
 html.exception body > .container-fluid {
-  padding: 0.5rem;
+  padding: 0;
   flex: 1 1 100%;
   display: flex;
   flex-direction: column;
@@ -10089,6 +10113,8 @@ html.exception body > .container-fluid {
 
 html.exception body header.title {
   color: white;
+  padding: 0.5rem 0.9rem;
+  background: linear-gradient(to bottom, rgba(189, 33, 48, 0.75), rgba(176, 31, 44, 0.75));
 }
 
 html.exception body header.title h1 {
@@ -10098,7 +10124,6 @@ html.exception body header.title h1 {
   letter-spacing: 0.2em;
   font-size: 1.75em;
   line-height: 1;
-  margin-bottom: 0.25rem;
 }
 
 html.exception body header.title h1 span.version {
@@ -10116,16 +10141,24 @@ html.exception body header.stats > div.stats span {
 
 html.exception body section {
   display: flex;
-  margin-left: -0.25rem;
-  margin-right: -0.25rem;
 }
 
 html.exception body section > div {
   display: flex;
-  background: white;
-  border-radius: 0.2rem;
-  margin: 0.25rem;
   flex: 1 1 auto;
+}
+
+html.exception body section h3 {
+  margin: 0;
+  font-weight: 200;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 1.25em;
+  line-height: 1;
+  background: #CCC;
+  color: white;
+  padding: 0.35rem 1rem;
+  position: relative;
 }
 
 html.exception body section samp.dump {
@@ -10138,6 +10171,10 @@ html.exception body section samp.dump {
 html.exception body section samp.dump > h3:first-child {
   font-size: 1.5em;
   margin-bottom: 1em;
+}
+
+html.exception body section.exception {
+  border-bottom: 2px solid rgba(187, 187, 187, 0.86);
 }
 
 html.exception body section.exception samp.dump {
@@ -10180,9 +10217,13 @@ html.exception body section.cols {
   padding-bottom: 0;
   display: flex;
   align-items: stretch;
-  flex-wrap: wrap;
-  margin-bottom: -0.25rem;
   box-sizing: border-box;
+}
+
+@media screen and (max-width: 960px) {
+  html.exception body section.cols {
+    flex-direction: column;
+  }
 }
 
 html.exception body section.cols > div {
@@ -10191,12 +10232,11 @@ html.exception body section.cols > div {
   flex: 1 1 45%;
   box-sizing: border-box;
   position: relative;
-  min-height: 20rem;
 }
 
-@media screen and (min-width: 501px) {
+@media screen and (min-width: 961px) {
   html.exception body section.cols > div {
-    min-width: 30rem;
+    min-height: 20rem;
   }
 }
 
@@ -10218,8 +10258,24 @@ html.exception body section.cols > div div.frame {
   overflow-x: hidden;
 }
 
+html.exception body section.cols > div samp.dump {
+  padding: 1.25rem 2rem;
+}
+
 html.exception body section.cols > div.left {
   background: #EEE;
+}
+
+@media screen and (min-width: 961px) {
+  html.exception body section.cols > div.left {
+    border-right: 2px solid rgba(187, 187, 187, 0.86);
+  }
+}
+
+@media screen and (max-width: 960px) {
+  html.exception body section.cols > div.left {
+    border-bottom: 1px solid rgba(187, 187, 187, 0.86);
+  }
 }
 
 html.exception body section.cols > div.left samp.dump {
@@ -10227,9 +10283,7 @@ html.exception body section.cols > div.left samp.dump {
 }
 
 html.exception body section.cols > div.right samp.dump {
-  border-bottom: 1px solid #DDD;
-  padding-bottom: 1.5rem;
-  margin-bottom: 1rem;
+  border-bottom: 2px solid rgba(187, 187, 187, 0.86);
   overflow-x: auto;
 }
 
