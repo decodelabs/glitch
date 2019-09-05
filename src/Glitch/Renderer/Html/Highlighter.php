@@ -70,25 +70,36 @@ class Highlighter
                     break;
                 }
 
+                $attrs = [];
 
                 switch ($name) {
                     case 'whitespace':
                         $source .= $token[1];
-                        break;
+                        continue 2;
 
-                    default:
-                        $inner = explode("\n", str_replace("\r", '', $token[1]));
-                        $name = $this->normalizeName($name);
-
-                        foreach ($inner as &$part) {
-                            if (!empty($part)) {
-                                $part = '<span class="'.$name.'">'.$this->esc($part).'</span>';
-                            }
-                        }
-
-                        $source .= implode("\n", $inner);
+                    case 'constant-encapsed-string':
+                        $quote = substr($token[1], 0, 1);
+                        $token[1] = substr($token[1], 1, -1);
+                        $attrs['data-quote'] = $quote;
                         break;
                 }
+
+                $name = $this->normalizeName($name);
+                $inner = explode("\n", str_replace("\r", '', $token[1]));
+
+                foreach ($attrs as $key => $val) {
+                    $attrs[$key] = ' '.$key.'="'.$this->esc($val).'"';
+                }
+
+                $attrs = implode($attrs);
+
+                foreach ($inner as &$part) {
+                    if (!empty($part)) {
+                        $part = '<span class="'.$name.'"'.$attrs.'>'.$this->esc($part).'</span>';
+                    }
+                }
+
+                $source .= implode("\n", $inner);
             } else {
                 if ($startLine !== null && $lastLine < $startLine) {
                     continue;
@@ -286,13 +297,13 @@ class Highlighter
                 return 'func '.$name;
 
             // Variable
-            case 'encapsed-and-whitespace':
             case 'num-string':
             case 'string-varname':
             case 'variable':
                 return 'var '.$name;
 
             // String
+            case 'encapsed-and-whitespace':
             case 'constant-encapsed-string':
                 return 'string '.$name;
 

@@ -68,6 +68,12 @@ samp.dump.source {
 
     .string {
         color: var(--red);
+
+        &:before, &:after {
+            content: attr(data-quote);
+            color: var(--gray);
+            opacity: 0.5;
+        }
     }
 
     .int, .float {

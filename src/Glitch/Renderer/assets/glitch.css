@@ -10203,6 +10203,12 @@ samp.dump.source .string {
   color: var(--red);
 }
 
+samp.dump.source .string:before, samp.dump.source .string:after {
+  content: attr(data-quote);
+  color: var(--gray);
+  opacity: 0.5;
+}
+
 samp.dump.source .int, samp.dump.source .float {
   color: var(--pink);
   font-weight: bol;
