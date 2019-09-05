@@ -10430,13 +10430,13 @@ html.exception body section.cols > div.left {
 
 @media screen and (min-width: 961px) {
   html.exception body section.cols > div.left {
-    border-right: 2px solid rgba(187, 187, 187, 0.86);
+    border-right: 2px solid rgba(187, 187, 187, 0.7);
   }
 }
 
 @media screen and (max-width: 960px) {
   html.exception body section.cols > div.left {
-    border-bottom: 1px solid rgba(187, 187, 187, 0.86);
+    border-bottom: 1px solid rgba(187, 187, 187, 0.7);
   }
 }
 
