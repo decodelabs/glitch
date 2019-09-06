@@ -1,5 +1,4 @@
 samp.dump.source {
-    display: block;
     overflow-x: auto;
     padding: 0 !important;
     color: #777;
@@ -24,7 +23,7 @@ samp.dump.source {
             color: darken(#C18D67, 10%);
             opacity: 0.3;
             border-right: 1px solid #CCC;
-            //display: inline-block;
+            display: inline-block;
             width: 3.65em;
             text-align: right;
             padding-right: 0.3em;
@@ -129,91 +128,89 @@ samp.dump.source {
 }
 
 
-html.dark {
-    samp.dump.source {
-        color: #777;
+html.dark samp.dump.source {
+    color: #777;
 
-        span.line {
-            &.highlighted {
-                background: rgba(lighten($blue, 25%), 0.1);
-            }
-
-            span.number {
-                color: lighten(#C18D67, 10%);
-                opacity: 0.4;
-                border-right: 2px solid rgba(#CCC, 0.35);
-                background: rgba(black, 0.2);
-            }
+    span.line {
+        &.highlighted {
+            background: rgba(lighten($blue, 25%), 0.1);
         }
 
-        .keyword {
-            color: lighten($green, 15%);
+        span.number {
+            color: lighten(#C18D67, 10%);
+            opacity: 0.4;
+            border-right: 2px solid rgba(#CCC, 0.35);
+            background: rgba(black, 0.2);
+        }
+    }
 
-            &.return,
-            &.break,
-            &.continue,
-            &.throw,
-            &.if,
-            &.else,
-            &.elseif,
-            &.endif,
-            &.for,
-            &.foreach,
-            &.each,
-            &.while,
-            &.do {
-                font-weight: bold;
-            }
+    .keyword {
+        color: lighten($green, 15%);
 
-            &.function + .name {
-                font-weight: bold;
-            }
+        &.return,
+        &.break,
+        &.continue,
+        &.throw,
+        &.if,
+        &.else,
+        &.elseif,
+        &.endif,
+        &.for,
+        &.foreach,
+        &.each,
+        &.while,
+        &.do {
+            font-weight: bold;
         }
 
-        .type {
-            color: lighten($cyan, 15%);
+        &.function + .name {
+            font-weight: bold;
         }
+    }
 
-        .tag {
-            color: $red-bright;
-        }
+    .type {
+        color: lighten($cyan, 15%);
+    }
 
-        .operator {
-            color: $gray;
-        }
+    .tag {
+        color: $red-bright;
+    }
 
-        .constant {
-            color: lighten($purple, 20%);
-        }
+    .operator {
+        color: $gray;
+    }
 
-        .func {
-            color: lighten($indigo, 25%);
-        }
+    .constant {
+        color: lighten($purple, 20%);
+    }
 
-        .string {
-            color: $red-bright;
-        }
+    .func {
+        color: lighten($indigo, 25%);
+    }
 
-        .int, .float {
-            color: lighten($pink, 10%);
-        }
+    .string {
+        color: $red-bright;
+    }
 
-        .g {
-            &.double-colon + .class {
-                color: lighten($cyan, 10%);
-            }
-        }
+    .int, .float {
+        color: lighten($pink, 10%);
+    }
 
-        .comment {
-            color: lighten(saturate(#C69D82, 10%), 10%);
+    .g {
+        &.double-colon + .class {
+            color: lighten($cyan, 10%);
         }
+    }
 
-        .html {
-            color: $pink;
-        }
+    .comment {
+        color: lighten(saturate(#C69D82, 10%), 10%);
+    }
 
-        .name {
-            color: $gray-200;
-        }
+    .html {
+        color: $pink;
+    }
+
+    .name {
+        color: $gray-200;
     }
 }

@@ -1,0 +1,66 @@
+html {
+    height: 100%;
+
+    &.dark {
+        body {
+            background: rgba(#333, 0.95);
+        }
+    }
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    max-height: 100%;
+    background: $cream;
+    display: flex;
+    flex-direction: column;
+
+    @media screen and (min-width: 961px) {
+        overflow: hidden;
+    }
+    @media screen and (max-width: 960px) {
+        max-height: none;
+        height: auto;
+    }
+
+    > .container-fluid {
+        padding: 0;
+        flex: 1 1 100%;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+
+        @media screen and (min-width: 961px) {
+            max-height: 100vh;
+        }
+    }
+}
+
+
+
+samp.dump {
+    display: block;
+    font-size: 0.75rem;
+    margin-bottom: 1rem;
+    white-space: nowrap;
+    line-height: 1.5;
+
+    &.trace {
+        padding: 1rem 0;
+        border-top: 1px solid #EEE;
+    }
+}
+
+
+section.dump {
+    samp.dump {
+        overflow-x: auto;
+
+        &:last-child {
+            margin-bottom: 0;
+            flex: 1 1 100%;
+        }
+    }
+}

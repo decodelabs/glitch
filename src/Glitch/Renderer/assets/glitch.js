@@ -97,7 +97,7 @@ $(function() {
         $(this).toggleClass('show');
     });
 
-    $(document).on('click', 'ul.stack.source .dump.trace', function(e) {
+    $(document).on('click', 'ul.stack .dump.trace', function(e) {
         $(this).parent().toggleClass('open', !$(this).hasClass('collapsed'));
-    })
+    });
 });

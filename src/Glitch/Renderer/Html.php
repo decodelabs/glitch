@@ -105,7 +105,7 @@ class Html implements Renderer
         $output[] = '</div></div>';
 
         $output[] = '<div class="right">';
-        $output[] = $this->renderExceptionTrace($dump->getTrace());
+        $output[] = $this->renderTrace($dump->getTrace());
         $output[] = '</div>';
 
         $output[] = '</div>';
@@ -134,7 +134,7 @@ class Html implements Renderer
 
             $output[] = '<div class="left">';
             $output[] = $this->renderExceptionMessage($exception);
-            $output[] = $this->renderExceptionTrace($dataDump->getTrace(), true);
+            $output[] = $this->renderTrace($dataDump->getTrace(), true);
             $output[] = '</div>';
 
             $output[] = '<div class="right"><div class="frame">';
@@ -166,79 +166,29 @@ class Html implements Renderer
         $output[] = '<head>';
 
         $vendor = $this->context->getVendorPath();
-        $isDev = is_link($vendor.'/decodelabs/glitch');
-
-        $css = $scss = [];
-        $css = ['glitch' => $vendor.'/decodelabs/glitch/src/Glitch/Renderer/assets/glitch.css'];
-        $scss = ['glitch' => $vendor.'/decodelabs/glitch/src/Glitch/Renderer/assets/glitch.scss'];
-
-        $js = [
-            'jQuery' => $vendor.'/bower-asset/jquery/dist/jquery.min.js',
-            'bootstrap' => $vendor.'/bower-asset/bootstrap/dist/js/bootstrap.bundle.min.js',
-            'glitch' => __DIR__.'/assets/glitch.js'
-        ];
 
 
         // Meta
         $output[] = '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">';
 
 
-        // Scss
-        if (static::DEV && $isDev) {
-            $test = ['glitch' => ['_badge.scss', '_entity.scss', '_list.scss', '_samp.scss', '_scalars.scss', '_signature.scss', '_stack.scss', '_tooltip.scss', '_source.scss']];
-
-            foreach ($scss as $name => $path) {
-                if (!file_exists($path)) {
-                    continue;
-                }
-
-                $cssPath = $css[$name];
-                $build = false;
-
-                if (file_exists($cssPath)) {
-                    $cssTime = filemtime($cssPath);
-                    $scssTime = filemtime($path);
-
-                    if ($scssTime > $cssTime) {
-                        $build = true;
-                    }
-                } else {
-                    $build = true;
-                }
-
-                if (!$build && isset($test[$name])) {
-                    foreach ($test[$name] as $testFileName) {
-                        $testFilePath = __DIR__.'/assets/scss/'.$testFileName;
-
-                        if (file_exists($testFilePath)) {
-                            $scssTime = filemtime($testFilePath);
-
-                            if ($scssTime > $cssTime) {
-                                $build = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if ($build) {
-                    exec('cd '.$vendor.'; sassc --style=expanded '.$path.' '.$cssPath.' 2>&1', $execOut);
-
-                    if (!empty($execOut)) {
-                        die('<pre>'.print_r($execOut, true));
-                    }
-                }
-            }
-        }
-
         // Css
-        foreach ($css as $name => $path) {
-            $output[] = '<style id="style-'.$name.'">';
-            $output[] = file_get_contents($path);
+        $css = $vendor.'/decodelabs/glitch/src/Glitch/Renderer/assets/glitch.css';
+        $this->buildScss($css);
+
+        if (file_exists($css)) {
+            $output[] = '<style id="style-glitch">';
+            $output[] = file_get_contents($css);
             $output[] = '</style>';
         }
 
         // Js
+        $js = [
+            'jQuery' => $vendor.'/bower-asset/jquery/dist/jquery.min.js',
+            'bootstrap' => $vendor.'/bower-asset/bootstrap/dist/js/bootstrap.bundle.min.js',
+            'glitch' => __DIR__.'/assets/glitch.js'
+        ];
+
         foreach ($js as $name => $path) {
             $output[] = '<script id="script-'.$name.'">';
             $output[] = file_get_contents($path);
@@ -251,6 +201,68 @@ class Html implements Renderer
         $output[] = '<div class="container-fluid">';
 
         return implode("\n", $output);
+    }
+
+    /**
+     * Build scss files
+     */
+    protected function buildScss(string $cssPath): void
+    {
+        $vendor = $this->context->getVendorPath();
+        $isDev = is_link($vendor.'/decodelabs/glitch');
+
+        if (!static::DEV || !$isDev) {
+            return;
+        }
+
+        $scssPath = substr($cssPath, 0, -3).'scss';
+
+        if (!file_exists($scssPath)) {
+            return;
+        }
+
+        $build = false;
+
+        if (file_exists($cssPath)) {
+            $cssTime = filemtime($cssPath);
+            $scssTime = filemtime($scssPath);
+
+            if ($scssTime > $cssTime) {
+                $build = true;
+            }
+        } else {
+            $build = true;
+        }
+
+        if (!$build) {
+            $test = scandir(__DIR__.'/assets/scss/');
+
+            foreach ($test as $testFileName) {
+                if ($testFileName === '.' || $testFileName === '..') {
+                    continue;
+                }
+
+                $testFilePath = __DIR__.'/assets/scss/'.$testFileName;
+
+                if (is_file($testFilePath)) {
+                    $scssTime = filemtime($testFilePath);
+
+                    if ($scssTime > $cssTime) {
+                        $build = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+
+        if ($build) {
+            exec('cd '.$vendor.'; sassc --style=expanded '.$scssPath.' '.$cssPath.' 2>&1', $execOut);
+
+            if (!empty($execOut)) {
+                die('<pre>'.print_r($execOut, true));
+            }
+        }
     }
 
     /**
@@ -302,7 +314,7 @@ class Html implements Renderer
     protected function renderDumpEntities(Dump $dump): string
     {
         $output = [];
-        $output[] = '<section class="dump">';
+        $output[] = '<section class="dump entity">';
         $output[] = '<h3>Dump</h3>';
 
         foreach ($dump->getEntities() as $value) {
@@ -395,26 +407,6 @@ class Html implements Renderer
     protected function renderTrace(Trace $trace, bool $open=false): string
     {
         $output = [];
-        $output[] = '<samp class="dump trace">';
-
-        $output[] = $this->renderEntity(
-            (new Entity('stack'))
-                ->setName('stack')
-                ->setStackTrace($trace)
-                ->setOpen($open)
-                ->setLength($trace->count())
-        );
-
-        $output[] = '</samp>';
-        return implode("\n", $output);
-    }
-
-    /**
-     * Render final stack trace
-     */
-    protected function renderExceptionTrace(Trace $trace): string
-    {
-        $output = [];
         $output[] = '<section class="stack">';
         $output[] = '<h3>Stack trace</h3>';
         $output[] = '<div><div class="frame">';
@@ -442,9 +434,9 @@ class Html implements Renderer
             $line[] = '</samp>';
 
             if (null !== ($source = $this->renderFrameSource($frame))) {
-                $line[] = '<div id="'.$sourceId.'" class="source collapse'.($first ? ' show' : null).'"><samp class="dump source">';
+                $line[] = '<samp id="'.$sourceId.'" class="dump source collapse'.($first ? ' show' : null).'">';
                 $line[] = $source;
-                $line[] = '</samp></div>';
+                $line[] = '</samp>';
             }
 
             $line[] = '</div>';
@@ -453,7 +445,7 @@ class Html implements Renderer
             $first = false;
         }
 
-        $output[] = $this->renderBasicList($lines, 'stack source');
+        $output[] = $this->renderBasicList($lines, 'stack');
         $output[] = '</div></div>';
         $output[] = '</section>';
 

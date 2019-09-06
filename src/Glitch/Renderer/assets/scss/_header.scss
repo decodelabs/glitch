@@ -1,0 +1,48 @@
+header.title {
+    color: white;
+    padding: 0.5rem 0.9rem;
+
+    background: linear-gradient(to bottom, rgba(darken(#555, 15%), 0.85), rgba(darken(#555, 15%), 0.95));
+    border-bottom: 2px solid desaturate(darken(#222, 20%), 20%);
+
+
+    h1 {
+        margin: 0;
+        font-weight: 200;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        font-size: 1.75em;
+        line-height: 1;
+
+        span.version {
+            font-size: 0.5em;
+            text-transform: none;
+        }
+    }
+}
+
+html.dump {
+    header.title {
+        background: linear-gradient(to bottom, rgba(darken($blue, 15%), 0.85), rgba(darken($blue, 15%), 0.95));
+        border-bottom: 2px solid desaturate(darken($blue, 20%), 20%);
+    }
+
+    &.dark {
+        header.title {
+            border-bottom: 2px solid desaturate(darken($blue, 25%), 20%);
+        }
+    }
+}
+
+html.exception {
+    header.title {
+        background: linear-gradient(to bottom, rgba(darken($red, 5%), 0.85), rgba(darken($red, 5%), 0.95));
+        border-bottom: 2px solid desaturate(darken($red, 10%), 20%);
+    }
+
+    &.dark {
+        header.title {
+            border-bottom: 2px solid desaturate(darken($red, 20%), 20%);
+        }
+    }
+}

@@ -1,0 +1,63 @@
+section.exception {
+    background: darken($cream, 5%);
+
+    samp.dump.exception {
+        min-width: 0;
+        border-radius: 2px;
+        padding: 1rem;
+
+        div.message {
+            margin-bottom: 1rem;
+            border-left: 3px solid $red;
+            padding-left: 1rem;
+            background: white;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+
+            div.line {
+                font-size: 2em;
+                border: none;
+            }
+
+            div.string.m {
+                &:before, &:after {
+                    content: '!!!';
+                }
+            }
+        }
+
+        .attr {
+            color: $pink;
+            font-weight: 600;
+
+            .label {
+                color: $gray;
+                font-weight: normal;
+
+                &:after {
+                    content: ':';
+                }
+            }
+        }
+    }
+}
+
+html.dark section.exception {
+    background: rgba(#333, 0.6);
+
+    samp.dump.exception div.message {
+        background: none;
+    }
+
+    samp.dump.exception {
+        .attr {
+            color: lighten($pink, 10%);
+
+            .label {
+                color: rgba($gray-300, 0.7);
+            }
+        }
+    }
+}

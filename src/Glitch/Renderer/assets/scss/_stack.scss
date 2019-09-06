@@ -1,165 +1,163 @@
+section.stack {
+    flex: 1 1 100%;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(to bottom, darken($cream, 12%) 0, darken($cream, 7%) 12rem);
+
+    > div {
+        position: relative;
+        flex: 1 1 100%;
+    }
+}
+
+
+html.dark section.stack {
+    background: linear-gradient(to bottom, rgba(white, 0.1) 0, rgba(white, 0) 12rem, rgba(black, 0.1));
+}
+
+
 ul.stack {
     list-style: none;
-    padding: 0;
+    padding: 1rem;
     margin: 0;
 
-    > li span {
-        &.number {
-            width: 1rem;
-            display: inline-block;
-        }
-        &.signature {
-            color: $gray;
-            padding-right: 1rem;
+    > li {
+        background: rgba(white, 0.8);
+        margin-bottom: 2px;
+        border-radius: 2px;
+    }
 
-            &:after {
-                content: "\A";
-                white-space: pre;
-            }
+    div.stack-frame {
+        border: 3px solid transparent;
+        transition: all 0.5s;
 
-            > *:last-child {
-                padding-right: 1rem;
-            }
-        }
-        &.file {
-            color: $orange;
-            margin-left: 2.5em;
+        &.open {
+            box-shadow: 2px 0.5rem 0.5rem rgba(black, 0.1);
+            border-color: rgba(#222, 0.85);
 
-            &:after {
-                content: ' :';
-                color: $gray;
-                opacity: 0.5;
-            }
-        }
-        &.line {
-            color: $pink;
-            padding-right: 1rem;
-        }
-
-        &.string > span.line {
-            opacity: 1 !important;
+            margin-bottom: 1em;
+            margin-top: 1em;
         }
     }
 
-    &.source {
-        padding: 1rem;
+    &:first-child div.stack-frame.open {
+        margin-top: 0;
+    }
 
+    samp.dump.trace {
+        padding: 0.5rem 0.75rem;
+        cursor: n-resize;
+        transition: margin-top 0.2s, border-color 0.2s ease-out;
+        overflow-x: auto;
+        border: none;
+
+        &.collapsed {
+            cursor: s-resize;
+            border-color: transparent;
+        }
+
+        span {
+            &.number {
+                width: 1rem;
+                display: inline-block;
+            }
+            &.signature {
+                color: $gray;
+                padding-right: 1rem;
+
+                &:after {
+                    content: "\A";
+                    white-space: pre;
+                }
+
+                > *:last-child {
+                    padding-right: 1rem;
+                }
+            }
+            &.file {
+                color: $orange;
+                margin-left: 2.5em;
+
+                &:after {
+                    content: ' :';
+                    color: $gray;
+                    opacity: 0.5;
+                }
+            }
+            &.line {
+                color: $pink;
+                padding-right: 1rem;
+            }
+        }
+    }
+
+    samp.dump.source {
+        padding: 0.5rem 0.75rem;
+        background: white;
+        border-radius: 0 0 2px 2px;
+
+        &:before {
+            content: '';
+            display: block;
+            width: 100%;
+            border-top: 1px solid darken(#EEE, 3%) !important;
+        }
+
+        span.line {
+            opacity: 1;
+
+            span.number {
+                background: rgba(darken($cream, 35%), 0.3);
+            }
+        }
+    }
+}
+
+html.dark {
+    ul.stack {
         > li {
-            background: rgba(white, 0.8);
-            margin-bottom: 2px;
-            border-radius: 2px;
+            background: rgba(#999, 0.1);
+        }
 
-            div.stack-frame {
-                border: 3px solid transparent;
-                transition: all 0.5s;
+        div.stack-frame {
+            &.open {
+                box-shadow: 2px 0.5rem 0.5rem rgba(black, 0.2);
+            }
+        }
 
-                &.open {
-                    box-shadow: 2px 0.5rem 0.5rem rgba(black, 0.1);
-                    border-color: rgba($red, 0.85);
-                    margin-bottom: 1em;
-                    margin-top: 1em;
+        samp.dump.trace {
+            span {
+                &.number {
+                    color: $gray;
+                }
+                &.file {
+                    color: lighten($orange, 25%);
+                }
+                &.line {
+                    color: lighten($pink, 15%);
                 }
             }
+        }
 
-            &:first-child div.stack-frame.open {
-                margin-top: 0;
-            }
+        samp.dump.source {
+            background: rgba(#333, 0.35);
 
-            samp.dump.trace {
-                padding: 0.5rem 0.75rem;
-                cursor: n-resize;
-                transition: margin-top 0.2s, border-color 0.2s ease-out;
-                overflow-x: auto;
-                border: none;
-
-                &.collapsed {
-                    cursor: s-resize;
-                    border-color: transparent;
-                }
-            }
-
-
-            div.source {
-                border-radius: 0 0 2px 2px;
-
-                samp.dump.source {
-                    border-radius: 0 0 2px 2px;
-                }
-
-                span.line {
-                    opacity: 1;
-                }
-            }
-
-            &:last-child {
-                margin-bottom: 0;
-
-                > div.source {
-                    margin-bottom: 0;
-                }
-            }
-
-            samp.dump.source {
-                padding: 0.5rem 0.75rem;
-                //background: rgba(#EEE, 0.35);
-                background: white;
-
-                &:before {
-                    content: '';
-                    display: block;
-                    width: 100%;
-                    border-top: 1px solid darken(#EEE, 3%) !important;
-                }
-
-                span.line span.number {
-                    background: rgba(darken($cream, 35%), 0.3);
-                }
+            &:before {
+                border-top: 1px solid rgba(#333, 0.8) !important;
             }
         }
     }
 }
 
 
-html.dark {
-    ul.stack {
-        > li span {
-            &.number {
-                color: $gray;
-            }
-            &.file {
-                color: lighten($orange, 25%);
-                opacity: 0.75;
-            }
-            &.line {
-                color: lighten($pink, 15%);
-                opacity: 0.75;
-            }
-        }
+html.exception {
+    ul.stack div.stack-frame.open {
+        border-color: rgba($red, 0.85);
+    }
+}
 
-        &.source {
-            > li {
-                background: rgba(#999, 0.1);
-
-                div.stack-frame.open {
-                    box-shadow: 2px 0.5rem 0.5rem rgba(black, 0.2);
-                }
-
-                samp.dump.source {
-                    background: rgba(#333, 0.35);
-
-                    &:before {
-                        border-top: 1px solid rgba(#333, 0.8) !important;
-                    }
-                }
-
-                div.source {
-                    samp.dump {
-                        //border-left-color: rgba($red-bright, 0.5) !important;
-                        //border-right-color: rgba($red-bright, 0.5) !important;
-                        //border-bottom-color: rgba($red-bright, 0.5) !important;
-                    }
-                }
-            }
-        }
+html.dump {
+    ul.stack div.stack-frame.open {
+        border-color: rgba($blue, 0.85);
     }
 }

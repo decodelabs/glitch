@@ -1,0 +1,84 @@
+div.cols {
+    flex: 1 1 100%;
+    padding-bottom: 0;
+    display: flex;
+    align-items: stretch;
+    box-sizing: border-box;
+    display: flex;
+
+    @media screen and (max-width: 960px) {
+        flex-direction: column;
+    }
+
+
+    > div {
+        box-sizing: border-box;
+        display: flex;
+        box-sizing: border-box;
+        position: relative;
+        display: flex;
+        flex: 1 1 45%;
+
+        @media screen and (min-width: 961px) {
+            min-height: 20rem;
+        }
+
+
+        div.frame {
+            width: 100%;
+
+            @media screen and (min-width: 961px) {
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                height: 100%;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+        }
+
+
+        &.left {
+            flex-direction: column;
+
+            @media screen and (min-width: 961px) {
+                h3 {
+                    border-right: 1px solid #888;
+                }
+
+                samp.dump.exception {
+                    border-right: 1px solid #DDD;
+                }
+
+                section.stack {
+                    border-right: 1px solid #CCC;
+                }
+            }
+        }
+
+        &.right {
+            @media screen and (max-width: 960px) {
+                min-height: 30vh;
+            }
+        }
+    }
+}
+
+
+html.dark div.cols > div.left {
+    @media screen and (min-width: 961px) {
+        h3 {
+            border-right: 1px solid rgba(#444, 0.7);
+        }
+
+        samp.dump.exception {
+            border-right: 1px solid rgba(#333, 0.7);
+        }
+
+        section.stack {
+            border-right: 1px solid rgba(#333, 0.7);
+        }
+    }
+}
