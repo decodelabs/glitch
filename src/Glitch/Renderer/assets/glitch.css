@@ -9992,6 +9992,10 @@ html.dark section.stack {
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 0, rgba(255, 255, 255, 0) 12rem, rgba(0, 0, 0, 0.1));
 }
 
+div.stack-list > ul.stack {
+  padding: 0.5em 0;
+}
+
 ul.stack {
   list-style: none;
   padding: 1rem;
