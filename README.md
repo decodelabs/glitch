@@ -29,7 +29,8 @@ Then add Glitch to your required packages list:
 ```
 
 
-Register base paths for easier reading of file names
+### Setup
+Register base paths for easier reading of file names:
 
 ```php
 \Glitch\Context::getDefault()->registerPathAlias('app', '/path/to/my/app');
@@ -42,6 +43,14 @@ becomes
 app://models/MyModel.php
 */
 ```
+
+Pass the <code>microtime()</code> of initial app launch if necessary:
+
+```php
+$time = microtime(true);
+\Glitch\Context::getDefault()->setStartTime($time);
+```
+
 
 ## Dumps
 Dump anything and everything easily, using simple global functions.
