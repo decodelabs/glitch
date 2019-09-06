@@ -79,11 +79,12 @@ Once rendered, the package is delivered via an instance of <code>DecodeLabs\Glit
 
 
 ## Exceptions
-Throw Glitches rather than Exceptions, passing mixed in interfaces as the method name (generated error interfaces must begin with E)
+Throw <code>Glitches</code> rather than <code>Exceptions</code>, passing interface names to be mixed in as the method name (custom generated error interfaces must be prefixed with E) to the Glitch call.
 
 ```php
 throw \Glitch::EOutOfBounds('This is out of bounds');
 
+// Implement multiple interfaces
 throw \Glitch::{'ENotFound,EBadMethodCall'}(
     "Didn't find a thing, couldn't call the other thing"
 );
@@ -94,7 +95,7 @@ throw \Glitch::ECompletelyMadeUpMeaning('My message', [
     'http' => 501
 ]);
 
-// Implement multiple interfaces, including already existing Exception interfaces
+// Implement already existing Exception interfaces
 throw \Glitch::{'EInvalidArgument,Psr\\Cache\\InvalidArgumentException'}(
     'Cache items must implement Cache\\IItem',
     ['http' => 500],  // params
@@ -110,17 +111,18 @@ Catch a Glitch in the normal way using whichever scope you require:
 ```php
 try {
     throw \Glitch::{'ENotFound,EBadMethodCall'}(
-        'Didn\'t find a thing, couldn\'t call the other thing'
+        "Didn't find a thing, couldn't call the other thing"
     );
 } catch(\EGlitch | \ENotFound | MyLibrary\EGlitch | MyLibrary\AThingThatDoesStuff\EBadMethodCall $e) {
     // All these types will catch
+    dd($e);
 }
 ```
 
 
 ### Traits
 
-Custom functionality can be mixed in to the generated Glitch by defining traits at the same level as any of the interfaces being implemented.
+Custom functionality can be mixed in to the generated Glitch automatically by defining traits at the same namespace level as any of the interfaces being implemented.
 
 ```php
 namespace MyLibrary;
