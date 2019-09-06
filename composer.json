@@ -13,6 +13,9 @@
         "php": "^7.2",
         "symfony/polyfill-mbstring": "~1.7",
 
+        "components/jquery": "~3.3",
+        "components/bootstrap": "~4.3",
+
         "bower-asset/jquery": "~3.3",
         "bower-asset/bootstrap": "~4.3"
     },
