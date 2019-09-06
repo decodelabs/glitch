@@ -14,7 +14,7 @@ use DecodeLabs\Glitch\Stack\Trace;
  */
 final class Glitch
 {
-    const VERSION = 'v0.8.0';
+    const VERSION = 'v0.9.0';
 
     public static $autoRegister = true;
 
