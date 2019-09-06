@@ -187,8 +187,8 @@ html.dark {
         }
 
         &.properties > li > .identifier.key {
-            color: lighten($blue, 20%);
-            opacity: 0.9;
+            color: lighten($blue, 25%);
+            opacity: 1;
 
             &:before {
                 color: lighten($green, 10%);

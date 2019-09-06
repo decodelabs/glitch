@@ -10266,8 +10266,8 @@ html.dark ul.list.meta > li > .identifier.key:before {
 }
 
 html.dark ul.list.properties > li > .identifier.key {
-  color: #66b0ff;
-  opacity: 0.9;
+  color: #80bdff;
+  opacity: 1;
 }
 
 html.dark ul.list.properties > li > .identifier.key:before {
@@ -10572,7 +10572,7 @@ html.dark .float {
 }
 
 html.dark .int, html.dark .float {
-  color: #a471f7;
+  color: #b389f9;
 }
 
 html.dark .string > .line {
