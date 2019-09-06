@@ -75,7 +75,7 @@ The dump package is rendered by an instance of <code>DecodeLabs\Glitch\Renderer<
 Custom renderers may convert <code>Entities</code> to other formats such as Xml for example.
 
 #### Transports
-Once rendered, the package is delivered via an instance of <code>DecodeLabs\Glitch\Transport</code>, also overridable on the default <code>Context</code>. It is the responsibility of the <code>Transport</code> to deliver the rendered dump. By default, the render is just echo'd out to <code>STDOUT</code>, however custom transports may send information to other interfaces, browser extensions, logging systems, etc.
+Once rendered, the package is delivered via an instance of <code>DecodeLabs\Glitch\Transport</code>, also overridable on the default <code>Context</code>. It is the responsibility of the <code>Transport</code> to deliver the rendered dump. By default, the render is just echoed out to <code>STDOUT</code>, however custom transports may send information to other interfaces, browser extensions, logging systems, etc.
 
 
 ## Exceptions
