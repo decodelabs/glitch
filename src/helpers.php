@@ -10,8 +10,8 @@ declare(strict_types=1);
  */
 namespace
 {
-    use DecodeLabs\Glitch\Factory;
     use DecodeLabs\Glitch\Context;
+    use DecodeLabs\Glitch\Exception\Factory;
     use DecodeLabs\Glitch\Stack\Frame;
 
     use Symfony\Component\VarDumper\VarDumper;

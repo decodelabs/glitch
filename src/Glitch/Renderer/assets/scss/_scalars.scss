@@ -1,0 +1,182 @@
+.null,
+.bool,
+.int,
+.float {
+    color: $pink;
+    font-weight: 600;
+}
+.bool {
+    font-style: italic;
+}
+.int, .float {
+    color: $indigo;
+}
+
+.g, .pointer {
+    color: $gray;
+}
+.pointer {
+    opacity: 0.5;
+}
+
+
+.string {
+    > .line {
+        color: $red !important;
+    }
+
+    > .length {
+        color: $teal;
+        margin-left: 0.5em;
+        display: none;
+    }
+
+    &:hover > .length {
+        display: inline;
+    }
+
+    &.identifier {
+        color: $orange;
+
+        &:before, &:after {
+            display: none;
+        }
+    }
+
+    &.definition {
+        color: $gray;
+    }
+
+    &.s {
+        > .line {
+            &:before, &:after {
+                content: '"';
+                color: $gray;
+                opacity: 0.5;
+            }
+        }
+    }
+
+    &.m {
+        padding-right: 1rem;
+        display: inline;
+        white-space: pre-line;
+
+        &:before, &:after {
+            content: '"""';
+            color: $gray;
+            opacity: 0.5;
+        }
+
+        > .line {
+            margin-left: -0.1rem;
+            padding-left: 0.1rem;
+            border-left: 1px solid rgba($gray, 0.18);
+
+            &:after {
+                content: '⏎';
+                color: $gray;
+                opacity: 0.5;
+                font-size: 1.3em;
+                line-height: 1;
+                margin-left: 0.2em;
+            }
+
+            &:last-child:after {
+                display: none;
+            }
+        }
+
+        &.large {
+            &.show {
+                cursor: n-resize;
+            }
+
+            &:not(.show) {
+                cursor: s-resize;
+
+                &:after {
+                    content: '""" show more';
+                }
+
+                > .line {
+                    position: relative;
+
+                    &:nth-child(1n+11) {
+                        display: none;
+                    }
+
+                    &:nth-child(9) {
+                        opacity: 0.6;
+                    }
+
+                    &:nth-child(10) {
+                        opacity: 0.3;
+                    }
+                }
+            }
+        }
+
+        &.exception {
+            &:before, &:after {
+                content: '!!!';
+            }
+
+            div.line {
+                font-size: 1.4em;
+            }
+        }
+    }
+
+    span.control {
+        color: $orange;
+        opacity: 0.65;
+    }
+}
+
+
+
+html.dark {
+    .null,
+    .bool,
+    .int,
+    .float {
+        color: lighten($pink, 10%);
+    }
+    .int, .float {
+        color: lighten($indigo, 25%);
+    }
+
+    .string {
+        > .line {
+            color: $red-bright !important;
+        }
+
+        &.identifier {
+            color: lighten($orange, 10%);
+        }
+
+        &.definition {
+            color: $gray-300;
+        }
+
+        &.m {
+            &:before, &:after {
+                opacity: 0.6;
+            }
+
+            > .line {
+                border-left: 1px solid rgba($gray, 0.06);
+            }
+        }
+
+        span.control {
+            color: lighten($orange, 10%);
+            opacity: 0.85;
+        }
+    }
+
+    .g {
+        opacity: 0.5;
+    }
+}

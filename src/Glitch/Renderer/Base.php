@@ -15,6 +15,7 @@ use DecodeLabs\Glitch\Dumper\Entity;
 
 trait Base
 {
+    //const RENDER_IN_PRODUCTION = false;
     //const SPACES = 2;
     //const RENDER_CLOSED = true;
     /*
@@ -41,13 +42,35 @@ trait Base
 
 
     /**
+     * Should render in production?
+     */
+    protected function shouldRenderInProduction(): bool
+    {
+        return static::RENDER_IN_PRODUCTION;
+    }
+
+
+    /**
+     * Should dump / exception body dump?
+     */
+    protected function shouldRender(): bool
+    {
+        return !$this->context->isProduction() || $this->shouldRenderInProduction();
+    }
+
+
+    /**
      * Convert Dump object to HTML string
      */
-    public function renderDump(Dump $dump, bool $isFinal=false): string
+    public function renderDump(Dump $dump): string
     {
+        if (!$this->shouldRender()) {
+            return '';
+        }
+
         $output = [];
 
-        if (!empty($header = $this->renderHeader())) {
+        if (!empty($header = $this->renderHeader('dump'))) {
             $output[] = $header;
         }
 
@@ -55,20 +78,54 @@ trait Base
         $output[] = $this->renderDumpEntities($dump);
 
         if ((static::RENDER_STACK ?? true) && $trace = $dump->getTrace()) {
-            $output[] = $this->renderTrace($trace);
+            $output[] = $this->renderTrace($trace, false);
         }
 
         if (!empty($footer = $this->renderFooter())) {
             $output[] = $footer;
         }
 
-        return $this->exportBuffer($output);
+        return $this->exportDumpBuffer($output);
     }
+
+
+    /**
+     * Inspect handled exception
+     */
+    public function renderException(\Throwable $exception, Entity $entity, Dump $dataDump): string
+    {
+        $output = [];
+
+        if (!empty($header = $this->renderHeader('exception'))) {
+            $output[] = $header;
+        }
+
+        if (!$this->shouldRender()) {
+            $output[] = $this->renderProductionExceptionMessage($exception);
+        } else {
+            $output[] = $this->renderStats($dataDump->getStats());
+            $output[] = $this->renderExceptionMessage($exception);
+            $output[] = $this->renderExceptionEntity($entity);
+
+            if ($trace = $dataDump->getTrace()) {
+                $output[] = $this->renderTrace($trace, true);
+            }
+        }
+
+        if (!empty($footer = $this->renderFooter())) {
+            $output[] = $footer;
+        }
+
+        return $this->exportExceptionBuffer($output);
+    }
+
+
+
 
     /**
      * Render dump header
      */
-    protected function renderHeader(): string
+    protected function renderHeader(string $class): string
     {
         return '';
     }
@@ -81,11 +138,53 @@ trait Base
         $output = [];
 
         foreach ($stats as $stat) {
-            $output[] = $stat->render('text');
+            if (null === ($statString = $stat->render('text'))) {
+                continue;
+            }
+
+            $output[] = $statString;
         }
 
         return implode(' | ', $output);
     }
+
+
+    /**
+     * Render exception message
+     */
+    protected function renderExceptionMessage(\Throwable $exception): string
+    {
+        $message = $exception->getMessage();
+        $code = $exception->getCode();
+        $httpCode = $exception instanceof \EGlitch ? $exception->getHttpCode() : null;
+
+        $head = [];
+
+        if ($code) {
+            $head[] = '#'.$code;
+        }
+        if ($httpCode) {
+            $head[] = 'HTTP '.$httpCode;
+        }
+
+        $output = '';
+
+        if (!empty($head)) {
+            $output .= implode(' | ', $head)."\n";
+        }
+
+        $output .= $this->esc($message);
+        return $output;
+    }
+
+    /**
+     * Render a default message in production mode
+     */
+    protected function renderProductionExceptionMessage(\Throwable $exception): string
+    {
+        return '';
+    }
+
 
     /**
      * Render main list of entities
@@ -105,18 +204,35 @@ trait Base
         return implode("\n\n", $output);
     }
 
+
+    /**
+     * Render exception entity
+     */
+    protected function renderExceptionEntity(Entity $entity): string
+    {
+        return $this->renderEntity($entity, 0, [
+            'info' => true,
+            'meta' => false,
+            'text' => false,
+            'properties' => true,
+            'values' => true,
+            'stack' => false
+        ]);
+    }
+
+
+
     /**
      * Render final trace
      */
-    protected function renderTrace(Trace $trace): string
+    protected function renderTrace(Trace $trace, bool $open=false): string
     {
         return $this->renderEntity(
             (new Entity('stack'))
                 ->setName('stack')
                 ->setStackTrace($trace)
-                ->setOpen(false)
-                ->setLength($trace->count()),
-            true
+                ->setOpen($open)
+                ->setLength($trace->count())
         );
     }
 
@@ -134,6 +250,22 @@ trait Base
     protected function exportBuffer(array $buffer): string
     {
         return implode("\n\n", $buffer);
+    }
+
+    /**
+     * Flatten dump buffer for final render
+     */
+    protected function exportDumpBuffer(array $buffer): string
+    {
+        return $this->exportBuffer($buffer);
+    }
+
+    /**
+     * Flatten dump buffer for final render
+     */
+    protected function exportExceptionBuffer(array $buffer): string
+    {
+        return $this->exportBuffer($buffer);
     }
 
 
@@ -371,7 +503,7 @@ trait Base
     /**
      * Render file path
      */
-    protected function renderSourceFile(string $path): string
+    protected function renderSourceFile(string $path, ?string $class=null): string
     {
         return $path;
     }
@@ -417,7 +549,7 @@ trait Base
 
         if ($class !== null) {
             $output[] = $this->renderSignatureClass($class);
-            $output[] = $this->renderSignatureCallType('::');
+            $output[] = $this->renderGrammar('::');
         }
 
         $output[] = $this->renderSignatureConstant($const);
@@ -441,7 +573,7 @@ trait Base
 
         // Type
         if ($frame->getInvokeType() !== null) {
-            $output[] = $this->renderSignatureCallType($frame->getInvokeType());
+            $output[] = $this->renderGrammar($frame->getInvokeType());
         }
 
         // Function
@@ -454,14 +586,14 @@ trait Base
                 $function = [];
                 $fArgs = [];
 
-                $function[] = $this->renderSignatureBracket('{');
+                $function[] = $this->renderGrammar('{');
 
                 foreach ($parts as $part) {
                     $fArgs[] = $this->renderString($part, 'identifier');
                 }
 
-                $function[] = implode(', ', $fArgs);
-                $function[] = $this->renderSignatureBracket('}');
+                $function[] = implode($this->renderGrammar(',').' ', $fArgs);
+                $function[] = $this->renderGrammar('}');
                 $function = implode($function);
             } else {
                 $function = $this->esc($function);
@@ -471,7 +603,7 @@ trait Base
         }
 
         // Args
-        $output[] = $this->renderSignatureBracket('(');
+        $output[] = $this->renderGrammar('(');
         $args = [];
 
         foreach ($frame->getArgs() as $arg) {
@@ -479,7 +611,7 @@ trait Base
                 $args[] = $this->renderSignatureObject($frame::normalizeClassName(get_class($arg)));
             } elseif (is_array($arg)) {
                 $args[] = $this->wrapSignatureArray(
-                    $this->renderSignatureBracket('[').count($arg).$this->renderSignatureBracket(']')
+                    $this->renderGrammar('[').count($arg).$this->renderGrammar(']')
                 );
             } else {
                 switch (true) {
@@ -510,8 +642,8 @@ trait Base
             }
         }
 
-        $output[] = implode($this->renderSignatureComma().' ', $args);
-        $output[] = $this->renderSignatureBracket(')');
+        $output[] = implode($this->renderGrammar(', ').' ', $args);
+        $output[] = $this->renderGrammar(')');
 
         return implode('', $output);
     }
@@ -542,14 +674,6 @@ trait Base
     }
 
     /**
-     * Passthrough call type
-     */
-    protected function renderSignatureCallType(string $type): string
-    {
-        return $type;
-    }
-
-    /**
      * Passthrough constant
      */
     protected function renderSignatureConstant(string $constant): string
@@ -571,22 +695,6 @@ trait Base
     protected function renderSignatureClosure(): string
     {
         return 'closure';
-    }
-
-    /**
-     * Passthrough bracket
-     */
-    protected function renderSignatureBracket(string $bracket): string
-    {
-        return $bracket;
-    }
-
-    /**
-     * Passthrough comma
-     */
-    protected function renderSignatureComma(): string
-    {
-        return ',';
     }
 
     /**
@@ -612,17 +720,22 @@ trait Base
     /**
      * Render an individual entity
      */
-    protected function renderEntity(Entity $entity, bool $forceOpen=false, int $level=0): string
+    protected function renderEntity(Entity $entity, int $level=0, array $overrides=null): string
     {
         $id = $linkId = $entity->getId();
         $name = $this->esc($entity->getName() ?? $entity->getType());
-        $showInfo = true;
-        $isRef = $showClass = false;
-        $showText = $entity->getText() !== null;
-        $showProperties = (bool)$entity->getProperties();
-        $showValues = (bool)$entity->getValues();
-        $showStack = (bool)$entity->getStackTrace();
+        $isRef = $showClass = $forceBody = false;
         $open = $entity->isOpen();
+
+        $sections = [
+            'info' => true,
+            'meta' => (bool)$entity->getAllMeta(),
+            'text' => $entity->getText() !== null,
+            'definition' => $entity->getDefinition() !== null,
+            'properties' => (bool)$entity->getProperties(),
+            'values' => (bool)$entity->getValues(),
+            'stack' => (bool)$entity->getStackTrace()
+        ];
 
         switch ($type = $entity->getType()) {
             case 'arrayReference':
@@ -631,63 +744,82 @@ trait Base
                 // no break
             case 'objectReference':
                 $linkId = 'ref-'.$id.'-'.spl_object_id($entity);
-                $name = $this->wrapReferenceName($name);
                 $isRef = true;
                 break;
 
             case 'resource':
-                $showInfo = false;
+                $sections['info'] = false;
                 break;
 
             case 'class':
             case 'interface':
             case 'trait':
                 $showClass = true;
-                $showInfo = false;
+                $sections['info'] = false;
                 break;
 
             case 'stack':
                 if (!$entity->getClass()) {
-                    $showInfo = false;
+                    $sections['info'] = false;
                 }
                 break;
 
             case 'flags':
-                $showInfo = false;
+                $sections['info'] = false;
                 break;
 
             case 'const':
-                $showInfo = false;
-                $const = $entity->getName();
-                $name = $this->renderConstName($const);
+                $sections['info'] = false;
+                break;
+
+            case 'array':
+                if (!$entity->getLength()) {
+                    $sections['info'] = false;
+                    $forceBody = true;
+                }
                 break;
         }
 
-        if (!static::RENDER_SECTIONS['info'] ?? true) {
-            $showInfo = false;
+        $keys = ['info', 'meta', 'text', 'definition', 'properties', 'values', 'stack'];
+
+        if ($overrides['info'] ?? null === true) {
+            $sections['info'] = true;
         }
-        if (!static::RENDER_SECTIONS['meta'] ?? true) {
-            $showMeta = false;
-        }
-        if (!static::RENDER_SECTIONS['text'] ?? true) {
-            $showText = false;
-        }
-        if (!static::RENDER_SECTIONS['properties'] ?? true) {
-            $showProperties = false;
-        }
-        if (!static::RENDER_SECTIONS['values'] ?? true) {
-            $showValues = false;
-        }
-        if (!static::RENDER_SECTIONS['stack'] ?? true && $type !== 'stack') {
-            $showStack = false;
+
+        foreach ($keys as $key) {
+            $overrides[$key] = $overrides[$key] ?? static::RENDER_SECTIONS[$key] ?? true;
+            $check = true;
+
+            if ($key == 'stack') {
+                $check = $type !== 'stack';
+            }
+
+            if (!$overrides[$key] && $check) {
+                $sections[$key] = false;
+            }
         }
 
 
 
         $header = [];
 
+        if ($type === 'const') {
+            $name = $this->renderConstName($entity->getName());
+        } else {
+            $nameParts = explode('|', $name);
+
+            foreach ($nameParts as $i => $part) {
+                $nameParts[$i] = $this->renderEntityNamePart(trim($part));
+            }
+
+            $g = $this->renderGrammar('|');
+            $name = implode(' '.$g.' ', $nameParts);
+        }
+
+
         // Name
         if ($isRef) {
+            $name = $this->wrapReferenceName($name);
             $header[] = $this->wrapEntityNameReference($name, $open, $id);
         } else {
             $header[] = $this->wrapEntityName($name, $open, $linkId);
@@ -705,37 +837,42 @@ trait Base
         }
 
         // Info
-        if ($showInfo) {
+        if ($sections['info']) {
             $header[] = $this->renderEntityInfoButton($linkId);
         }
 
         // Meta
-        if ($showMeta = (bool)$entity->getAllMeta()) {
+        if ($sections['meta']) {
             $header[] = $this->renderEntityMetaButton($linkId);
         }
 
         // Text
-        if ($showText) {
+        if ($sections['text']) {
             $header[] = $this->renderEntityTextButton($linkId);
         }
 
+        // Definition
+        if ($sections['definition']) {
+            $header[] = $this->renderEntityDefinitionButton($linkId);
+        }
+
         // Properties
-        if ($showProperties) {
+        if ($sections['properties']) {
             $header[] = $this->renderEntityPropertiesButton($linkId);
         }
 
         // Values
-        if ($showValues) {
+        if ($sections['values']) {
             $header[] = $this->renderEntityValuesButton($linkId);
         }
 
         // Stack
-        if ($showStack) {
+        if ($sections['stack']) {
             $header[] = $this->renderEntityStackButton($type, $open, $linkId);
         }
 
         // Bracket
-        if ($hasBody = ($showInfo || $showMeta || $showText || $showProperties || $showValues || $showStack)) {
+        if ($hasBody = $forceBody || in_array(true, $sections, true)) {
             $header[] = $this->renderGrammar('{');
         }
 
@@ -749,48 +886,53 @@ trait Base
         $output[] = $this->wrapEntityHeader(implode(' ', array_filter($header)), $type, $linkId);
 
 
-        $hasBodyContent = $showText || $showProperties || $showValues || $showStack;
+        $hasBodyContent = $sections['text'] || $sections['definition'] || $sections['properties'] || $sections['values'] || $sections['stack'];
         $renderClosed = static::RENDER_CLOSED ?? true;
 
-        if (!$open && !$renderClosed && !$forceOpen && $level > 4) {
-            $hasBodyContent = false;
+        if (!$open && !$renderClosed && $level > 4) {
+            $hasBody = false;
         }
 
         // Body
-        if ($hasBodyContent) {
+        if ($hasBody) {
             $body = [];
 
             // Info
-            if ($showInfo) {
+            if ($sections['info']) {
                 $body[] = $this->renderInfoBlock($entity, $level);
             }
 
             // Meta
-            if ($showMeta) {
+            if ($sections['meta']) {
                 $body[] = $this->renderMetaBlock($entity, $level);
             }
 
             // Text
-            if ($showText) {
+            if ($sections['text']) {
                 $body[] = $this->renderTextBlock($entity, $level);
             }
 
+            // Definition
+            if ($sections['definition']) {
+                $body[] = $this->renderDefinitionBlock($entity, $level);
+            }
+
             // Properties
-            if ($showProperties) {
+            if ($sections['properties']) {
                 $body[] = $this->renderPropertiesBlock($entity, $level);
             }
 
             // Values
-            if ($showValues) {
+            if ($sections['values']) {
                 $body[] = $this->renderValuesBlock($entity, $level);
             }
 
             // Stack
-            if ($showStack) {
+            if ($sections['stack']) {
                 $body[] = $this->renderStackBlock($entity, $level);
             }
 
-            $output[] = $this->wrapEntityBody(implode("\n", array_filter($body)), $open, $linkId);
+            $output[] = $this->wrapEntityBody(implode("\n", array_filter($body)), $open && $hasBodyContent, $linkId);
         }
 
         // Footer
@@ -822,6 +964,15 @@ trait Base
      * Passthrough entity name
      */
     protected function wrapEntityName(string $name, bool $open, string $linkId): string
+    {
+        return $name;
+    }
+
+
+    /**
+     * Wrap entity name if reference
+     */
+    protected function renderEntityNamePart(string $name): string
     {
         return $name;
     }
@@ -878,6 +1029,14 @@ trait Base
     }
 
     /**
+     * Empty definition button stub
+     */
+    protected function renderEntityDefinitionButton(string $linkId): string
+    {
+        return '';
+    }
+
+    /**
      * Empty properties button stub
      */
     protected function renderEntityPropertiesButton(string $linkId): string
@@ -928,6 +1087,11 @@ trait Base
         }
 
         $type = $entity->getType();
+
+        if ($type == 'exception') {
+            $type = 'object';
+        }
+
         $info = [];
         $showClass = false;
 
@@ -1021,6 +1185,10 @@ trait Base
             $output = $this->indent(
                 implode($output)
             );
+        } elseif ($type === 'exception') {
+            $output = $this->indent(
+                $this->renderMultiLineString($entity->getText(), true)
+            );
         } else {
             $output = $this->indent(
                 $this->renderScalar($entity->getText())
@@ -1028,6 +1196,21 @@ trait Base
         }
 
         return $this->wrapEntityBodyBlock($output, 'text', true, $id, $type);
+    }
+
+    /**
+     * Render entity text block
+     */
+    protected function renderDefinitionBlock(Entity $entity, int $level=0): string
+    {
+        $id = $entity->getId();
+        $type = $entity->getType();
+
+        $output = $this->indent(
+            $this->renderIdentifierString($entity->getDefinition(), 'definition')
+        );
+
+        return $this->wrapEntityBodyBlock($output, 'definition', true, $id, $type);
     }
 
     /**
@@ -1077,25 +1260,46 @@ trait Base
                 $line[] = $this->renderLineNumber($count - $i);
                 $line[] = $this->wrapSignature($this->renderStackFrameSignature($frame));
                 $line[] = "\n   ";
-                $line[] = $this->renderSourceFile($this->context->normalizePath($frame->getCallingFile()));
-                $line[] = $this->renderSourceLine($frame->getCallingLine());
-                $lines[] = implode(' ', $line);
+
+                if (null !== ($file = $frame->getCallingFile())) {
+                    $line[] = $this->renderSourceFile($this->context->normalizePath($file));
+                    $line[] = $this->renderSourceLine($frame->getCallingLine());
+                } else {
+                    $line[] = $this->renderSourceFile('internal', 'internal');
+                }
+
+                $lines[] = $this->wrapStackFrame(implode(' ', $line));
             }
 
             $output = $this->indent(
                 $this->renderBasicList($lines, 'stack')
             );
+
+            $blockType = 'stack-list';
         } else {
-            //die('oi2');
             $newEntity = (new Entity('stack'))
                 ->setName('stack')
                 ->setStackTrace($trace)
-                ->setLength($trace->count());
+                ->setLength($trace->count())
+                ->setOpen(false);
 
-            $output = $this->renderEntity($newEntity, false, $level + 1);
+            $output = $this->indent(
+                $this->renderEntity($newEntity, $level + 1)
+            );
+
+            $blockType = 'stack';
         }
 
-        return $this->wrapEntityBodyBlock($output, 'stack', true, $id);
+        return $this->wrapEntityBodyBlock($output, $blockType, true, $id);
+    }
+
+
+    /**
+     * Wrap stack frame
+     */
+    protected function wrapStackFrame(string $frame): string
+    {
+        return $frame;
     }
 
 
@@ -1173,12 +1377,12 @@ trait Base
             }
 
             if ($value instanceof Entity) {
-                $line[] = $this->renderEntity($value, false, $level + 1);
+                $line[] = $this->renderEntity($value, $level + 1);
             } elseif (is_array($value)) {
                 $isAssoc = $this->arrayIsAssoc($value);
-                $line[] = $this->renderGrammar('{');
-                $line[] = $this->renderList($value, $style, $isAssoc, $isAssoc ? 'map' : 'inline', $level + 1);
-                $line[] = $this->renderGrammar('}');
+                $line[] = $this->renderGrammar('{').
+                    $this->renderList($value, $style, $isAssoc, $isAssoc ? 'map' : 'inline', $level + 1).
+                    $this->renderGrammar('}');
             } else {
                 $line[] = $this->renderScalar($value, $asIdentifier ? 'identifier' : null);
             }
@@ -1196,7 +1400,10 @@ trait Base
      */
     protected function renderBasicList(array $lines, ?string $class=null): string
     {
-        return implode("\n", $lines);
+        $classes = explode(' ', $class);
+
+        $sep = in_array('inline', $classes) ? ', ' : "\n";
+        return implode($sep, $lines);
     }
 
 

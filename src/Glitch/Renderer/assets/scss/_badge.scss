@@ -1,0 +1,38 @@
+a.badge {
+    cursor: help;
+    font-size: 0.9em;
+    color: white !important;
+
+    &.collapsed {
+        opacity: 0.3;
+    }
+
+    i {
+        font-style: normal;
+        position: relative;
+    }
+
+    &.info i {
+        top: 0.05em;
+    }
+    &.text i {
+        top: 0.05em;
+    }
+    &.definition {
+        background-color: $orange;
+
+        &:hover {
+            background-color: darken($orange, 15%);
+        }
+    }
+    &.properties i {
+        top: -0.08em;
+    }
+}
+
+
+html.dark {
+    a.badge-dark {
+        background-color: darken(#343a40, 8%);
+    }
+}

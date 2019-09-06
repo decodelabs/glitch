@@ -1,0 +1,216 @@
+ul.list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    > li {
+        position: relative;
+
+        > .g {
+            margin-right: -2rem;
+        }
+
+        > ul.list {
+            margin-left: 2rem;
+        }
+
+        > .identifier.key {
+            position: relative;
+            white-space: pre;
+
+            &:before {
+                content: 'ⓟ';
+                color: $green;
+                opacity: 1;
+
+                display: none;
+                position: relative;
+                margin-top: 0.3em;
+                margin-right: 0.75em;
+                font-size: 0.8em;
+            }
+        }
+
+        > *:last-child {
+            padding-right: 1rem;
+        }
+    }
+
+    &.info {
+        max-width: 80em;
+
+        > li {
+            white-space: normal;
+
+            > .identifier {
+                color: $cyan;
+
+                &.key {
+                    color: $gray;
+                    opacity: 0.75;
+
+                    &:before {
+                        content: 'ⓘ';
+                        color: $cyan;
+                        opacity: 0.8;
+                        display: inline;
+                    }
+                }
+            }
+        }
+    }
+
+    &.meta {
+        > li {
+            > .identifier {
+                color: $red;
+
+                &.key {
+                    color: $gray-700;
+                    opacity: 0.75;
+
+                    &:before {
+                        content: 'ⓜ';
+                        color: $red;
+                        opacity: 0.8;
+                        display: inline;
+                    }
+                }
+            }
+        }
+    }
+
+    &.properties {
+        > li {
+            > .identifier {
+                &.key {
+                    color: $blue;
+                    opacity: 0.75;
+
+                    &:before {
+                        content: 'ⓟ';
+                        color: $green;
+                        display: inline;
+                    }
+
+                    &.protected:before {
+                        color: $yellow;
+                    }
+                    &.private:before {
+                        color: $red;
+                    }
+                    &.public:before {
+                        color: $green;
+                    }
+                    &.virtual:before {
+                        content: 'ⓧ';
+                        color: $purple;
+                    }
+                }
+            }
+        }
+    }
+
+    &.values {
+        > li {
+            &:before {
+                content: 'ⓥ';
+                color: $yellow;
+                position: relative;
+                margin-top: 0.3em;
+                font-size: 0.8em;
+                display: inline;
+                opacity: 0.75;
+            }
+        }
+    }
+
+    &.inline {
+        margin: 0 0 0 2rem !important;
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: normal;
+
+        > li {
+            &:after {
+                content: ',';
+                color: $gray;
+                opacity: 0.5;
+                margin-right: 1em;
+            }
+
+            &:last-child:after {
+                display: none;
+            }
+
+            > *:last-child {
+                padding: 0 !important;
+            }
+        }
+    }
+}
+
+
+
+html.dark {
+    ul.list {
+        > li > .identifier.key:before {
+            color: lighten($green, 10%);
+            font-weight: bold;
+        }
+
+        &.info > li > .identifier {
+            color: lighten($cyan, 10%);
+
+            &.key {
+                color: $gray-300;
+
+                &:before {
+                    color: lighten($cyan, 10%);
+                    opacity: 1;
+                }
+            }
+        }
+
+        &.meta > li > .identifier {
+            color: $red-bright;
+
+            &.key {
+                color: $gray-200;
+                opacity: 0.75;
+
+                &:before {
+                    color: lighten($red-bright, 10%);
+                    opacity: 1;
+                }
+            }
+        }
+
+        &.properties > li > .identifier.key {
+            color: lighten($blue, 25%);
+            opacity: 1;
+
+            &:before {
+                color: lighten($green, 10%);
+            }
+
+            &.protected:before {
+                color: lighten($yellow, 15%);
+            }
+            &.private:before {
+                color: lighten($red-bright, 15%);
+            }
+            &.public:before {
+                color: lighten($green, 15%);
+            }
+            &.virtual:before {
+                color: lighten($purple, 20%);
+            }
+        }
+
+        &.values > li:before {
+            color: lighten($yellow, 15%);
+            font-weight: bold;
+        }
+    }
+}

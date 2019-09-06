@@ -3,113 +3,34 @@
 
 Glitch is a standalone PHP package designed to improve end-to-end error handling and inspection when developing your applications.
 
-The initial release provides a radically enhanced Exception framework that decouples the _meaning_ of an Exception from the underlying _implementation_ functionality, alongside deep data inspection tools.
-
-## Rationale
-PHP (and, as it happens, most modern languages) rely on a fairly rudimentary concept of Exceptions to handle errors at runtime. The principle is generally sound, however the implementation suffers from a handful of key flaws.
-
-Primarily, _meaning_ is inferred by the class name of the Exception being thrown.
-
-```php
-throw new OutOfBoundsException('Index is not in range');
-```
-
-While this _works_, it is fundamentally limiting; PHP does not have multiple-inheritance and so can only convey one _meaning_ directly via the class name, does not imply any context of scope (ie, _where_ the error occurred), and requires writing unnecessary boilerplate code to represent every form of _meaning_ being relayed.
-
-```php
-namespace MyLibrary {
-    class TooMuchTypingException extends \RuntimeException {}
-}
-
-namespace MyOtherLibrary {
-    class TooMuchTypingException extends \RuntimeException {}
-}
-```
-
-Having libraries that need to convey the same _meaning_ but from different contexts compound this problem by either having to redefine the same class in their own namespace, or rely on traits to share functionality.
-
-The structure of the class that makes an Exception should be dedicated to providing the functionality required to convey the **state** of the application in the context it is used.
-
-
-#### Multiple meanings
-While classes cannot convey multiple messages, interfaces _can_.
-
-```php
-namespace MyLibrary;
-
-interface ENotFound {}
-interface EFailedService {}
-
-class MethodNotFoundException extends \RuntimeException implements NotFoundError, FailedServiceError {}
-
-try {
-    throw new MethodNotFoundException('Test');
-} catch(ENotFound $e) {}
-```
-
-However interfaces alone cannot immediately infer where the problem originated as you still require a class to be defined for each context from which the Exception may be thrown.
-
-Also, this requires writing and loading **lots** of boilerplate code to represent what are ultimately simple, static messages.
-
-
-### Solution
-Instead of defining a class for every Exception that may be thrown, interfaces can be generated at runtime to represent a specific meaning of an error, and assigned to anonymous classes as and when they are needed.
-
-The generated interfaces can be placed throughout the namespace tree so that try / catch blocks can check for the same message at any level of namespace depth, and the resulting anonymous class can automatically extend from PHP's built in set of named Exceptions.
-
-Glitch attempts to do all of this automatically from the minimum amount of input.
-
-```php
-namespace MyLibrary\AThingThatDoesStuff;
-
-class Amazeballs {
-
-    public function doStuff() {
-        throw \Glitch::{'ENotFound,EFailedService'}(
-            'Service "doStuff" cannot be found'
-        );
-    }
-}
-```
-
-The resulting object would look something like this:
-
-```php
-namespace {
-    interface EGlitch {}
-    interface ENotFound {
-        const EXTEND = 'RuntimeException';
-    }
-}
-
-namespace MyLibrary {
-    interface EGlitch extends \EGlitch {}
-}
-
-namespace MyLibrary\AThingThatDoesStuff {
-
-    interface EGlitch extends MyLibrary\EGlitch {}
-    interface ENotFound extends EGlitch, \ENotFound {}
-    interface EFailedService extends EGlitch {}
-
-    $e = new class($message) extends \RuntimeException implements ENotFound,EFailedService {}
-}
-```
-
-The generated Exception can be checked for in a try / catch block with _any_ of those scoped interfaces, root interfaces or PHP's RuntimeException.
-
-Any functionality that the Exception then needs to convey the **state** of the error can then either be mixed in via traits, or by extending from an intermediate class that defines the necessary methods.
+The project aims to provide a radically enhanced Exception framework that decouples the _meaning_ of an Exception from the underlying _implementation_ functionality, alongside deep data inspection tools and an Exception handling interface.
 
 
 ## Installation
-Glitch can be installed via composer
+#### Glitch can be installed via composer
 
+First, add the asset-packagist repository to your composer.json: (https://asset-packagist.org/site/about)
+
+```json
+"repositories": [
+    {
+        "type": "composer",
+        "url": "https://asset-packagist.org"
+    }
+]
 ```
-composer require decodelabs/glitch
+
+Then add Glitch to your required packages list:
+
+```json
+"require": {
+    "decodelabs/glitch": "~1"
+}
 ```
 
 
-Register base paths for easier reading of file names
+### Setup
+Register base paths for easier reading of file names:
 
 ```php
 \Glitch\Context::getDefault()->registerPathAlias('app', '/path/to/my/app');
@@ -119,20 +40,53 @@ Register base paths for easier reading of file names
 
 becomes
 
-{app}/models/MyModel.php
+app://models/MyModel.php
 */
 ```
 
+Pass the <code>microtime()</code> of initial app launch if necessary:
 
-### Usage
+```php
+$time = microtime(true);
+\Glitch\Context::getDefault()->setStartTime($time);
+```
 
-Throw Glitches rather than Exceptions, passing mixed in interfaces as the method name (generated error interfaces must begin with E)
+
+## Dumps
+Dump anything and everything easily, using simple global functions.
+The functions mirror those used in Symfony/VarDumper, maintaining compatibility by using Symfony's VarDumper interface if it is already loaded.
+
+```php
+class MyThing {}
+$myObject = new MyThing();
+
+// This will dump the object and carry on
+dump($myObject);
+
+// This will dump the object and exit
+dd($myObject);
+```
+
+The resulting dump interface (when using the HTML renderer, the default option) is injected into an iframe at runtime so can be rendered into any HTML page without breaking anything. If the page is otherwise empty, the iframe will expand to fill the viewport if possible.
+
+#### Renderers
+The dump package is rendered by an instance of <code>DecodeLabs\Glitch\Renderer</code> which can be overridden on the default <code>Context</code> at startup. By default the <code>Html</code> renderer is loaded under normal circumstances, the <code>Cli</code> renderer is used when under the cli sapi.
+
+Custom renderers may convert <code>Entities</code> to other formats such as Xml for example.
+
+#### Transports
+Once rendered, the package is delivered via an instance of <code>DecodeLabs\Glitch\Transport</code>, also overridable on the default <code>Context</code>. It is the responsibility of the <code>Transport</code> to deliver the rendered dump. By default, the render is just echoed out to <code>STDOUT</code>, however custom transports may send information to other interfaces, browser extensions, logging systems, etc.
+
+
+## Exceptions
+Throw <code>Glitches</code> rather than <code>Exceptions</code>, passing interface names to be mixed in as the method name (custom generated error interfaces must be prefixed with E) to the Glitch call.
 
 ```php
 throw \Glitch::EOutOfBounds('This is out of bounds');
 
+// Implement multiple interfaces
 throw \Glitch::{'ENotFound,EBadMethodCall'}(
-    'Didn\'t find a thing, couldn\'t call the other thing'
+    "Didn't find a thing, couldn't call the other thing"
 );
 
 // You can associate a http code too..
@@ -141,11 +95,15 @@ throw \Glitch::ECompletelyMadeUpMeaning('My message', [
     'http' => 501
 ]);
 
+// Implement already existing Exception interfaces
 throw \Glitch::{'EInvalidArgument,Psr\\Cache\\InvalidArgumentException'}(
     'Cache items must implement Cache\\IItem',
     ['http' => 500],  // params
     $item             // data
 );
+
+// Reference interfaces using a path style
+throw \Glitch::{'../OtherNamespace/OtherInterface'}('My exception');
 ```
 
 Catch a Glitch in the normal way using whichever scope you require:
@@ -153,17 +111,18 @@ Catch a Glitch in the normal way using whichever scope you require:
 ```php
 try {
     throw \Glitch::{'ENotFound,EBadMethodCall'}(
-        'Didn\'t find a thing, couldn\'t call the other thing'
+        "Didn't find a thing, couldn't call the other thing"
     );
 } catch(\EGlitch | \ENotFound | MyLibrary\EGlitch | MyLibrary\AThingThatDoesStuff\EBadMethodCall $e) {
     // All these types will catch
+    dd($e);
 }
 ```
 
 
 ### Traits
 
-Custom functionality can be mixed in to the generated Glitch by defining traits at the same level as any of the E* interfaces being generated.
+Custom functionality can be mixed in to the generated Glitch automatically by defining traits at the same namespace level as any of the interfaces being implemented.
 
 ```php
 namespace MyLibrary;
@@ -184,6 +143,10 @@ class Thing {
 }
 ```
 
+
+
+## Other information
+[Rationale for Glitch Exceptions](docs/Rationale.md)
 
 
 ## Licensing

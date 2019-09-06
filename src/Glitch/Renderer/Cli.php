@@ -15,6 +15,7 @@ use DecodeLabs\Glitch\Dumper\Entity;
 
 class Cli implements Renderer
 {
+    const RENDER_IN_PRODUCTION = true;
     const SPACES = 2;
     const RENDER_CLOSED = false;
 
@@ -77,10 +78,64 @@ class Cli implements Renderer
         $output = [];
 
         foreach ($stats as $key => $stat) {
-            $output[] = $this->format($stat->render('text'), 'cyan');
+            if (null === ($statString = $stat->render('text'))) {
+                continue;
+            }
+
+            $color = 'cyan';
+            $options = [];
+
+            switch ($stat->getClass()) {
+                case 'danger':
+                    $color = 'red';
+                    $options[] = 'bold';
+                    break;
+
+                case 'warning':
+                    $color = 'yellow';
+                    break;
+
+                case 'success':
+                    $color = 'green';
+                    //$options[] = 'bold';
+                    break;
+            }
+
+            $output[] = $this->format($statString, $color, null, ...$options);
         }
 
         return implode(' | ', $output);
+    }
+
+    /**
+     * Render exception message
+     */
+    protected function renderExceptionMessage(\Throwable $exception): string
+    {
+        $message = $exception->getMessage();
+        $code = $exception->getCode();
+        $httpCode = $exception instanceof \EGlitch ? $exception->getHttpCode() : null;
+        $head = [];
+
+        if ($code) {
+            $head[] =
+                $this->format('#', 'white', null, 'dim').
+                $this->format((string)$code, 'magenta');
+        }
+        if ($httpCode) {
+            $head[] =
+                $this->format('HTTP', 'white', null, 'dim').' '.
+                $this->format((string)$httpCode, 'magenta');
+        }
+
+        $output = '';
+
+        if (!empty($head)) {
+            $output .= implode(' | ', $head)."\n";
+        }
+
+        $output .= $this->renderMultiLineString($message, true);
+        return $output;
     }
 
     /**
@@ -132,7 +187,7 @@ class Cli implements Renderer
         $parts = explode(' ', $class);
         $mod = array_pop($parts);
         $style = array_pop($parts);
-        $color = 'yellow';
+        $color = 'white';
         $output = '';
 
         switch ($style) {
@@ -167,27 +222,31 @@ class Cli implements Renderer
                 break;
         }
 
-        return $output.$this->format($this->renderStringLine($string, $forceSingleLineMax), $color, null, ...$options);
+        $output .= $this->stackFormat($color, null, ...$options);
+        $output .= $this->renderStringLine($string, $forceSingleLineMax);
+        $output .= $this->popFormat();
+        return $output;
     }
 
     /**
      * Render a standard multi line string
      */
-    protected function renderMultiLineString(string $string): string
+    protected function renderMultiLineString(string $string, bool $asException=false): string
     {
         $string = str_replace("\r", '', $string);
         $parts = explode("\n", $string);
         $count = count($parts);
+        $quotes = $asException ? '!!!' : '"""';
 
         $output = [];
-        $output[] = $this->format('""" '.mb_strlen($string), 'white', null, 'dim');
+        $output[] = $this->format($quotes.' '.mb_strlen($string), 'white', null, 'dim');
 
         foreach ($parts as $part) {
             $output[] = $this->format($this->renderStringLine($part), 'red', null, 'bold').
                 $this->format('⏎', 'white', null, 'dim');
         }
 
-        $output[] = $this->format('"""', 'white', null, 'dim');
+        $output[] = $this->format($quotes, 'white', null, 'dim');
 
         return implode("\n", $output);
     }
@@ -219,7 +278,7 @@ class Cli implements Renderer
      */
     protected function wrapControlCharacter(string $control): string
     {
-        return $this->format($control, 'white', 'red', null, 'bold');
+        return $this->format($control, 'white', 'red', 'bold');
     }
 
 
@@ -250,7 +309,7 @@ class Cli implements Renderer
     /**
      * Render file path
      */
-    protected function renderSourceFile(string $path): string
+    protected function renderSourceFile(string $path, ?string $class=null): string
     {
         return $this->format($path, 'yellow');
     }
@@ -278,14 +337,6 @@ class Cli implements Renderer
     protected function renderSignatureClass(string $class): string
     {
         return $this->format($class, 'cyan', null, 'bold');
-    }
-
-    /**
-     * render signature call type part (:: or ->)
-     */
-    protected function renderSignatureCallType(string $type): string
-    {
-        return $this->format($type, 'white', null, 'dim');
     }
 
     /**
@@ -317,22 +368,6 @@ class Cli implements Renderer
     }
 
     /**
-     * render signature bracket string
-     */
-    protected function renderSignatureBracket(string $bracket): string
-    {
-        return $this->format($bracket, 'white', null, 'dim');
-    }
-
-    /**
-     * render signature arg comma
-     */
-    protected function renderSignatureComma(): string
-    {
-        return $this->format(',', 'white', null, 'dim');
-    }
-
-    /**
      * render signature object name
      */
     protected function renderSignatureObject(string $object): string
@@ -347,13 +382,14 @@ class Cli implements Renderer
     {
         return
             $this->format('&', 'white', null, 'dim').
-            $this->format($name, 'green', null, 'bold');
+            //$this->format($name, 'green', null, 'bold');
+            $name;
     }
 
     /**
-     * Wrap entity name link
+     * Wrap entity name if reference
      */
-    protected function wrapEntityName(string $name, bool $open, string $linkId): string
+    protected function renderEntityNamePart(string $name): string
     {
         return $this->format($name, 'green', null, 'bold');
     }
@@ -382,6 +418,40 @@ class Cli implements Renderer
         return
             $this->format('#', 'white', null, 'dim').
             $this->format((string)$objectId, 'white');
+    }
+
+
+
+    /**
+     * Render basic list
+     */
+    protected function renderBasicList(array $lines, ?string $class=null): string
+    {
+        $classes = explode(' ', $class);
+        $isInline = in_array('inline', $classes);
+        $wrap = false;
+
+        if ($isInline) {
+            $wrap = true;
+            $test = implode(', ', $lines);
+
+            if (strlen($test) > 80) {
+                $isInline = false;
+            }
+        }
+
+        $sep =  $isInline ? $this->format(', ', 'white', null, 'dim') : "\n";
+        $output = implode($sep, $lines);
+
+        if ($wrap) {
+            if ($isInline) {
+                $output = ' '.$output.' ';
+            } else {
+                $output = $this->indent("\n".$output)."\n";
+            }
+        }
+
+        return $output;
     }
 
 

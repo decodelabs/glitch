@@ -15,7 +15,7 @@ use DecodeLabs\Glitch\Dumper\Inspector;
 /**
  * Represents a normalized stack trace
  */
-class Trace implements \IteratorAggregate, \Countable, Inspectable
+class Trace implements \IteratorAggregate, \ArrayAccess, \Countable, Inspectable
 {
     protected $frames = [];
 
@@ -132,6 +132,14 @@ class Trace implements \IteratorAggregate, \Countable, Inspectable
         return $this->frames[0] ?? null;
     }
 
+    /**
+     * Get frame by offset
+     */
+    public function getFrame(int $offset): ?Frame
+    {
+        return $this->frames[$offset] ?? null;
+    }
+
 
     /**
      * Get file from first frame
@@ -185,6 +193,41 @@ class Trace implements \IteratorAggregate, \Countable, Inspectable
     {
         return count($this->frames);
     }
+
+
+    /**
+     * Set offset
+     */
+    public function offsetSet($offset, $value)
+    {
+        throw \Glitch::EBadMethodCall('Stack traces cannot be changed after instantiation');
+    }
+
+    /**
+     * Get by index
+     */
+    public function offsetGet($offset)
+    {
+        return $this->frames[$offset] ?? null;
+    }
+
+    /**
+     * Has offset?
+     */
+    public function offsetExists($offset)
+    {
+        return isset($this->frames[$offset]);
+    }
+
+    /**
+     * Remove offset
+     */
+    public function offsetUnset($offset)
+    {
+        throw \Glitch::EBadMethodCall('Stack traces cannot be changed after instantiation');
+    }
+
+
 
 
 

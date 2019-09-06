@@ -10,11 +10,17 @@ use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Renderer;
+use DecodeLabs\Glitch\Renderer\Html\Highlighter;
 use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Dumper\Entity;
+use DecodeLabs\Glitch\Dumper\Inspector;
+use DecodeLabs\Glitch\Exception\EIncomplete;
 
 class Html implements Renderer
 {
+    const DARK = true;
+
+    const RENDER_IN_PRODUCTION = false;
     const SPACES = 0;
     const RENDER_CLOSED = true;
 
@@ -29,31 +35,145 @@ class Html implements Renderer
 
     const RENDER_STACK = true;
 
+    const DEV = true;
+
+    const HTTP_STATUSES = [
+        100 => 'Continue',
+        101 => 'Switching Protocols',
+        200 => 'OK',
+        201 => 'Created',
+        202 => 'Accepted',
+        203 => 'Non-Authoritative Information',
+        204 => 'No Content',
+        205 => 'Reset Content',
+        206 => 'Partial Content',
+        300 => 'Multiple Choices',
+        302 => 'Found',
+        303 => 'See Other',
+        304 => 'Not Modified',
+        305 => 'Use Proxy',
+        400 => 'Bad Request',
+        401 => 'Unauthorized',
+        402 => 'Payment Required',
+        403 => 'Forbidden',
+        404 => 'Not Found',
+        405 => 'Method Not Allowed',
+        406 => 'Not Acceptable',
+        407 => 'Proxy Authentication Required',
+        408 => 'Request Timeout',
+        409 => 'Conflict',
+        410 => 'Gone',
+        411 => 'Length Required',
+        412 => 'Precondition Failed',
+        413 => 'Request Entity Too Large',
+        414 => 'Request-URI Too Long',
+        415 => 'Unsupported Media Type',
+        416 => 'Requested Range Not Satisfiable',
+        417 => 'Expectation Failed',
+        500 => 'Internal Server Error',
+        501 => 'Not Implemented',
+        502 => 'Bad Gateway',
+        503 => 'Service Unavailable',
+        504 => 'Gateway Timeout',
+        505 => 'HTTP Version Not Supported'
+    ];
+
     use Base;
+
+
+    /**
+     * Convert Dump object to HTML string
+     */
+    public function renderDump(Dump $dump): string
+    {
+        if (!$this->shouldRender()) {
+            return '';
+        }
+
+        $output = [];
+
+        $output[] = $this->renderHeader('dump');
+
+        $output[] = '<header class="title">';
+        $output[] = '<h1>Glitch <span class="version">'.\Glitch::VERSION.'</span></h1>';
+        $output[] = '</header>';
+
+        $output[] = '<div class="cols">';
+
+        $output[] = '<div class="left"><div class="frame">';
+        $output[] = $this->renderDumpEntities($dump);
+        $output[] = $this->renderEnvironment($dump->getStats());
+        $output[] = '</div></div>';
+
+        $output[] = '<div class="right">';
+        $output[] = $this->renderTrace($dump->getTrace());
+        $output[] = '</div>';
+
+        $output[] = '</div>';
+
+        $output[] = $this->renderFooter();
+        return $this->exportDumpBuffer($output);
+    }
+
+
+    /**
+     * Inspect handled exception
+     */
+    public function renderException(\Throwable $exception, Entity $entity, Dump $dataDump): string
+    {
+        $output = [];
+
+        $class = 'exception';
+
+        if ($exception instanceof EIncomplete) {
+            $class .= ' incomplete';
+        }
+
+        $output[] = $this->renderHeader($class);
+
+        if (!$this->shouldRender()) {
+            $output[] = $this->renderProductionExceptionMessage($exception);
+        } else {
+            $output[] = '<header class="title">';
+            $output[] = '<h1>Glitch <span class="version">'.\Glitch::VERSION.'</span></h1>';
+            $output[] = '</header>';
+
+            $output[] = '<div class="cols">';
+
+            $output[] = '<div class="left">';
+            $output[] = $this->renderExceptionMessage($exception);
+            $output[] = $this->renderTrace($dataDump->getTrace(), true);
+            $output[] = '</div>';
+
+            $output[] = '<div class="right"><div class="frame">';
+            $output[] = $this->renderExceptionEntity($entity);
+            $output[] = $this->renderEnvironment($dataDump->getStats());
+            $output[] = '</div></div>';
+
+            $output[] = '</div>';
+        }
+
+        $output[] = $this->renderFooter();
+        return $this->exportExceptionBuffer($output);
+    }
+
+
 
     /**
      * Render scripts and styles
      */
-    protected function renderHeader(): string
+    protected function renderHeader(string $class): string
     {
+        if (static::DARK) {
+            $class .= ' dark';
+        }
+
         $output = [];
         $output[] = '<!doctype html>';
-        $output[] = '<html lang="en">';
+        $output[] = '<html lang="en" class="'.$class.'">';
         $output[] = '<head>';
 
         $vendor = $this->context->getVendorPath();
-
-        $css = [
-            //'bootstrap-reboot' => $vendor.'/components/bootstrap/css/bootstrap-reboot.min.css',
-            'bootstrap' => $vendor.'/components/bootstrap/css/bootstrap.min.css',
-            'glitch' => __DIR__.'/assets/dump.css'
-        ];
-
-        $js = [
-            'jQuery' => $vendor.'/components/jquery/jquery.min.js',
-            'bootstrap' => $vendor.'/components/bootstrap/js/bootstrap.bundle.min.js',
-            'glitch' => __DIR__.'/assets/dump.js'
-        ];
 
 
         // Meta
@@ -61,13 +181,22 @@ class Html implements Renderer
 
 
         // Css
-        foreach ($css as $name => $path) {
-            $output[] = '<style id="style-'.$name.'">';
-            $output[] = file_get_contents($path);
+        $css = $vendor.'/decodelabs/glitch/src/Glitch/Renderer/assets/glitch.css';
+        $this->buildScss($css);
+
+        if (file_exists($css)) {
+            $output[] = '<style id="style-glitch">';
+            $output[] = file_get_contents($css);
             $output[] = '</style>';
         }
 
         // Js
+        $js = [
+            'jQuery' => $vendor.'/bower-asset/jquery/dist/jquery.min.js',
+            'bootstrap' => $vendor.'/bower-asset/bootstrap/dist/js/bootstrap.bundle.min.js',
+            'glitch' => __DIR__.'/assets/glitch.js'
+        ];
+
         foreach ($js as $name => $path) {
             $output[] = '<script id="script-'.$name.'">';
             $output[] = file_get_contents($path);
@@ -77,24 +206,113 @@ class Html implements Renderer
 
         $output[] = '</head>';
         $output[] = '<body>';
+        $output[] = '<div class="container-fluid">';
 
         return implode("\n", $output);
     }
 
-
     /**
-     * Build a stat list header bar
+     * Build scss files
      */
-    protected function renderStats(array $stats): string
+    protected function buildScss(string $cssPath): void
     {
-        $output = [];
-        $output[] = '<header class="stats container-fluid">';
+        $vendor = $this->context->getVendorPath();
+        $isDev = is_link($vendor.'/decodelabs/glitch');
 
-        foreach ($stats as $key => $stat) {
-            $output[] = '<span class="stat stat-'.$key.' badge badge-'.$stat->getClass().'" title="'.$this->esc($stat->getName()).'">'.$stat->render('html').'</span>';
+        if (!static::DEV || !$isDev) {
+            return;
         }
 
-        $output[] = '</header>';
+        $scssPath = substr($cssPath, 0, -3).'scss';
+
+        if (!file_exists($scssPath)) {
+            return;
+        }
+
+        $build = false;
+
+        if (file_exists($cssPath)) {
+            $cssTime = filemtime($cssPath);
+            $scssTime = filemtime($scssPath);
+
+            if ($scssTime > $cssTime) {
+                $build = true;
+            }
+        } else {
+            $build = true;
+        }
+
+        if (!$build) {
+            $test = scandir(__DIR__.'/assets/scss/');
+
+            foreach ($test as $testFileName) {
+                if ($testFileName === '.' || $testFileName === '..') {
+                    continue;
+                }
+
+                $testFilePath = __DIR__.'/assets/scss/'.$testFileName;
+
+                if (is_file($testFilePath)) {
+                    $scssTime = filemtime($testFilePath);
+
+                    if ($scssTime > $cssTime) {
+                        $build = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+
+        if ($build) {
+            exec('cd '.$vendor.'; sassc --style=expanded '.$scssPath.' '.$cssPath.' 2>&1', $execOut);
+
+            if (!empty($execOut)) {
+                die('<pre>'.print_r($execOut, true));
+            }
+        }
+    }
+
+    /**
+     * Render exception message
+     */
+    protected function renderExceptionMessage(\Throwable $exception): string
+    {
+        $message = $exception->getMessage();
+        $code = $exception->getCode();
+        $httpCode = null;
+        $file = $this->context->normalizePath($exception->getFile());
+        $line = $exception->getLine();
+
+        if ($exception instanceof \EGlitch) {
+            $httpCode = $exception->getHttpCode();
+        }
+
+
+        $output = [];
+        $output[] = '<section class="exception">';
+        $output[] = '<h3>Exception</h3>';
+        $output[] = '<samp class="dump exception">';
+        $output[] = '<div class="message">'.$this->renderMultiLineString($message).'</div>';
+
+        if ($file) {
+            $output[] = '<span class="attr file"><span class="label">File</span> '.$file.' <span class="g">:</span> '.$line.'</span>';
+        }
+
+        if ($code) {
+            $output[] = '<span class="attr code"><span class="label">Code</span> '.$code.'</span>';
+        }
+
+        if ($httpCode) {
+            if (isset(static::HTTP_STATUSES[$httpCode])) {
+                $httpCode .= ' '.static::HTTP_STATUSES[$httpCode];
+            }
+
+            $output[] = '<div class="attr http"><span class="label">HTTP</span> '.$httpCode.'</div>';
+        }
+
+        $output[] = '</samp>';
+        $output[] = '</section>';
         return implode("\n", $output);
     }
 
@@ -104,7 +322,8 @@ class Html implements Renderer
     protected function renderDumpEntities(Dump $dump): string
     {
         $output = [];
-        $output[] = '<div class="container-fluid">';
+        $output[] = '<section class="dump entity">';
+        $output[] = '<h3>Dump</h3>';
 
         foreach ($dump->getEntities() as $value) {
             $output[] = '<samp class="dump">';
@@ -118,30 +337,146 @@ class Html implements Renderer
             $output[] = '</samp>';
         }
 
-        $output[] = '</div>';
+        $output[] = '</section>';
+
+        return implode("\n", $output);
+    }
+
+    /**
+     * Render exception entity
+     */
+    protected function renderExceptionEntity(Entity $entity): string
+    {
+        $output = [];
+        $output[] = '<section class="dump object">';
+        $output[] = '<h3>Exception object</h3>';
+        $output[] = '<samp class="dump">';
+        $output[] = $this->renderEntity($entity, 0, [
+            'info' => true,
+            'meta' => false,
+            'text' => false,
+            'properties' => true,
+            'values' => true,
+            'stack' => false
+        ]);
+        $output[] = '</samp>';
+        $output[] = '</section>';
+
+        return implode("\n", $output);
+    }
+
+    /**
+     * Render environment vars
+     */
+    protected function renderEnvironment(array $stats): string
+    {
+        $array = [];
+
+        foreach ($stats as $name => $stat) {
+            $array[$name] = $stat->render('text');
+        }
+
+        $array = array_merge($array, [
+            'php' => phpversion(),
+            'headers' => getallheaders(),
+            'includes' => array_map(function ($val) {
+                return $this->context->normalizePath($val);
+            }, get_included_files()),
+            '$_SERVER' => $_SERVER,
+            '$_GET' => $_GET,
+            '$_POST' => $_POST,
+            '$_FILES' => $_FILES,
+            '$_COOKIE' => $_COOKIE,
+            '$GLOBALS' => $GLOBALS
+        ]);
+
+        $inspector = new Inspector($this->context);
+
+        foreach ($array as $key => $value) {
+            $array[$key] = $inspector($value, function ($entity) {
+                $entity->setOpen(false);
+            });
+        }
+
+        $output = [];
+        $output[] = '<section class="dump environment">';
+        $output[] = '<h3>Environment</h3>';
+        $output[] = '<samp class="dump environment">';
+
+        $output[] = $this->renderList($array, 'meta');
+
+        $output[] = '</samp>';
+        $output[] = '</section>';
         return implode("\n", $output);
     }
 
     /**
      * Render final stack trace
      */
-    protected function renderTrace(Trace $trace): string
+    protected function renderTrace(Trace $trace, bool $open=false): string
     {
         $output = [];
-        $output[] = '<div class="container-fluid">';
-        $output[] = '<samp class="dump trace">';
+        $output[] = '<section class="stack">';
+        $output[] = '<h3>Stack trace</h3>';
+        $output[] = '<div><div class="frame">';
+        $count = count($trace);
+        $lines = [];
+        $stackId = uniqid();
+        $first = true;
 
-        $output[] = $this->renderEntity(
-            (new Entity('stack'))
-                ->setName('stack')
-                ->setStackTrace($trace)
-                ->setOpen(false)
-                ->setLength($trace->count())
-        );
+        foreach ($trace as $i => $frame) {
+            $line = $sig = [];
+            $line[] = '<div class="stack-frame'.($first ? ' open' : null).'">';
+            $sourceId = 'stack-'.$i.'-'.$stackId;
+            $line[] = '<samp class="dump trace'.($first ? null : ' collapsed').'" data-target="#'.$sourceId.'">';
 
-        $output[] = '</samp>';
-        $output[] = '</div>';
+            $sig[] = $this->renderLineNumber($count - $i);
+            $sig[] = $this->wrapSignature($this->renderStackFrameSignature($frame));
+            $sig[] = "\n   ";
+
+            if (null !== ($file = $frame->getCallingFile())) {
+                $sig[] = $this->renderSourceFile($this->context->normalizePath($file));
+                $sig[] = $this->renderSourceLine($frame->getCallingLine());
+            } else {
+                $sig[] = $this->renderSourceFile('internal', 'internal');
+            }
+
+            $line[] = implode(' ', $sig);
+            $line[] = '</samp>';
+
+            if (null !== ($source = $this->renderFrameSource($frame))) {
+                $line[] = '<samp id="'.$sourceId.'" class="dump source collapse'.($first ? ' show' : null).'">';
+                $line[] = $source;
+                $line[] = '</samp>';
+            }
+
+            $line[] = '</div>';
+
+            $lines[] = implode("\n", $line);
+            $first = false;
+        }
+
+        $output[] = $this->renderBasicList($lines, 'stack');
+        $output[] = '</div></div>';
+        $output[] = '</section>';
+
         return implode("\n", $output);
+    }
+
+    /**
+     * Render stack frame calling code from source file
+     */
+    protected function renderFrameSource(Frame $frame): ?string
+    {
+        if ($path = $frame->getCallingFile()) {
+            $line = $frame->getCallingLine();
+        } elseif ($path = $frame->getFile()) {
+            $line = $frame->getLine();
+        } else {
+            return null;
+        }
+
+        return (new Highlighter())->extractFile($path, $line);
     }
 
     /**
@@ -150,6 +485,7 @@ class Html implements Renderer
     protected function renderFooter(): string
     {
         $output = [];
+        $output[] = '</div>';
         $output[] = '</body>';
         $output[] = '</html>';
 
@@ -163,13 +499,15 @@ class Html implements Renderer
     {
         $html = implode("\n", $buffer);
         $id = uniqid('glitch-dump');
+        $borderColor = static::DARK ? '#333' : '#888';
 
         $output = [];
-        $output[] = '<iframe id="'.$id.'" frameborder="0" class="glitch-dump"></iframe>';
         $output[] = '<style>';
-        $output[] = '.glitch-dump { width: 100%; height: 30rem; border: 1px solid #EEE; }';
-        $output[] = '.glitch-dump:only-of-type { height: calc(100% - 8px); border: none; }';
+        $output[] = '.glitch-dump { width: 100%; max-width: 100vw; min-width: 100%; height: 20rem; box-sizing: border-box; border: 2px solid '.$borderColor.'; resize: both; }';
+        $output[] = 'body > .glitch-dump { height: 50vh; }';
+        $output[] = 'body > .glitch-dump:only-of-type { height:100%; border: none; resize: none; position: absolute; width: 100%; top: 0; left: 0; }';
         $output[] = '</style>';
+        $output[] = '<iframe id="'.$id.'" frameborder="0" class="glitch-dump"></iframe>';
         $output[] = '<script>';
         $output[] = 'var doc = document.getElementById(\''.$id.'\').contentWindow.document;';
         $output[] = 'doc.open();doc.write('.json_encode($html).');doc.close();';
@@ -177,8 +515,6 @@ class Html implements Renderer
 
         return implode("\n", $output);
     }
-
-
 
 
     /**
@@ -226,14 +562,14 @@ class Html implements Renderer
     /**
      * Render a standard multi line string
      */
-    protected function renderMultiLineString(string $string): string
+    protected function renderMultiLineString(string $string, bool $asException=false): string
     {
         $string = str_replace("\r", '', $string);
         $parts = explode("\n", $string);
         $count = count($parts);
 
         $output = [];
-        $output[] = '<div class="string m'.($count > 10 ? ' large' : null).'"><span class="length">'.mb_strlen($string).'</span>';
+        $output[] = '<div class="string m'.($count > 10 ? ' large' : null).($asException ? ' exception' : null).'"><span class="length">'.mb_strlen($string).'</span>';
 
         foreach ($parts as $part) {
             $output[] = '<div class="line">'.$this->renderStringLine($part).'</div>';
@@ -303,9 +639,9 @@ class Html implements Renderer
     /**
      * Render file path
      */
-    protected function renderSourceFile(string $path): string
+    protected function renderSourceFile(string $path, ?string $class=null): string
     {
-        return '<span class="file">'.$path.'</span>';
+        return '<span class="file '.$class.'">'.$path.'</span>';
     }
 
     /**
@@ -343,14 +679,6 @@ class Html implements Renderer
     }
 
     /**
-     * render signature call type part (:: or ->)
-     */
-    protected function renderSignatureCallType(string $type): string
-    {
-        return '<i class="ty">'.$this->esc($type).'</i>';
-    }
-
-    /**
      * render signature constant part
      */
     protected function renderSignatureConstant(string $constant): string
@@ -364,22 +692,6 @@ class Html implements Renderer
     protected function wrapSignatureFunction(string $function, ?string $class=null): string
     {
         return '<i class="fn'.($class ? ' '.$class : null).'">'.$function.'</i>';
-    }
-
-    /**
-     * render signature bracket string
-     */
-    protected function renderSignatureBracket(string $bracket): string
-    {
-        return '<i class="br">'.$this->esc($bracket).'</i>';
-    }
-
-    /**
-     * render signature arg comma
-     */
-    protected function renderSignatureComma(): string
-    {
-        return '<i class="cm">,</i>';
     }
 
     /**
@@ -428,6 +740,14 @@ class Html implements Renderer
     }
 
     /**
+     * Wrap entity name if reference
+     */
+    protected function renderEntityNamePart(string $name): string
+    {
+        return '<i>'.$this->esc($name).'</i>';
+    }
+
+    /**
      * Wrap entity name link reference
      */
     protected function wrapEntityNameReference(string $name, bool $open, string $id): string
@@ -454,7 +774,7 @@ class Html implements Renderer
 
 
     /**
-     * render info toggle button
+     * Render info toggle button
      */
     protected function renderEntityInfoButton(string $linkId): string
     {
@@ -462,7 +782,7 @@ class Html implements Renderer
     }
 
     /**
-     * render meta toggle button
+     * Render meta toggle button
      */
     protected function renderEntityMetaButton(string $linkId): string
     {
@@ -470,7 +790,7 @@ class Html implements Renderer
     }
 
     /**
-     * render text toggle button
+     * Render text toggle button
      */
     protected function renderEntityTextButton(string $linkId): string
     {
@@ -478,7 +798,15 @@ class Html implements Renderer
     }
 
     /**
-     * render properties toggle button
+     * Render text toggle button
+     */
+    protected function renderEntityDefinitionButton(string $linkId): string
+    {
+        return '<a data-target="#definition-'.$linkId.'" class="definition body primary badge badge-danger"><i>d</i></a>';
+    }
+
+    /**
+     * Render properties toggle button
      */
     protected function renderEntityPropertiesButton(string $linkId): string
     {
@@ -486,7 +814,7 @@ class Html implements Renderer
     }
 
     /**
-     * render values toggle button
+     * Render values toggle button
      */
     protected function renderEntityValuesButton(string $linkId): string
     {
@@ -494,7 +822,7 @@ class Html implements Renderer
     }
 
     /**
-     * render stack toggle button
+     * Render stack toggle button
      */
     protected function renderEntityStackButton(string $type, bool $open, string $linkId): string
     {
@@ -507,7 +835,7 @@ class Html implements Renderer
 
 
     /**
-     * render object id tag
+     * Render object id tag
      */
     protected function renderEntityOid(int $objectId, bool $isRef, string $id): string
     {
@@ -550,6 +878,14 @@ class Html implements Renderer
         return '<div class="entity footer">'.$footer.'</div>';
     }
 
+    /**
+     * Wrap stack frame
+     */
+    protected function wrapStackFrame(string $frame): string
+    {
+        return '<div class="stack-frame">'.$frame.'</div>';
+    }
+
 
     /**
      * Render basic list
@@ -565,7 +901,7 @@ class Html implements Renderer
 
         $output[] = '</ul>';
 
-        return implode("\n", $output);
+        return "\n".implode("\n", $output)."\n";
     }
 
 

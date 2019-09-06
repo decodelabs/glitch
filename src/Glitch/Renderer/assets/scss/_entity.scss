@@ -1,0 +1,230 @@
+section.dump.entity {
+    background: darken($cream, 5%);
+}
+
+html.dark section.dump.entity {
+    background: rgba(#333, 0.6);
+}
+
+
+div.entity {
+    &.title,
+    &.footer {
+        display: inline-flex;
+        align-items: center;
+        position: relative;
+    }
+
+    &.title {
+        > * {
+            margin-right: 0.5em;
+        }
+
+        .name {
+            color: $green;
+            cursor: pointer;
+            text-decoration: none;
+
+            &.ref:before {
+                content: '&';
+                color: $gray;
+                opacity: 0.5;
+                margin-right: 0.2em;
+            }
+
+            i {
+                font-style: normal;
+            }
+
+            .g {
+                color: $gray;
+                opacity: 0.5;
+            }
+        }
+
+        &.type-stack .name {
+            color: $gray !important;
+        }
+        &.type-flags {
+            .name {
+                color: $purple !important;
+            }
+
+            ~ .body > .inner > .values > ul.list.values > li:before {
+                content: 'ⓒ';
+                color: $purple;
+            }
+        }
+        &.type-const .name {
+            cursor: default;
+        }
+
+
+        .length {
+            color: $teal;
+            margin-left: -0.25em;
+
+            &:before {
+                content: ':';
+                color: $gray;
+                opacity: 0.5;
+                margin-right: 0.25em;
+            }
+        }
+
+        .oid {
+            margin-right: 0 !important;
+            color: $gray;
+
+            &:before {
+                content: '#';
+                color: $gray;
+                opacity: 0.5;
+                margin-right: 0.2em;
+            }
+        }
+        a.oid:before {
+            content: '&';
+        }
+
+
+        &:target {
+            > .name {
+                background: $green;
+                color: white !important;
+                border-radius: 0.3em;
+                padding: 0 0.3em;
+                margin: 0 0.4em 0 -0.3em;
+                line-height: 1.3;
+            }
+
+            > .oid {
+                background: $purple;
+                color: white;
+                border-radius: 0.3em;
+                padding: 0 0.3em;
+                margin: 0 -0.3em;
+                line-height: 1.3;
+
+                &:before {
+                    color: white;
+                }
+            }
+        }
+    }
+}
+
+
+div.inner {
+    padding: 0 0 0 2rem;
+    display: block;
+    position: relative;
+
+    > .inner {
+        padding: 0;
+    }
+
+    &.body {
+        border-left: 1px solid rgba($gray, 0.18);
+    }
+
+    &.type-stack > div.stack:before {
+        content: 'ⓢ';
+        color: $dark;
+        opacity: 0.5;
+        position: relative;
+        margin-top: 0.3em;
+        font-size: 0.8em;
+    }
+    &.stack > div.stack:before {
+        display: none;
+    }
+
+    > div.text {
+        color: $red;
+
+        &:before {
+            content: 'ⓣ';
+            color: $gray;
+            opacity: 0.5;
+            position: relative;
+            margin-top: 0.3em;
+            font-size: 0.8em;
+        }
+
+        &.binary > i {
+            margin-right: 0.5em;
+            color: $indigo;
+        }
+    }
+
+    > div.definition {
+        color: $orange;
+
+        &:before {
+            content: 'ⓓ';
+            color: $orange;
+            opacity: 1;
+            position: relative;
+            margin-top: 0.3em;
+            font-size: 0.8em;
+        }
+    }
+}
+
+a.name.collapsed ~ a.badge.body {
+    opacity: 0.1;
+
+    &.values {
+        opacity: 0.3;
+    }
+}
+
+
+
+
+
+html.dark {
+    div.entity.title {
+        .name {
+            color: lighten($green, 10%);
+        }
+
+        &.type-flags {
+            .name {
+                color: lighten($purple, 25%) !important;
+            }
+
+            ~ .body > .inner > .values > ul.list.values > li:before {
+                color: lighten($purple, 25%);
+            }
+        }
+
+        .length {
+            color: lighten($teal, 10%);
+        }
+
+        &:target > .oid {
+            background: lighten($purple, 10%);
+        }
+    }
+
+    div.inner {
+        &.body {
+            border-left: 1px solid rgba($gray, 0.06);
+        }
+
+        &.type-stack > div.stack:before {
+            content: 'ⓢ';
+            color: $gray;
+        }
+
+        > div.text {
+            color: lighten($red, 10%);
+
+            &.binary > i {
+                color: lighten($indigo, 25%);
+            }
+        }
+    }
+}
