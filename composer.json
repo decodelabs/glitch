@@ -22,6 +22,7 @@
         },
         "files": [
             "src/EGlitch.php",
+            "src/EGlitchTrait.php",
             "src/Glitch.php",
             "src/helpers.php"
         ]
