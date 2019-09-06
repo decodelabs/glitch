@@ -94,13 +94,16 @@ class Html implements Renderer
             $output[] = '<h1>Glitch <span class="version">'.\Glitch::VERSION.'</span></h1>';
             $output[] = '</header>';
 
+            /*
             $output[] = '<section class="exception"><div class="exception">';
             $output[] = $this->renderExceptionMessage($exception);
             $output[] = '</div></section>';
+            */
 
             $output[] = '<section class="cols">';
 
             $output[] = '<div class="left">';
+            $output[] = $this->renderExceptionMessage($exception);
             $output[] = $this->renderExceptionTrace($dataDump->getTrace(), true);
             $output[] = '</div>';
 
@@ -256,6 +259,7 @@ class Html implements Renderer
 
 
         $output = [];
+        $output[] = '<h3>Exception</h3>';
         $output[] = '<samp class="dump exception">';
         $output[] = '<div class="message">'.$this->renderMultiLineString($message).'</div>';
 

@@ -53,6 +53,7 @@ ul.stack {
                 padding: 0.5rem 0.75rem;
                 cursor: n-resize;
                 transition: margin-top 0.2s, border-color 0.5s ease-out;
+                overflow-x: auto;
 
                 &.collapsed {
                     cursor: s-resize;
@@ -63,9 +64,9 @@ ul.stack {
 
                 &:not(.collapsed) {
                     border-radius: 2px 2px 0 0;
-                    border-top: 3px solid rgba(darken($red, 10%), 0.75);
-                    border-left: 3px solid rgba(darken($red, 10%), 0.75);
-                    border-right: 3px solid rgba(darken($red, 10%), 0.75);
+                    border-top: 3px solid rgba($red, 0.95);
+                    border-left: 3px solid rgba($red, 0.95);
+                    border-right: 3px solid rgba($red, 0.95);
                     margin-top: 0.5em;
                 }
             }
@@ -80,9 +81,9 @@ ul.stack {
 
                 samp.dump {
                     border-radius: 0 0 2px 2px;
-                    border-left: 3px solid rgba(darken($red, 5%), 0.5) !important;
-                    border-right: 3px solid rgba(darken($red, 5%), 0.5) !important;
-                    border-bottom: 3px solid rgba(darken($red, 5%), 0.5) !important;
+                    border-left: 3px solid rgba($red, 0.85) !important;
+                    border-right: 3px solid rgba($red, 0.85) !important;
+                    border-bottom: 3px solid rgba($red, 0.85) !important;
                 }
             }
 
@@ -97,6 +98,8 @@ ul.stack {
             samp.dump.source {
                 padding: 0.5rem 0.75rem;
                 background: rgba(#EEE, 0.35);
+                filter: contrast(0.9);
+                box-shadow: 2px 0.5rem 0.5rem rgba(black, 0.1);
 
                 &:before {
                     content: '';

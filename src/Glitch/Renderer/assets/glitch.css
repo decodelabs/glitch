@@ -10009,6 +10009,7 @@ ul.stack.source > li samp.dump.trace {
   padding: 0.5rem 0.75rem;
   cursor: n-resize;
   transition: margin-top 0.2s, border-color 0.5s ease-out;
+  overflow-x: auto;
 }
 
 ul.stack.source > li samp.dump.trace.collapsed {
@@ -10020,9 +10021,9 @@ ul.stack.source > li samp.dump.trace.collapsed {
 
 ul.stack.source > li samp.dump.trace:not(.collapsed) {
   border-radius: 2px 2px 0 0;
-  border-top: 3px solid rgba(189, 33, 48, 0.75);
-  border-left: 3px solid rgba(189, 33, 48, 0.75);
-  border-right: 3px solid rgba(189, 33, 48, 0.75);
+  border-top: 3px solid rgba(220, 53, 69, 0.95);
+  border-left: 3px solid rgba(220, 53, 69, 0.95);
+  border-right: 3px solid rgba(220, 53, 69, 0.95);
   margin-top: 0.5em;
 }
 
@@ -10037,9 +10038,9 @@ ul.stack.source > li > div.source {
 
 ul.stack.source > li > div.source samp.dump {
   border-radius: 0 0 2px 2px;
-  border-left: 3px solid rgba(211, 37, 53, 0.5) !important;
-  border-right: 3px solid rgba(211, 37, 53, 0.5) !important;
-  border-bottom: 3px solid rgba(211, 37, 53, 0.5) !important;
+  border-left: 3px solid rgba(220, 53, 69, 0.85) !important;
+  border-right: 3px solid rgba(220, 53, 69, 0.85) !important;
+  border-bottom: 3px solid rgba(220, 53, 69, 0.85) !important;
 }
 
 ul.stack.source > li:last-child {
@@ -10053,6 +10054,8 @@ ul.stack.source > li:last-child > div.source {
 ul.stack.source > li samp.dump.source {
   padding: 0.5rem 0.75rem;
   background: rgba(238, 238, 238, 0.35);
+  filter: contrast(0.9);
+  box-shadow: 2px 0.5rem 0.5rem rgba(0, 0, 0, 0.1);
 }
 
 ul.stack.source > li samp.dump.source:before {
@@ -10255,7 +10258,7 @@ samp.dump.source .name {
 body {
   padding: 0;
   margin: 0;
-  height: 100% !important;
+  height: 100%;
   max-height: 100%;
 }
 
@@ -10280,9 +10283,16 @@ html.exception body {
   flex-direction: column;
 }
 
-@media screen and (min-height: 550px) {
+@media screen and (min-width: 961px) {
   html.exception body {
     overflow: hidden;
+  }
+}
+
+@media screen and (max-width: 960px) {
+  html.exception body {
+    max-height: none;
+    height: auto;
   }
 }
 
@@ -10292,13 +10302,19 @@ html.exception body > .container-fluid {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  max-height: 100vh;
+}
+
+@media screen and (min-width: 961px) {
+  html.exception body > .container-fluid {
+    max-height: 100vh;
+  }
 }
 
 html.exception body header.title {
   color: white;
   padding: 0.5rem 0.9rem;
-  background: linear-gradient(to bottom, rgba(189, 33, 48, 0.75), rgba(176, 31, 44, 0.75));
+  background: linear-gradient(to bottom, rgba(211, 37, 53, 0.85), rgba(211, 37, 53, 0.95));
+  border-bottom: 2px solid #a73742;
 }
 
 html.exception body header.title h1 {
@@ -10334,12 +10350,12 @@ html.exception body section > div {
 
 html.exception body section h3 {
   margin: 0;
-  font-weight: 200;
+  font-weight: 100;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  font-size: 1.25em;
+  font-size: 0.9em;
   line-height: 1;
-  background: linear-gradient(to bottom, rgba(136, 136, 136, 0.8), rgba(102, 102, 102, 0.8));
+  background: linear-gradient(to bottom, rgba(136, 136, 136, 0.7), rgba(119, 119, 119, 0.7));
   color: white;
   padding: 0.35rem 1rem;
   position: relative;
@@ -10355,49 +10371,6 @@ html.exception body section samp.dump {
 html.exception body section samp.dump > h3:first-child {
   font-size: 1.5em;
   margin-bottom: 1em;
-}
-
-html.exception body section.exception {
-  padding: 0 1rem 0.5rem;
-  border-bottom: 2px solid #888;
-  background: linear-gradient(to bottom, rgba(176, 31, 44, 0.75), rgba(176, 31, 44, 0.3));
-}
-
-html.exception body section.exception samp.dump {
-  background: white;
-  min-width: 0;
-  border-radius: 2px;
-}
-
-html.exception body section.exception samp.dump div.message {
-  margin-bottom: 1rem;
-}
-
-html.exception body section.exception samp.dump div.message:last-child {
-  margin-bottom: 0;
-}
-
-html.exception body section.exception samp.dump div.message div.line {
-  font-size: 2em;
-  border: none;
-}
-
-html.exception body section.exception samp.dump div.message div.string.m:before, html.exception body section.exception samp.dump div.message div.string.m:after {
-  content: '!!!';
-}
-
-html.exception body section.exception samp.dump .attr {
-  color: var(--pink);
-  font-weight: 600;
-}
-
-html.exception body section.exception samp.dump .attr .label {
-  color: var(--gray);
-  font-weight: normal;
-}
-
-html.exception body section.exception samp.dump .attr .label:after {
-  content: ':';
 }
 
 html.exception body section.cols {
@@ -10435,15 +10408,20 @@ html.exception body section.cols > div {
 }
 
 html.exception body section.cols > div div.frame {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
   width: 100%;
-  height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
+}
+
+@media screen and (min-width: 961px) {
+  html.exception body section.cols > div div.frame {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
 }
 
 html.exception body section.cols > div samp.dump {
@@ -10454,11 +10432,66 @@ html.exception body section.cols > div.left {
   flex-direction: column;
 }
 
+@media screen and (min-width: 961px) {
+  html.exception body section.cols > div.left h3 {
+    border-right: 1px solid #888;
+  }
+  html.exception body section.cols > div.left samp.dump {
+    border-right: 1px solid #DDD;
+  }
+  html.exception body section.cols > div.left > div {
+    border-right: 1px solid #CCC;
+  }
+}
+
+html.exception body section.cols > div.left samp.dump.exception {
+  background: white;
+  min-width: 0;
+  border-radius: 2px;
+}
+
+html.exception body section.cols > div.left samp.dump.exception div.message {
+  margin-bottom: 1rem;
+}
+
+html.exception body section.cols > div.left samp.dump.exception div.message:last-child {
+  margin-bottom: 0;
+}
+
+html.exception body section.cols > div.left samp.dump.exception div.message div.line {
+  font-size: 2em;
+  border: none;
+}
+
+html.exception body section.cols > div.left samp.dump.exception div.message div.string.m:before, html.exception body section.cols > div.left samp.dump.exception div.message div.string.m:after {
+  content: '!!!';
+}
+
+html.exception body section.cols > div.left samp.dump.exception .attr {
+  color: var(--pink);
+  font-weight: 600;
+}
+
+html.exception body section.cols > div.left samp.dump.exception .attr .label {
+  color: var(--gray);
+  font-weight: normal;
+}
+
+html.exception body section.cols > div.left samp.dump.exception .attr .label:after {
+  content: ':';
+}
+
 html.exception body section.cols > div.left > div {
   background: #EEE;
   position: relative;
   height: 100%;
   flex: 1 1 100%;
+}
+
+@media screen and (max-width: 960px) {
+  html.exception body section.cols > div.right {
+    min-height: 30vh;
+  }
 }
 
 html.exception body section.cols > div.right samp.dump {
