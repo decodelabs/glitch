@@ -38,23 +38,6 @@ ul.stack {
             margin-bottom: 1em;
             margin-top: 1em;
         }
-    }
-
-    &:first-child div.stack-frame.open {
-        margin-top: 0;
-    }
-
-    samp.dump.trace {
-        padding: 0.5rem 0.75rem;
-        cursor: n-resize;
-        transition: margin-top 0.2s, border-color 0.2s ease-out;
-        overflow-x: auto;
-        border: none;
-
-        &.collapsed {
-            cursor: s-resize;
-            border-color: transparent;
-        }
 
         span {
             &.number {
@@ -76,18 +59,39 @@ ul.stack {
             }
             &.file {
                 color: $orange;
-                margin-left: 2.5em;
+                margin-left: 1.5em;
 
-                &:after {
+                + .line:before {
                     content: ' :';
                     color: $gray;
                     opacity: 0.5;
+                }
+
+                &.internal {
+                    font-style: italic;
                 }
             }
             &.line {
                 color: $pink;
                 padding-right: 1rem;
             }
+        }
+    }
+
+    &:first-child div.stack-frame.open {
+        margin-top: 0;
+    }
+
+    samp.dump.trace {
+        padding: 0.5rem 0.75rem;
+        cursor: n-resize;
+        transition: margin-top 0.2s, border-color 0.2s ease-out;
+        overflow-x: auto;
+        border: none;
+
+        &.collapsed {
+            cursor: s-resize;
+            border-color: transparent;
         }
     }
 
@@ -123,9 +127,7 @@ html.dark {
             &.open {
                 box-shadow: 2px 0.5rem 0.5rem rgba(black, 0.2);
             }
-        }
 
-        samp.dump.trace {
             span {
                 &.number {
                     color: $gray;
@@ -150,14 +152,20 @@ html.dark {
 }
 
 
+html.dump {
+    ul.stack div.stack-frame.open {
+        border-color: rgba($blue, 0.85);
+    }
+}
+
 html.exception {
     ul.stack div.stack-frame.open {
         border-color: rgba($red, 0.85);
     }
 }
 
-html.dump {
+html.incomplete {
     ul.stack div.stack-frame.open {
-        border-color: rgba($blue, 0.85);
+        border-color: rgba($orange, 0.85);
     }
 }

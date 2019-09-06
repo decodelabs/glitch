@@ -4,7 +4,7 @@
  * @license http://opensource.org/licenses/MIT
  */
 declare(strict_types=1);
-namespace DecodeLabs\Glitch;
+namespace DecodeLabs\Glitch\Exception;
 
 /**
  * Automatically generate Exceptions on the fly based on scope and
@@ -125,6 +125,7 @@ class Factory
     protected $interfaces = [];
     protected $traits = [];
 
+    protected $hasRoot = false;
 
     protected $interfaceIndex = [];
     protected $interfaceDefs = [];
@@ -181,7 +182,9 @@ class Factory
             }
         }
 
-        $this->targetNamespace = ltrim($this->targetNamespace, '\\');
+        if ($this->targetNamespace !== null) {
+            $this->targetNamespace = ltrim($this->targetNamespace, '\\');
+        }
 
         if (empty($this->targetNamespace)) {
             $this->targetNamespace = null;
@@ -200,7 +203,7 @@ class Factory
         $this->params['interfaces'] = [];
 
         $this->interfaces['\\DecodeLabs\\Glitch\\Inspectable'] = true;
-        $this->traits['\\DecodeLabs\\Glitch\\TException'] = true;
+        $this->traits['\\EGlitchTrait'] = true;
 
         $this->prepareInterfaces($interfaces);
     }
@@ -263,6 +266,7 @@ class Factory
     {
         $this->indexInterfaces();
         $this->buildDefinitions();
+
         $hash = $this->compileDefinitions();
         $this->params['type'] = $this->type;
         return new self::$instances[$hash]($this->message, $this->params);
@@ -295,16 +299,21 @@ class Factory
      */
     protected function indexInterface(string $interface): ?string
     {
+        $parts = explode('\\', $interface);
+        $name = array_pop($parts);
+        $traitName = implode('\\', $parts).'\\'.$name.'Trait';
+        $isEFormat = preg_match('/^(E)[A-Z][a-zA-Z0-9_]+$/', $name);
+
+        if ($isEFormat && trait_exists($traitName, true)) {
+            $this->traits[$traitName] = true;
+        }
+
         if (interface_exists($interface)) {
             $this->interfaceIndex[$interface] = [];
             return null;
         }
 
-        $parts = explode('\\', $interface);
-        $name = array_pop($parts);
-        $output = null;
-
-        if (!preg_match('/^(E)[A-Z][a-zA-Z0-9_]+$/', $name)) {
+        if (!$isEFormat) {
             return null;
         }
 
@@ -375,6 +384,10 @@ class Factory
         $this->exceptionDef = 'return new class(\'\') extends '.$this->type;
 
         if (!empty($this->interfaceIndex)) {
+            if ($this->hasRoot) {
+                unset($this->interfaceIndex['\\EGlitch']);
+            }
+
             $this->exceptionDef .= ' implements '.implode(',', array_keys($this->interfaceIndex));
         }
 
@@ -455,11 +468,10 @@ class Factory
 
         $parts = explode('\\', $interface);
         $name = array_pop($parts);
-        $traitName = implode('\\', $parts).'\\'.$name.'Trait';
         array_shift($parts);
 
-        if (trait_exists($traitName, true)) {
-            $this->traits[$traitName] = true;
+        if ($parent === '\\EGlitch') {
+            $this->hasRoot = true;
         }
 
         if (interface_exists($interface)) {
@@ -476,7 +488,15 @@ class Factory
     protected function compileDefinitions(): string
     {
         $defs = implode("\n", $this->interfaceDefs);
+
+        // Put the eval code in $GLOBALS to dump if it dies
+        $GLOBALS['__eval'] = $defs."\n".$this->exceptionDef;
+
         @eval($defs);
+
+        // Remove defs from $GLOBALS again
+        unset($GLOBALS['__eval']);
+
         $hash = md5($this->exceptionDef);
 
         if (!isset(self::$instances[$hash])) {

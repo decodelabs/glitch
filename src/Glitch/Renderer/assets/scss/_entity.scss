@@ -157,6 +157,19 @@ div.inner {
             color: $indigo;
         }
     }
+
+    > div.definition {
+        color: $orange;
+
+        &:before {
+            content: 'ⓓ';
+            color: $orange;
+            opacity: 1;
+            position: relative;
+            margin-top: 0.3em;
+            font-size: 0.8em;
+        }
+    }
 }
 
 a.name.collapsed ~ a.badge.body {

@@ -4,11 +4,11 @@
  * @license http://opensource.org/licenses/MIT
  */
 declare(strict_types=1);
-namespace DecodeLabs\Glitch;
 
 use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Stack\Trace;
 
+use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Inspectable;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
@@ -18,7 +18,7 @@ use DecodeLabs\Glitch\Dumper\Inspector;
  * This trait is automatically rolled into the generated exception
  * when using the Factory
  */
-trait TException
+trait EGlitchTrait
 {
     protected $http;
     protected $data;

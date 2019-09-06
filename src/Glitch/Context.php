@@ -161,23 +161,6 @@ class Context
     }
 
 
-
-    /**
-     * Quit a stubbed method
-     */
-    public function incomplete($data=null, int $rewind=0): void
-    {
-        $frame = Frame::create($rewind + 1);
-
-        throw \Glitch::EImplementation(
-            $frame->getSignature().' has not been implemented yet',
-            null,
-            $data
-        );
-    }
-
-
-
     /**
      * Log an exception... somewhere :)
      */

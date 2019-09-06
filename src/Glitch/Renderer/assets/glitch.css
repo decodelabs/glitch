@@ -9584,6 +9584,15 @@ html.exception.dark header.title {
   border-bottom: 2px solid #812a33;
 }
 
+html.incomplete header.title {
+  background: linear-gradient(to bottom, rgba(245, 113, 2, 0.85), rgba(245, 113, 2, 0.95));
+  border-bottom: 2px solid #c66718;
+}
+
+html.incomplete.dark header.title {
+  border-bottom: 2px solid #984f13;
+}
+
 div.cols {
   flex: 1 1 100%;
   padding-bottom: 0;
@@ -9749,6 +9758,14 @@ html.dark section.exception samp.dump.exception .attr .label {
   color: rgba(222, 226, 230, 0.7);
 }
 
+html.incomplete section.exception samp.dump.exception div.message {
+  border-color: #fd7e14;
+}
+
+html.incomplete section.exception samp.dump.exception div.message .string.m .line {
+  color: #fd7e14 !important;
+}
+
 section.dump.entity {
   background: #efefea;
 }
@@ -9901,6 +9918,19 @@ div.inner > div.text.binary > i {
   color: #6610f2;
 }
 
+div.inner > div.definition {
+  color: #fd7e14;
+}
+
+div.inner > div.definition:before {
+  content: 'ⓓ';
+  color: #fd7e14;
+  opacity: 1;
+  position: relative;
+  margin-top: 0.3em;
+  font-size: 0.8em;
+}
+
 a.name.collapsed ~ a.badge.body {
   opacity: 0.1;
 }
@@ -9986,6 +10016,45 @@ ul.stack div.stack-frame.open {
   margin-top: 1em;
 }
 
+ul.stack div.stack-frame span.number {
+  width: 1rem;
+  display: inline-block;
+}
+
+ul.stack div.stack-frame span.signature {
+  color: #adb5bd;
+  padding-right: 1rem;
+}
+
+ul.stack div.stack-frame span.signature:after {
+  content: "\A";
+  white-space: pre;
+}
+
+ul.stack div.stack-frame span.signature > *:last-child {
+  padding-right: 1rem;
+}
+
+ul.stack div.stack-frame span.file {
+  color: #fd7e14;
+  margin-left: 1.5em;
+}
+
+ul.stack div.stack-frame span.file + .line:before {
+  content: ' :';
+  color: #adb5bd;
+  opacity: 0.5;
+}
+
+ul.stack div.stack-frame span.file.internal {
+  font-style: italic;
+}
+
+ul.stack div.stack-frame span.line {
+  color: #e83e8c;
+  padding-right: 1rem;
+}
+
 ul.stack:first-child div.stack-frame.open {
   margin-top: 0;
 }
@@ -10001,41 +10070,6 @@ ul.stack samp.dump.trace {
 ul.stack samp.dump.trace.collapsed {
   cursor: s-resize;
   border-color: transparent;
-}
-
-ul.stack samp.dump.trace span.number {
-  width: 1rem;
-  display: inline-block;
-}
-
-ul.stack samp.dump.trace span.signature {
-  color: #adb5bd;
-  padding-right: 1rem;
-}
-
-ul.stack samp.dump.trace span.signature:after {
-  content: "\A";
-  white-space: pre;
-}
-
-ul.stack samp.dump.trace span.signature > *:last-child {
-  padding-right: 1rem;
-}
-
-ul.stack samp.dump.trace span.file {
-  color: #fd7e14;
-  margin-left: 2.5em;
-}
-
-ul.stack samp.dump.trace span.file:after {
-  content: ' :';
-  color: #adb5bd;
-  opacity: 0.5;
-}
-
-ul.stack samp.dump.trace span.line {
-  color: #e83e8c;
-  padding-right: 1rem;
 }
 
 ul.stack samp.dump.source {
@@ -10067,15 +10101,15 @@ html.dark ul.stack div.stack-frame.open {
   box-shadow: 2px 0.5rem 0.5rem rgba(0, 0, 0, 0.2);
 }
 
-html.dark ul.stack samp.dump.trace span.number {
+html.dark ul.stack div.stack-frame span.number {
   color: #adb5bd;
 }
 
-html.dark ul.stack samp.dump.trace span.file {
+html.dark ul.stack div.stack-frame span.file {
   color: #fec392;
 }
 
-html.dark ul.stack samp.dump.trace span.line {
+html.dark ul.stack div.stack-frame span.line {
   color: #f082b5;
 }
 
@@ -10087,12 +10121,16 @@ html.dark ul.stack samp.dump.source:before {
   border-top: 1px solid rgba(51, 51, 51, 0.8) !important;
 }
 
+html.dump ul.stack div.stack-frame.open {
+  border-color: rgba(0, 123, 255, 0.85);
+}
+
 html.exception ul.stack div.stack-frame.open {
   border-color: rgba(220, 53, 69, 0.85);
 }
 
-html.dump ul.stack div.stack-frame.open {
-  border-color: rgba(0, 123, 255, 0.85);
+html.incomplete ul.stack div.stack-frame.open {
+  border-color: rgba(253, 126, 20, 0.85);
 }
 
 ul.list {
@@ -10432,6 +10470,14 @@ a.badge.text i {
   top: 0.05em;
 }
 
+a.badge.definition {
+  background-color: #fd7e14;
+}
+
+a.badge.definition:hover {
+  background-color: #c35a02;
+}
+
 a.badge.properties i {
   top: -0.08em;
 }
@@ -10484,6 +10530,10 @@ html.dark a.badge-dark {
 
 .string.identifier:before, .string.identifier:after {
   display: none;
+}
+
+.string.definition {
+  color: #adb5bd;
 }
 
 .string.s > .line:before, .string.s > .line:after {
@@ -10581,6 +10631,10 @@ html.dark .string > .line {
 
 html.dark .string.identifier {
   color: #fd9a47;
+}
+
+html.dark .string.definition {
+  color: #dee2e6;
 }
 
 html.dark .string.m:before, html.dark .string.m:after {

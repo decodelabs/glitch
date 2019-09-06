@@ -43,6 +43,10 @@
         }
     }
 
+    &.definition {
+        color: $gray;
+    }
+
     &.s {
         > .line {
             &:before, &:after {
@@ -150,6 +154,10 @@ html.dark {
 
         &.identifier {
             color: lighten($orange, 10%);
+        }
+
+        &.definition {
+            color: $gray-300;
         }
 
         &.m {

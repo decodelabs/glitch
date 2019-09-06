@@ -5,9 +5,10 @@
  */
 declare(strict_types=1);
 
-use DecodeLabs\Glitch\Factory;
 use DecodeLabs\Glitch\Context;
+use DecodeLabs\Glitch\Exception\Factory;
 use DecodeLabs\Glitch\Stack\Trace;
+use DecodeLabs\Glitch\Stack\Frame;
 
 /**
  * This is just a facade.
@@ -24,6 +25,14 @@ final class Glitch
     public static function setAutoRegister(bool $register): void
     {
         self::$autoRegister = $register;
+    }
+
+    /**
+     * Should auto register as error handler?
+     */
+    public static function shouldAutoRegister(): bool
+    {
+        return self::$autoRegister;
     }
 
     /**
@@ -49,9 +58,17 @@ final class Glitch
     /**
      * Shortcut to incomplete context method
      */
-    public static function incomplete($data=null)
+    public static function incomplete($data=null, int $rewind=0): void
     {
-        Context::getDefault()->incomplete($data, 1);
+        $frame = Frame::create($rewind + 1);
+
+        throw Factory::create(
+            null,
+            ['EImplementation', 'DecodeLabs/Glitch/Exception/EIncomplete'],
+            $frame->getSignature().' has not been implemented yet',
+            null,
+            $data
+        );
     }
 
     /**

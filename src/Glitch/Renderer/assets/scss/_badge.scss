@@ -18,6 +18,13 @@ a.badge {
     &.text i {
         top: 0.05em;
     }
+    &.definition {
+        background-color: $orange;
+
+        &:hover {
+            background-color: darken($orange, 15%);
+        }
+    }
     &.properties i {
         top: -0.08em;
     }

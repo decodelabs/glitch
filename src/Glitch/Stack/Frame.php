@@ -220,7 +220,7 @@ class Frame
      */
     public static function normalizeClassName(string $class, bool $alias=true): string
     {
-        if ($alias && false !== strpos($class, 'Glitch/Factory.php')) {
+        if ($alias && false !== strpos($class, 'Glitch/Exception/Factory.php')) {
             return 'EGlitch';
         }
 
@@ -350,6 +350,22 @@ class Frame
         }
 
         return $output;
+    }
+
+
+    /**
+     * Get reflection for active frame function
+     */
+    public function getReflection(): ?\ReflectionFunctionAbstract
+    {
+        if ($this->function === '{closure}') {
+            return null;
+        } elseif ($this->className !== null) {
+            $classRef = new \ReflectionClass($this->namespace.'\\'.$this->className);
+            return $classRef->getMethod($this->function);
+        } else {
+            return new \ReflectionFunction($this->namespace.'\\'.$this->function);
+        }
     }
 
 

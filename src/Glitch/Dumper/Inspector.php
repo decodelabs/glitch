@@ -536,7 +536,7 @@ class Inspector
      */
     protected function normalizeClassName(string $class, \ReflectionObject $reflection): string
     {
-        if (false !== strpos($class, 'Glitch/Factory.php')) {
+        if (false !== strpos($class, 'Glitch/Exception/Factory.php')) {
             $class = 'EGlitch';
         } elseif (0 === strpos($class, "class@anonymous\x00")) {
             $class = $reflection->getParentClass()->getShortName().'@anonymous';

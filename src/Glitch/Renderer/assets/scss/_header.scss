@@ -46,3 +46,16 @@ html.exception {
         }
     }
 }
+
+html.incomplete {
+    header.title {
+        background: linear-gradient(to bottom, rgba(darken($orange, 5%), 0.85), rgba(darken($orange, 5%), 0.95));
+        border-bottom: 2px solid desaturate(darken($orange, 10%), 20%);
+    }
+
+    &.dark {
+        header.title {
+            border-bottom: 2px solid desaturate(darken($orange, 20%), 20%);
+        }
+    }
+}

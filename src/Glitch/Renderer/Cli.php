@@ -309,7 +309,7 @@ class Cli implements Renderer
     /**
      * Render file path
      */
-    protected function renderSourceFile(string $path): string
+    protected function renderSourceFile(string $path, ?string $class=null): string
     {
         return $this->format($path, 'yellow');
     }

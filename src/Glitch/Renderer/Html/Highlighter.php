@@ -20,6 +20,10 @@ class Highlighter
 
     public function extractFile(string $path, int $line, int $buffer=8): string
     {
+        if (!file_exists($path)) {
+            return '';
+        }
+
         return $this->extract(file_get_contents($path), $line, $buffer);
     }
 
@@ -46,7 +50,7 @@ class Highlighter
                 $name = substr(token_name($token[0]), 2);
                 $name = strtolower(str_replace('_', '-', $name));
 
-                if ($name === 'whitespace') {
+                if ($name === 'whitespace' || $name === 'doc-comment') {
                     if ($lastLine >= $endLine) {
                         $parts = explode("\x00", str_replace("\n", "\x00\n", $token[1]));
                     } else {
@@ -141,6 +145,10 @@ class Highlighter
 
     public function highlightFile(string $path, ?int $startLine=null, ?int $endLine=null, ?int $highlight=null): string
     {
+        if (!file_exists($path)) {
+            return '';
+        }
+
         return $this->highlight(file_get_contents($path), $startLine, $endLine, $highlight);
     }
 

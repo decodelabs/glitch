@@ -61,3 +61,11 @@ html.dark section.exception {
         }
     }
 }
+
+html.incomplete section.exception samp.dump.exception div.message {
+    border-color: $orange;
+    
+    .string.m .line {
+        color: $orange !important;
+    }
+}

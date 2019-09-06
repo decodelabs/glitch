@@ -14,6 +14,7 @@ use DecodeLabs\Glitch\Renderer\Html\Highlighter;
 use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
+use DecodeLabs\Glitch\Exception\EIncomplete;
 
 class Html implements Renderer
 {
@@ -121,7 +122,14 @@ class Html implements Renderer
     public function renderException(\Throwable $exception, Entity $entity, Dump $dataDump): string
     {
         $output = [];
-        $output[] = $this->renderHeader('exception');
+
+        $class = 'exception';
+
+        if ($exception instanceof EIncomplete) {
+            $class .= ' incomplete';
+        }
+
+        $output[] = $this->renderHeader($class);
 
         if (!$this->shouldRender()) {
             $output[] = $this->renderProductionExceptionMessage($exception);
@@ -378,7 +386,8 @@ class Html implements Renderer
             '$_GET' => $_GET,
             '$_POST' => $_POST,
             '$_FILES' => $_FILES,
-            '$_COOKIE' => $_COOKIE
+            '$_COOKIE' => $_COOKIE,
+            '$GLOBALS' => $GLOBALS
         ]);
 
         $inspector = new Inspector($this->context);
@@ -423,11 +432,13 @@ class Html implements Renderer
 
             $sig[] = $this->renderLineNumber($count - $i);
             $sig[] = $this->wrapSignature($this->renderStackFrameSignature($frame));
+            $sig[] = "\n   ";
 
             if (null !== ($file = $frame->getCallingFile())) {
-                $sig[] = "\n   ";
                 $sig[] = $this->renderSourceFile($this->context->normalizePath($file));
                 $sig[] = $this->renderSourceLine($frame->getCallingLine());
+            } else {
+                $sig[] = $this->renderSourceFile('internal', 'internal');
             }
 
             $line[] = implode(' ', $sig);
@@ -484,7 +495,7 @@ class Html implements Renderer
     /**
      * Implode buffer and wrap it in JS iframe injector
      */
-    protected function exportDumpBuffer(array $buffer): string
+    protected function exportBuffer(array $buffer): string
     {
         $html = implode("\n", $buffer);
         $id = uniqid('glitch-dump');
@@ -504,32 +515,6 @@ class Html implements Renderer
 
         return implode("\n", $output);
     }
-
-    /**
-     * Implode buffer and wrap it in JS iframe injector
-     */
-    protected function exportExceptionBuffer(array $buffer): string
-    {
-        $html = implode("\n", $buffer);
-        $id = uniqid('glitch-exception');
-        $borderColor = static::DARK ? '#333' : '#888';
-
-        $output = [];
-        $output[] = '<style>';
-        $output[] = '.glitch-exception { width: 100%; max-width: 100vw; min-width: 100%; height: 30rem; box-sizing: border-box; border: 2px solid '.$borderColor.'; resize: both; }';
-        $output[] = 'body > .glitch-exception { height: 50vh; }';
-        $output[] = 'body > .glitch-exception:only-of-type { height:100%; border: none; resize: none; position: absolute; width: 100%; top: 0; left: 0; }';
-        $output[] = '</style>';
-        $output[] = '<iframe id="'.$id.'" frameborder="0" class="glitch-exception"></iframe>';
-        $output[] = '<script>';
-        $output[] = 'var doc = document.getElementById(\''.$id.'\').contentWindow.document;';
-        $output[] = 'doc.open();doc.write('.json_encode($html).');doc.close();';
-        $output[] = '</script>';
-
-        return implode("\n", $output);
-    }
-
-
 
 
     /**
@@ -654,9 +639,9 @@ class Html implements Renderer
     /**
      * Render file path
      */
-    protected function renderSourceFile(string $path): string
+    protected function renderSourceFile(string $path, ?string $class=null): string
     {
-        return '<span class="file">'.$path.'</span>';
+        return '<span class="file '.$class.'">'.$path.'</span>';
     }
 
     /**
@@ -789,7 +774,7 @@ class Html implements Renderer
 
 
     /**
-     * render info toggle button
+     * Render info toggle button
      */
     protected function renderEntityInfoButton(string $linkId): string
     {
@@ -797,7 +782,7 @@ class Html implements Renderer
     }
 
     /**
-     * render meta toggle button
+     * Render meta toggle button
      */
     protected function renderEntityMetaButton(string $linkId): string
     {
@@ -805,7 +790,7 @@ class Html implements Renderer
     }
 
     /**
-     * render text toggle button
+     * Render text toggle button
      */
     protected function renderEntityTextButton(string $linkId): string
     {
@@ -813,7 +798,15 @@ class Html implements Renderer
     }
 
     /**
-     * render properties toggle button
+     * Render text toggle button
+     */
+    protected function renderEntityDefinitionButton(string $linkId): string
+    {
+        return '<a data-target="#definition-'.$linkId.'" class="definition body primary badge badge-danger"><i>d</i></a>';
+    }
+
+    /**
+     * Render properties toggle button
      */
     protected function renderEntityPropertiesButton(string $linkId): string
     {
@@ -821,7 +814,7 @@ class Html implements Renderer
     }
 
     /**
-     * render values toggle button
+     * Render values toggle button
      */
     protected function renderEntityValuesButton(string $linkId): string
     {
@@ -829,7 +822,7 @@ class Html implements Renderer
     }
 
     /**
-     * render stack toggle button
+     * Render stack toggle button
      */
     protected function renderEntityStackButton(string $type, bool $open, string $linkId): string
     {
@@ -842,7 +835,7 @@ class Html implements Renderer
 
 
     /**
-     * render object id tag
+     * Render object id tag
      */
     protected function renderEntityOid(int $objectId, bool $isRef, string $id): string
     {
@@ -883,6 +876,14 @@ class Html implements Renderer
     protected function wrapEntityFooter(string $footer): string
     {
         return '<div class="entity footer">'.$footer.'</div>';
+    }
+
+    /**
+     * Wrap stack frame
+     */
+    protected function wrapStackFrame(string $frame): string
+    {
+        return '<div class="stack-frame">'.$frame.'</div>';
     }
 
 

@@ -503,7 +503,7 @@ trait Base
     /**
      * Render file path
      */
-    protected function renderSourceFile(string $path): string
+    protected function renderSourceFile(string $path, ?string $class=null): string
     {
         return $path;
     }
@@ -731,6 +731,7 @@ trait Base
             'info' => true,
             'meta' => (bool)$entity->getAllMeta(),
             'text' => $entity->getText() !== null,
+            'definition' => $entity->getDefinition() !== null,
             'properties' => (bool)$entity->getProperties(),
             'values' => (bool)$entity->getValues(),
             'stack' => (bool)$entity->getStackTrace()
@@ -779,7 +780,7 @@ trait Base
                 break;
         }
 
-        $keys = ['info', 'meta', 'text', 'properties', 'values', 'stack'];
+        $keys = ['info', 'meta', 'text', 'definition', 'properties', 'values', 'stack'];
 
         if ($overrides['info'] ?? null === true) {
             $sections['info'] = true;
@@ -850,6 +851,11 @@ trait Base
             $header[] = $this->renderEntityTextButton($linkId);
         }
 
+        // Definition
+        if ($sections['definition']) {
+            $header[] = $this->renderEntityDefinitionButton($linkId);
+        }
+
         // Properties
         if ($sections['properties']) {
             $header[] = $this->renderEntityPropertiesButton($linkId);
@@ -880,7 +886,7 @@ trait Base
         $output[] = $this->wrapEntityHeader(implode(' ', array_filter($header)), $type, $linkId);
 
 
-        $hasBodyContent = $sections['text'] || $sections['properties'] || $sections['values'] || $sections['stack'];
+        $hasBodyContent = $sections['text'] || $sections['definition'] || $sections['properties'] || $sections['values'] || $sections['stack'];
         $renderClosed = static::RENDER_CLOSED ?? true;
 
         if (!$open && !$renderClosed && $level > 4) {
@@ -904,6 +910,11 @@ trait Base
             // Text
             if ($sections['text']) {
                 $body[] = $this->renderTextBlock($entity, $level);
+            }
+
+            // Definition
+            if ($sections['definition']) {
+                $body[] = $this->renderDefinitionBlock($entity, $level);
             }
 
             // Properties
@@ -1013,6 +1024,14 @@ trait Base
      * Empty text button stub
      */
     protected function renderEntityTextButton(string $linkId): string
+    {
+        return '';
+    }
+
+    /**
+     * Empty definition button stub
+     */
+    protected function renderEntityDefinitionButton(string $linkId): string
     {
         return '';
     }
@@ -1180,6 +1199,21 @@ trait Base
     }
 
     /**
+     * Render entity text block
+     */
+    protected function renderDefinitionBlock(Entity $entity, int $level=0): string
+    {
+        $id = $entity->getId();
+        $type = $entity->getType();
+
+        $output = $this->indent(
+            $this->renderIdentifierString($entity->getDefinition(), 'definition')
+        );
+
+        return $this->wrapEntityBodyBlock($output, 'definition', true, $id, $type);
+    }
+
+    /**
      * Render entity properties block
      */
     protected function renderPropertiesBlock(Entity $entity, int $level=0): string
@@ -1225,14 +1259,16 @@ trait Base
                 $line = [];
                 $line[] = $this->renderLineNumber($count - $i);
                 $line[] = $this->wrapSignature($this->renderStackFrameSignature($frame));
+                $line[] = "\n   ";
 
                 if (null !== ($file = $frame->getCallingFile())) {
-                    $line[] = "\n   ";
                     $line[] = $this->renderSourceFile($this->context->normalizePath($file));
                     $line[] = $this->renderSourceLine($frame->getCallingLine());
+                } else {
+                    $line[] = $this->renderSourceFile('internal', 'internal');
                 }
 
-                $lines[] = implode(' ', $line);
+                $lines[] = $this->wrapStackFrame(implode(' ', $line));
             }
 
             $output = $this->indent(
@@ -1254,6 +1290,15 @@ trait Base
         }
 
         return $this->wrapEntityBodyBlock($output, $blockType, true, $id);
+    }
+
+
+    /**
+     * Wrap stack frame
+     */
+    protected function wrapStackFrame(string $frame): string
+    {
+        return $frame;
     }
 
 
