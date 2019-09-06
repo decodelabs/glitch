@@ -1280,7 +1280,8 @@ trait Base
             $newEntity = (new Entity('stack'))
                 ->setName('stack')
                 ->setStackTrace($trace)
-                ->setLength($trace->count());
+                ->setLength($trace->count())
+                ->setOpen(false);
 
             $output = $this->indent(
                 $this->renderEntity($newEntity, $level + 1)
