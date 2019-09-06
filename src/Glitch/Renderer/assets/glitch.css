@@ -9762,10 +9762,6 @@ html.incomplete section.exception samp.dump.exception div.message {
   border-color: #fd7e14;
 }
 
-html.incomplete section.exception samp.dump.exception div.message .string.m .line {
-  color: #fd7e14 !important;
-}
-
 section.dump.entity {
   background: #efefea;
 }
