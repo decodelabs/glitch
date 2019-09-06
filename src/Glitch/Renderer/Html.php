@@ -496,14 +496,15 @@ class Html implements Renderer
     {
         $html = implode("\n", $buffer);
         $id = uniqid('glitch-dump');
-        $borderColor = static::DARK ? '#333' : '#EEE';
+        $borderColor = static::DARK ? '#333' : '#888';
 
         $output = [];
         $output[] = '<iframe id="'.$id.'" frameborder="0" class="glitch-dump"></iframe>';
         $output[] = '<style>';
         $output[] = 'body { padding: 0; margin: 0; }';
-        $output[] = '.glitch-dump { width: 100%; max-width: 100vw; min-width: 100%; height: 30rem; box-sizing: border-box; border: 4px solid '.$borderColor.'; resize: both; }';
-        $output[] = 'body .glitch-dump:only-of-type { height:100%; border: none; resize: none; }';
+        $output[] = '.glitch-dump { width: 100%; max-width: 100vw; min-width: 100%; height: 20rem; box-sizing: border-box; border: 2px solid '.$borderColor.'; resize: both; }';
+        $output[] = 'body > .glitch-dump { height: 50vh; }';
+        $output[] = 'body > .glitch-dump:only-of-type { height:100%; border: none; resize: none; }';
         $output[] = '</style>';
         $output[] = '<script>';
         $output[] = 'var doc = document.getElementById(\''.$id.'\').contentWindow.document;';
@@ -520,14 +521,15 @@ class Html implements Renderer
     {
         $html = implode("\n", $buffer);
         $id = uniqid('glitch-exception');
-        $borderColor = static::DARK ? '#333' : '#EEE';
+        $borderColor = static::DARK ? '#333' : '#888';
 
         $output = [];
         $output[] = '<iframe id="'.$id.'" frameborder="0" class="glitch-exception"></iframe>';
         $output[] = '<style>';
         $output[] = 'body { padding: 0; margin: 0; }';
-        $output[] = '.glitch-exception { width: 100%; max-width: 100vw; min-width: 100%; height: 50rem; box-sizing: border-box; border: 4px solid '.$borderColor.'; resize: both; }';
-        $output[] = 'body .glitch-exception:only-of-type { height:100%; border: none; resize: none; }';
+        $output[] = '.glitch-exception { width: 100%; max-width: 100vw; min-width: 100%; height: 30rem; box-sizing: border-box; border: 2px solid '.$borderColor.'; resize: both; }';
+        $output[] = 'body > .glitch-exception { height: 50vh; }';
+        $output[] = 'body > .glitch-exception:only-of-type { height:100%; border: none; resize: none; }';
         $output[] = '</style>';
         $output[] = '<script>';
         $output[] = 'var doc = document.getElementById(\''.$id.'\').contentWindow.document;';
