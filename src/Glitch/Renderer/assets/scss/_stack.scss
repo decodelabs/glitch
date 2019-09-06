@@ -3,87 +3,91 @@ ul.stack {
     padding: 0;
     margin: 0;
 
-    li {
-        span {
-            &.number {
-                width: 1rem;
-                display: inline-block;
-            }
-            &.signature {
-                color: var(--orange);
-                padding-right: 1rem;
+    > li span {
+        &.number {
+            width: 1rem;
+            display: inline-block;
+        }
+        &.signature {
+            color: $gray;
+            padding-right: 1rem;
 
-                &:after {
-                    content: "\A";
-                    white-space: pre;
-                }
-
-                > *:last-child {
-                    padding-right: 1rem;
-                }
+            &:after {
+                content: "\A";
+                white-space: pre;
             }
-            &.file {
-                color: var(--orange);
-                //opacity: 0.75;
-                margin-left: 2.5em;
 
-                &:after {
-                    content: ' :';
-                    color: var(--gray);
-                    opacity: 0.5;
-                }
-            }
-            &.line {
-                color: var(--pink);
+            > *:last-child {
                 padding-right: 1rem;
             }
+        }
+        &.file {
+            color: $orange;
+            margin-left: 2.5em;
+
+            &:after {
+                content: ' :';
+                color: $gray;
+                opacity: 0.5;
+            }
+        }
+        &.line {
+            color: $pink;
+            padding-right: 1rem;
+        }
+
+        &.string > span.line {
+            opacity: 1 !important;
         }
     }
 
     &.source {
         padding: 1rem;
-        background: linear-gradient(to bottom, #DDD 0, #EEE 12rem);
 
         > li {
-            background: white;
+            background: rgba(white, 0.8);
             margin-bottom: 2px;
             border-radius: 2px;
+
+            div.stack-frame {
+                border: 3px solid transparent;
+                transition: all 0.5s;
+
+                &.open {
+                    box-shadow: 2px 0.5rem 0.5rem rgba(black, 0.1);
+                    border-color: rgba($red, 0.85);
+                    margin-bottom: 1em;
+                    margin-top: 1em;
+                }
+            }
+
+            &:first-child div.stack-frame.open {
+                margin-top: 0;
+            }
 
             samp.dump.trace {
                 padding: 0.5rem 0.75rem;
                 cursor: n-resize;
-                transition: margin-top 0.2s, border-color 0.5s ease-out;
+                transition: margin-top 0.2s, border-color 0.2s ease-out;
                 overflow-x: auto;
+                border: none;
 
                 &.collapsed {
                     cursor: s-resize;
-                    border-top: 3px solid transparent;
-                    border-left: 3px solid transparent;
-                    border-right: 3px solid transparent;
-                }
-
-                &:not(.collapsed) {
-                    border-radius: 2px 2px 0 0;
-                    border-top: 3px solid rgba($red, 0.95);
-                    border-left: 3px solid rgba($red, 0.95);
-                    border-right: 3px solid rgba($red, 0.95);
-                    margin-top: 0.5em;
+                    border-color: transparent;
                 }
             }
 
-            &:first-child samp.dump.trace {
-                margin-top: 0 !important;
-            }
 
-            > div.source {
-                margin-bottom: 0.5em;
+            div.source {
                 border-radius: 0 0 2px 2px;
 
-                samp.dump {
+                samp.dump.source {
                     border-radius: 0 0 2px 2px;
-                    border-left: 3px solid rgba($red, 0.85) !important;
-                    border-right: 3px solid rgba($red, 0.85) !important;
-                    border-bottom: 3px solid rgba($red, 0.85) !important;
+                }
+
+                span.line {
+                    opacity: 1;
                 }
             }
 
@@ -97,15 +101,63 @@ ul.stack {
 
             samp.dump.source {
                 padding: 0.5rem 0.75rem;
-                background: rgba(#EEE, 0.35);
-                filter: contrast(0.9);
-                box-shadow: 2px 0.5rem 0.5rem rgba(black, 0.1);
+                //background: rgba(#EEE, 0.35);
+                background: white;
 
                 &:before {
                     content: '';
                     display: block;
                     width: 100%;
                     border-top: 1px solid darken(#EEE, 3%) !important;
+                }
+
+                span.line span.number {
+                    background: rgba(darken($cream, 35%), 0.3);
+                }
+            }
+        }
+    }
+}
+
+
+html.dark {
+    ul.stack {
+        > li span {
+            &.number {
+                color: $gray;
+            }
+            &.file {
+                color: lighten($orange, 25%);
+                opacity: 0.75;
+            }
+            &.line {
+                color: lighten($pink, 15%);
+                opacity: 0.75;
+            }
+        }
+
+        &.source {
+            > li {
+                background: rgba(#999, 0.1);
+
+                div.stack-frame.open {
+                    box-shadow: 2px 0.5rem 0.5rem rgba(black, 0.2);
+                }
+
+                samp.dump.source {
+                    background: rgba(#333, 0.35);
+
+                    &:before {
+                        border-top: 1px solid rgba(#333, 0.8) !important;
+                    }
+                }
+
+                div.source {
+                    samp.dump {
+                        //border-left-color: rgba($red-bright, 0.5) !important;
+                        //border-right-color: rgba($red-bright, 0.5) !important;
+                        //border-bottom-color: rgba($red-bright, 0.5) !important;
+                    }
                 }
             }
         }

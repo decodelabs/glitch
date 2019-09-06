@@ -32,7 +32,7 @@ samp.dump.source {
     }
 
     .keyword {
-        color: var(--green);
+        color: $green;
 
         &.return,
         &.break,
@@ -56,34 +56,34 @@ samp.dump.source {
     }
 
     .type {
-        color: var(--cyan);
+        color: $cyan;
     }
 
     .cast {
-        color: var(--gray);
+        color: $teal;
         font-style: italic;
     }
 
     .tag {
-        color: var(--red);
+        color: $red;
         font-weight: bold;
     }
 
     .operator {
-        color: var(--gray);
+        color: $gray;
     }
 
     .constant {
-        color: var(--purple);
+        color: $purple;
         font-weight: bold;
     }
 
     .func {
-        color: var(--indigo);
+        color: $indigo;
     }
 
     .var {
-        color: var(--gray);
+        color: darken($gray, 15%);
 
         &.this {
             font-style: italic;
@@ -91,31 +91,27 @@ samp.dump.source {
     }
 
     .string {
-        color: var(--red);
+        color: $red;
+        font-weight: bold;
 
         &:before, &:after {
             content: attr(data-quote);
-            color: var(--gray);
+            color: $gray;
             opacity: 0.5;
         }
     }
 
     .int, .float {
-        color: var(--pink);
-        font-weight: bol;
+        color: $pink;
+        font-weight: bold;
     }
 
     .g {
-        color: var(--gray);
-        opacity: 0.5;
+        color: $gray;
 
         &.double-colon + .class {
-            color: var(--cyan);
+            color: $cyan;
             font-style: italic;
-        }
-
-        &.object-operator + .name {
-            //color: var(--gray);
         }
     }
 
@@ -124,10 +120,100 @@ samp.dump.source {
     }
 
     .html {
-        color: var(--pink);
+        color: $pink;
     }
 
     .name {
         color: darken($blue, 20%);
+    }
+}
+
+
+html.dark {
+    samp.dump.source {
+        color: #777;
+
+        span.line {
+            &.highlighted {
+                background: rgba(lighten($blue, 25%), 0.1);
+            }
+
+            span.number {
+                color: lighten(#C18D67, 10%);
+                opacity: 0.4;
+                border-right: 2px solid rgba(#CCC, 0.35);
+                background: rgba(black, 0.2);
+            }
+        }
+
+        .keyword {
+            color: lighten($green, 15%);
+
+            &.return,
+            &.break,
+            &.continue,
+            &.throw,
+            &.if,
+            &.else,
+            &.elseif,
+            &.endif,
+            &.for,
+            &.foreach,
+            &.each,
+            &.while,
+            &.do {
+                font-weight: bold;
+            }
+
+            &.function + .name {
+                font-weight: bold;
+            }
+        }
+
+        .type {
+            color: lighten($cyan, 15%);
+        }
+
+        .tag {
+            color: $red-bright;
+        }
+
+        .operator {
+            color: $gray;
+        }
+
+        .constant {
+            color: lighten($purple, 20%);
+        }
+
+        .func {
+            color: lighten($indigo, 25%);
+        }
+
+        .string {
+            color: $red-bright;
+        }
+
+        .int, .float {
+            color: lighten($pink, 10%);
+        }
+
+        .g {
+            &.double-colon + .class {
+                color: lighten($cyan, 10%);
+            }
+        }
+
+        .comment {
+            color: lighten(saturate(#C69D82, 10%), 10%);
+        }
+
+        .html {
+            color: $pink;
+        }
+
+        .name {
+            color: $gray-200;
+        }
     }
 }

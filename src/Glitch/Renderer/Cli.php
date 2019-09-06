@@ -340,14 +340,6 @@ class Cli implements Renderer
     }
 
     /**
-     * render signature call type part (:: or ->)
-     */
-    protected function renderSignatureCallType(string $type): string
-    {
-        return $this->format($type, 'white', null, 'dim');
-    }
-
-    /**
      * render signature constant part
      */
     protected function renderSignatureConstant(string $constant): string
@@ -373,22 +365,6 @@ class Cli implements Renderer
         }
 
         return $output;
-    }
-
-    /**
-     * render signature bracket string
-     */
-    protected function renderSignatureBracket(string $bracket): string
-    {
-        return $this->format($bracket, 'white', null, 'dim');
-    }
-
-    /**
-     * render signature arg comma
-     */
-    protected function renderSignatureComma(): string
-    {
-        return $this->format(',', 'white', null, 'dim');
     }
 
     /**

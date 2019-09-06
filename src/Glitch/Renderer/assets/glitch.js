@@ -1,6 +1,4 @@
 $(function() {
-    $('[title]').tooltip();
-
     $(document).on('click', '[data-target]', function(e) {
         e.preventDefault();
         var $badge = $(this),
@@ -98,4 +96,8 @@ $(function() {
     $(document).on('click', '.string.m.large', function() {
         $(this).toggleClass('show');
     });
+
+    $(document).on('click', 'ul.stack.source .dump.trace', function(e) {
+        $(this).parent().toggleClass('open', !$(this).hasClass('collapsed'));
+    })
 });

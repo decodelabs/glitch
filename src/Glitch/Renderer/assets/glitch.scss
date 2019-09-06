@@ -1,6 +1,8 @@
 @import "../../../../../../bower-asset/bootstrap/scss/bootstrap.scss";
+$gray: $gray-500;
+$red-bright: lighten(saturate($red, 20%), 15%);
+$cream: lighten(desaturate(#F1F2E2, 25%), 6%);
 
-@import "./scss/_tooltip.scss";
 @import "./scss/_samp.scss";
 @import "./scss/_scalars.scss";
 @import "./scss/_entity.scss";
@@ -10,36 +12,16 @@
 @import "./scss/_signature.scss";
 @import "./scss/_source.scss";
 
-body {
-    padding: 0;
-    margin: 0;
-    height: 100%;
-    max-height: 100%;
-
-    > .container-fluid {
-        padding: 2rem;
-
-        header.stats {
-            > div.stats {
-                line-height: 1;
-            }
-        }
-    }
-}
-
 
 html {
     height: 100%;
 
-    &.dump {
-        header.stats {
-            margin-bottom: 2rem;
-        }
-    }
-}
-
-html.exception {
     body {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        max-height: 100%;
+        background: $cream;
         display: flex;
         flex-direction: column;
 
@@ -61,202 +43,273 @@ html.exception {
             @media screen and (min-width: 961px) {
                 max-height: 100vh;
             }
-        }
 
-        header.title {
-            color: white;
-            padding: 0.5rem 0.9rem;
-            background: linear-gradient(to bottom, rgba(darken($red, 5%), 0.85), rgba(darken($red, 5%), 0.95));
-            border-bottom: 2px solid desaturate(darken($red, 10%), 20%);
-
-            h1 {
-                margin: 0;
-                font-weight: 200;
-                text-transform: uppercase;
-                letter-spacing: 0.2em;
-                font-size: 1.75em;
-                line-height: 1;
-
-                span.version {
-                    font-size: 0.5em;
-                    text-transform: none;
+            header.stats {
+                > div.stats {
+                    line-height: 1;
                 }
             }
         }
+    }
 
+    &.dump {
         header.stats {
-            padding-bottom: 0.25rem;
+            margin-bottom: 2rem;
+        }
+    }
 
-            > div.stats {
-                span {
-                    border: 1px solid rgba(white, 0.65);
-                }
+    header.title {
+        color: white;
+        padding: 0.5rem 0.9rem;
+
+        background: linear-gradient(to bottom, rgba(darken($blue, 15%), 0.85), rgba(darken($blue, 15%), 0.95));
+        border-bottom: 2px solid desaturate(darken($blue, 20%), 20%);
+
+
+        h1 {
+            margin: 0;
+            font-weight: 200;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-size: 1.75em;
+            line-height: 1;
+
+            span.version {
+                font-size: 0.5em;
+                text-transform: none;
             }
         }
+    }
 
 
-        section {
-            display: flex;
+    div.cols {
+        flex: 1 1 100%;
+        padding-bottom: 0;
+        display: flex;
+        align-items: stretch;
+        box-sizing: border-box;
+        display: flex;
 
-            > div {
-                display: flex;
-                flex: 1 1 auto;
-            }
 
-            h3 {
-                margin: 0;
-                font-weight: 100;
-                text-transform: uppercase;
-                letter-spacing: 0.2em;
-                font-size: 0.9em;
-                line-height: 1;
-                background: linear-gradient(to bottom, rgba(#888, 0.7), rgba(#777, 0.7));
-                color: white;
-                padding: 0.35rem 1rem;
-                position: relative;
-            }
-
-            samp.dump {
-                margin: 0;
-                padding: 0.75rem 1rem;
-                flex: 1 1 auto;
-                font-size: 0.8em;
-
-                > h3:first-child {
-                    font-size: 1.5em;
-                    margin-bottom: 1em;
-                }
-            }
+        @media screen and (max-width: 960px) {
+            flex-direction: column;
         }
 
-
-        section.cols {
-            flex: 1 1 100%;
-            padding-bottom: 0;
-            display: flex;
-            align-items: stretch;
+        > div {
             box-sizing: border-box;
+            display: flex;
+            box-sizing: border-box;
+            position: relative;
+            display: flex;
+            flex: 1 1 45%;
 
-            @media screen and (max-width: 960px) {
-                flex-direction: column;
+            @media screen and (min-width: 961px) {
+                min-height: 20rem;
             }
 
-            > div {
-                box-sizing: border-box;
-                display: flex;
-                flex: 1 1 45%;
-                box-sizing: border-box;
-                position: relative;
+
+            div.frame {
+                width: 100%;
 
                 @media screen and (min-width: 961px) {
-                    min-height: 20rem;
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    bottom: 0;
+                    left: 0;
+                    height: 100%;
+                    overflow-y: auto;
+                    overflow-x: hidden;
                 }
-
-                @media screen and (max-width: 500px) {
-                    flex: 1 1 100%;
-                }
+            }
 
 
-                div.frame {
-                    width: 100%;
+            &.left {
+                flex-direction: column;
 
-                    @media screen and (min-width: 961px) {
-                        position: absolute;
-                        top: 0;
-                        right: 0;
-                        bottom: 0;
-                        left: 0;
-
-                        height: 100%;
-                        overflow-y: auto;
-                        overflow-x: hidden;
+                @media screen and (min-width: 961px) {
+                    h3 {
+                        border-right: 1px solid #888;
                     }
-                }
-
-                samp.dump {
-                    padding: 1.25rem 2rem;
-                }
-
-                &.left {
-                    flex-direction: column;
-
-                    @media screen and (min-width: 961px) {
-                        h3 {
-                            border-right: 1px solid #888;
-                        }
-
-                        samp.dump {
-                            border-right: 1px solid #DDD;
-                        }
-
-                        > div {
-                            border-right: 1px solid #CCC;
-                        }
-                    }
-
 
                     samp.dump.exception {
-                        background: white;
-                        min-width: 0;
-                        border-radius: 2px;
-
-                        div.message {
-                            margin-bottom: 1rem;
-
-                            &:last-child {
-                                margin-bottom: 0;
-                            }
-
-                            div.line {
-                                font-size: 2em;
-                                border: none;
-                            }
-
-                            div.string.m {
-                                &:before, &:after {
-                                    content: '!!!';
-                                }
-                            }
-                        }
-
-                        .attr {
-                            color: var(--pink);
-                            font-weight: 600;
-
-                            .label {
-                                color: var(--gray);
-                                font-weight: normal;
-
-                                &:after {
-                                    content: ':';
-                                }
-                            }
-                        }
+                        border-right: 1px solid #DDD;
                     }
 
-                    > div {
-                        background: #EEE;
-                        position: relative;
-                        height: 100%;
-                        flex: 1 1 100%;
+                    section.stack {
+                        border-right: 1px solid #CCC;
+                    }
+                }
+            }
+
+            &.right {
+                @media screen and (max-width: 960px) {
+                    min-height: 30vh;
+                }
+            }
+        }
+    }
+
+    section {
+        h3 {
+            margin: 0;
+            font-weight: 100;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-size: 0.9em;
+            line-height: 1;
+            background: linear-gradient(to bottom, rgba(#888, 0.7), rgba(#777, 0.7));
+            color: white;
+            padding: 0.35rem 1rem;
+            position: relative;
+        }
+
+        samp.dump {
+            margin: 0;
+            flex: 1 1 auto;
+            font-size: 0.8em;
+            padding: 1.25rem 2rem;
+        }
+
+
+        &.exception {
+            background: darken($cream, 5%);
+
+            samp.dump.exception {
+                min-width: 0;
+                border-radius: 2px;
+                padding: 1rem;
+
+                div.message {
+                    margin-bottom: 1rem;
+                    border-left: 3px solid $red;
+                    padding-left: 1rem;
+                    background: white;
+
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
+
+                    div.line {
+                        font-size: 2em;
+                        border: none;
+                    }
+
+                    div.string.m {
+                        &:before, &:after {
+                            content: '!!!';
+                        }
                     }
                 }
 
-                &.right {
-                    @media screen and (max-width: 960px) {
-                        min-height: 30vh;
-                    }
+                .attr {
+                    color: $pink;
+                    font-weight: 600;
 
-                    samp.dump {
-                        overflow-x: auto;
+                    .label {
+                        color: $gray;
+                        font-weight: normal;
 
-                        &:last-child {
-                            margin-bottom: 0;
-                            flex: 1 1 100%;
+                        &:after {
+                            content: ':';
                         }
                     }
                 }
             }
+        }
+
+        &.stack {
+            flex: 1 1 100%;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(to bottom, darken($cream, 12%) 0, darken($cream, 7%) 12rem);
+
+            > div {
+                position: relative;
+                flex: 1 1 100%;
+
+
+            }
+        }
+
+
+        &.dump {
+            samp.dump {
+                overflow-x: auto;
+
+                &:last-child {
+                    margin-bottom: 0;
+                    flex: 1 1 100%;
+                }
+            }
+        }
+    }
+
+    &.dark {
+        body {
+            background: rgba(#333, 0.95);
+        }
+    }
+}
+
+html.exception {
+    header.title {
+        background: linear-gradient(to bottom, rgba(darken($red, 5%), 0.85), rgba(darken($red, 5%), 0.95));
+        border-bottom: 2px solid desaturate(darken($red, 10%), 20%);
+    }
+}
+
+
+html.dark {
+    &.exception {
+        header.title {
+            border-bottom: 2px solid desaturate(darken($red, 20%), 20%);
+        }
+    }
+
+    div.cols > div {
+        &.left {
+            @media screen and (min-width: 961px) {
+                h3 {
+                    border-right: 1px solid rgba(#444, 0.7);
+                }
+
+                samp.dump.exception {
+                    border-right: 1px solid rgba(#333, 0.7);
+                }
+
+                section.stack {
+                    border-right: 1px solid rgba(#333, 0.7);
+                }
+            }
+        }
+    }
+
+    section {
+        h3 {
+            background: linear-gradient(to bottom, rgba(#888, 0.4), rgba(#777, 0.4));
+        }
+
+        &.exception {
+            background: rgba(#333, 0.6);
+
+            samp.dump.exception div.message {
+                background: none;
+            }
+
+            samp.dump.exception {
+                .attr {
+                    color: lighten($pink, 10%);
+
+                    .label {
+                        color: rgba($gray-300, 0.7);
+                    }
+                }
+            }
+        }
+
+        &.stack {
+            background: linear-gradient(to bottom, rgba(white, 0.1) 0, rgba(white, 0) 12rem, rgba(black, 0.1));
         }
     }
 }

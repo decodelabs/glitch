@@ -12,13 +12,13 @@ div.entity {
         }
 
         .name {
-            color: var(--green) !important;
+            color: $green;
             cursor: pointer;
             text-decoration: none;
 
             &.ref:before {
                 content: '&';
-                color: var(--gray);
+                color: $gray;
                 opacity: 0.5;
                 margin-right: 0.2em;
             }
@@ -28,22 +28,22 @@ div.entity {
             }
 
             .g {
-                color: var(--gray);
+                color: $gray;
                 opacity: 0.5;
             }
         }
 
         &.type-stack .name {
-            color: var(--gray) !important;
+            color: $gray !important;
         }
         &.type-flags {
             .name {
-                color: var(--purple) !important;
+                color: $purple !important;
             }
 
             ~ .body > .inner > .values > ul.list.values > li:before {
                 content: 'ⓒ';
-                color: var(--purple);
+                color: $purple;
             }
         }
         &.type-const .name {
@@ -52,12 +52,12 @@ div.entity {
 
 
         .length {
-            color: var(--teal);
+            color: $teal;
             margin-left: -0.25em;
 
             &:before {
                 content: ':';
-                color: var(--gray);
+                color: $gray;
                 opacity: 0.5;
                 margin-right: 0.25em;
             }
@@ -65,11 +65,11 @@ div.entity {
 
         .oid {
             margin-right: 0 !important;
-            color: var(--gray);
+            color: $gray;
 
             &:before {
                 content: '#';
-                color: var(--gray);
+                color: $gray;
                 opacity: 0.5;
                 margin-right: 0.2em;
             }
@@ -81,19 +81,21 @@ div.entity {
 
         &:target {
             > .name {
-                background: var(--green);
+                background: $green;
                 color: white !important;
                 border-radius: 0.3em;
                 padding: 0 0.3em;
                 margin: 0 0.4em 0 -0.3em;
+                line-height: 1.3;
             }
 
             > .oid {
-                background: var(--purple);
+                background: $purple;
                 color: white;
                 border-radius: 0.3em;
                 padding: 0 0.3em;
                 margin: 0 -0.3em;
+                line-height: 1.3;
 
                 &:before {
                     color: white;
@@ -114,12 +116,12 @@ div.inner {
     }
 
     &.body {
-        border-left: 1px solid #F5F5F5;
+        border-left: 1px solid rgba($gray, 0.18);
     }
 
     &.type-stack > div.stack:before {
         content: 'ⓢ';
-        color: var(--dark);
+        color: $dark;
         opacity: 0.5;
         position: relative;
         margin-top: 0.3em;
@@ -130,11 +132,11 @@ div.inner {
     }
 
     > div.text {
-        color: var(--red);
+        color: $red;
 
         &:before {
             content: 'ⓣ';
-            color: var(--gray);
+            color: $gray;
             opacity: 0.5;
             position: relative;
             margin-top: 0.3em;
@@ -143,7 +145,7 @@ div.inner {
 
         &.binary > i {
             margin-right: 0.5em;
-            color: var(--indigo);
+            color: $indigo;
         }
     }
 }
@@ -153,5 +155,54 @@ a.name.collapsed ~ a.badge.body {
 
     &.values {
         opacity: 0.3;
+    }
+}
+
+
+
+
+
+html.dark {
+    div.entity.title {
+        .name {
+            color: lighten($green, 10%);
+        }
+
+        &.type-flags {
+            .name {
+                color: lighten($purple, 25%) !important;
+            }
+
+            ~ .body > .inner > .values > ul.list.values > li:before {
+                color: lighten($purple, 25%);
+            }
+        }
+
+        .length {
+            color: lighten($teal, 10%);
+        }
+
+        &:target > .oid {
+            background: lighten($purple, 10%);
+        }
+    }
+
+    div.inner {
+        &.body {
+            border-left: 1px solid rgba($gray, 0.06);
+        }
+
+        &.type-stack > div.stack:before {
+            content: 'ⓢ';
+            color: $gray;
+        }
+
+        > div.text {
+            color: lighten($red, 10%);
+
+            &.binary > i {
+                color: lighten($indigo, 25%);
+            }
+        }
     }
 }

@@ -3,23 +3,23 @@ span.signature {
         font-style: normal;
 
         &.ns {
-            color: var(--cyan);
+            color: $cyan;
             filter: brightness(0.65);
             opacity: 0.75;
         }
 
         &.cl {
-            color: var(--cyan);
+            color: $cyan;
             filter: brightness(0.5);
         }
 
         &.ty {
-            color: var(--gray);
+            color: $gray;
             opacity: 0.6;
         }
 
         &.fn {
-            color: var(--blue);
+            color: $blue;
             filter: brightness(0.75);
             font-weight: bold;
 
@@ -27,7 +27,7 @@ span.signature {
                 font-style: italic;
 
                 &:before, &:after {
-                    color: var(--gray);
+                    color: $gray;
                     opacity: 0.4;
                 }
 
@@ -41,34 +41,85 @@ span.signature {
             }
         }
 
-        &.br {
-            color: var(--gray);
-            opacity: 0.75;
-            font-style: normal;
-        }
-
         &.ob {
-            color: var(--cyan);
+            color: $cyan;
+            font-style: italic;
         }
 
         &.co {
-            color: var(--purple);
+            color: $purple;
             font-weight: bold;
         }
     }
 
     span.ar {
-        color: var(--cyan);
+        color: $cyan;
         font-style: italic;
 
         i.br:first-child:after {
             content: '…';
-            color: var(--gray);
+            color: $gray;
             opacity: 0.7;
         }
     }
 
     span.string .line {
         padding-right: 0;
+    }
+}
+
+
+
+html.dark {
+    span.signature {
+        i {
+            &.ns {
+                color: lighten($cyan, 10%);
+                filter: none;
+                opacity: 0.85;
+            }
+
+            &.cl {
+                color: lighten($cyan, 15%);
+                font-weight: bold;
+                filter: none;
+            }
+
+            &.fn {
+                color: lighten($blue, 20%);
+                filter: none;
+                font-weight: bold;
+
+                &.closure {
+                    &:before, &:after {
+                        opacity: 0.9;
+                    }
+                }
+            }
+
+            &.ob {
+                color: lighten($cyan, 15%);
+            }
+
+            &.co {
+                color: lighten($purple, 20%);
+                font-weight: bold;
+            }
+        }
+
+        span.ar {
+            color: $cyan;
+            font-style: italic;
+
+            i.br:first-child:after {
+                content: '…';
+                color: $gray;
+                opacity: 0.7;
+            }
+        }
+
+        span.string .line {
+            padding-right: 0;
+        }
     }
 }

@@ -22,3 +22,10 @@ a.badge {
         top: -0.08em;
     }
 }
+
+
+html.dark {
+    a.badge-dark {
+        background-color: darken(#343a40, 8%);
+    }
+}

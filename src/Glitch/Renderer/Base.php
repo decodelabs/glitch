@@ -549,7 +549,7 @@ trait Base
 
         if ($class !== null) {
             $output[] = $this->renderSignatureClass($class);
-            $output[] = $this->renderSignatureCallType('::');
+            $output[] = $this->renderGrammar('::');
         }
 
         $output[] = $this->renderSignatureConstant($const);
@@ -573,7 +573,7 @@ trait Base
 
         // Type
         if ($frame->getInvokeType() !== null) {
-            $output[] = $this->renderSignatureCallType($frame->getInvokeType());
+            $output[] = $this->renderGrammar($frame->getInvokeType());
         }
 
         // Function
@@ -586,14 +586,14 @@ trait Base
                 $function = [];
                 $fArgs = [];
 
-                $function[] = $this->renderSignatureBracket('{');
+                $function[] = $this->renderGrammar('{');
 
                 foreach ($parts as $part) {
                     $fArgs[] = $this->renderString($part, 'identifier');
                 }
 
-                $function[] = implode(', ', $fArgs);
-                $function[] = $this->renderSignatureBracket('}');
+                $function[] = implode($this->renderGrammar(',').' ', $fArgs);
+                $function[] = $this->renderGrammar('}');
                 $function = implode($function);
             } else {
                 $function = $this->esc($function);
@@ -603,7 +603,7 @@ trait Base
         }
 
         // Args
-        $output[] = $this->renderSignatureBracket('(');
+        $output[] = $this->renderGrammar('(');
         $args = [];
 
         foreach ($frame->getArgs() as $arg) {
@@ -611,7 +611,7 @@ trait Base
                 $args[] = $this->renderSignatureObject($frame::normalizeClassName(get_class($arg)));
             } elseif (is_array($arg)) {
                 $args[] = $this->wrapSignatureArray(
-                    $this->renderSignatureBracket('[').count($arg).$this->renderSignatureBracket(']')
+                    $this->renderGrammar('[').count($arg).$this->renderGrammar(']')
                 );
             } else {
                 switch (true) {
@@ -642,8 +642,8 @@ trait Base
             }
         }
 
-        $output[] = implode($this->renderSignatureComma().' ', $args);
-        $output[] = $this->renderSignatureBracket(')');
+        $output[] = implode($this->renderGrammar(', ').' ', $args);
+        $output[] = $this->renderGrammar(')');
 
         return implode('', $output);
     }
@@ -674,14 +674,6 @@ trait Base
     }
 
     /**
-     * Passthrough call type
-     */
-    protected function renderSignatureCallType(string $type): string
-    {
-        return $type;
-    }
-
-    /**
      * Passthrough constant
      */
     protected function renderSignatureConstant(string $constant): string
@@ -703,22 +695,6 @@ trait Base
     protected function renderSignatureClosure(): string
     {
         return 'closure';
-    }
-
-    /**
-     * Passthrough bracket
-     */
-    protected function renderSignatureBracket(string $bracket): string
-    {
-        return $bracket;
-    }
-
-    /**
-     * Passthrough comma
-     */
-    protected function renderSignatureComma(): string
-    {
-        return ',';
     }
 
     /**

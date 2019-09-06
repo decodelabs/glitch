@@ -1,33 +1,32 @@
-.null {
-    color: var(--pink);
+.null,
+.bool,
+.int,
+.float {
+    color: $pink;
     font-weight: 600;
 }
 .bool {
-    color: var(--pink);
     font-style: italic;
-    font-weight: 600;
 }
 .int, .float {
-    color: var(--indigo);
-    font-weight: 600;
+    color: $indigo;
 }
 
+.g, .pointer {
+    color: $gray;
+}
 .pointer {
-    color: var(--gray);
     opacity: 0.5;
 }
 
-.g {
-    color: var(--gray);
-}
 
 .string {
     > .line {
-        color: var(--red) !important;
+        color: $red !important;
     }
 
     > .length {
-        color: var(--teal);
+        color: $teal;
         margin-left: 0.5em;
         display: none;
     }
@@ -37,7 +36,7 @@
     }
 
     &.identifier {
-        color: var(--orange);
+        color: $orange;
 
         &:before, &:after {
             display: none;
@@ -48,7 +47,7 @@
         > .line {
             &:before, &:after {
                 content: '"';
-                color: var(--gray);
+                color: $gray;
                 opacity: 0.5;
             }
         }
@@ -61,18 +60,18 @@
 
         &:before, &:after {
             content: '"""';
-            color: var(--gray);
+            color: $gray;
             opacity: 0.5;
         }
 
         > .line {
             margin-left: -0.1rem;
             padding-left: 0.1rem;
-            border-left: 1px solid #F5F5F5;
+            border-left: 1px solid rgba($gray, 0.18);
 
             &:after {
                 content: '⏎';
-                color: var(--gray);
+                color: $gray;
                 opacity: 0.5;
                 font-size: 1.3em;
                 line-height: 1;
@@ -126,7 +125,50 @@
     }
 
     span.control {
-        color: var(--orange);
+        color: $orange;
         opacity: 0.65;
+    }
+}
+
+
+
+html.dark {
+    .null,
+    .bool,
+    .int,
+    .float {
+        color: lighten($pink, 10%);
+    }
+    .int, .float {
+        color: lighten($indigo, 20%);
+    }
+
+    .string {
+        > .line {
+            color: $red-bright !important;
+        }
+
+        &.identifier {
+            color: lighten($orange, 10%);
+        }
+
+        &.m {
+            &:before, &:after {
+                opacity: 0.6;
+            }
+
+            > .line {
+                border-left: 1px solid rgba($gray, 0.06);
+            }
+        }
+
+        span.control {
+            color: lighten($orange, 10%);
+            opacity: 0.85;
+        }
+    }
+
+    .g {
+        opacity: 0.5;
     }
 }
