@@ -1,6 +1,7 @@
 section.stack {
     flex: 1 1 100%;
     display: flex;
+    max-width: 100%;
     flex-direction: column;
     background: linear-gradient(to bottom, darken($cream, 12%) 0, darken($cream, 7%) 12rem);
 
