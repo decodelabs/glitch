@@ -80,7 +80,7 @@ $(function() {
             offset = elOffset + 50;
         }
 
-        $('html, body').animate({ scrollTop: offset}, 700);
+        $(this).closest('div.frame').animate({ scrollTop: offset}, 700);
     });
 
 
