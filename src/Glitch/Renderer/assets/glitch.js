@@ -48,7 +48,7 @@ $(function() {
 
                 setTimeout(function() {
                     $target.css({ display: '' });
-                }, 200);
+                }, 250);
             }
         }
     });
