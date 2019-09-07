@@ -137,7 +137,6 @@ div.entity {
         position: relative;
         height: 0;
         display: none;
-        overflow: hidden;
         transition: height 0.35s;
 
         > .inner {
@@ -145,7 +144,6 @@ div.entity {
             position: relative;
             height: 0;
             display: none;
-            overflow: hidden;
             transition: height 0.35s;
 
             &.t-stack-list {
@@ -208,6 +206,16 @@ div.entity {
     &.w-t-stack > div.body > .inner.t-stack {
         height: auto;
         display: block;
+    }
+
+    &.transitioning > div.body {
+        overflow-y: hidden;
+        width: 100vw;
+
+        > .inner {
+            overflow-y: hidden;
+            width: 100vw;
+        }
     }
 }
 

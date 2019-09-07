@@ -879,7 +879,7 @@ trait Base
         }
 
         // Bracket
-        if ($hasBody = $forceBody || in_array(true, $sections, true)) {
+        if (($hasBody = in_array(true, $sections, true)) || $forceBody) {
             $header[] = $this->renderGrammar('{');
         }
 
@@ -950,7 +950,7 @@ trait Base
         }
 
         // Footer
-        if ($hasBody) {
+        if ($hasBody || $forceBody) {
             $output[] = $this->wrapEntityFooter($this->renderGrammar('}'));
         }
 
