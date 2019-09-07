@@ -43,7 +43,7 @@
         }
     }
 
-    &.definition {
+    &.def {
         color: $gray;
     }
 
@@ -156,7 +156,7 @@ html.dark {
             color: lighten($orange, 10%);
         }
 
-        &.definition {
+        &.def {
             color: $gray-300;
         }
 

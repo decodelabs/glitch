@@ -28,7 +28,7 @@ class Html implements Renderer
         'info' => true,
         'meta' => true,
         'text' => true,
-        'properties' => true,
+        'props' => true,
         'values' => true,
         'stack' => true
     ];
@@ -363,7 +363,7 @@ class Html implements Renderer
             'info' => true,
             'meta' => false,
             'text' => false,
-            'properties' => true,
+            'props' => true,
             'values' => true,
             'stack' => false
         ]);
@@ -433,7 +433,7 @@ class Html implements Renderer
 
         foreach ($trace as $i => $frame) {
             $line = $sig = [];
-            $line[] = '<div class="stack-frame group'.($first ? ' with-source' : null).'">';
+            $line[] = '<div class="stack-frame group'.($first ? ' w-source' : null).'">';
             $line[] = '<samp class="dump trace" data-open="source">';
 
             $sig[] = $this->renderLineNumber($count - $i);
@@ -731,7 +731,7 @@ class Html implements Renderer
      */
     protected function wrapEntityHeader(string $header, string $type, string $linkId): string
     {
-        return '<div class="title type-'.$type.'" id="'.$linkId.'">'.$header.'</div>';
+        return '<div class="title t-'.$type.'" id="'.$linkId.'">'.$header.'</div>';
     }
 
     /**
@@ -765,7 +765,7 @@ class Html implements Renderer
      */
     protected function wrapEntityNameReference(string $name, bool $open, string $id): string
     {
-        return '<a class="name code'.($open ? null : ' collapsed').' ref" href="#'.$id.'">'.$name.'</a>';
+        return '<a class="name code ref" href="#'.$id.'">'.$name.'</a>';
     }
 
     /**
@@ -796,9 +796,13 @@ class Html implements Renderer
     /**
      * Render info toggle button
      */
-    protected function renderEntityInfoButton(string $linkId): string
+    protected function renderEntityInfoButton(string $linkId, bool $isRef): string
     {
-        return '<a data-open="type-info" class="info badge"><i>i</i></a>';
+        if ($isRef) {
+            return '<a data-open="body" class="info badge"><i>i</i></a>';
+        } else {
+            return '<a data-open="t-info" class="info badge"><i>i</i></a>';
+        }
     }
 
     /**
@@ -806,7 +810,7 @@ class Html implements Renderer
      */
     protected function renderEntityMetaButton(string $linkId): string
     {
-        return '<a data-open="type-meta" class="meta badge"><i>m</i></a>';
+        return '<a data-open="t-meta" class="meta badge"><i>m</i></a>';
     }
 
     /**
@@ -814,7 +818,7 @@ class Html implements Renderer
      */
     protected function renderEntityTextButton(string $linkId): string
     {
-        return '<a data-open="type-text" class="text primary badge"><i>t</i></a>';
+        return '<a data-open="t-text" class="text primary badge"><i>t</i></a>';
     }
 
     /**
@@ -822,7 +826,7 @@ class Html implements Renderer
      */
     protected function renderEntityDefinitionButton(string $linkId): string
     {
-        return '<a data-open="type-definition" class="definition primary badge"><i>d</i></a>';
+        return '<a data-open="t-def" class="def primary badge"><i>d</i></a>';
     }
 
     /**
@@ -830,7 +834,7 @@ class Html implements Renderer
      */
     protected function renderEntityPropertiesButton(string $linkId): string
     {
-        return '<a data-open="type-properties" class="properties primary badge"><i>p</i></a>';
+        return '<a data-open="t-props" class="props primary badge"><i>p</i></a>';
     }
 
     /**
@@ -838,7 +842,7 @@ class Html implements Renderer
      */
     protected function renderEntityValuesButton(string $linkId): string
     {
-        return '<a data-open="type-values" class="values badge primary"><i>v</i></a>';
+        return '<a data-open="t-values" class="values badge primary"><i>v</i></a>';
     }
 
     /**
@@ -849,7 +853,7 @@ class Html implements Renderer
         if ($type === 'stack') {
             return '<a data-open="body" class="stack badge"><i>s</i></a>';
         } else {
-            return '<a data-open="type-stack" class="stack primary badge"><i>s</i></a>';
+            return '<a data-open="t-stack" class="stack primary badge"><i>s</i></a>';
         }
     }
 
@@ -885,7 +889,7 @@ class Html implements Renderer
             $class = $type;
         }
 
-        return '<div class="inner type-'.$type.'"><div class="'.$class.'">'."\n".
+        return '<div class="inner t-'.$type.'"><div class="'.$class.'">'."\n".
             $block."\n".
         '</div></div>';
     }

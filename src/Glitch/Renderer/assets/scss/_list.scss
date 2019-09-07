@@ -80,7 +80,7 @@ ul.list {
         }
     }
 
-    &.properties {
+    &.props {
         > li {
             > .identifier {
                 &.key {
@@ -186,7 +186,7 @@ html.dark {
             }
         }
 
-        &.properties > li > .identifier.key {
+        &.props > li > .identifier.key {
             color: lighten($blue, 25%);
             opacity: 1;
 

@@ -42,14 +42,14 @@ a.badge {
             top: 0.05em;
         }
     }
-    &.definition {
+    &.def {
         background-color: $orange;
 
         &:hover {
             background-color: darken($orange, 15%);
         }
     }
-    &.properties {
+    &.props {
         background-color: $blue;
 
         &:hover {
@@ -77,13 +77,13 @@ a.badge {
 }
 
 div.entity {
-    &.with-type-info > div.title a.info,
-    &.with-type-meta > div.title a.meta,
-    &.with-type-text > div.title a.text,
-    &.with-type-definition > div.title a.definition,
-    &.with-type-properties > div.title a.properties,
-    &.with-type-values > div.title a.values,
-    &.with-type-stack > div.title a.stack {
+    &.w-t-info > div.title a.info,
+    &.w-t-meta > div.title a.meta,
+    &.w-t-text > div.title a.text,
+    &.w-t-def > div.title a.def,
+    &.w-t-props > div.title a.props,
+    &.w-t-values > div.title a.values,
+    &.w-t-stack > div.title a.stack {
         opacity: 1;
     }
 }

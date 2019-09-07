@@ -23,7 +23,7 @@ trait Base
         'info' => true,
         'meta' => true,
         'text' => true,
-        'properties' => true,
+        'props' => true,
         'values' => true,
         'stack' => true
     ];
@@ -214,7 +214,7 @@ trait Base
             'info' => true,
             'meta' => false,
             'text' => false,
-            'properties' => true,
+            'props' => true,
             'values' => true,
             'stack' => false
         ]);
@@ -731,8 +731,8 @@ trait Base
             'info' => true,
             'meta' => (bool)$entity->getAllMeta(),
             'text' => $entity->getText() !== null,
-            'definition' => $entity->getDefinition() !== null,
-            'properties' => (bool)$entity->getProperties(),
+            'def' => $entity->getDefinition() !== null,
+            'props' => (bool)$entity->getProperties(),
             'values' => (bool)$entity->getValues(),
             'stack' => (bool)$entity->getStackTrace()
         ];
@@ -780,7 +780,7 @@ trait Base
                 break;
         }
 
-        $keys = ['info', 'meta', 'text', 'definition', 'properties', 'values', 'stack'];
+        $keys = ['info', 'meta', 'text', 'def', 'props', 'values', 'stack'];
 
         if ($overrides['info'] ?? null === true) {
             $sections['info'] = true;
@@ -840,7 +840,7 @@ trait Base
 
         // Info
         if ($sections['info']) {
-            $buttons[] = $this->renderEntityInfoButton($linkId);
+            $buttons[] = $this->renderEntityInfoButton($linkId, $isRef);
         }
 
         // Meta
@@ -854,12 +854,12 @@ trait Base
         }
 
         // Definition
-        if ($sections['definition']) {
+        if ($sections['def']) {
             $buttons[] = $this->renderEntityDefinitionButton($linkId);
         }
 
         // Properties
-        if ($sections['properties']) {
+        if ($sections['props']) {
             $buttons[] = $this->renderEntityPropertiesButton($linkId);
         }
 
@@ -893,7 +893,7 @@ trait Base
         $output[] = $this->wrapEntityHeader(implode(' ', array_filter($header)), $type, $linkId);
 
 
-        $hasBodyContent = $sections['text'] || $sections['definition'] || $sections['properties'] || $sections['values'] || $sections['stack'];
+        $hasBodyContent = $sections['text'] || $sections['def'] || $sections['props'] || $sections['values'] || $sections['stack'];
         $renderClosed = static::RENDER_CLOSED ?? true;
 
         if (!$open && !$renderClosed && $level > 4) {
@@ -918,31 +918,31 @@ trait Base
 
             // Text
             if ($sections['text']) {
-                $classes[] = 'with-type-text';
+                $classes[] = 'w-t-text';
                 $body[] = $this->renderTextBlock($entity, $level);
             }
 
             // Definition
-            if ($sections['definition']) {
-                $classes[] = 'with-type-definition';
+            if ($sections['def']) {
+                $classes[] = 'w-t-def';
                 $body[] = $this->renderDefinitionBlock($entity, $level);
             }
 
             // Properties
-            if ($sections['properties']) {
-                $classes[] = 'with-type-properties';
+            if ($sections['props']) {
+                $classes[] = 'w-t-props';
                 $body[] = $this->renderPropertiesBlock($entity, $level);
             }
 
             // Values
             if ($sections['values']) {
-                $classes[] = 'with-type-values';
+                $classes[] = 'w-t-values';
                 $body[] = $this->renderValuesBlock($entity, $level);
             }
 
             // Stack
             if ($sections['stack']) {
-                $classes[] = 'with-type-stack';
+                $classes[] = 'w-t-stack';
                 $body[] = $this->renderStackBlock($entity, $level);
             }
 
@@ -951,11 +951,13 @@ trait Base
 
         // Footer
         if ($hasBody) {
-            if ($open) {
-                $classes[] = 'with-body';
-            }
-
             $output[] = $this->wrapEntityFooter($this->renderGrammar('}'));
+        }
+
+        if ($open && ($hasBody && !empty($classes))) {
+            $classes[] = 'w-body';
+        } elseif ($isRef && $sections['info']) {
+            $classes[] = 'w-t-info';
         }
 
 
@@ -1042,7 +1044,7 @@ trait Base
     /**
      * Empty info button stub
      */
-    protected function renderEntityInfoButton(string $linkId): string
+    protected function renderEntityInfoButton(string $linkId, bool $isRef): string
     {
         return '';
     }
@@ -1242,10 +1244,10 @@ trait Base
         $type = $entity->getType();
 
         $output = $this->indent(
-            $this->renderIdentifierString($entity->getDefinition(), 'definition')
+            $this->renderIdentifierString($entity->getDefinition(), 'def')
         );
 
-        return $this->wrapEntityBodyBlock($output, 'definition', true, $id, $type);
+        return $this->wrapEntityBodyBlock($output, 'def', true, $id, $type);
     }
 
     /**
@@ -1256,10 +1258,10 @@ trait Base
         $id = $entity->getId();
 
         $output = $this->indent(
-            $this->renderList($entity->getProperties(), 'properties', true, null, $level + 1)
+            $this->renderList($entity->getProperties(), 'props', true, null, $level + 1)
         );
 
-        return $this->wrapEntityBodyBlock($output, 'properties', true, $id);
+        return $this->wrapEntityBodyBlock($output, 'props', true, $id);
     }
 
     /**
@@ -1381,7 +1383,7 @@ trait Base
                 $asIdentifier = true;
                 break;
 
-            case 'properties':
+            case 'props':
                 $access = true;
                 break;
         }
