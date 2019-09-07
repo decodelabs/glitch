@@ -40,7 +40,6 @@ ul.list {
         max-width: 80em;
 
         > li {
-            white-space: normal;
 
             > .identifier {
                 color: $cyan;
@@ -56,6 +55,10 @@ ul.list {
                         display: inline;
                     }
                 }
+            }
+
+            ul.inline {
+                display: flex;
             }
         }
     }
