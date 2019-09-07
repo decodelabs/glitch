@@ -1,61 +1,53 @@
 $(function() {
-    $(document).on('click', '[data-target]', function(e) {
+    $(document).on('click', '[data-open]', function(e) {
         e.preventDefault();
-        var $badge = $(this),
-            $entity = $badge.closest('.entity'),
-            isName = $badge.hasClass('name'),
-            $target = $($badge.attr('data-target')),
-            isCollapsed = !$target.hasClass('show'),
-            isBody = $badge.hasClass('body'),
-            $name = $entity.find('a.name'),
-            $body = $($name.attr('data-target')),
-            isBodyCollapsed = !$body.hasClass('show'),
-            otherChildren = $body.children('div.collapse.show').not($badge.attr('data-target')).length;
+        var $button = $(this),
+            $parent = $button.closest('.group'),
+            targetClass = $button.attr('data-open'),
+            $target = $parent.find('> .'+targetClass+',.body > .'+targetClass),
+            open = $parent.hasClass('with-'+targetClass),
+            isBadge = $button.hasClass('badge'),
+            isEntity = $button.hasClass('name'),
+            height;
 
+        if(isBadge && !$parent.hasClass('with-body')) {
+            $parent.toggleClass('with-'+targetClass, true);
+            $parent.find('> .title > .name').click();
+            return;
+        }
 
-        if(isBody) {
-            if(!isCollapsed && isBodyCollapsed) {
-                $body.collapse('show');
-                $name.removeClass('collapsed');
+        if(!open) {
+            if(isEntity && !$parent.is("[class*='with-type-']")) {
+                $parent.find('> .title .badge.primary').first().click();
             } else {
-                $badge.toggleClass('collapsed', !isCollapsed);
+                $target.css({ display: 'block' });
+                height = $target.prop('scrollHeight');
+                $target.css({ height: height });
+                $parent.toggleClass('with-'+targetClass, !open);
 
-                if(!isCollapsed) {
-                    $target.collapse('toggle');
-
-                    // Closing
-                    if(!otherChildren) {
-                        $body.collapse('hide');
-                        $name.addClass('collapsed');
-                    }
-                } else {
-                    // Opening
-                    if(isBodyCollapsed) {
-                        $target.addClass('show');
-                        $body.collapse('show');
-                        $name.removeClass('collapsed');
-                    } else {
-                        $target.collapse('show');
-                    }
-                }
+                setTimeout(function() {
+                    $target.css({ height: '', display: '' });
+                }, 350);
             }
         } else {
-            $badge.toggleClass('collapsed', !isCollapsed);
+            $parent.toggleClass('with-'+targetClass, !open);
 
-            if(isName && isCollapsed && !otherChildren) {
-                var $first = $entity.find('a.primary:first');
-
-                if(!$first.length) {
-                    $first = $entity.find('a.badge:first');
-                }
-
-                $first.click();
+            if(isBadge && $parent.hasClass('with-body') && !$parent.is("[class*='with-type-']")) {
+                $parent.toggleClass('with-'+targetClass, open);
+                $parent.find('> .title > .name').click();
+                $parent.toggleClass('with-'+targetClass, !open);
             } else {
-                $target.collapse('toggle');
-            }
+                $parent.toggleClass('with-'+targetClass, open);
 
-            if(isName && $entity.hasClass('type-stack')) {
-                $entity.find('.badge.stack').toggleClass('collapsed', !isCollapsed);
+                $target.css({ display: 'block' });
+                height = $target.prop('scrollHeight');
+                $target.css({ height: height });
+                $parent.toggleClass('with-'+targetClass, !open);
+                $target.css({ height: '' });
+
+                setTimeout(function() {
+                    $target.css({ display: '' });
+                }, 200);
             }
         }
     });
@@ -95,9 +87,5 @@ $(function() {
 
     $(document).on('click', '.string.m.large', function() {
         $(this).toggleClass('show');
-    });
-
-    $(document).on('click', 'ul.stack .dump.trace', function(e) {
-        $(this).parent().toggleClass('open', !$(this).hasClass('collapsed'));
     });
 });

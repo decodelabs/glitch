@@ -836,39 +836,46 @@ trait Base
             $header[] = $this->renderEntityClassName($entity->getClass());
         }
 
+        $buttons = [];
+
         // Info
         if ($sections['info']) {
-            $header[] = $this->renderEntityInfoButton($linkId);
+            $buttons[] = $this->renderEntityInfoButton($linkId);
         }
 
         // Meta
         if ($sections['meta']) {
-            $header[] = $this->renderEntityMetaButton($linkId);
+            $buttons[] = $this->renderEntityMetaButton($linkId);
         }
 
         // Text
         if ($sections['text']) {
-            $header[] = $this->renderEntityTextButton($linkId);
+            $buttons[] = $this->renderEntityTextButton($linkId);
         }
 
         // Definition
         if ($sections['definition']) {
-            $header[] = $this->renderEntityDefinitionButton($linkId);
+            $buttons[] = $this->renderEntityDefinitionButton($linkId);
         }
 
         // Properties
         if ($sections['properties']) {
-            $header[] = $this->renderEntityPropertiesButton($linkId);
+            $buttons[] = $this->renderEntityPropertiesButton($linkId);
         }
 
         // Values
         if ($sections['values']) {
-            $header[] = $this->renderEntityValuesButton($linkId);
+            $buttons[] = $this->renderEntityValuesButton($linkId);
         }
 
         // Stack
         if ($sections['stack']) {
-            $header[] = $this->renderEntityStackButton($type, $open, $linkId);
+            $buttons[] = $this->renderEntityStackButton($type, $open, $linkId);
+        }
+
+        // Buttons
+        if (!empty($buttons)) {
+            $header[] = $this->wrapEntityButtons(implode(' ', $buttons));
         }
 
         // Bracket
@@ -893,6 +900,8 @@ trait Base
             $hasBody = false;
         }
 
+        $classes = [];
+
         // Body
         if ($hasBody) {
             $body = [];
@@ -909,26 +918,31 @@ trait Base
 
             // Text
             if ($sections['text']) {
+                $classes[] = 'with-type-text';
                 $body[] = $this->renderTextBlock($entity, $level);
             }
 
             // Definition
             if ($sections['definition']) {
+                $classes[] = 'with-type-definition';
                 $body[] = $this->renderDefinitionBlock($entity, $level);
             }
 
             // Properties
             if ($sections['properties']) {
+                $classes[] = 'with-type-properties';
                 $body[] = $this->renderPropertiesBlock($entity, $level);
             }
 
             // Values
             if ($sections['values']) {
+                $classes[] = 'with-type-values';
                 $body[] = $this->renderValuesBlock($entity, $level);
             }
 
             // Stack
             if ($sections['stack']) {
+                $classes[] = 'with-type-stack';
                 $body[] = $this->renderStackBlock($entity, $level);
             }
 
@@ -937,10 +951,23 @@ trait Base
 
         // Footer
         if ($hasBody) {
+            if ($open) {
+                $classes[] = 'with-body';
+            }
+
             $output[] = $this->wrapEntityFooter($this->renderGrammar('}'));
         }
 
-        return implode($hasBodyContent ? "\n" : ' ', $output);
+
+        return $this->wrapEntity(implode($hasBodyContent ? "\n" : ' ', $output), implode(' ', $classes));
+    }
+
+    /**
+     * Wrap entity
+     */
+    protected function wrapEntity(string $entity): string
+    {
+        return $entity;
     }
 
 
@@ -1001,6 +1028,14 @@ trait Base
     protected function renderEntityClassName(string $class): string
     {
         return $class;
+    }
+
+    /**
+     * Wrap buttons
+     */
+    protected function wrapEntityButtons(string $buttons): string
+    {
+        return $buttons;
     }
 
 

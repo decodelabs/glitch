@@ -1,7 +1,24 @@
-@import "../../../../../../bower-asset/bootstrap/scss/bootstrap.scss";
-$gray: $gray-500;
-$red-bright: lighten(saturate($red, 20%), 15%);
-$cream: lighten(desaturate(#F1F2E2, 25%), 6%);
+
+
+
+body {
+    display: block;
+}
+
+.collapse:not(.show) {
+    display: none;
+}
+
+.collapsing {
+    position: relative;
+    height: 0;
+    overflow: hidden;
+    transition: height 0.35s ease;
+}
+
+
+@import "./scss/_variables.scss";
+@import "./scss/_reboot.scss";
 
 @import "./scss/_container.scss";
 @import "./scss/_header.scss";

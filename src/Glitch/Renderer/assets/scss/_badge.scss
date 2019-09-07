@@ -2,21 +2,45 @@ a.badge {
     cursor: help;
     font-size: 0.9em;
     color: white !important;
-
-    &.collapsed {
-        opacity: 0.3;
-    }
+    background: pink;
+    padding: 0 0.5em;
+    border-radius: 0.25em;
+    transition: background-color 0.35s, opacity 0.2s;
+    opacity: 0.3;
 
     i {
         font-style: normal;
         position: relative;
     }
 
-    &.info i {
-        top: 0.05em;
+    &.info {
+        background-color: $cyan;
+
+        &:hover {
+            background-color: darken($cyan, 10%);
+        }
+
+        i {
+            top: 0.05em;
+        }
     }
-    &.text i {
-        top: 0.05em;
+    &.meta {
+        background-color: $pink;
+
+        &:hover {
+            background-color: darken($pink, 10%);
+        }
+    }
+    &.text {
+        background-color: $red;
+
+        &:hover {
+            background-color: darken($red, 10%);
+        }
+
+        i {
+            top: 0.05em;
+        }
     }
     &.definition {
         background-color: $orange;
@@ -25,14 +49,41 @@ a.badge {
             background-color: darken($orange, 15%);
         }
     }
-    &.properties i {
-        top: -0.08em;
+    &.properties {
+        background-color: $blue;
+
+        &:hover {
+            background-color: darken($blue, 10%);
+        }
+
+        i {
+            top: -0.08em;
+        }
+    }
+    &.values {
+        background-color: $yellow;
+
+        &:hover {
+            background-color: darken($yellow, 15%);
+        }
+    }
+    &.stack {
+        background-color: $gray-600;
+
+        &:hover {
+            background-color: darken($gray-600, 15%);
+        }
     }
 }
 
-
-html.dark {
-    a.badge-dark {
-        background-color: darken(#343a40, 8%);
+div.entity {
+    &.with-type-info > div.title a.info,
+    &.with-type-meta > div.title a.meta,
+    &.with-type-text > div.title a.text,
+    &.with-type-definition > div.title a.definition,
+    &.with-type-properties > div.title a.properties,
+    &.with-type-values > div.title a.values,
+    &.with-type-stack > div.title a.stack {
+        opacity: 1;
     }
 }
