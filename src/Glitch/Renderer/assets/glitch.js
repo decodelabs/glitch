@@ -64,7 +64,14 @@ $(function() {
         var id = $(this).attr('href'),
             $target = $(id).children('.name'),
             $entity = $(id).parent(),
-            $parents = $target.parents('.entity:not(.w-body)');
+            $parents = $target.parents('.entity:not(.w-body)'),
+            isFramed = $('body').width() > 960,
+            $scroller = isFramed ? $(this).closest('div.frame') : $('html,body'),
+            windowHeight = isFramed ? $scroller.height() : $(window).height(),
+            elHeight = $target.height(),
+            $section = $(this).closest('section'),
+            sectionOffset = isFramed ? $section.offset().top : 0,
+            elOffset = $target.offset().top - sectionOffset;
 
         window.location.hash = id;
 
@@ -72,18 +79,13 @@ $(function() {
             $(this).find('> .title .name').click();
         });
 
-        var elOffset = $target.offset().top,
-            elHeight = $target.height(),
-            windowHeight = $(window).height(),
-            offset;
-
         if (elHeight < windowHeight) {
             offset = elOffset - ((windowHeight / 4) - (elHeight / 2));
         } else {
             offset = elOffset + 50;
         }
 
-        $(this).closest('div.frame').animate({ scrollTop: offset}, 700);
+        $scroller.animate({ scrollTop: offset}, 700);
     });
 
 
