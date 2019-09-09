@@ -18,7 +18,7 @@ composer require decodelabs/glitch
 Register base paths for easier reading of file names:
 
 ```php
-\Glitch\Context::getDefault()->registerPathAlias('app', '/path/to/my/app');
+\Glitch::getContext()->registerPathAlias('app', '/path/to/my/app');
 
 /*
 /path/to/my/app/models/MyModel.php
@@ -33,7 +33,7 @@ Pass the <code>microtime()</code> of initial app launch if necessary:
 
 ```php
 $time = microtime(true);
-\Glitch\Context::getDefault()->setStartTime($time);
+\Glitch::getContext()->setStartTime($time);
 ```
 
 
