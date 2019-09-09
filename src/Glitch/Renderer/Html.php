@@ -508,16 +508,19 @@ class Html implements Renderer
         $borderColor = static::DARK ? '#333' : '#888';
 
         $output = [];
+        $output[] = '<div class="glitch-dump">';
         $output[] = '<style>';
-        $output[] = '.glitch-dump { width: 100%; max-width: 100vw; min-width: 100%; height: 20rem; box-sizing: border-box; border: 2px solid '.$borderColor.'; resize: both; }';
-        $output[] = 'body > .glitch-dump { height: 50vh; }';
-        $output[] = 'body > .glitch-dump:only-of-type { height:100%; border: none; resize: none; position: absolute; width: 100%; top: 0; left: 0; }';
+        $output[] = '.glitch-dump > iframe { width: 100%; max-width: 100vw; min-width: 100%; height: 100%; box-sizing: border-box; border: 2px solid '.$borderColor.'; resize: both; }';
+        $output[] = 'body > .glitch-dump > iframe { height: 50vh; }';
+        $output[] = 'body > .glitch-dump:only-child { height:100%; border: none; resize: none; position: absolute; width: 100%; top: 0; left: 0; }';
+        $output[] = 'body > .glitch-dump:only-child > iframe { height:100%; }';
         $output[] = '</style>';
-        $output[] = '<iframe id="'.$id.'" frameborder="0" class="glitch-dump"></iframe>';
+        $output[] = '<iframe id="'.$id.'" frameborder="0"></iframe>';
         $output[] = '<script>';
         $output[] = 'var doc = document.getElementById(\''.$id.'\').contentWindow.document;';
         $output[] = 'doc.open();doc.write('.json_encode($html).');doc.close();';
         $output[] = '</script>';
+        $output[] = '</div>';
 
         return implode("\n", $output);
     }

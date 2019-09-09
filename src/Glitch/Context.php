@@ -29,6 +29,8 @@ class Context
     protected $objectInspectors = [];
     protected $resourceInspectors = [];
 
+    protected $dumpedInBuffer = false;
+
     protected $dumpRenderer;
     protected $transport;
 
@@ -144,6 +146,10 @@ class Context
             $dump->addEntity($inspector->inspectValue($value));
         }
 
+        if (ob_get_level()) {
+            $this->dumpedInBuffer = true;
+        }
+
         $inspector->reset();
         unset($inspector);
 
@@ -156,6 +162,14 @@ class Context
      */
     public function dumpDie(array $values, int $rewind=0): void
     {
+        while (ob_get_level()) {
+            if ($this->dumpedInBuffer) {
+                echo ob_get_clean();
+            } else {
+                ob_end_clean();
+            }
+        }
+
         $this->dump($values, $rewind + 1);
         exit(1);
     }
