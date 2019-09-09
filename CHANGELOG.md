@@ -1,6 +1,6 @@
 ## v0.10.0 (2019-09-09)
 * Removed bootstrap dependency
-* Remove asset-packagist dependency
+* Removed asset-packagist dependency
 * Added output buffer detection and escaping
 * Added PSR-3 Logger support
 * Added responsive font scaling
