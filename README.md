@@ -1,7 +1,7 @@
 # Glitch
 ### Better exceptions for PHP.
 
-Glitch is a standalone PHP package designed to improve end-to-end error handling and inspection when developing your applications.
+Glitch is a standalone PHP package designed to improve end-to-end error generation, handling and inspection when developing your applications.
 
 The project aims to provide a radically enhanced Exception framework that decouples the _meaning_ of an Exception from the underlying _implementation_ functionality, alongside deep data inspection tools and an Exception handling interface.
 
@@ -16,7 +16,9 @@ composer require decodelabs/glitch
 
 
 ### Setup
-Register base paths for easier reading of file names:
+Glitch will work out of the box with minimal setup. There are however some optional steps you can take to customise operation.
+
+Register base path aliases for easier reading of file names in dumps:
 
 ```php
 \Glitch::getContext()->registerPathAlias('app', '/path/to/my/app');
@@ -53,18 +55,32 @@ dump($myObject);
 dd($myObject);
 ```
 
-The resulting dump interface (when using the HTML renderer, the default option) is injected into an iframe at runtime so can be rendered into any HTML page without breaking anything. If the page is otherwise empty, the iframe will expand to fill the viewport if possible.
+You can mark also functions as incomplete whilst in development:
+```php
+function myFunction() {
+    // This will throw a Glitch exception
+    \Glitch::incomplete([
+        'info' => 'some test info'
+    ]);
+}
+```
 
 #### Renderers
-The dump package is rendered by an instance of <code>DecodeLabs\Glitch\Renderer</code> which can be overridden on the default <code>Context</code> at startup. By default the <code>Html</code> renderer is loaded under normal circumstances, the <code>Cli</code> renderer is used when under the cli sapi.
+The resulting dump UI (when using the HTML renderer, the default option) is injected into an iframe at runtime so can be rendered into any HTML page without breaking anything. If the page is otherwise empty, the iframe will expand to fill the viewport if possible.
 
-Custom renderers may convert <code>Entities</code> to other formats such as Xml for example.
+The dump output is rendered by an instance of <code>DecodeLabs\Glitch\Renderer</code> which can be overridden on the default <code>Context</code> at startup. By default the <code>Html</code> renderer is loaded under normal circumstances, the <code>Cli</code> renderer is used when under the CLI sapi.
+
+Custom renderers may convert <code>Entities</code> to other output formats depending on where they should be sent, such as Xml or Json for example.
 
 #### Transports
-Once rendered, the package is delivered via an instance of <code>DecodeLabs\Glitch\Transport</code>, also overridable on the default <code>Context</code>. It is the responsibility of the <code>Transport</code> to deliver the rendered dump. By default, the render is just echoed out to <code>STDOUT</code>, however custom transports may send information to other interfaces, browser extensions, logging systems, etc.
+Once rendered, the dump information is delivered via an instance of <code>DecodeLabs\Glitch\Transport</code>, also overridable on the default <code>Context</code>. It is the responsibility of the <code>Transport</code> to deliver the rendered dump.
+
+By default, the render is just echoed out to <code>STDOUT</code>, however custom transports may send information to other interfaces, browser extensions, logging systems, etc.
 
 
 ## Exceptions
+Glitch exceptions can be used to greatly simplify how you create and throw errors in your code, especially if you are writing a shared library.
+
 Throw <code>Glitches</code> rather than <code>Exceptions</code>, passing interface names to be mixed in as the method name (custom generated error interfaces must be prefixed with E) to the Glitch call.
 
 ```php
@@ -99,7 +115,7 @@ try {
     throw \Glitch::{'ENotFound,EBadMethodCall'}(
         "Didn't find a thing, couldn't call the other thing"
     );
-} catch(\EGlitch | \ENotFound | MyLibrary\EGlitch | MyLibrary\AThingThatDoesStuff\EBadMethodCall $e) {
+} catch(\Exception | \EGlitch | \ENotFound | MyLibrary\EGlitch | MyLibrary\AThingThatDoesStuff\EBadMethodCall | BadMethodCallException $e) {
     // All these types will catch
     dd($e);
 }
