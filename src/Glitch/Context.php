@@ -225,6 +225,7 @@ class Context implements LoggerAwareInterface
         set_error_handler([$this, 'handleError']);
         set_exception_handler([$this, 'handleException']);
         register_shutdown_function([$this, 'handleShutdown']);
+        set_ini('display_errors', false);
 
         return $this;
     }
