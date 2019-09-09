@@ -15,7 +15,7 @@ use DecodeLabs\Glitch\Stack\Frame;
  */
 final class Glitch
 {
-    const VERSION = 'v0.9.0';
+    const VERSION = 'v0.10.0';
 
     public static $autoRegister = true;
 
