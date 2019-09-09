@@ -28,7 +28,7 @@ class Html implements Renderer
         'info' => true,
         'meta' => true,
         'text' => true,
-        'properties' => true,
+        'props' => true,
         'values' => true,
         'stack' => true
     ];
@@ -181,26 +181,34 @@ class Html implements Renderer
 
 
         // Css
-        $css = $vendor.'/decodelabs/glitch/src/Glitch/Renderer/assets/glitch.css';
-        $this->buildScss($css);
+        $sassCss = $vendor.'/decodelabs/glitch/src/Glitch/Renderer/assets/glitch.css';
+        $this->buildScss($sassCss);
 
-        if (file_exists($css)) {
-            $output[] = '<style id="style-glitch">';
-            $output[] = file_get_contents($css);
-            $output[] = '</style>';
+
+        $css = [
+            'glitch' => $sassCss
+        ];
+
+        foreach ($css as $name => $cssPath) {
+            if (file_exists($cssPath)) {
+                $output[] = '<style id="style-'.$name.'">';
+                $output[] = file_get_contents($cssPath);
+                $output[] = '</style>';
+            }
         }
 
         // Js
         $js = [
-            'jQuery' => $vendor.'/bower-asset/jquery/dist/jquery.min.js',
-            'bootstrap' => $vendor.'/bower-asset/bootstrap/dist/js/bootstrap.bundle.min.js',
+            'jQuery' => $vendor.'/components/jquery/jquery.min.js',
             'glitch' => __DIR__.'/assets/glitch.js'
         ];
 
-        foreach ($js as $name => $path) {
-            $output[] = '<script id="script-'.$name.'">';
-            $output[] = file_get_contents($path);
-            $output[] = '</script>';
+        foreach ($js as $name => $jsPath) {
+            if (file_exists($jsPath)) {
+                $output[] = '<script id="script-'.$name.'">';
+                $output[] = file_get_contents($jsPath);
+                $output[] = '</script>';
+            }
         }
 
 
@@ -265,7 +273,7 @@ class Html implements Renderer
 
 
         if ($build) {
-            exec('cd '.$vendor.'; sassc --style=expanded '.$scssPath.' '.$cssPath.' 2>&1', $execOut);
+            exec('cd '.$vendor.'; sassc --style=compressed '.$scssPath.' '.$cssPath.' 2>&1', $execOut);
 
             if (!empty($execOut)) {
                 die('<pre>'.print_r($execOut, true));
@@ -355,7 +363,7 @@ class Html implements Renderer
             'info' => true,
             'meta' => false,
             'text' => false,
-            'properties' => true,
+            'props' => true,
             'values' => true,
             'stack' => false
         ]);
@@ -421,14 +429,12 @@ class Html implements Renderer
         $output[] = '<div><div class="frame">';
         $count = count($trace);
         $lines = [];
-        $stackId = uniqid();
         $first = true;
 
         foreach ($trace as $i => $frame) {
             $line = $sig = [];
-            $line[] = '<div class="stack-frame'.($first ? ' open' : null).'">';
-            $sourceId = 'stack-'.$i.'-'.$stackId;
-            $line[] = '<samp class="dump trace'.($first ? null : ' collapsed').'" data-target="#'.$sourceId.'">';
+            $line[] = '<div class="stack-frame group'.($first ? ' w-source' : null).'">';
+            $line[] = '<samp class="dump trace" data-open="source">';
 
             $sig[] = $this->renderLineNumber($count - $i);
             $sig[] = $this->wrapSignature($this->renderStackFrameSignature($frame));
@@ -445,7 +451,7 @@ class Html implements Renderer
             $line[] = '</samp>';
 
             if (null !== ($source = $this->renderFrameSource($frame))) {
-                $line[] = '<samp id="'.$sourceId.'" class="dump source collapse'.($first ? ' show' : null).'">';
+                $line[] = '<samp class="dump source">';
                 $line[] = $source;
                 $line[] = '</samp>';
             }
@@ -502,16 +508,19 @@ class Html implements Renderer
         $borderColor = static::DARK ? '#333' : '#888';
 
         $output = [];
+        $output[] = '<div class="glitch-dump">';
         $output[] = '<style>';
-        $output[] = '.glitch-dump { width: 100%; max-width: 100vw; min-width: 100%; height: 20rem; box-sizing: border-box; border: 2px solid '.$borderColor.'; resize: both; }';
-        $output[] = 'body > .glitch-dump { height: 50vh; }';
-        $output[] = 'body > .glitch-dump:only-of-type { height:100%; border: none; resize: none; position: absolute; width: 100%; top: 0; left: 0; }';
+        $output[] = '.glitch-dump > iframe { width: 100%; max-width: 100vw; min-width: 100%; height: 100%; box-sizing: border-box; border: 2px solid '.$borderColor.'; resize: both; }';
+        $output[] = 'body > .glitch-dump > iframe { height: 50vh; }';
+        $output[] = 'body > .glitch-dump:only-child { height:100%; border: none; resize: none; position: absolute; width: 100%; top: 0; left: 0; }';
+        $output[] = 'body > .glitch-dump:only-child > iframe { height:100%; }';
         $output[] = '</style>';
-        $output[] = '<iframe id="'.$id.'" frameborder="0" class="glitch-dump"></iframe>';
+        $output[] = '<iframe id="'.$id.'" frameborder="0"></iframe>';
         $output[] = '<script>';
         $output[] = 'var doc = document.getElementById(\''.$id.'\').contentWindow.document;';
         $output[] = 'doc.open();doc.write('.json_encode($html).');doc.close();';
         $output[] = '</script>';
+        $output[] = '</div>';
 
         return implode("\n", $output);
     }
@@ -711,6 +720,13 @@ class Html implements Renderer
     }
 
 
+    /**
+     * Wrap entity
+     */
+    protected function wrapEntity(string $entity, ?string $class=null): string
+    {
+        return '<div class="entity group '.$class.'">'.$entity.'</div>';
+    }
 
 
     /**
@@ -718,7 +734,7 @@ class Html implements Renderer
      */
     protected function wrapEntityHeader(string $header, string $type, string $linkId): string
     {
-        return '<div class="entity title type-'.$type.'" id="'.$linkId.'">'.$header.'</div>';
+        return '<div class="title t-'.$type.'" id="'.$linkId.'">'.$header.'</div>';
     }
 
     /**
@@ -736,7 +752,7 @@ class Html implements Renderer
      */
     protected function wrapEntityName(string $name, bool $open, string $linkId): string
     {
-        return '<a class="name code'.($open ? null : ' collapsed').'" data-target="#body-'.$linkId.'">'.$name.'</a>';
+        return '<a class="name code" data-open="body">'.$name.'</a>';
     }
 
     /**
@@ -752,7 +768,7 @@ class Html implements Renderer
      */
     protected function wrapEntityNameReference(string $name, bool $open, string $id): string
     {
-        return '<a class="name code'.($open ? null : ' collapsed').' ref" href="#'.$id.'">'.$name.'</a>';
+        return '<a class="name code ref" href="#'.$id.'">'.$name.'</a>';
     }
 
     /**
@@ -772,13 +788,24 @@ class Html implements Renderer
     }
 
 
+    /**
+     * Wrap buttons
+     */
+    protected function wrapEntityButtons(string $buttons): string
+    {
+        return '<span class="buttons">'.$buttons.'</span>';
+    }
 
     /**
      * Render info toggle button
      */
-    protected function renderEntityInfoButton(string $linkId): string
+    protected function renderEntityInfoButton(string $linkId, bool $isRef): string
     {
-        return '<a data-target="#info-'.$linkId.'" class="info body badge badge-info collapsed"><i>i</i></a>';
+        if ($isRef) {
+            return '<a data-open="body" class="info badge"><i>i</i></a>';
+        } else {
+            return '<a data-open="t-info" class="info badge"><i>i</i></a>';
+        }
     }
 
     /**
@@ -786,7 +813,7 @@ class Html implements Renderer
      */
     protected function renderEntityMetaButton(string $linkId): string
     {
-        return '<a data-target="#meta-'.$linkId.'" class="meta body badge badge-secondary collapsed"><i>m</i></a>';
+        return '<a data-open="t-meta" class="meta badge"><i>m</i></a>';
     }
 
     /**
@@ -794,7 +821,7 @@ class Html implements Renderer
      */
     protected function renderEntityTextButton(string $linkId): string
     {
-        return '<a data-target="#text-'.$linkId.'" class="text body primary badge badge-danger"><i>t</i></a>';
+        return '<a data-open="t-text" class="text primary badge"><i>t</i></a>';
     }
 
     /**
@@ -802,7 +829,7 @@ class Html implements Renderer
      */
     protected function renderEntityDefinitionButton(string $linkId): string
     {
-        return '<a data-target="#definition-'.$linkId.'" class="definition body primary badge badge-danger"><i>d</i></a>';
+        return '<a data-open="t-def" class="def primary badge"><i>d</i></a>';
     }
 
     /**
@@ -810,7 +837,7 @@ class Html implements Renderer
      */
     protected function renderEntityPropertiesButton(string $linkId): string
     {
-        return '<a data-target="#properties-'.$linkId.'" class="properties body primary badge badge-primary"><i>p</i></a>';
+        return '<a data-open="t-props" class="props primary badge"><i>p</i></a>';
     }
 
     /**
@@ -818,7 +845,7 @@ class Html implements Renderer
      */
     protected function renderEntityValuesButton(string $linkId): string
     {
-        return '<a data-target="#values-'.$linkId.'" class="values body badge primary badge-warning"><i>v</i></a>';
+        return '<a data-open="t-values" class="values badge primary"><i>v</i></a>';
     }
 
     /**
@@ -827,9 +854,9 @@ class Html implements Renderer
     protected function renderEntityStackButton(string $type, bool $open, string $linkId): string
     {
         if ($type === 'stack') {
-            return '<a data-target="#body-'.$linkId.'" class="stack badge badge-dark'.($open ? null : ' collapsed').'"><i>s</i></a>';
+            return '<a data-open="body" class="stack badge"><i>s</i></a>';
         } else {
-            return '<a data-target="#stack-'.$linkId.'" class="stack body primary badge badge-dark"><i>s</i></a>';
+            return '<a data-open="t-stack" class="stack primary badge"><i>s</i></a>';
         }
     }
 
@@ -851,7 +878,7 @@ class Html implements Renderer
      */
     protected function wrapEntityBody(string $body, bool $open, string $linkId): string
     {
-        return '<div id="body-'.$linkId.'" class="collapse'.($open ? ' show' : null).' inner body">'.$body.'</div>';
+        return '<div class="inner body">'.$body.'</div>';
     }
 
     /**
@@ -865,7 +892,7 @@ class Html implements Renderer
             $class = $type;
         }
 
-        return '<div id="'.$type.'-'.$linkId.'" class="collapse'.($open ? ' show': null).' inner type-'.$type.'"><div class="'.$class.'">'."\n".
+        return '<div class="inner t-'.$type.'"><div class="'.$class.'">'."\n".
             $block."\n".
         '</div></div>';
     }
@@ -875,7 +902,7 @@ class Html implements Renderer
      */
     protected function wrapEntityFooter(string $footer): string
     {
-        return '<div class="entity footer">'.$footer.'</div>';
+        return '<div class="footer">'.$footer.'</div>';
     }
 
     /**

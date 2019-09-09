@@ -15,8 +15,10 @@ use DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Glitch\Transport;
 
 use Composer\Autoload\ClassLoader;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 
-class Context
+class Context implements LoggerAwareInterface
 {
     protected static $default;
 
@@ -29,6 +31,9 @@ class Context
     protected $objectInspectors = [];
     protected $resourceInspectors = [];
 
+    protected $dumpedInBuffer = false;
+
+    protected $logger;
     protected $dumpRenderer;
     protected $transport;
 
@@ -125,6 +130,16 @@ class Context
 
 
 
+    /**
+     * Set PSR logger
+     */
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
+    }
+
+
+
 
 
     /**
@@ -144,6 +159,10 @@ class Context
             $dump->addEntity($inspector->inspectValue($value));
         }
 
+        if (ob_get_level()) {
+            $this->dumpedInBuffer = true;
+        }
+
         $inspector->reset();
         unset($inspector);
 
@@ -156,6 +175,14 @@ class Context
      */
     public function dumpDie(array $values, int $rewind=0): void
     {
+        while (ob_get_level()) {
+            if ($this->dumpedInBuffer) {
+                echo ob_get_clean();
+            } else {
+                ob_end_clean();
+            }
+        }
+
         $this->dump($values, $rewind + 1);
         exit(1);
     }
@@ -219,6 +246,12 @@ class Context
      */
     public function handleException(\Throwable $exception): void
     {
+        if ($this->logger) {
+            $this->logger->critical($exception->getMessage(), [
+                'exception' => $exception
+            ]);
+        }
+
         if ($exception instanceof \EGlitch) {
             $data = $exception->getData();
             $trace = $exception->getStackTrace();

@@ -12,9 +12,9 @@
     "require": {
         "php": "^7.2",
         "symfony/polyfill-mbstring": "~1.7",
+        "psr/log": "^1.0",
 
-        "bower-asset/jquery": "~3.3",
-        "bower-asset/bootstrap": "~4.3"
+        "components/jquery": "~3.3"
     },
     "autoload": {
         "psr-4": {

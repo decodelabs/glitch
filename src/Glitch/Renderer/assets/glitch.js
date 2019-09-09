@@ -1,88 +1,83 @@
 $(function() {
-    $(document).on('click', '[data-target]', function(e) {
+    $(document).on('click', '[data-open]', function(e) {
         e.preventDefault();
-        var $badge = $(this),
-            $entity = $badge.closest('.entity'),
-            isName = $badge.hasClass('name'),
-            $target = $($badge.attr('data-target')),
-            isCollapsed = !$target.hasClass('show'),
-            isBody = $badge.hasClass('body'),
-            $name = $entity.find('a.name'),
-            $body = $($name.attr('data-target')),
-            isBodyCollapsed = !$body.hasClass('show'),
-            otherChildren = $body.children('div.collapse.show').not($badge.attr('data-target')).length;
+        var $button = $(this),
+            $parent = $button.closest('.group'),
+            targetClass = $button.attr('data-open'),
+            $target = $parent.find('> .'+targetClass+',> .body > .'+targetClass),
+            open = $parent.hasClass('w-'+targetClass),
+            isBadge = $button.hasClass('badge'),
+            isEntity = $button.hasClass('name'),
+            height;
 
+        if(isBadge && targetClass !== 'body' && !$parent.hasClass('w-body')) {
+            $parent.toggleClass('w-'+targetClass, true);
+            $parent.find('> .title > .name[data-open]').click();
+            return;
+        }
 
-        if(isBody) {
-            if(!isCollapsed && isBodyCollapsed) {
-                $body.collapse('show');
-                $name.removeClass('collapsed');
-            } else {
-                $badge.toggleClass('collapsed', !isCollapsed);
-
-                if(!isCollapsed) {
-                    $target.collapse('toggle');
-
-                    // Closing
-                    if(!otherChildren) {
-                        $body.collapse('hide');
-                        $name.addClass('collapsed');
-                    }
-                } else {
-                    // Opening
-                    if(isBodyCollapsed) {
-                        $target.addClass('show');
-                        $body.collapse('show');
-                        $name.removeClass('collapsed');
-                    } else {
-                        $target.collapse('show');
-                    }
-                }
+        if(!open) {
+            if(isEntity && !$parent.is("[class*='w-t-']")) {
+                var targetBadgeClass = $parent.find('> .title .badge.primary').first().attr('data-open');
+                $parent.toggleClass('w-'+targetBadgeClass, true);
             }
+
+            $target.css({ display: 'block' });
+            height = $target.prop('scrollHeight');
+            $target.css({ height: height });
+            $parent.toggleClass('w-'+targetClass, !open).toggleClass('transitioning', true);
+
+            setTimeout(function() {
+                $target.css({ height: '', display: '' });
+                $parent.toggleClass('transitioning', false);
+            }, 350);
         } else {
-            $badge.toggleClass('collapsed', !isCollapsed);
+            $parent.toggleClass('w-'+targetClass, !open);
 
-            if(isName && isCollapsed && !otherChildren) {
-                var $first = $entity.find('a.primary:first');
-
-                if(!$first.length) {
-                    $first = $entity.find('a.badge:first');
-                }
-
-                $first.click();
+            if(isBadge && targetClass !== 'body' && $parent.hasClass('w-body') && !$parent.is("[class*='w-t-']")) {
+                $parent.toggleClass('w-'+targetClass, open);
+                $parent.find('> .title > .name').click();
+                $parent.toggleClass('w-'+targetClass, !open);
             } else {
-                $target.collapse('toggle');
-            }
+                $parent.toggleClass('w-'+targetClass, open);
 
-            if(isName && $entity.hasClass('type-stack')) {
-                $entity.find('.badge.stack').toggleClass('collapsed', !isCollapsed);
+                $target.css({ display: 'block' });
+                height = $target.prop('scrollHeight');
+                $target.css({ height: height });
+                $parent.toggleClass('w-'+targetClass, !open);
+                $target.css({ height: '' });
+                $parent.toggleClass('transitioning', true);
+
+                setTimeout(function() {
+                    $target.css({ display: '' });
+                    $parent.toggleClass('transitioning', false);
+                }, 250);
             }
         }
     });
+
+
 
     $(document).on('click', 'a.ref', function(e) {
         e.preventDefault();
 
         var id = $(this).attr('href'),
             $target = $(id).children('.name'),
-            $body = $($target.attr('data-target')),
-            isBodyCollapsed = !$body.hasClass('show'),
-            $parents = $target.parents('.collapse');
+            $entity = $(id).parent(),
+            $parents = $target.parents('.entity:not(.w-body)'),
+            isFramed = $('body').width() > 960,
+            $scroller = isFramed ? $(this).closest('div.frame') : $('html,body'),
+            windowHeight = isFramed ? $scroller.height() : $(window).height(),
+            elHeight = $target.height(),
+            $section = $(this).closest('section'),
+            sectionOffset = isFramed ? $section.offset().top : 0,
+            elOffset = $target.offset().top - sectionOffset;
 
         window.location.hash = id;
 
         $parents.each(function() {
-            $('a[data-target="#'+$(this).attr('id')+'"]').removeClass('collapsed');
-        }).collapse('show');
-
-        if(isBodyCollapsed) {
-            $target.click();
-        }
-
-        var elOffset = $target.offset().top,
-            elHeight = $target.height(),
-            windowHeight = $(window).height(),
-            offset;
+            $(this).find('> .title .name').click();
+        });
 
         if (elHeight < windowHeight) {
             offset = elOffset - ((windowHeight / 4) - (elHeight / 2));
@@ -90,14 +85,12 @@ $(function() {
             offset = elOffset + 50;
         }
 
-        $('html, body').animate({ scrollTop: offset}, 700);
+        $scroller.animate({ scrollTop: offset}, 700);
     });
+
+
 
     $(document).on('click', '.string.m.large', function() {
         $(this).toggleClass('show');
-    });
-
-    $(document).on('click', 'ul.stack .dump.trace', function(e) {
-        $(this).parent().toggleClass('open', !$(this).hasClass('collapsed'));
     });
 });

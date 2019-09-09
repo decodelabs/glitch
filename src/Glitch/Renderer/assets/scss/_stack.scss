@@ -1,6 +1,7 @@
 section.stack {
     flex: 1 1 100%;
     display: flex;
+    max-width: 100%;
     flex-direction: column;
     background: linear-gradient(to bottom, darken($cream, 12%) 0, darken($cream, 7%) 12rem);
 
@@ -35,18 +36,29 @@ ul.stack {
         border: 3px solid transparent;
         transition: all 0.5s;
 
-        &.open {
+        samp.dump.source {
+            height: 0;
+            transition: height 0.35s;
+        }
+
+        &.w-source {
             box-shadow: 2px 0.5rem 0.5rem rgba(black, 0.1);
             border-color: rgba(#222, 0.85);
 
             margin-bottom: 1em;
             margin-top: 1em;
+
+            samp.dump.source {
+                height: auto;
+            }
         }
 
         span {
             &.number {
-                width: 1rem;
+                width: 2em;
+                margin-right: 0.5em;
                 display: inline-block;
+                text-align: right;
             }
             &.signature {
                 color: $gray;
@@ -63,7 +75,7 @@ ul.stack {
             }
             &.file {
                 color: $orange;
-                margin-left: 1.5em;
+                margin-left: 2.45em;
 
                 + .line:before {
                     content: ' :';
@@ -82,7 +94,7 @@ ul.stack {
         }
     }
 
-    &:first-child div.stack-frame.open {
+    &:first-child div.stack-frame.w-source {
         margin-top: 0;
     }
 
@@ -128,7 +140,7 @@ html.dark {
         }
 
         div.stack-frame {
-            &.open {
+            &.w-source {
                 box-shadow: 2px 0.5rem 0.5rem rgba(black, 0.2);
             }
 
@@ -157,19 +169,19 @@ html.dark {
 
 
 html.dump {
-    ul.stack div.stack-frame.open {
+    ul.stack div.stack-frame.w-source {
         border-color: rgba($blue, 0.85);
     }
 }
 
 html.exception {
-    ul.stack div.stack-frame.open {
+    ul.stack div.stack-frame.w-source {
         border-color: rgba($red, 0.85);
     }
 }
 
 html.incomplete {
-    ul.stack div.stack-frame.open {
+    ul.stack div.stack-frame.w-source {
         border-color: rgba($orange, 0.85);
     }
 }

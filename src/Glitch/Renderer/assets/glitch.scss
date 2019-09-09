@@ -1,7 +1,6 @@
-@import "../../../../../../bower-asset/bootstrap/scss/bootstrap.scss";
-$gray: $gray-500;
-$red-bright: lighten(saturate($red, 20%), 15%);
-$cream: lighten(desaturate(#F1F2E2, 25%), 6%);
+@import "./scss/_variables.scss";
+@import "./scss/_fonts.scss";
+@import "./scss/_reboot.scss";
 
 @import "./scss/_container.scss";
 @import "./scss/_header.scss";
