@@ -22,3 +22,6 @@ $cyan:    #17a2b8 !default;
 
 $red-bright: lighten(saturate($red, 20%), 15%);
 $cream: lighten(desaturate(#F1F2E2, 25%), 6%);
+
+$font-scale: true;
+$font-base-size: 17px;

@@ -1,0 +1,66 @@
+$font-base-size: 16px !default !global;
+$font-min-size: 10px !default !global;
+
+$font-scale: false !default !global;
+$font-scale-threshold: 3000px !default !global;
+$font-scale-region: 300px !default !global;
+$font-scale-crossover: null !default !global;
+
+@if global-variable-exists(page-max-width) {
+    $font-scale-crossover: $page-max-width !default;
+} @else {
+    $font-scale-crossover: 1080px !default;
+}
+
+
+
+// FONT SCALING
+@mixin applyRelativeFontSizing($maxWidth: $font-scale-threshold) {
+    $divisions: ($font-base-size / 1px) - ($font-min-size / 1px);
+
+    @if $font-scale-crossover != false {
+        $expDivisions: floor(($maxWidth - $font-scale-crossover) / $font-scale-region);
+
+        html {
+            font-size: $font-base-size + $expDivisions - 1;
+        }
+
+        @for $i from 1 through ($expDivisions - 1) {
+            @media only screen and (max-width: #{$maxWidth - ($i * $font-scale-region)}) {
+                html {
+                    font-size: #{$font-base-size + ($expDivisions - ($i + 1))};
+                }
+            }
+        }
+
+        $divisionWidth: (($font-scale-crossover - 600px) / $divisions);
+
+        @for $i from 1 through $divisions {
+            @media only screen and (max-width: #{$font-scale-crossover - (($i - 1) * $divisionWidth)}) {
+                html {
+                    font-size: #{$font-base-size - $i};
+                }
+            }
+        }
+    } @else {
+        $divisionWidth: ($maxWidth - 600px / $divisions);
+
+        @for $i from 1 through $divisions {
+            @media only screen and (max-width: #{$maxWidth - ($i * $divisionWidth)}) {
+                html {
+                    font-size: #{$font-base-size - $i};
+                }
+            }
+        }
+    }
+}
+
+
+
+html {
+    font-size: $font-base-size;
+}
+
+@if $font-scale == true {
+    @include applyRelativeFontSizing();
+}
