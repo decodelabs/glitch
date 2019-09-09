@@ -15,8 +15,10 @@ use DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Glitch\Transport;
 
 use Composer\Autoload\ClassLoader;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 
-class Context
+class Context implements LoggerAwareInterface
 {
     protected static $default;
 
@@ -31,6 +33,7 @@ class Context
 
     protected $dumpedInBuffer = false;
 
+    protected $logger;
     protected $dumpRenderer;
     protected $transport;
 
@@ -123,6 +126,16 @@ class Context
     public function isProduction(): bool
     {
         return $this->runMode == 'production';
+    }
+
+
+
+    /**
+     * Set PSR logger
+     */
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
     }
 
 
@@ -233,6 +246,12 @@ class Context
      */
     public function handleException(\Throwable $exception): void
     {
+        if ($this->logger) {
+            $this->logger->critical($exception->getMessage(), [
+                'exception' => $exception
+            ]);
+        }
+
         if ($exception instanceof \EGlitch) {
             $data = $exception->getData();
             $trace = $exception->getStackTrace();
