@@ -402,12 +402,12 @@ trait Base
 
         if ($maxLength !== null && strlen($line) > $maxLength) {
             $shorten = true;
-            $line = substr($line, 0, $maxLength);
+            $line = mb_substr($line, 0, $maxLength);
         }
 
         $output = $this->esc($line);
 
-        $output = preg_replace_callback('/[[:cntrl:]]/', function ($matches) {
+        $output = preg_replace_callback('/[[:cntrl:]]/u', function ($matches) {
             $hex = implode(unpack("H*", $matches[0]));
             $output = $this->normalizeHex($hex);
             return $this->wrapControlCharacter($output);

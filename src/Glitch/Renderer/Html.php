@@ -599,7 +599,6 @@ class Html implements Renderer
         }
 
         $output .= '</span>';
-
         return $output;
     }
 
