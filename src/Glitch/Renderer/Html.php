@@ -505,17 +505,16 @@ class Html implements Renderer
     {
         $html = implode("\n", $buffer);
         $id = uniqid('glitch-dump');
-        $borderColor = static::DARK ? '#333' : '#888';
 
         $output = [];
         $output[] = '<div class="glitch-dump">';
         $output[] = '<style>';
-        $output[] = '.glitch-dump > iframe { width: 100%; max-width: 100vw; min-width: 100%; height: 100%; box-sizing: border-box; border: 2px solid '.$borderColor.'; resize: both; }';
+        $output[] = '.glitch-dump > iframe { width: 100%; max-width: 100vw; min-width: 100%; height: 100%; resize: both; }';
         $output[] = 'body > .glitch-dump > iframe { height: 50vh; }';
+        $output[] = 'body > .glitch-dump:only-child > iframe { height:100vh; }';
         $output[] = 'body > .glitch-dump:only-child { height:100%; border: none; resize: none; position: absolute; width: 100%; top: 0; left: 0; }';
-        $output[] = 'body > .glitch-dump:only-child > iframe { height:100%; }';
         $output[] = '</style>';
-        $output[] = '<iframe id="'.$id.'" frameborder="0"></iframe>';
+        $output[] = '<iframe id="'.$id.'" width="100%" height="100%" frameborder="0"></iframe>';
         $output[] = '<script>';
         $output[] = 'var doc = document.getElementById(\''.$id.'\').contentWindow.document;';
         $output[] = 'doc.open();doc.write('.json_encode($html).');doc.close();';
