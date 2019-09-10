@@ -912,8 +912,10 @@ trait Base
                 if ($visibility['info']) {
                     $classes[] = 'w-t-info';
                 }
-                
-                $body[] = $this->renderInfoBlock($entity, $level, $visibility['info']);
+
+                if ($renderClosed || $visibility['info']) {
+                    $body[] = $this->renderInfoBlock($entity, $level, $visibility['info']);
+                }
             }
 
             // Meta
@@ -921,8 +923,10 @@ trait Base
                 if ($visibility['meta']) {
                     $classes[] = 'w-t-meta';
                 }
-                
-                $body[] = $this->renderMetaBlock($entity, $level, $visibility['meta']);
+
+                if ($renderClosed || $visibility['meta']) {
+                    $body[] = $this->renderMetaBlock($entity, $level, $visibility['meta']);
+                }
             }
 
             // Text
@@ -930,8 +934,10 @@ trait Base
                 if ($visibility['text']) {
                     $classes[] = 'w-t-text';
                 }
-                
-                $body[] = $this->renderTextBlock($entity, $level, $visibility['text']);
+
+                if ($renderClosed || $visibility['text']) {
+                    $body[] = $this->renderTextBlock($entity, $level, $visibility['text']);
+                }
             }
 
             // Definition
@@ -939,8 +945,10 @@ trait Base
                 if ($visibility['definition']) {
                     $classes[] = 'w-t-def';
                 }
-                
-                $body[] = $this->renderDefinitionBlock($entity, $level, $visibility['definition']);
+
+                if ($renderClosed || $visibility['definition']) {
+                    $body[] = $this->renderDefinitionBlock($entity, $level, $visibility['definition']);
+                }
             }
 
             // Properties
@@ -948,8 +956,10 @@ trait Base
                 if ($visibility['properties']) {
                     $classes[] = 'w-t-props';
                 }
-                
-                $body[] = $this->renderPropertiesBlock($entity, $level, $visibility['properties']);
+
+                if ($renderClosed || $visibility['properties']) {
+                    $body[] = $this->renderPropertiesBlock($entity, $level, $visibility['properties']);
+                }
             }
 
             // Values
@@ -957,8 +967,10 @@ trait Base
                 if ($visibility['values']) {
                     $classes[] = 'w-t-values';
                 }
-                
-                $body[] = $this->renderValuesBlock($entity, $level, $visibility['values']);
+
+                if ($renderClosed || $visibility['values']) {
+                    $body[] = $this->renderValuesBlock($entity, $level, $visibility['values']);
+                }
             }
 
             // Stack
@@ -966,8 +978,10 @@ trait Base
                 if ($visibility['stack']) {
                     $classes[] = 'w-t-stack';
                 }
-                
-                $body[] = $this->renderStackBlock($entity, $level, $visibility['stack']);
+
+                if ($renderClosed || $visibility['stack']) {
+                    $body[] = $this->renderStackBlock($entity, $level, $visibility['stack']);
+                }
             }
 
             $output[] = $this->wrapEntityBody(implode("\n", array_filter($body)), $open && $hasBodyContent, $linkId);
