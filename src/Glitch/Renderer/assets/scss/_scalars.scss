@@ -22,7 +22,7 @@
 
 .string {
     > .line {
-        color: $red !important;
+        color: $red;
     }
 
     > .length {
@@ -88,6 +88,22 @@
             }
         }
 
+        &.def {
+            display: block;
+
+            &:before, &:after {
+                display: none;
+            }
+
+            > .length {
+                display: none !important;
+            }
+
+            > .line {
+                color: $gray;
+            }
+        }
+
         &.large {
             &.show {
                 cursor: n-resize;
@@ -150,7 +166,7 @@ html.dark {
 
     .string {
         > .line {
-            color: $red-bright !important;
+            color: $red-bright;
         }
 
         &.identifier {
@@ -168,6 +184,10 @@ html.dark {
 
             > .line {
                 border-left: 1px solid rgba($gray, 0.06);
+            }
+
+            &.def > .line {
+                color: lighten($orange, 30%);
             }
         }
 

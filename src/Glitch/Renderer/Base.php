@@ -379,7 +379,7 @@ trait Base
     /**
      * Passthrough string
      */
-    protected function renderMultiLineString(string $string): string
+    protected function renderMultiLineString(string $string, string $class=null): string
     {
         return $string;
     }
@@ -1262,7 +1262,7 @@ trait Base
             );
         } elseif ($type === 'exception') {
             $output = $this->indent(
-                $this->renderMultiLineString($entity->getText(), true)
+                $this->renderMultiLineString($entity->getText(), 'exception')
             );
         } else {
             $output = $this->indent(
@@ -1282,7 +1282,7 @@ trait Base
         $type = $entity->getType();
 
         $output = $this->indent(
-            $this->renderIdentifierString($entity->getDefinition(), 'def')
+            $this->renderMultiLineString($entity->getDefinition(), 'def')
         );
 
         return $this->wrapEntityBodyBlock($output, 'def', true, $id, $type);

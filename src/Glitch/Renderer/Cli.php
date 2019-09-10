@@ -134,7 +134,7 @@ class Cli implements Renderer
             $output .= implode(' | ', $head)."\n";
         }
 
-        $output .= $this->renderMultiLineString($message, true);
+        $output .= $this->renderMultiLineString($message, 'exception');
         return $output;
     }
 
@@ -231,12 +231,12 @@ class Cli implements Renderer
     /**
      * Render a standard multi line string
      */
-    protected function renderMultiLineString(string $string, bool $asException=false): string
+    protected function renderMultiLineString(string $string, string $class=null): string
     {
         $string = str_replace("\r", '', $string);
         $parts = explode("\n", $string);
         $count = count($parts);
-        $quotes = $asException ? '!!!' : '"""';
+        $quotes = $class === 'exception' ? '!!!' : '"""';
 
         $output = [];
         $output[] = $this->format($quotes.' '.mb_strlen($string), 'white', null, 'dim');

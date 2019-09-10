@@ -570,14 +570,14 @@ class Html implements Renderer
     /**
      * Render a standard multi line string
      */
-    protected function renderMultiLineString(string $string, bool $asException=false): string
+    protected function renderMultiLineString(string $string, string $class=null): string
     {
         $string = str_replace("\r", '', $string);
         $parts = explode("\n", $string);
         $count = count($parts);
 
         $output = [];
-        $output[] = '<div class="string m'.($count > 10 ? ' large' : null).($asException ? ' exception' : null).'"><span class="length">'.mb_strlen($string).'</span>';
+        $output[] = '<div class="string m'.($count > 10 ? ' large' : null).' '.$class.'"><span class="length">'.mb_strlen($string).'</span>';
 
         foreach ($parts as $part) {
             $output[] = '<div class="line">'.$this->renderStringLine($part).'</div>';
