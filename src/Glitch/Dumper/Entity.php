@@ -37,6 +37,16 @@ class Entity
     protected $properties;
     protected $stackTrace;
 
+    protected $sections = [
+        'info' => false,
+        'meta' => false,
+        'text' => true,
+        'definition' => true,
+        'properties' => true,
+        'values' => true,
+        'stack' => true
+    ];
+
     /**
      * Construct with required info
      */
@@ -556,5 +566,71 @@ class Entity
                     $value
                 );
         }
+    }
+
+
+
+    /**
+     * Hide entity section
+     */
+    public function hideSection(string $name): Entity
+    {
+        if (isset($this->sections[$name])) {
+            $this->sections[$name] = false;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Show entity section
+     */
+    public function showSection(string $name): Entity
+    {
+        if (isset($this->sections[$name])) {
+            $this->sections[$name] = true;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set entity section visible
+     */
+    public function setSectionVisible(string $name, bool $visible): Entity
+    {
+        if (isset($this->sections[$name])) {
+            $this->sections[$name] = $visible;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Is section visible
+     */
+    public function isSectionVisible(string $name): bool
+    {
+        return $this->sections[$name] ?? false;
+    }
+
+    /**
+     * Set section visibility map
+     */
+    public function setSectionsVisible(array $sections): Entity
+    {
+        foreach ($sections as $section => $visible) {
+            $this->setSectionVisible($section, (bool)$visible);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get section visibility
+     */
+    public function getSectionVisibility(): array
+    {
+        return $this->sections;
     }
 }

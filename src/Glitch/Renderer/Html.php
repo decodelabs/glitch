@@ -799,7 +799,7 @@ class Html implements Renderer
     /**
      * Render info toggle button
      */
-    protected function renderEntityInfoButton(string $linkId, bool $isRef): string
+    protected function renderEntityInfoButton(bool $isRef, bool $open): string
     {
         if ($isRef) {
             return '<a data-open="body" class="info badge"><i>i</i></a>';
@@ -811,7 +811,7 @@ class Html implements Renderer
     /**
      * Render meta toggle button
      */
-    protected function renderEntityMetaButton(string $linkId): string
+    protected function renderEntityMetaButton(bool $open): string
     {
         return '<a data-open="t-meta" class="meta badge"><i>m</i></a>';
     }
@@ -819,7 +819,7 @@ class Html implements Renderer
     /**
      * Render text toggle button
      */
-    protected function renderEntityTextButton(string $linkId): string
+    protected function renderEntityTextButton(bool $open): string
     {
         return '<a data-open="t-text" class="text primary badge"><i>t</i></a>';
     }
@@ -827,7 +827,7 @@ class Html implements Renderer
     /**
      * Render text toggle button
      */
-    protected function renderEntityDefinitionButton(string $linkId): string
+    protected function renderEntityDefinitionButton(bool $open): string
     {
         return '<a data-open="t-def" class="def primary badge"><i>d</i></a>';
     }
@@ -835,7 +835,7 @@ class Html implements Renderer
     /**
      * Render properties toggle button
      */
-    protected function renderEntityPropertiesButton(string $linkId): string
+    protected function renderEntityPropertiesButton(bool $open): string
     {
         return '<a data-open="t-props" class="props primary badge"><i>p</i></a>';
     }
@@ -843,7 +843,7 @@ class Html implements Renderer
     /**
      * Render values toggle button
      */
-    protected function renderEntityValuesButton(string $linkId): string
+    protected function renderEntityValuesButton(bool $open): string
     {
         return '<a data-open="t-values" class="values badge primary"><i>v</i></a>';
     }
@@ -851,7 +851,7 @@ class Html implements Renderer
     /**
      * Render stack toggle button
      */
-    protected function renderEntityStackButton(string $type, bool $open, string $linkId): string
+    protected function renderEntityStackButton(string $type, bool $open): string
     {
         if ($type === 'stack') {
             return '<a data-open="body" class="stack badge"><i>s</i></a>';
