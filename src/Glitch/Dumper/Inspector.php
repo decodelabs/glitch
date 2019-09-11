@@ -325,7 +325,8 @@ class Inspector
      */
     public function inspectString(string $string)
     {
-        $isPossibleClass = preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $string);
+        $isPossibleClass = false !== strpos($string, '\\') &&
+            preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $string);
 
         // Binary string
         if ($string !== '' && !preg_match('//u', $string)) {
