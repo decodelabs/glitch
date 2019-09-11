@@ -48,6 +48,10 @@ ul.stack {
             margin-bottom: 1em;
             margin-top: 1em;
 
+            samp.dump.trace {
+                cursor: n-resize;
+            }
+
             samp.dump.source {
                 height: auto;
             }
@@ -100,15 +104,10 @@ ul.stack {
 
     samp.dump.trace {
         padding: 0.5rem 0.75rem;
-        cursor: n-resize;
+        cursor: s-resize;
         transition: margin-top 0.2s, border-color 0.2s ease-out;
         overflow-x: auto;
         border: none;
-
-        &.collapsed {
-            cursor: s-resize;
-            border-color: transparent;
-        }
     }
 
     samp.dump.source {
