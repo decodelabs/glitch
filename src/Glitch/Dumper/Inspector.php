@@ -325,8 +325,8 @@ class Inspector
      */
     public function inspectString(string $string)
     {
-        $isPossibleClass = false !== strpos($string, '\\') &&
-            preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $string);
+        $isPossibleClass = preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $string);
+        $loadClasses = false !== strpos($string, '\\');
 
         // Binary string
         if ($string !== '' && !preg_match('//u', $string)) {
@@ -336,17 +336,17 @@ class Inspector
                 ->setLength(strlen($string));
 
         // Class name
-        } elseif ($isPossibleClass && class_exists($string)) {
+        } elseif ($isPossibleClass && class_exists($string, $loadClasses)) {
             return (new Entity('class'))
                 ->setClass($string);
 
         // Interface name
-        } elseif ($isPossibleClass && interface_exists($string)) {
+        } elseif ($isPossibleClass && interface_exists($string, $loadClasses)) {
             return (new Entity('interface'))
                 ->setClass($string);
 
         // Trait name
-        } elseif ($isPossibleClass && trait_exists($string)) {
+        } elseif ($isPossibleClass && trait_exists($string, $loadClasses)) {
             return (new Entity('trait'))
                 ->setClass($string);
 
