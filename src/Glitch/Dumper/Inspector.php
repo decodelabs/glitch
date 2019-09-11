@@ -540,7 +540,11 @@ class Inspector
         if (false !== strpos($class, 'Glitch/Exception/Factory.php')) {
             $class = 'EGlitch';
         } elseif (0 === strpos($class, "class@anonymous\x00")) {
-            $class = $reflection->getParentClass()->getShortName().'@anonymous';
+            if ($parent = $reflection->getParentClass()) {
+                $class = $parent->getShortName().'@anonymous';
+            } else {
+                $class = '@anonymous';
+            }
         }
 
         return $class;
