@@ -16,12 +16,14 @@ composer require decodelabs/glitch
 
 
 ### Setup
-Glitch will work out of the box with minimal setup. There are however some optional steps you can take to customise operation.
+Glitch will work out of the box with minimal setup. It uses a [Veneer Facade](https://github.com/decodelabs/veneer) so you can use it in any namespace context without having to import anything.
+
+There are however some optional steps you can take to customise operation.
 
 Register base path aliases for easier reading of file names in dumps:
 
 ```php
-\Glitch::getContext()->registerPathAlias('app', '/path/to/my/app');
+Glitch::registerPathAlias('app', '/path/to/my/app');
 
 /*
 /path/to/my/app/models/MyModel.php
@@ -36,7 +38,7 @@ Pass the <code>microtime()</code> of initial app launch if necessary:
 
 ```php
 $time = microtime(true);
-\Glitch::getContext()->setStartTime($time);
+Glitch::setStartTime($time);
 ```
 
 
@@ -59,7 +61,7 @@ You can mark also functions as incomplete whilst in development:
 ```php
 function myFunction() {
     // This will throw a Glitch exception
-    \Glitch::incomplete([
+    Glitch::incomplete([
         'info' => 'some test info'
     ]);
 }
@@ -84,35 +86,35 @@ Glitch exceptions can be used to greatly simplify how you create and throw error
 Throw <code>Glitches</code> rather than <code>Exceptions</code>, passing interface names to be mixed in as the method name (custom generated error interfaces must be prefixed with E) to the Glitch call.
 
 ```php
-throw \Glitch::EOutOfBounds('This is out of bounds');
+throw Glitch::EOutOfBounds('This is out of bounds');
 
 // Implement multiple interfaces
-throw \Glitch::{'ENotFound,EBadMethodCall'}(
+throw Glitch::{'ENotFound,EBadMethodCall'}(
     "Didn't find a thing, couldn't call the other thing"
 );
 
 // You can associate a http code too..
-throw \Glitch::ECompletelyMadeUpMeaning('My message', [
+throw Glitch::ECompletelyMadeUpMeaning('My message', [
     'code' => 1234,
     'http' => 501
 ]);
 
 // Implement already existing Exception interfaces
-throw \Glitch::{'EInvalidArgument,Psr\\Cache\\InvalidArgumentException'}(
+throw Glitch::{'EInvalidArgument,Psr\\Cache\\InvalidArgumentException'}(
     'Cache items must implement Cache\\IItem',
     ['http' => 500],  // params
     $item             // data
 );
 
 // Reference interfaces using a path style
-throw \Glitch::{'../OtherNamespace/OtherInterface'}('My exception');
+throw Glitch::{'../OtherNamespace/OtherInterface'}('My exception');
 ```
 
 Catch a Glitch in the normal way using whichever scope you require:
 
 ```php
 try {
-    throw \Glitch::{'ENotFound,EBadMethodCall'}(
+    throw Glitch::{'ENotFound,EBadMethodCall'}(
         "Didn't find a thing, couldn't call the other thing"
     );
 } catch(\Exception | \EGlitch | \ENotFound | MyLibrary\EGlitch | MyLibrary\AThingThatDoesStuff\EBadMethodCall | BadMethodCallException $e) {
@@ -138,7 +140,7 @@ trait EBadThingTrait {
 
 class Thing {
     public function doAThing() {
-        throw \Glitch::EBadThing('A bad thing happened', [
+        throw Glitch::EBadThing('A bad thing happened', [
             'customData' => 'My custom info'
         ]);
     }
