@@ -58,7 +58,7 @@ namespace MyLibrary\AThingThatDoesStuff;
 class Amazeballs {
 
     public function doStuff() {
-        throw \Glitch::{'ENotFound,EFailedService'}(
+        throw Glitch::{'ENotFound,EFailedService'}(
             'Service "doStuff" cannot be found'
         );
     }

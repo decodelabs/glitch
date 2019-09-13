@@ -34,7 +34,7 @@ class Frame
         $data = debug_backtrace();
 
         if ($rewind >= count($data) - 1) {
-            throw \Glitch::EOutOfRange('Stack rewind of stack frame range');
+            throw Glitch::EOutOfRange('Stack rewind of stack frame range');
         }
 
         if ($rewind) {
