@@ -545,7 +545,9 @@ trait Base
 
         $output = [];
 
-        $output[] = $this->renderSignatureNamespace($namespace);
+        if (substr((string)$class, 0, 1) !== '~') {
+            $output[] = $this->renderSignatureNamespace($namespace);
+        }
 
         if ($class !== null) {
             $output[] = $this->renderSignatureClass($class);
@@ -567,8 +569,13 @@ trait Base
 
         // Namespace
         if (null !== ($class = $frame->getClassName())) {
-            $output[] = $this->renderSignatureNamespace($frame->getNamespace().'\\');
-            $output[] = $this->renderSignatureClass($frame::normalizeClassName($class));
+            $class = $frame::normalizeClassName($class);
+
+            if (substr((string)$class, 0, 1) !== '~') {
+                $output[] = $this->renderSignatureNamespace($frame->getNamespace().'\\');
+            }
+
+            $output[] = $this->renderSignatureClass($class);
         }
 
         // Type

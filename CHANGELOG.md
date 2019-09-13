@@ -1,3 +1,7 @@
+## v0.11.0 (2019-09-13)
+* Converted root class into Veneer Facade
+* Simplified Context interface
+
 ## v0.10.0 (2019-09-09)
 * Removed bootstrap dependency
 * Removed asset-packagist dependency

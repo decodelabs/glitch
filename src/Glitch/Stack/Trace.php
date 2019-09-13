@@ -140,6 +140,14 @@ class Trace implements \IteratorAggregate, \ArrayAccess, \Countable, Inspectable
         return $this->frames[$offset] ?? null;
     }
 
+    /**
+     * Shift the top frame from the stack
+     */
+    public function shift(): ?Frame
+    {
+        return array_shift($this->frames);
+    }
+
 
     /**
      * Get file from first frame
@@ -242,7 +250,7 @@ class Trace implements \IteratorAggregate, \ArrayAccess, \Countable, Inspectable
 
         foreach ($frames as $i => $frame) {
             $output[($count - $i).': '.$frame->getSignature(true)] = [
-                'file' => Context::getDefault()->normalizePath($frame->getCallingFile()).' : '.$frame->getCallingLine()
+                'file' => Glitch::normalizePath($frame->getCallingFile()).' : '.$frame->getCallingLine()
             ];
         }
 

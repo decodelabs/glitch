@@ -98,7 +98,7 @@ class Frame
 
 
         // Glitch specific
-        if ($this->className == 'Glitch' && $this->function == '__callStatic') {
+        if (null !== ($facade = $this->getVeneerFacade())) {
             $this->function = array_shift($this->args);
             $this->args = $this->args[0];
         }
@@ -163,6 +163,24 @@ class Frame
     }
 
 
+    /**
+     * Is in facade ?
+     */
+    public function getVeneerFacade(): ?string
+    {
+        $isFacade =
+            //$this->function === '__callStatic' &&
+            $this->className !== null &&
+            false !== strpos($this->className, 'veneer/src/Binding.php');
+
+        if (!$isFacade) {
+            return null;
+        }
+
+        return $this->className::FACADE;
+    }
+
+
 
 
     /**
@@ -220,8 +238,12 @@ class Frame
      */
     public static function normalizeClassName(string $class, bool $alias=true): string
     {
-        if ($alias && false !== strpos($class, 'Glitch/Exception/Factory.php')) {
-            return 'EGlitch';
+        if ($alias) {
+            if (false !== strpos($class, 'Glitch/Exception/Factory.php')) {
+                return 'EGlitch';
+            } elseif (false !== strpos($class, 'veneer/src/Binding.php')) {
+                return '~'.$class::FACADE;
+            }
         }
 
         $name = [];
@@ -231,7 +253,7 @@ class Frame
             $part = trim(array_shift($parts));
 
             if (preg_match('/^class@anonymous(.+)(\(([0-9]+)\))/', $part, $matches)) {
-                $name[] = Context::getDefault()->normalizePath(trim($matches[1])).' : '.($matches[3] ?? null);
+                $name[] = Glitch::normalizePath(trim($matches[1])).' : '.($matches[3] ?? null);
             } elseif (preg_match('/^eval\(\)\'d/', $part)) {
                 $name = ['eval[ '.implode(' : ', $name).' ]'];
             } else {
@@ -324,7 +346,13 @@ class Frame
         }
 
         if ($this->className !== null) {
-            $output .= self::normalizeClassName($this->className);
+            $className = self::normalizeClassName($this->className);
+
+            if (substr($className, 0, 1) == '~') {
+                $output = '';
+            }
+
+            $output .= $className;
         }
 
         if ($this->type) {
@@ -410,7 +438,7 @@ class Frame
     public function toArray(): array
     {
         return [
-            'file' => Context::getDefault()->normalizePath($this->getFile()),
+            'file' => Glitch::normalizePath($this->getFile()),
             'line' => $this->getLine(),
             'function' => $this->function,
             'class' => $this->className,
