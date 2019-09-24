@@ -82,6 +82,10 @@ class Inspector
 
         'SplFileInfo' => [Inspect\Spl::class, 'inspectSplFileInfo'],
         'SplFileObject' => [Inspect\Spl::class, 'inspectSplFileObject'],
+
+        // Xml
+        'SimpleXMLElement' => [Inspect\Xml::class, 'inspectSimpleXmlElement'],
+        'XMLWriter' => [Inspect\Xml::class, 'inspectXmlWriter']
     ];
 
     const RESOURCES = [
