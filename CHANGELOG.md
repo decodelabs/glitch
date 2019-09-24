@@ -1,6 +1,8 @@
 ## v0.11.0 (2019-09-13)
 * Converted root class into Veneer Facade
 * Simplified Context interface
+* Updated to Veneer v0.3 structure
+* Added various PHP extension inspectors
 
 ## v0.10.0 (2019-09-09)
 * Removed bootstrap dependency
