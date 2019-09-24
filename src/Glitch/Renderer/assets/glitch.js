@@ -19,6 +19,11 @@ $(function() {
         if(!open) {
             if(isEntity && !$parent.is("[class*='w-t-']")) {
                 var targetBadgeClass = $parent.find('> .title .badge.primary').first().attr('data-open');
+
+                if(targetBadgeClass === undefined) {
+                    targetBadgeClass = $parent.find('> .title .badge').first().attr('data-open');
+                }
+
                 $parent.toggleClass('w-'+targetBadgeClass, true);
             }
 
