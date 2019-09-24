@@ -58,6 +58,9 @@ class Inspector
         'Ds\\Queue' => [Inspect\Ds::class, 'inspectCollection'],
         'Ds\\PriorityQueue' => [Inspect\Ds::class, 'inspectCollection'],
 
+        // GMP
+        'GMP' => [Inspect\Gmp::class, 'inspectGmp'],
+
         // PDO
         'PDO' => [Inspect\PDO::class, 'inspectPdo'],
         'PDOStatement' => [Inspect\PDO::class, 'inspectPdoStatement'],
