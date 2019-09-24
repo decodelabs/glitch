@@ -133,6 +133,19 @@ class Factory
 
 
     /**
+     * Direct call interface
+     */
+    public static function __callStatic(string $method, array $args): \EGlitch
+    {
+        return self::create(
+            null,
+            explode(',', $method),
+            1,
+            ...$args
+        );
+    }
+
+    /**
      * Generate a context specific, message oriented throwable error
      */
     public static function create(?string $type, array $interfaces=[], int $rewind=null, $message=null, ?array $params=[], $data=null): \EGlitch
