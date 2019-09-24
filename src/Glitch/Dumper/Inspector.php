@@ -27,6 +27,27 @@ class Inspector
         'DateTimeZone' => [Inspect\Date::class, 'inspectDateTimeZone'],
         'DatePeriod' => [Inspect\Date::class, 'inspectDatePeriod'],
 
+        // DOM
+        'DOMAttr' => [Inspect\Dom::class, 'inspectAttr'],
+        'DOMCdataSection' => [Inspect\Dom::class, 'inspectCdataSection'],
+        'DOMCharacterData' => [Inspect\Dom::class, 'inspectCharacterData'],
+        'DOMComment' => [Inspect\Dom::class, 'inspectComment'],
+        'DOMDocument' => [Inspect\Dom::class, 'inspectDocument'],
+        'DOMDocumentFragment' => [Inspect\Dom::class, 'inspectDocumentFragment'],
+        'DOMDocumentType' => [Inspect\Dom::class, 'inspectDocumentType'],
+        'DOMElement' => [Inspect\Dom::class, 'inspectElement'],
+        'DOMEntity' => [Inspect\Dom::class, 'inspectEntity'],
+        'DOMEntityReference' => [Inspect\Dom::class, 'inspectEntityReference'],
+        'DOMImplementation' => [Inspect\Dom::class, 'inspectImplementation'],
+        'DOMNamedNodeMap' => [Inspect\Dom::class, 'inspectNamedNodeMap'],
+        'DOMNode' => [Inspect\Dom::class, 'inspectNode'],
+        'DOMNodeList' => [Inspect\Dom::class, 'inspectNodeList'],
+        'DOMNotation' => [Inspect\Dom::class, 'inspectNotation'],
+        'DOMProcessingInstruction' => [Inspect\Dom::class, 'inspectProcessingInstruction'],
+        'DOMText' => [Inspect\Dom::class, 'inspectText'],
+        'DOMXPath' => [Inspect\Dom::class, 'inspectXPath'],
+
+
         // Ds
         'Ds\\Vector' => [Inspect\Ds::class, 'inspectCollection'],
         'Ds\\Map' => [Inspect\Ds::class, 'inspectCollection'],
@@ -391,6 +412,30 @@ class Inspector
     }
 
 
+    /**
+     * Name single flag from set
+     */
+    public function inspectFlag(?int $flag, array $options): ?Entity
+    {
+        if ($flag === null) {
+            return null;
+        }
+
+        foreach ($options as $const) {
+            $value = constant($const);
+
+            if (!is_int($value)) {
+                continue;
+            }
+
+            if ($flag === $value) {
+                return $this->inspectConstant($const);
+            }
+        }
+
+        return null;
+    }
+
 
     /**
      * Create flag list
@@ -507,7 +552,7 @@ class Inspector
     /**
      * Convert object into Entity
      */
-    public function inspectObject(object $object): ?Entity
+    public function inspectObject(object $object, bool $properties=true): ?Entity
     {
         $objectId = spl_object_id($object);
         $reflection = new \ReflectionObject($object);
@@ -519,6 +564,10 @@ class Inspector
             ->setClass($className)
             ->setObjectId($objectId)
             ->setHash(spl_object_hash($object));
+
+        if ($object instanceof \Countable) {
+            $entity->setLength($object->count());
+        }
 
 
         if (!$reflection->isInternal()) {
@@ -542,7 +591,10 @@ class Inspector
             $className => $reflection
         ] + $parents;
 
-        $this->inspectObjectProperties($object, $reflections, $entity);
+        if ($properties) {
+            $this->inspectObjectProperties($object, $reflections, $entity);
+        }
+
         return $entity;
     }
 
