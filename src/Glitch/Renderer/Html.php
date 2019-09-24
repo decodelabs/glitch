@@ -616,7 +616,13 @@ class Html implements Renderer
      */
     protected function wrapControlCharacter(string $control): string
     {
-        return '<span class="control">'.$control.'</span>';
+        $class = 'control';
+
+        if ($control === '\\t') {
+            $class .= ' tab';
+        }
+
+        return '<span class="'.$class.'">'.$control.'</span>';
     }
 
     /**
