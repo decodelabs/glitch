@@ -58,6 +58,10 @@ class Inspector
         'Ds\\Queue' => [Inspect\Ds::class, 'inspectCollection'],
         'Ds\\PriorityQueue' => [Inspect\Ds::class, 'inspectCollection'],
 
+        // PDO
+        'PDO' => [Inspect\PDO::class, 'inspectPdo'],
+        'PDOStatement' => [Inspect\PDO::class, 'inspectPdoStatement'],
+
         // Reflection
         'ReflectionClass' => [Inspect\Reflection::class, 'inspectReflectionClass'],
         'ReflectionClassConstant' => [Inspect\Reflection::class, 'inspectReflectionClassConstant'],
@@ -419,9 +423,9 @@ class Inspector
     /**
      * Name single flag from set
      */
-    public function inspectFlag(?int $flag, array $options): ?Entity
+    public function inspectFlag($flag, array $options): ?Entity
     {
-        if ($flag === null) {
+        if (!is_string($flag) && !is_int($flag)) {
             return null;
         }
 
