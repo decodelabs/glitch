@@ -62,6 +62,10 @@ class Inspector
         'PDO' => [Inspect\PDO::class, 'inspectPdo'],
         'PDOStatement' => [Inspect\PDO::class, 'inspectPdoStatement'],
 
+        // Redis
+        'Redis' => [Inspect\Redis::class, 'inspectRedis'],
+
+
         // Reflection
         'ReflectionClass' => [Inspect\Reflection::class, 'inspectReflectionClass'],
         'ReflectionClassConstant' => [Inspect\Reflection::class, 'inspectReflectionClassConstant'],
