@@ -1,0 +1,48 @@
+<?php
+/**
+ * This file is part of the Glitch package
+ * @license http://opensource.org/licenses/MIT
+ */
+declare(strict_types=1);
+namespace DecodeLabs\Glitch\Dumper\Inspect;
+
+use DecodeLabs\Glitch\Dumper\Entity;
+use DecodeLabs\Glitch\Dumper\Inspector;
+
+use Ds\Collection;
+use Ds\Pair;
+use Ds\Set;
+
+class Ds
+{
+    /**
+     * Inspect Collection
+     */
+    public static function inspectCollection(Collection $collection, Entity $entity, Inspector $inspector): void
+    {
+        $entity
+            ->setLength(count($collection))
+            ->setMeta('capacity', $inspector($collection->capacity()))
+            ->setValues($inspector->inspectList($collection->toArray()));
+    }
+
+    /**
+     * Inspect Pair
+     */
+    public static function inspectPair(Pair $pair, Entity $entity, Inspector $inspector): void
+    {
+        $entity
+            ->setProperties($inspector->inspectList($pair->toArray()));
+    }
+
+    /**
+     * Inspect Set
+     */
+    public static function inspectSet(Set $set, Entity $entity, Inspector $inspector): void
+    {
+        $entity
+            ->setLength(count($set))
+            ->setMeta('capacity', $inspector($set->capacity()))
+            ->setValues($inspector->inspectList($set->toArray()));
+    }
+}

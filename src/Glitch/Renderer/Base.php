@@ -755,6 +755,7 @@ trait Base
                 break;
 
             case 'resource':
+                $showClass = true;
                 $sections['info'] = false;
                 break;
 

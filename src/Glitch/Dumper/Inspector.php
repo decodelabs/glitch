@@ -27,6 +27,16 @@ class Inspector
         'DateTimeZone' => [Inspect\Date::class, 'inspectDateTimeZone'],
         'DatePeriod' => [Inspect\Date::class, 'inspectDatePeriod'],
 
+        // Ds
+        'Ds\\Vector' => [Inspect\Ds::class, 'inspectCollection'],
+        'Ds\\Map' => [Inspect\Ds::class, 'inspectCollection'],
+        'Ds\\Deque' => [Inspect\Ds::class, 'inspectCollection'],
+        'Ds\\Pair' => [Inspect\Ds::class, 'inspectPair'],
+        'Ds\\Set' => [Inspect\Ds::class, 'inspectSet'],
+        'Ds\\Stack' => [Inspect\Ds::class, 'inspectCollection'],
+        'Ds\\Queue' => [Inspect\Ds::class, 'inspectCollection'],
+        'Ds\\PriorityQueue' => [Inspect\Ds::class, 'inspectCollection'],
+
         // Reflection
         'ReflectionClass' => [Inspect\Reflection::class, 'inspectReflectionClass'],
         'ReflectionClassConstant' => [Inspect\Reflection::class, 'inspectReflectionClassConstant'],
@@ -362,9 +372,13 @@ class Inspector
      */
     public function inspectResource($resource): Entity
     {
+        $parts = explode('#', (string)$resource);
+        $id = array_pop($parts);
+
         $entity = (new Entity('resource'))
-            ->setName((string)$resource)
-            ->setClass($rType = get_resource_type($resource));
+            ->setName('resource')
+            ->setClass($rType = get_resource_type($resource))
+            ->setObjectId((int)$id);
 
         $typeName = str_replace(' ', '', ucwords($rType));
         $method = 'inspect'.ucfirst($typeName).'Resource';
