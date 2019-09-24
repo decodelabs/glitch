@@ -17,6 +17,7 @@ namespace
 
     use Symfony\Component\VarDumper\VarDumper;
 
+    // Register the Veneer facade
     Context::registerFacade();
 
     if (!function_exists('dd')) {
