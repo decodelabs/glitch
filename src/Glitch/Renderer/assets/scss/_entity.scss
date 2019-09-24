@@ -73,6 +73,10 @@ div.entity {
             cursor: default;
         }
 
+        .class {
+            color: $gray-700;
+        }
+
 
         .length {
             color: $teal;
@@ -247,6 +251,10 @@ html.dark div.entity {
 
         .length {
             color: lighten($teal, 10%);
+        }
+
+        .class {
+            color: $gray-300;
         }
 
         &:target > .oid {

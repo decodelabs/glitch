@@ -1,3 +1,16 @@
+## v0.11.0 (2019-09-13)
+* Converted root class into Veneer Facade
+* Simplified Context interface
+* Updated to Veneer v0.3 structure
+* Added various PHP extension inspectors
+
+## v0.10.0 (2019-09-09)
+* Removed bootstrap dependency
+* Removed asset-packagist dependency
+* Added output buffer detection and escaping
+* Added PSR-3 Logger support
+* Added responsive font scaling
+
 ## v0.9.0 (2019-09-06)
 * Added exception handler hook
 * Added exception dump interface

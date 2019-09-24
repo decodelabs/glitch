@@ -61,7 +61,7 @@ class Trace implements \IteratorAggregate, \ArrayAccess, \Countable, Inspectable
 
         if ($rewind) {
             if ($rewind > count($trace) - 1) {
-                throw \Glitch::EOutOfRange('Stack rewind out of stack frame range', [
+                throw Glitch::EOutOfRange('Stack rewind out of stack frame range', [
                     'data' => [
                         'rewind' => $rewind,
                         'trace' => $trace
@@ -104,8 +104,8 @@ class Trace implements \IteratorAggregate, \ArrayAccess, \Countable, Inspectable
     {
         foreach ($frames as $frame) {
             if (!$frame instanceof Frame) {
-                throw \Glitch::EUnexpectedValue([
-                    'message' => 'Trace frame is not an instance of DecodeLabs\\Glitch\\Frame',
+                throw Glitch::EUnexpectedValue([
+                    'message' => 'Trace frame is not an instance of DecodeLabs\\Glitch\\Stack\\Frame',
                     'data' => $frame
                 ]);
             }
@@ -138,6 +138,14 @@ class Trace implements \IteratorAggregate, \ArrayAccess, \Countable, Inspectable
     public function getFrame(int $offset): ?Frame
     {
         return $this->frames[$offset] ?? null;
+    }
+
+    /**
+     * Shift the top frame from the stack
+     */
+    public function shift(): ?Frame
+    {
+        return array_shift($this->frames);
     }
 
 
@@ -200,7 +208,7 @@ class Trace implements \IteratorAggregate, \ArrayAccess, \Countable, Inspectable
      */
     public function offsetSet($offset, $value)
     {
-        throw \Glitch::EBadMethodCall('Stack traces cannot be changed after instantiation');
+        throw Glitch::EBadMethodCall('Stack traces cannot be changed after instantiation');
     }
 
     /**
@@ -224,7 +232,7 @@ class Trace implements \IteratorAggregate, \ArrayAccess, \Countable, Inspectable
      */
     public function offsetUnset($offset)
     {
-        throw \Glitch::EBadMethodCall('Stack traces cannot be changed after instantiation');
+        throw Glitch::EBadMethodCall('Stack traces cannot be changed after instantiation');
     }
 
 
@@ -242,7 +250,7 @@ class Trace implements \IteratorAggregate, \ArrayAccess, \Countable, Inspectable
 
         foreach ($frames as $i => $frame) {
             $output[($count - $i).': '.$frame->getSignature(true)] = [
-                'file' => Context::getDefault()->normalizePath($frame->getCallingFile()).' : '.$frame->getCallingLine()
+                'file' => Glitch::normalizePath($frame->getCallingFile()).' : '.$frame->getCallingLine()
             ];
         }
 

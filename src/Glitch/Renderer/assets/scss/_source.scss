@@ -202,6 +202,10 @@ html.dark samp.dump.source {
         }
     }
 
+    .var {
+        color: $gray-500;
+    }
+
     .comment {
         color: lighten(saturate(#C69D82, 10%), 10%);
     }

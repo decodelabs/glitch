@@ -35,6 +35,10 @@ trait EGlitchTrait
      */
     public function __construct($message, array $params=[])
     {
+        if (!is_string($message)) {
+            $message = 'blah';
+        }
+
         parent::__construct(
             $message,
             $params['code'] ?? 0,
@@ -121,43 +125,6 @@ trait EGlitchTrait
         return $this->stackTrace;
     }
 
-
-
-    /**
-     * Get debug info
-     */
-    public function __debugInfo(): array
-    {
-        $output = [
-            'message' => $this->message,
-            'code' => $this->code,
-            'http' => $this->http
-        ];
-
-
-        // Data
-        if ($this->data !== null) {
-            $output['data'] = $this->data;
-        }
-
-
-        // Types
-        $types = [];
-        $class = new \ReflectionClass($this);
-
-        while ($class = $class->getParentClass()) {
-            $types[] = $class->getName();
-        }
-
-        $output['types'] = array_merge($types, array_values(class_implements($this)));
-        sort($output['types']);
-        $output['file'] = Context::getDefault()->normalizePath($this->file).' : '.$this->line;
-
-
-        // Trace
-        $output['stackTrace'] = $this->getStackTrace();
-        return $output;
-    }
 
     /**
      * Inspect for Glitch

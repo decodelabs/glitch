@@ -379,7 +379,7 @@ trait Base
     /**
      * Passthrough string
      */
-    protected function renderMultiLineString(string $string): string
+    protected function renderMultiLineString(string $string, string $class=null): string
     {
         return $string;
     }
@@ -402,12 +402,12 @@ trait Base
 
         if ($maxLength !== null && strlen($line) > $maxLength) {
             $shorten = true;
-            $line = substr($line, 0, $maxLength);
+            $line = mb_substr($line, 0, $maxLength);
         }
 
         $output = $this->esc($line);
 
-        $output = preg_replace_callback('/[[:cntrl:]]/', function ($matches) {
+        $output = preg_replace_callback('/[[:cntrl:]]/u', function ($matches) {
             $hex = implode(unpack("H*", $matches[0]));
             $output = $this->normalizeHex($hex);
             return $this->wrapControlCharacter($output);
@@ -545,7 +545,9 @@ trait Base
 
         $output = [];
 
-        $output[] = $this->renderSignatureNamespace($namespace);
+        if (substr((string)$class, 0, 1) !== '~') {
+            $output[] = $this->renderSignatureNamespace($namespace);
+        }
 
         if ($class !== null) {
             $output[] = $this->renderSignatureClass($class);
@@ -567,8 +569,13 @@ trait Base
 
         // Namespace
         if (null !== ($class = $frame->getClassName())) {
-            $output[] = $this->renderSignatureNamespace($frame->getNamespace().'\\');
-            $output[] = $this->renderSignatureClass($frame::normalizeClassName($class));
+            $class = $frame::normalizeClassName($class);
+
+            if (substr((string)$class, 0, 1) !== '~') {
+                $output[] = $this->renderSignatureNamespace($frame->getNamespace().'\\');
+            }
+
+            $output[] = $this->renderSignatureClass($class);
         }
 
         // Type
@@ -748,6 +755,7 @@ trait Base
                 break;
 
             case 'resource':
+                $showClass = true;
                 $sections['info'] = false;
                 break;
 
@@ -837,40 +845,41 @@ trait Base
         }
 
         $buttons = [];
+        $visibility = $entity->getSectionVisibility();
 
         // Info
         if ($sections['info']) {
-            $buttons[] = $this->renderEntityInfoButton($linkId, $isRef);
+            $buttons[] = $this->renderEntityInfoButton($isRef, $visibility['info']);
         }
 
         // Meta
         if ($sections['meta']) {
-            $buttons[] = $this->renderEntityMetaButton($linkId);
+            $buttons[] = $this->renderEntityMetaButton($visibility['meta']);
         }
 
         // Text
         if ($sections['text']) {
-            $buttons[] = $this->renderEntityTextButton($linkId);
+            $buttons[] = $this->renderEntityTextButton($visibility['text']);
         }
 
         // Definition
         if ($sections['def']) {
-            $buttons[] = $this->renderEntityDefinitionButton($linkId);
+            $buttons[] = $this->renderEntityDefinitionButton($visibility['definition']);
         }
 
         // Properties
         if ($sections['props']) {
-            $buttons[] = $this->renderEntityPropertiesButton($linkId);
+            $buttons[] = $this->renderEntityPropertiesButton($visibility['properties']);
         }
 
         // Values
         if ($sections['values']) {
-            $buttons[] = $this->renderEntityValuesButton($linkId);
+            $buttons[] = $this->renderEntityValuesButton($visibility['values']);
         }
 
         // Stack
         if ($sections['stack']) {
-            $buttons[] = $this->renderEntityStackButton($type, $open, $linkId);
+            $buttons[] = $this->renderEntityStackButton($type, $visibility['stack']);
         }
 
         // Buttons
@@ -908,42 +917,79 @@ trait Base
 
             // Info
             if ($sections['info']) {
-                $body[] = $this->renderInfoBlock($entity, $level);
+                if ($visibility['info']) {
+                    $classes[] = 'w-t-info';
+                }
+
+                if ($renderClosed || $visibility['info']) {
+                    $body[] = $this->renderInfoBlock($entity, $level, $visibility['info']);
+                }
             }
 
             // Meta
             if ($sections['meta']) {
-                $body[] = $this->renderMetaBlock($entity, $level);
+                if ($visibility['meta']) {
+                    $classes[] = 'w-t-meta';
+                }
+
+                if ($renderClosed || $visibility['meta']) {
+                    $body[] = $this->renderMetaBlock($entity, $level, $visibility['meta']);
+                }
             }
 
             // Text
             if ($sections['text']) {
-                $classes[] = 'w-t-text';
-                $body[] = $this->renderTextBlock($entity, $level);
+                if ($visibility['text']) {
+                    $classes[] = 'w-t-text';
+                }
+
+                if ($renderClosed || $visibility['text']) {
+                    $body[] = $this->renderTextBlock($entity, $level, $visibility['text']);
+                }
             }
 
             // Definition
             if ($sections['def']) {
-                $classes[] = 'w-t-def';
-                $body[] = $this->renderDefinitionBlock($entity, $level);
+                if ($visibility['definition']) {
+                    $classes[] = 'w-t-def';
+                }
+
+                if ($renderClosed || $visibility['definition']) {
+                    $body[] = $this->renderDefinitionBlock($entity, $level, $visibility['definition']);
+                }
             }
 
             // Properties
             if ($sections['props']) {
-                $classes[] = 'w-t-props';
-                $body[] = $this->renderPropertiesBlock($entity, $level);
+                if ($visibility['properties']) {
+                    $classes[] = 'w-t-props';
+                }
+
+                if ($renderClosed || $visibility['properties']) {
+                    $body[] = $this->renderPropertiesBlock($entity, $level, $visibility['properties']);
+                }
             }
 
             // Values
             if ($sections['values']) {
-                $classes[] = 'w-t-values';
-                $body[] = $this->renderValuesBlock($entity, $level);
+                if ($visibility['values']) {
+                    $classes[] = 'w-t-values';
+                }
+
+                if ($renderClosed || $visibility['values']) {
+                    $body[] = $this->renderValuesBlock($entity, $level, $visibility['values']);
+                }
             }
 
             // Stack
             if ($sections['stack']) {
-                $classes[] = 'w-t-stack';
-                $body[] = $this->renderStackBlock($entity, $level);
+                if ($visibility['stack']) {
+                    $classes[] = 'w-t-stack';
+                }
+
+                if ($renderClosed || $visibility['stack']) {
+                    $body[] = $this->renderStackBlock($entity, $level, $visibility['stack']);
+                }
             }
 
             $output[] = $this->wrapEntityBody(implode("\n", array_filter($body)), $open && $hasBodyContent, $linkId);
@@ -1044,7 +1090,7 @@ trait Base
     /**
      * Empty info button stub
      */
-    protected function renderEntityInfoButton(string $linkId, bool $isRef): string
+    protected function renderEntityInfoButton(bool $isRef, bool $open): string
     {
         return '';
     }
@@ -1052,7 +1098,7 @@ trait Base
     /**
      * Empty meta button stub
      */
-    protected function renderEntityMetaButton(string $linkId): string
+    protected function renderEntityMetaButton(bool $open): string
     {
         return '';
     }
@@ -1060,7 +1106,7 @@ trait Base
     /**
      * Empty text button stub
      */
-    protected function renderEntityTextButton(string $linkId): string
+    protected function renderEntityTextButton(bool $open): string
     {
         return '';
     }
@@ -1068,7 +1114,7 @@ trait Base
     /**
      * Empty definition button stub
      */
-    protected function renderEntityDefinitionButton(string $linkId): string
+    protected function renderEntityDefinitionButton(bool $open): string
     {
         return '';
     }
@@ -1076,7 +1122,7 @@ trait Base
     /**
      * Empty properties button stub
      */
-    protected function renderEntityPropertiesButton(string $linkId): string
+    protected function renderEntityPropertiesButton(bool $open): string
     {
         return '';
     }
@@ -1084,7 +1130,7 @@ trait Base
     /**
      * Empty values button stub
      */
-    protected function renderEntityValuesButton(string $linkId): string
+    protected function renderEntityValuesButton(bool $open): string
     {
         return '';
     }
@@ -1092,7 +1138,7 @@ trait Base
     /**
      * Empty stack button stub
      */
-    protected function renderEntityStackButton(string $type, bool $open, string $linkId): string
+    protected function renderEntityStackButton(string $type, bool $open): string
     {
         return '';
     }
@@ -1112,7 +1158,7 @@ trait Base
     /**
      * Render entity info block
      */
-    protected function renderInfoBlock(Entity $entity, int $level=0): string
+    protected function renderInfoBlock(Entity $entity, int $level=0, bool $open): string
     {
         $id = $linkId = $entity->getId();
 
@@ -1192,7 +1238,7 @@ trait Base
     /**
      * Render entity meta block
      */
-    protected function renderMetaBlock(Entity $entity, int $level=0): string
+    protected function renderMetaBlock(Entity $entity, int $level=0, bool $open): string
     {
         $id = $entity->getId();
 
@@ -1206,7 +1252,7 @@ trait Base
     /**
      * Render entity text block
      */
-    protected function renderTextBlock(Entity $entity, int $level=0): string
+    protected function renderTextBlock(Entity $entity, int $level=0, bool $open): string
     {
         $id = $entity->getId();
         $type = $entity->getType();
@@ -1224,7 +1270,7 @@ trait Base
             );
         } elseif ($type === 'exception') {
             $output = $this->indent(
-                $this->renderMultiLineString($entity->getText(), true)
+                $this->renderMultiLineString($entity->getText(), 'exception')
             );
         } else {
             $output = $this->indent(
@@ -1238,13 +1284,13 @@ trait Base
     /**
      * Render entity text block
      */
-    protected function renderDefinitionBlock(Entity $entity, int $level=0): string
+    protected function renderDefinitionBlock(Entity $entity, int $level=0, bool $open): string
     {
         $id = $entity->getId();
         $type = $entity->getType();
 
         $output = $this->indent(
-            $this->renderIdentifierString($entity->getDefinition(), 'def')
+            $this->renderMultiLineString($entity->getDefinition(), 'def')
         );
 
         return $this->wrapEntityBodyBlock($output, 'def', true, $id, $type);
@@ -1253,7 +1299,7 @@ trait Base
     /**
      * Render entity properties block
      */
-    protected function renderPropertiesBlock(Entity $entity, int $level=0): string
+    protected function renderPropertiesBlock(Entity $entity, int $level=0, bool $open): string
     {
         $id = $entity->getId();
 
@@ -1267,7 +1313,7 @@ trait Base
     /**
      * Render entity values block
      */
-    protected function renderValuesBlock(Entity $entity, int $level=0): string
+    protected function renderValuesBlock(Entity $entity, int $level=0, bool $open): string
     {
         $id = $entity->getId();
 
@@ -1282,7 +1328,7 @@ trait Base
     /**
      * Render entity stack trace block
      */
-    protected function renderStackBlock(Entity $entity, int $level=0): string
+    protected function renderStackBlock(Entity $entity, int $level=0, bool $open): string
     {
         $id = $entity->getId();
         $type = $entity->getType();

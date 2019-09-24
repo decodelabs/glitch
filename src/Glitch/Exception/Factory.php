@@ -133,15 +133,28 @@ class Factory
 
 
     /**
+     * Direct call interface
+     */
+    public static function __callStatic(string $method, array $args): \EGlitch
+    {
+        return self::create(
+            null,
+            explode(',', $method),
+            1,
+            ...$args
+        );
+    }
+
+    /**
      * Generate a context specific, message oriented throwable error
      */
-    public static function create(?string $type, array $interfaces=[], $message=null, ?array $params=[], $data=null): \EGlitch
+    public static function create(?string $type, array $interfaces=[], int $rewind=null, $message=null, ?array $params=[], $data=null): \EGlitch
     {
-        return (new self($type, $interfaces, $message, $params, $data))->build();
+        return (new self($type, $interfaces, $rewind, $message, $params, $data))->build();
     }
 
 
-    protected function __construct(?string $type, array $interfaces=[], $message=null, ?array $params=[], $data=null)
+    protected function __construct(?string $type, array $interfaces=[], int $rewind=null, $message=null, ?array $params=[], $data=null)
     {
         if (is_array($message)) {
             $params = $message;
@@ -158,6 +171,10 @@ class Factory
 
         if ($data !== null) {
             $this->params['data'] = $data;
+        }
+
+        if ($rewind !== null) {
+            $this->params['rewind'] = $rewind;
         }
 
         $this->params['rewind'] = $rewind = max((int)($this->params['rewind'] ?? 0), 0);
@@ -382,15 +399,33 @@ class Factory
 
         // Build class def
         $this->exceptionDef = 'return new class(\'\') extends '.$this->type;
+        $interfaces = [];
+        $hasGlitch = false;
 
-        if (!empty($this->interfaceIndex)) {
-            if ($this->hasRoot) {
-                unset($this->interfaceIndex['\\EGlitch']);
+        foreach ($this->interfaceIndex as $interface => $set) {
+            if ($this->hasRoot && $interface === '\\EGlitch') {
+                continue;
             }
 
-            $this->exceptionDef .= ' implements '.implode(',', array_keys($this->interfaceIndex));
+            $parts = explode('\\', $interface);
+            $name = array_pop($parts);
+
+            if ($name === 'EGlitch') {
+                if (!$hasGlitch) {
+                    $hasGlitch = true;
+                } else {
+                    continue;
+                }
+            }
+
+            $interfaces[] = $interface;
         }
 
+        if (empty($interfaces)) {
+            $interfaces[] = '\\EGlitch';
+        }
+
+        $this->exceptionDef .= ' implements '.implode(',', $interfaces);
         $this->exceptionDef .= ' {';
 
         foreach ($this->traits as $trait => $enabled) {
@@ -494,14 +529,14 @@ class Factory
 
         @eval($defs);
 
-        // Remove defs from $GLOBALS again
-        unset($GLOBALS['__eval']);
-
         $hash = md5($this->exceptionDef);
 
         if (!isset(self::$instances[$hash])) {
-            self::$instances[$hash] = eval($this->exceptionDef);
+            self::$instances[$hash] = @eval($this->exceptionDef);
         }
+
+        // Remove defs from $GLOBALS again
+        unset($GLOBALS['__eval']);
 
         return $hash;
     }

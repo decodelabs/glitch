@@ -2,6 +2,7 @@
     "name": "decodelabs/glitch",
     "description": "Better exceptions for PHP",
     "type": "library",
+    "keywords": ["dump", "dumper", "exception", "debug"],
     "license": "MIT",
     "authors": [
         {
@@ -11,7 +12,9 @@
     ],
     "require": {
         "php": "^7.2",
-        "symfony/polyfill-mbstring": "~1.7",
+        "symfony/polyfill-mbstring": "^1.7",
+        
+        "decodelabs/veneer": "~0.3",
         "psr/log": "^1.0",
 
         "components/jquery": "~3.3"
@@ -23,8 +26,12 @@
         "files": [
             "src/EGlitch.php",
             "src/EGlitchTrait.php",
-            "src/Glitch.php",
             "src/helpers.php"
         ]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-develop": "1.0.x-dev"
+        }
     }
 }

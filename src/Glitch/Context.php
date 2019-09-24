@@ -14,13 +14,22 @@ use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Glitch\Transport;
 
+use DecodeLabs\Glitch\Exception\Factory;
+
 use Composer\Autoload\ClassLoader;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 
-class Context implements LoggerAwareInterface
+use DecodeLabs\Veneer\FacadeTarget;
+use DecodeLabs\Veneer\FacadeTargetTrait;
+use DecodeLabs\Veneer\FacadePlugin;
+
+class Context implements LoggerAwareInterface, FacadeTarget
 {
-    protected static $default;
+    use FacadeTargetTrait;
+
+    const FACADE = 'Glitch';
+    const VERSION = 'v0.11.0';
 
     protected $startTime;
     protected $runMode = 'development';
@@ -39,27 +48,6 @@ class Context implements LoggerAwareInterface
 
 
     /**
-     * Create / fetch default context
-     */
-    public static function getDefault(): Context
-    {
-        if (!self::$default) {
-            self::setDefault(new self());
-        }
-
-        return self::$default;
-    }
-
-    /**
-     * Set custom default context
-     */
-    public static function setDefault(Context $default): void
-    {
-        self::$default = $default;
-    }
-
-
-    /**
      * Construct
      */
     public function __construct()
@@ -67,13 +55,8 @@ class Context implements LoggerAwareInterface
         $this->startTime = microtime(true);
         $this->pathAliases['glitch'] = dirname(__DIR__);
 
-        if (\Glitch::$autoRegister) {
-            $this->registerAsErrorHandler();
-        }
-
         $this->registerStatGatherer('default', [$this, 'gatherDefaultStats']);
     }
-
 
 
     /**
@@ -148,6 +131,11 @@ class Context implements LoggerAwareInterface
     public function dump(array $values, int $rewind=0): void
     {
         $trace = Trace::create($rewind - 1);
+
+        if (null !== $trace->getFirstFrame()->getVeneerFacade()) {
+            $trace->shift();
+        }
+
         $inspector = new Inspector($this);
         $dump = new Dump($trace);
 
@@ -218,6 +206,57 @@ class Context implements LoggerAwareInterface
 
 
     /**
+     * Redirect type list to Factory
+     */
+    public function __call(string $method, array $args): \EGlitch
+    {
+        if (!preg_match('|[.\\/]|', $method) && !preg_match('/^[A-Z]/', $method)) {
+            throw Glitch::EBadMethodCall('Method '.$method.' is not available in Glitch');
+        }
+
+        return Factory::create(
+            null,
+            explode(',', $method),
+            1,
+            ...$args
+        );
+    }
+
+
+    /**
+     * Shortcut to incomplete context method
+     */
+    public function incomplete($data=null, int $rewind=0): void
+    {
+        $frame = $this->getLastFrame($rewind);
+
+        throw Factory::create(
+            null,
+            ['EImplementation', 'DecodeLabs/Glitch/Exception/EIncomplete'],
+            $rewind,
+            $frame->getSignature().' has not been implemented yet',
+            null,
+            $data
+        );
+    }
+
+    /**
+     * Get last frame
+     */
+    protected function getLastFrame(int $rewind=0): Frame
+    {
+        $frame = Frame::create($rewind + 2);
+
+        if ($frame->getVeneerFacade() !== null) {
+            $frame = Frame::create($rewind + 3);
+        }
+
+        return $frame;
+    }
+
+
+
+    /**
      * Register as error handler
      */
     public function registerAsErrorHandler(): Context
@@ -225,6 +264,7 @@ class Context implements LoggerAwareInterface
         set_error_handler([$this, 'handleError']);
         set_exception_handler([$this, 'handleException']);
         register_shutdown_function([$this, 'handleShutdown']);
+        ini_set('display_errors', '0');
 
         return $this;
     }

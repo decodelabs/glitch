@@ -95,7 +95,7 @@ class Html implements Renderer
         $output[] = $this->renderHeader('dump');
 
         $output[] = '<header class="title">';
-        $output[] = '<h1>Glitch <span class="version">'.\Glitch::VERSION.'</span></h1>';
+        $output[] = '<h1>Glitch <span class="version">'.Glitch::VERSION.'</span></h1>';
         $output[] = '</header>';
 
         $output[] = '<div class="cols">';
@@ -135,7 +135,7 @@ class Html implements Renderer
             $output[] = $this->renderProductionExceptionMessage($exception);
         } else {
             $output[] = '<header class="title">';
-            $output[] = '<h1>Glitch <span class="version">'.\Glitch::VERSION.'</span></h1>';
+            $output[] = '<h1>Glitch <span class="version">'.Glitch::VERSION.'</span></h1>';
             $output[] = '</header>';
 
             $output[] = '<div class="cols">';
@@ -505,17 +505,16 @@ class Html implements Renderer
     {
         $html = implode("\n", $buffer);
         $id = uniqid('glitch-dump');
-        $borderColor = static::DARK ? '#333' : '#888';
 
         $output = [];
         $output[] = '<div class="glitch-dump">';
         $output[] = '<style>';
-        $output[] = '.glitch-dump > iframe { width: 100%; max-width: 100vw; min-width: 100%; height: 100%; box-sizing: border-box; border: 2px solid '.$borderColor.'; resize: both; }';
+        $output[] = '.glitch-dump > iframe { width: 100%; max-width: 100vw; min-width: 100%; height: 100%; resize: both; }';
         $output[] = 'body > .glitch-dump > iframe { height: 50vh; }';
+        $output[] = 'body > .glitch-dump:only-child > iframe { height:100vh; }';
         $output[] = 'body > .glitch-dump:only-child { height:100%; border: none; resize: none; position: absolute; width: 100%; top: 0; left: 0; }';
-        $output[] = 'body > .glitch-dump:only-child > iframe { height:100%; }';
         $output[] = '</style>';
-        $output[] = '<iframe id="'.$id.'" frameborder="0"></iframe>';
+        $output[] = '<iframe id="'.$id.'" width="100%" height="100%" frameborder="0"></iframe>';
         $output[] = '<script>';
         $output[] = 'var doc = document.getElementById(\''.$id.'\').contentWindow.document;';
         $output[] = 'doc.open();doc.write('.json_encode($html).');doc.close();';
@@ -571,14 +570,14 @@ class Html implements Renderer
     /**
      * Render a standard multi line string
      */
-    protected function renderMultiLineString(string $string, bool $asException=false): string
+    protected function renderMultiLineString(string $string, string $class=null): string
     {
         $string = str_replace("\r", '', $string);
         $parts = explode("\n", $string);
         $count = count($parts);
 
         $output = [];
-        $output[] = '<div class="string m'.($count > 10 ? ' large' : null).($asException ? ' exception' : null).'"><span class="length">'.mb_strlen($string).'</span>';
+        $output[] = '<div class="string m'.($count > 10 ? ' large' : null).' '.$class.'"><span class="length">'.mb_strlen($string).'</span>';
 
         foreach ($parts as $part) {
             $output[] = '<div class="line">'.$this->renderStringLine($part).'</div>';
@@ -600,7 +599,6 @@ class Html implements Renderer
         }
 
         $output .= '</span>';
-
         return $output;
     }
 
@@ -618,7 +616,13 @@ class Html implements Renderer
      */
     protected function wrapControlCharacter(string $control): string
     {
-        return '<span class="control">'.$control.'</span>';
+        $class = 'control';
+
+        if ($control === '\\t') {
+            $class .= ' tab';
+        }
+
+        return '<span class="'.$class.'">'.$control.'</span>';
     }
 
     /**
@@ -799,7 +803,7 @@ class Html implements Renderer
     /**
      * Render info toggle button
      */
-    protected function renderEntityInfoButton(string $linkId, bool $isRef): string
+    protected function renderEntityInfoButton(bool $isRef, bool $open): string
     {
         if ($isRef) {
             return '<a data-open="body" class="info badge"><i>i</i></a>';
@@ -811,7 +815,7 @@ class Html implements Renderer
     /**
      * Render meta toggle button
      */
-    protected function renderEntityMetaButton(string $linkId): string
+    protected function renderEntityMetaButton(bool $open): string
     {
         return '<a data-open="t-meta" class="meta badge"><i>m</i></a>';
     }
@@ -819,7 +823,7 @@ class Html implements Renderer
     /**
      * Render text toggle button
      */
-    protected function renderEntityTextButton(string $linkId): string
+    protected function renderEntityTextButton(bool $open): string
     {
         return '<a data-open="t-text" class="text primary badge"><i>t</i></a>';
     }
@@ -827,7 +831,7 @@ class Html implements Renderer
     /**
      * Render text toggle button
      */
-    protected function renderEntityDefinitionButton(string $linkId): string
+    protected function renderEntityDefinitionButton(bool $open): string
     {
         return '<a data-open="t-def" class="def primary badge"><i>d</i></a>';
     }
@@ -835,7 +839,7 @@ class Html implements Renderer
     /**
      * Render properties toggle button
      */
-    protected function renderEntityPropertiesButton(string $linkId): string
+    protected function renderEntityPropertiesButton(bool $open): string
     {
         return '<a data-open="t-props" class="props primary badge"><i>p</i></a>';
     }
@@ -843,7 +847,7 @@ class Html implements Renderer
     /**
      * Render values toggle button
      */
-    protected function renderEntityValuesButton(string $linkId): string
+    protected function renderEntityValuesButton(bool $open): string
     {
         return '<a data-open="t-values" class="values badge primary"><i>v</i></a>';
     }
@@ -851,7 +855,7 @@ class Html implements Renderer
     /**
      * Render stack toggle button
      */
-    protected function renderEntityStackButton(string $type, bool $open, string $linkId): string
+    protected function renderEntityStackButton(string $type, bool $open): string
     {
         if ($type === 'stack') {
             return '<a data-open="body" class="stack badge"><i>s</i></a>';

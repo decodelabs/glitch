@@ -10,11 +10,15 @@ declare(strict_types=1);
  */
 namespace
 {
+    use DecodeLabs\Glitch\Glitch as Facade;
     use DecodeLabs\Glitch\Context;
     use DecodeLabs\Glitch\Exception\Factory;
     use DecodeLabs\Glitch\Stack\Frame;
 
     use Symfony\Component\VarDumper\VarDumper;
+
+    // Register the Veneer facade
+    Context::registerFacade();
 
     if (!function_exists('dd')) {
         /**
@@ -22,7 +26,7 @@ namespace
          */
         function dd($var, ...$vars): void
         {
-            Context::getDefault()->dumpDie(func_get_args(), 1);
+            Facade::dumpDie(func_get_args(), 1);
         }
     }
 
@@ -32,7 +36,7 @@ namespace
          */
         function dump($var, ...$vars): void
         {
-            Context::getDefault()->dump(func_get_args(), 1);
+            Facade::dump(func_get_args(), 1);
         }
     } elseif (class_exists(VarDumper::class)) {
         VarDumper::setHandler(function ($var) {
@@ -55,7 +59,7 @@ namespace
                     $args = func_get_args();
                 }
 
-                Context::getDefault()->dump($args, 3);
+                Facade::dump($args, 3);
             } else {
                 $skip--;
                 return;
@@ -72,6 +76,7 @@ namespace
         return Factory::create(
             null,
             [],
+            1,
             $message,
             $params,
             $data

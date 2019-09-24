@@ -27,6 +27,48 @@ class Inspector
         'DateTimeZone' => [Inspect\Date::class, 'inspectDateTimeZone'],
         'DatePeriod' => [Inspect\Date::class, 'inspectDatePeriod'],
 
+        // DOM
+        'DOMAttr' => [Inspect\Dom::class, 'inspectAttr'],
+        'DOMCdataSection' => [Inspect\Dom::class, 'inspectCdataSection'],
+        'DOMCharacterData' => [Inspect\Dom::class, 'inspectCharacterData'],
+        'DOMComment' => [Inspect\Dom::class, 'inspectComment'],
+        'DOMDocument' => [Inspect\Dom::class, 'inspectDocument'],
+        'DOMDocumentFragment' => [Inspect\Dom::class, 'inspectDocumentFragment'],
+        'DOMDocumentType' => [Inspect\Dom::class, 'inspectDocumentType'],
+        'DOMElement' => [Inspect\Dom::class, 'inspectElement'],
+        'DOMEntity' => [Inspect\Dom::class, 'inspectEntity'],
+        'DOMEntityReference' => [Inspect\Dom::class, 'inspectEntityReference'],
+        'DOMImplementation' => [Inspect\Dom::class, 'inspectImplementation'],
+        'DOMNamedNodeMap' => [Inspect\Dom::class, 'inspectNamedNodeMap'],
+        'DOMNode' => [Inspect\Dom::class, 'inspectNode'],
+        'DOMNodeList' => [Inspect\Dom::class, 'inspectNodeList'],
+        'DOMNotation' => [Inspect\Dom::class, 'inspectNotation'],
+        'DOMProcessingInstruction' => [Inspect\Dom::class, 'inspectProcessingInstruction'],
+        'DOMText' => [Inspect\Dom::class, 'inspectText'],
+        'DOMXPath' => [Inspect\Dom::class, 'inspectXPath'],
+
+
+        // Ds
+        'Ds\\Vector' => [Inspect\Ds::class, 'inspectCollection'],
+        'Ds\\Map' => [Inspect\Ds::class, 'inspectCollection'],
+        'Ds\\Deque' => [Inspect\Ds::class, 'inspectCollection'],
+        'Ds\\Pair' => [Inspect\Ds::class, 'inspectPair'],
+        'Ds\\Set' => [Inspect\Ds::class, 'inspectSet'],
+        'Ds\\Stack' => [Inspect\Ds::class, 'inspectCollection'],
+        'Ds\\Queue' => [Inspect\Ds::class, 'inspectCollection'],
+        'Ds\\PriorityQueue' => [Inspect\Ds::class, 'inspectCollection'],
+
+        // GMP
+        'GMP' => [Inspect\Gmp::class, 'inspectGmp'],
+
+        // PDO
+        'PDO' => [Inspect\PDO::class, 'inspectPdo'],
+        'PDOStatement' => [Inspect\PDO::class, 'inspectPdoStatement'],
+
+        // Redis
+        'Redis' => [Inspect\Redis::class, 'inspectRedis'],
+
+
         // Reflection
         'ReflectionClass' => [Inspect\Reflection::class, 'inspectReflectionClass'],
         'ReflectionClassConstant' => [Inspect\Reflection::class, 'inspectReflectionClassConstant'],
@@ -51,6 +93,10 @@ class Inspector
 
         'SplFileInfo' => [Inspect\Spl::class, 'inspectSplFileInfo'],
         'SplFileObject' => [Inspect\Spl::class, 'inspectSplFileObject'],
+
+        // Xml
+        'SimpleXMLElement' => [Inspect\Xml::class, 'inspectSimpleXmlElement'],
+        'XMLWriter' => [Inspect\Xml::class, 'inspectXmlWriter']
     ];
 
     const RESOURCES = [
@@ -325,7 +371,8 @@ class Inspector
      */
     public function inspectString(string $string)
     {
-        $isPossibleClass = preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $string);
+        $isPossibleClass = preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $string);
+        $loadClasses = false !== strpos($string, '\\');
 
         // Binary string
         if ($string !== '' && !preg_match('//u', $string)) {
@@ -335,17 +382,17 @@ class Inspector
                 ->setLength(strlen($string));
 
         // Class name
-        } elseif ($isPossibleClass && class_exists($string)) {
+        } elseif ($isPossibleClass && class_exists($string, $loadClasses)) {
             return (new Entity('class'))
                 ->setClass($string);
 
         // Interface name
-        } elseif ($isPossibleClass && interface_exists($string)) {
+        } elseif ($isPossibleClass && interface_exists($string, $loadClasses)) {
             return (new Entity('interface'))
                 ->setClass($string);
 
         // Trait name
-        } elseif ($isPossibleClass && trait_exists($string)) {
+        } elseif ($isPossibleClass && trait_exists($string, $loadClasses)) {
             return (new Entity('trait'))
                 ->setClass($string);
 
@@ -361,9 +408,13 @@ class Inspector
      */
     public function inspectResource($resource): Entity
     {
+        $parts = explode('#', (string)$resource);
+        $id = array_pop($parts);
+
         $entity = (new Entity('resource'))
-            ->setName((string)$resource)
-            ->setClass($rType = get_resource_type($resource));
+            ->setName('resource')
+            ->setClass($rType = get_resource_type($resource))
+            ->setObjectId((int)$id);
 
         $typeName = str_replace(' ', '', ucwords($rType));
         $method = 'inspect'.ucfirst($typeName).'Resource';
@@ -375,6 +426,30 @@ class Inspector
         return $entity;
     }
 
+
+    /**
+     * Name single flag from set
+     */
+    public function inspectFlag($flag, array $options): ?Entity
+    {
+        if (!is_string($flag) && !is_int($flag)) {
+            return null;
+        }
+
+        foreach ($options as $const) {
+            $value = constant($const);
+
+            if (!is_int($value)) {
+                continue;
+            }
+
+            if ($flag === $value) {
+                return $this->inspectConstant($const);
+            }
+        }
+
+        return null;
+    }
 
 
     /**
@@ -492,7 +567,7 @@ class Inspector
     /**
      * Convert object into Entity
      */
-    public function inspectObject(object $object): ?Entity
+    public function inspectObject(object $object, bool $properties=true): ?Entity
     {
         $objectId = spl_object_id($object);
         $reflection = new \ReflectionObject($object);
@@ -504,6 +579,10 @@ class Inspector
             ->setClass($className)
             ->setObjectId($objectId)
             ->setHash(spl_object_hash($object));
+
+        if ($object instanceof \Countable) {
+            $entity->setLength($object->count());
+        }
 
 
         if (!$reflection->isInternal()) {
@@ -527,7 +606,10 @@ class Inspector
             $className => $reflection
         ] + $parents;
 
-        $this->inspectObjectProperties($object, $reflections, $entity);
+        if ($properties) {
+            $this->inspectObjectProperties($object, $reflections, $entity);
+        }
+
         return $entity;
     }
 
@@ -539,7 +621,11 @@ class Inspector
         if (false !== strpos($class, 'Glitch/Exception/Factory.php')) {
             $class = 'EGlitch';
         } elseif (0 === strpos($class, "class@anonymous\x00")) {
-            $class = $reflection->getParentClass()->getShortName().'@anonymous';
+            if ($parent = $reflection->getParentClass()) {
+                $class = $parent->getShortName().'@anonymous';
+            } else {
+                $class = '@anonymous';
+            }
         }
 
         return $class;

@@ -22,4 +22,34 @@ class Xml
             ->setMeta('current_line_number', $inspector->inspectValue(xml_get_current_line_number($resource)))
             ->setMeta('error_code', $inspector->inspectValue(xml_get_error_code($resource)));
     }
+
+    /**
+     * Inspect simple Xml
+     */
+    public static function inspectSimpleXmlElement(\SimpleXMLElement $element, Entity $entity, Inspector $inspector): void
+    {
+        $ref = new \ReflectionObject($element);
+        $values = [];
+
+        foreach ($ref->getProperties() as $property) {
+            $name = $property->getName();
+            $values[$name] = $inspector($property->getValue($element));
+        }
+
+        $entity
+            ->setText(empty($values) ? (string)$element : null)
+            ->setDefinition($element->asXML())
+            ->setValues($values)
+            ->setSectionVisible('definition', false)
+            ;
+    }
+
+    /**
+     * Inspect Xml writer
+     */
+    public static function inspectXmlWriter(\XMLWriter $writer, Entity $entity, Inspector $inspector): void
+    {
+        $entity
+            ->setText($writer->outputMemory(false));
+    }
 }
