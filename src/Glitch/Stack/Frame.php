@@ -171,7 +171,7 @@ class Frame
         $isFacade =
             //$this->function === '__callStatic' &&
             $this->className !== null &&
-            false !== strpos($this->className, 'veneer/src/Binding.php');
+            false !== strpos($this->className, 'veneer/src/Veneer/Binding.php');
 
         if (!$isFacade) {
             return null;
