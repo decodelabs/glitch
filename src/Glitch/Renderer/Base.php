@@ -730,8 +730,9 @@ trait Base
     protected function renderEntity(Entity $entity, int $level=0, array $overrides=null): string
     {
         $id = $linkId = $entity->getId();
-        $name = $this->esc($entity->getName() ?? $entity->getType());
-        $isRef = $showClass = $forceBody = false;
+        $name = $entity->getName() ?? $entity->getType();
+        $isRef = $forceBody = false;
+        $showClass = true;
         $open = $entity->isOpen();
 
         $sections = [
@@ -833,15 +834,16 @@ trait Base
             $header[] = $this->wrapEntityName($name, $open, $linkId);
         }
 
-        // Length
-        if (null !== ($length = $entity->getLength())) {
-            $header[] = $this->renderEntityLength($length);
+        // Class
+        if ($showClass && null !== ($class = $entity->getClass())) {
+            $header[] = $this->renderPointer('~');
+            $header[] = $this->renderEntityClassName($class);
         }
 
-        // Class
-        if ($showClass) {
+        // Length
+        if (null !== ($length = $entity->getLength())) {
             $header[] = $this->renderPointer(':');
-            $header[] = $this->renderEntityClassName($entity->getClass());
+            $header[] = $this->renderEntityLength($length);
         }
 
         $buttons = [];

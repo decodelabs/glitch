@@ -80,14 +80,6 @@ div.entity {
 
         .length {
             color: $teal;
-            margin-left: -0.25em;
-
-            &:before {
-                content: ':';
-                color: $gray;
-                opacity: 0.5;
-                margin-right: 0.25em;
-            }
         }
 
         .oid {
