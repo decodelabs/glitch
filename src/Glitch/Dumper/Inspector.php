@@ -23,9 +23,13 @@ class Inspector
 
         // Date
         'DateTime' => [Inspect\Date::class, 'inspectDateTime'],
+        'Carbon\\Carbon' => [Inspect\Date::class, 'inspectDateTime'],
         'DateInterval' => [Inspect\Date::class, 'inspectDateInterval'],
+        'Carbon\\CarbonInterval' => [Inspect\Date::class, 'inspectDateInterval'],
         'DateTimeZone' => [Inspect\Date::class, 'inspectDateTimeZone'],
+        'Carbon\\CarbonTimeZone' => [Inspect\Date::class, 'inspectDateTimeZone'],
         'DatePeriod' => [Inspect\Date::class, 'inspectDatePeriod'],
+        'Carbon\\CarbonPeriod' => [Inspect\Date::class, 'inspectDatePeriod'],
 
         // DOM
         'DOMAttr' => [Inspect\Dom::class, 'inspectAttr'],
@@ -356,11 +360,15 @@ class Inspector
                 return $this->inspectObject($value);
 
             default:
-                throw \Glitch::EUnexpectedValue(
-                    'Unknown entity type',
-                    null,
-                    $value
-                );
+                try {
+                    return $this->inspectString((string)$value);
+                } catch (\Throwable $e) {
+                    throw Glitch::EUnexpectedValue(
+                        'Unknown entity type',
+                        null,
+                        $value
+                    );
+                }
         }
     }
 
