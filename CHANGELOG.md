@@ -1,5 +1,6 @@
 ## v0.11.1 (2019-09-27)
 * Added static glitch facade instantiation
+* Added Carbon inspect support
 
 ## v0.11.0 (2019-09-13)
 * Converted root class into Veneer Facade
