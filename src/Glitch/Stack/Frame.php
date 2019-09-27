@@ -99,8 +99,10 @@ class Frame
 
         // Glitch specific
         if (null !== ($facade = $this->getVeneerFacade())) {
-            $this->function = array_shift($this->args);
-            $this->args = $this->args[0];
+            if (isset($this->args[0])) {
+                $this->function = array_shift($this->args);
+                $this->args = $this->args[0];
+            }
         }
     }
 
@@ -177,7 +179,11 @@ class Frame
             return null;
         }
 
-        return $this->className::FACADE;
+        if (defined($this->className.'::FACADE')) {
+            return $this->className::FACADE;
+        }
+
+        return null;
     }
 
 

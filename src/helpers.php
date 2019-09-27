@@ -10,7 +10,7 @@ declare(strict_types=1);
  */
 namespace
 {
-    use DecodeLabs\Glitch\Glitch as Facade;
+    use DecodeLabs\Glitch as Facade;
     use DecodeLabs\Glitch\Context;
     use DecodeLabs\Glitch\Exception\Factory;
     use DecodeLabs\Glitch\Stack\Frame;
@@ -18,7 +18,7 @@ namespace
     use Symfony\Component\VarDumper\VarDumper;
 
     // Register the Veneer facade
-    Context::registerFacade();
+    Context::registerFacade(Facade::class);
 
     if (!function_exists('dd')) {
         /**
