@@ -66,20 +66,4 @@ namespace
             }
         });
     }
-
-
-    /**
-     * Direct facade for generating IError based exceptions
-     */
-    function Glitch($message, ?array $params=[], $data=null): \EGlitch
-    {
-        return Factory::create(
-            null,
-            [],
-            1,
-            $message,
-            $params,
-            $data
-        );
-    }
 }

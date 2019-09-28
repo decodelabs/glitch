@@ -222,6 +222,21 @@ class Context implements LoggerAwareInterface, FacadeTarget
         );
     }
 
+    /**
+     * Create generic exception
+     */
+    public function Exception($message, ?array $params=[], $data=null): \EGlitch
+    {
+        return Factory::create(
+            null,
+            [],
+            1,
+            $message,
+            $params,
+            $data
+        );
+    }
+
 
     /**
      * Shortcut to incomplete context method
