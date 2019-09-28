@@ -544,7 +544,7 @@ class Inspector
         }
 
         $entity = (new Entity($isRef ? 'arrayReference' : 'array'))
-            //->setClass('array')
+            ->setClass('array')
             ->setLength($empty ? 0 : count($array) - 1)
             ->setHash($hash)
             ->setId($id)
@@ -584,7 +584,7 @@ class Inspector
 
         $entity = (new Entity($isRef ? 'objectReference' : 'object'))
             ->setName($this->normalizeClassName($reflection->getShortName(), $reflection))
-            //->setClass($className)
+            ->setClass($className)
             ->setObjectId($objectId)
             ->setHash(spl_object_hash($object));
 

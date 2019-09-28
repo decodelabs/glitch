@@ -18,6 +18,7 @@ class Entity
     protected $objectId;
     protected $hash;
     protected $class;
+    protected $className;
     protected $parents;
     protected $interfaces;
     protected $traits;
@@ -180,6 +181,23 @@ class Entity
     public function getClass(): ?string
     {
         return $this->class;
+    }
+
+    /**
+     * Set object class name
+     */
+    public function setClassName(?string $className): Entity
+    {
+        $this->className = $className;
+        return $this;
+    }
+
+    /**
+     * Get object class
+     */
+    public function getClassName(): ?string
+    {
+        return $this->className;
     }
 
 

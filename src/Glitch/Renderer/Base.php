@@ -732,7 +732,7 @@ trait Base
         $id = $linkId = $entity->getId();
         $name = $entity->getName() ?? $entity->getType();
         $isRef = $forceBody = false;
-        $showClass = true;
+        $showClassName = true;
         $open = $entity->isOpen();
 
         $sections = [
@@ -756,14 +756,14 @@ trait Base
                 break;
 
             case 'resource':
-                $showClass = true;
+                $showClassName = true;
                 $sections['info'] = false;
                 break;
 
             case 'class':
             case 'interface':
             case 'trait':
-                $showClass = true;
+                $showClassName = true;
                 $sections['info'] = false;
                 break;
 
@@ -835,9 +835,9 @@ trait Base
         }
 
         // Class
-        if ($showClass && null !== ($class = $entity->getClass())) {
+        if ($showClassName && null !== ($className = $entity->getClassName())) {
             $header[] = $this->renderPointer('~');
-            $header[] = $this->renderEntityClassName($class);
+            $header[] = $this->renderEntityClassName($className);
         }
 
         // Length
