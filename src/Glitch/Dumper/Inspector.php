@@ -12,6 +12,9 @@ use DecodeLabs\Glitch\Stack\Trace;
 
 use DecodeLabs\Glitch\Dumper\Inspect;
 
+use df\core\IDumpable as R7Dumpable;
+use df\core\debug\dumper\Property as R7Property;
+
 class Inspector
 {
     const OBJECTS = [
@@ -689,6 +692,11 @@ class Inspector
             $object->glitchInspect($entity, $this);
             return;
 
+        // r7 dump
+        } elseif ($object instanceof R7Dumpable) {
+            $this->dumpR7Object($object, $entity);
+            return;
+
         // Debug info
         } elseif (method_exists($object, '__debugInfo')) {
             $entity->setValues($this->inspectList($info = $object->__debugInfo()));
@@ -708,6 +716,50 @@ class Inspector
         // Reflection members
         foreach (array_reverse($reflections) as $className => $reflection) {
             $this->inspectClassMembers($object, $reflection, $entity);
+        }
+    }
+
+    /**
+     * Dump legacy DF r7 IDumpable object
+     */
+    protected function dumpR7Object(R7Dumpable $object): void
+    {
+        $data = $object->getDumpProperties();
+
+        if (is_string($data)) {
+            $entity->setText($data);
+        } elseif (is_array($data)) {
+            $values = [];
+
+            foreach ($data as $key => $value) {
+                if ($value instanceof R7Property) {
+                    switch ($value->getVisibility()) {
+                        case 'protected':
+                            $prefix = '*';
+                            break;
+
+                        case 'private':
+                            $prefix = '!';
+                            break;
+
+                        default:
+                            $prefix = '';
+                            break;
+                    }
+
+                    $entity->setProperty($key, $inspector($value->getValue()));
+                } else {
+                    $values[$key] = $inspector($value);
+                }
+            }
+
+            if (!empty($values)) {
+                $entity->setValues($values);
+            }
+        } else {
+            $entity
+                ->setValues([$inspector($data)])
+                ->setShowKeys(false);
         }
     }
 
