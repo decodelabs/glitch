@@ -66,4 +66,21 @@ namespace
             }
         });
     }
+
+    if (!function_exists('Glitch')) {
+        /**
+         * Generic root passthrough function
+         */
+        function Glitch($message, ?array $params=[], $data=null): \EGlitch
+        {
+            return Factory::create(
+                null,
+                [],
+                1,
+                $message,
+                $params,
+                $data
+            );
+        }
+    }
 }
