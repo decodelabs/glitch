@@ -395,17 +395,17 @@ class Inspector
         // Class name
         } elseif ($isPossibleClass && class_exists($string, $loadClasses)) {
             return (new Entity('class'))
-                ->setClass($string);
+                ->setClassName($string);
 
         // Interface name
         } elseif ($isPossibleClass && interface_exists($string, $loadClasses)) {
             return (new Entity('interface'))
-                ->setClass($string);
+                ->setClassName($string);
 
         // Trait name
         } elseif ($isPossibleClass && trait_exists($string, $loadClasses)) {
             return (new Entity('trait'))
-                ->setClass($string);
+                ->setClassName($string);
 
 
         // Standard string
