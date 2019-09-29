@@ -10,11 +10,12 @@ use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Renderer;
-use DecodeLabs\Glitch\Renderer\Html\Highlighter;
 use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
 use DecodeLabs\Glitch\Exception\EIncomplete;
+
+use DecodeLabs\Enlighten\Highlighter;
 
 class Html implements Renderer
 {
