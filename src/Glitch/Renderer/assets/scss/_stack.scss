@@ -3,17 +3,12 @@ section.stack {
     display: flex;
     max-width: 100%;
     flex-direction: column;
-    background: linear-gradient(to bottom, darken($cream, 12%) 0, darken($cream, 7%) 12rem);
+    background: linear-gradient(to bottom, rgba(white, 0.1) 0, rgba(white, 0) 12rem, rgba(black, 0.1));
 
     > div {
         position: relative;
         flex: 1 1 100%;
     }
-}
-
-
-html.dark section.stack {
-    background: linear-gradient(to bottom, rgba(white, 0.1) 0, rgba(white, 0) 12rem, rgba(black, 0.1));
 }
 
 div.stack-list > ul.stack {
@@ -27,7 +22,7 @@ ul.stack {
     margin: 0;
 
     > li {
-        background: rgba(white, 0.8);
+        background: rgba(#999, 0.1);
         margin-bottom: 2px;
         border-radius: 2px;
     }
@@ -42,7 +37,7 @@ ul.stack {
         }
 
         &.w-source {
-            box-shadow: 2px 0.5rem 0.5rem rgba(black, 0.1);
+            box-shadow: 2px 0.5rem 0.5rem rgba(black, 0.2);
             border-color: rgba(#222, 0.85);
 
             margin-bottom: 1em;
@@ -59,6 +54,7 @@ ul.stack {
 
         span {
             &.number {
+                color: $gray;
                 width: 2em;
                 margin-right: 0.5em;
                 display: inline-block;
@@ -78,7 +74,7 @@ ul.stack {
                 }
             }
             &.file {
-                color: $orange;
+                color: lighten($orange, 25%);
                 margin-left: 2.45em;
 
                 + .line:before {
@@ -92,7 +88,7 @@ ul.stack {
                 }
             }
             &.line {
-                color: $pink;
+                color: lighten($pink, 15%);
                 padding-right: 1rem;
             }
         }
@@ -112,14 +108,14 @@ ul.stack {
 
     samp.dump.source {
         padding: 0.5rem 0.75rem;
-        background: white;
+        background: rgba(#333, 0.35);
         border-radius: 0 0 2px 2px;
 
         &:before {
             content: '';
             display: block;
             width: 100%;
-            border-top: 1px solid darken(#EEE, 3%) !important;
+            border-top: 1px solid rgba(#333, 0.8) !important;
         }
 
         span.line {
@@ -127,40 +123,6 @@ ul.stack {
 
             span.number {
                 background: rgba(darken($cream, 35%), 0.3);
-            }
-        }
-    }
-}
-
-html.dark {
-    ul.stack {
-        > li {
-            background: rgba(#999, 0.1);
-        }
-
-        div.stack-frame {
-            &.w-source {
-                box-shadow: 2px 0.5rem 0.5rem rgba(black, 0.2);
-            }
-
-            span {
-                &.number {
-                    color: $gray;
-                }
-                &.file {
-                    color: lighten($orange, 25%);
-                }
-                &.line {
-                    color: lighten($pink, 15%);
-                }
-            }
-        }
-
-        samp.dump.source {
-            background: rgba(#333, 0.35);
-
-            &:before {
-                border-top: 1px solid rgba(#333, 0.8) !important;
             }
         }
     }

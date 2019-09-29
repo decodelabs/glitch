@@ -20,14 +20,14 @@ ul.list {
 
             &:before {
                 content: 'ⓟ';
-                color: $green;
+                color: lighten($green, 10%);
                 opacity: 1;
-
                 display: none;
                 position: relative;
                 margin-top: 0.3em;
                 margin-right: 0.75em;
                 font-size: 0.8em;
+                font-weight: bold;
             }
         }
 
@@ -42,16 +42,15 @@ ul.list {
         > li {
 
             > .identifier {
-                color: $cyan;
+                color: lighten($cyan, 10%);
 
                 &.key {
-                    color: $gray;
+                    color: $gray-300;
                     opacity: 0.75;
 
                     &:before {
                         content: 'ⓘ';
-                        color: $cyan;
-                        opacity: 0.8;
+                        color: lighten($cyan, 10%);
                         display: inline;
                     }
                 }
@@ -66,16 +65,15 @@ ul.list {
     &.meta {
         > li {
             > .identifier {
-                color: $red;
+                color: $red-bright;
 
                 &.key {
-                    color: $gray-700;
+                    color: $gray-200;
                     opacity: 0.75;
 
                     &:before {
                         content: 'ⓜ';
-                        color: $red;
-                        opacity: 0.8;
+                        color: lighten($red-bright, 10%);
                         display: inline;
                     }
                 }
@@ -87,27 +85,26 @@ ul.list {
         > li {
             > .identifier {
                 &.key {
-                    color: $blue;
-                    opacity: 0.75;
+                    color: lighten($blue, 25%);
 
                     &:before {
                         content: 'ⓟ';
-                        color: $green;
+                        color: lighten($green, 10%);
                         display: inline;
                     }
 
                     &.protected:before {
-                        color: $yellow;
+                        color: lighten($yellow, 15%);
                     }
                     &.private:before {
-                        color: $red;
+                        color: lighten($red-bright, 15%);
                     }
                     &.public:before {
-                        color: $green;
+                        color: lighten($green, 15%);
                     }
                     &.virtual:before {
                         content: 'ⓧ';
-                        color: $purple;
+                        color: lighten($purple, 20%);
                     }
                 }
             }
@@ -118,12 +115,13 @@ ul.list {
         > li {
             &:before {
                 content: 'ⓥ';
-                color: $yellow;
+                color: lighten($yellow, 15%);
                 position: relative;
                 margin-top: 0.3em;
                 font-size: 0.8em;
                 display: inline;
                 opacity: 0.75;
+                font-weight: bold;
             }
         }
     }
@@ -149,71 +147,6 @@ ul.list {
             > *:last-child {
                 padding: 0 !important;
             }
-        }
-    }
-}
-
-
-
-html.dark {
-    ul.list {
-        > li > .identifier.key:before {
-            color: lighten($green, 10%);
-            font-weight: bold;
-        }
-
-        &.info > li > .identifier {
-            color: lighten($cyan, 10%);
-
-            &.key {
-                color: $gray-300;
-
-                &:before {
-                    color: lighten($cyan, 10%);
-                    opacity: 1;
-                }
-            }
-        }
-
-        &.meta > li > .identifier {
-            color: $red-bright;
-
-            &.key {
-                color: $gray-200;
-                opacity: 0.75;
-
-                &:before {
-                    color: lighten($red-bright, 10%);
-                    opacity: 1;
-                }
-            }
-        }
-
-        &.props > li > .identifier.key {
-            color: lighten($blue, 25%);
-            opacity: 1;
-
-            &:before {
-                color: lighten($green, 10%);
-            }
-
-            &.protected:before {
-                color: lighten($yellow, 15%);
-            }
-            &.private:before {
-                color: lighten($red-bright, 15%);
-            }
-            &.public:before {
-                color: lighten($green, 15%);
-            }
-            &.virtual:before {
-                color: lighten($purple, 20%);
-            }
-        }
-
-        &.values > li:before {
-            color: lighten($yellow, 15%);
-            font-weight: bold;
         }
     }
 }

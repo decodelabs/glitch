@@ -18,8 +18,6 @@ use DecodeLabs\Glitch\Exception\EIncomplete;
 
 class Html implements Renderer
 {
-    const DARK = true;
-
     const RENDER_IN_PRODUCTION = false;
     const SPACES = 0;
     const RENDER_CLOSED = true;
@@ -164,10 +162,6 @@ class Html implements Renderer
      */
     protected function renderHeader(string $class): string
     {
-        if (static::DARK) {
-            $class .= ' dark';
-        }
-
         $output = [];
         $output[] = '<!doctype html>';
         $output[] = '<html lang="en" class="'.$class.'">';

@@ -2,14 +2,14 @@
 .bool,
 .int,
 .float {
-    color: $pink;
+    color: lighten($pink, 10%);
     font-weight: 600;
 }
 .bool {
     font-style: italic;
 }
 .int, .float {
-    color: $indigo;
+    color: lighten($indigo, 25%);
 }
 
 .g, .pointer {
@@ -22,7 +22,7 @@
 
 .string {
     > .line {
-        color: $red;
+        color: $red-bright;
     }
 
     > .length {
@@ -36,7 +36,7 @@
     }
 
     &.identifier {
-        color: $orange;
+        color: lighten($orange, 10%);
 
         &:before, &:after {
             display: none;
@@ -44,7 +44,7 @@
     }
 
     &.def {
-        color: $gray;
+        color: $gray-300;
     }
 
     &.s {
@@ -65,13 +65,13 @@
         &:before, &:after {
             content: '"""';
             color: $gray;
-            opacity: 0.5;
+            opacity: 0.6;
         }
 
         > .line {
             margin-left: -0.1rem;
             padding-left: 0.1rem;
-            border-left: 1px solid rgba($gray, 0.18);
+            border-left: 1px solid rgba($gray, 0.06);
             white-space: pre;
 
             &:after {
@@ -100,7 +100,7 @@
             }
 
             > .line {
-                color: $gray;
+                color: lighten($orange, 30%);
             }
         }
 
@@ -146,8 +146,8 @@
     }
 
     span.control {
-        color: $orange;
-        opacity: 0.65;
+        color: lighten($orange, 10%);
+        opacity: 0.85;
 
         &.tab {
             display: inline-block;
@@ -158,53 +158,6 @@
             &:after {
                 content: '  ';
             }
-        }
-    }
-}
-
-
-
-html.dark {
-    .null,
-    .bool,
-    .int,
-    .float {
-        color: lighten($pink, 10%);
-    }
-    .int, .float {
-        color: lighten($indigo, 25%);
-    }
-
-    .string {
-        > .line {
-            color: $red-bright;
-        }
-
-        &.identifier {
-            color: lighten($orange, 10%);
-        }
-
-        &.def {
-            color: $gray-300;
-        }
-
-        &.m {
-            &:before, &:after {
-                opacity: 0.6;
-            }
-
-            > .line {
-                border-left: 1px solid rgba($gray, 0.06);
-            }
-
-            &.def > .line {
-                color: lighten($orange, 30%);
-            }
-        }
-
-        span.control {
-            color: lighten($orange, 10%);
-            opacity: 0.85;
         }
     }
 

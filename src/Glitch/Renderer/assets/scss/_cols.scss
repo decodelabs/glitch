@@ -45,15 +45,15 @@ div.cols {
 
             @media screen and (min-width: 961px) {
                 h3 {
-                    border-right: 1px solid #888;
+                    border-right: 1px solid rgba(#444, 0.7);
                 }
 
                 samp.dump.exception {
-                    border-right: 1px solid #DDD;
+                    border-right: 1px solid rgba(#333, 0.7);
                 }
 
                 section.stack {
-                    border-right: 1px solid #CCC;
+                    border-right: 1px solid rgba(#333, 0.7);
                 }
             }
         }
@@ -62,23 +62,6 @@ div.cols {
             @media screen and (max-width: 960px) {
                 min-height: 30vh;
             }
-        }
-    }
-}
-
-
-html.dark div.cols > div.left {
-    @media screen and (min-width: 961px) {
-        h3 {
-            border-right: 1px solid rgba(#444, 0.7);
-        }
-
-        samp.dump.exception {
-            border-right: 1px solid rgba(#333, 0.7);
-        }
-
-        section.stack {
-            border-right: 1px solid rgba(#333, 0.7);
         }
     }
 }
