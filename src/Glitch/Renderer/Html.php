@@ -477,7 +477,7 @@ class Html implements Renderer
             return null;
         }
 
-        return (new Highlighter())->extractFile($path, $line);
+        return (new Highlighter())->extractFromFile($path, $line);
     }
 
     /**
