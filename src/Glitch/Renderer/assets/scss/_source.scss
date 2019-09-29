@@ -1,7 +1,6 @@
 samp.dump.source {
     overflow-x: auto;
     padding: 0 !important;
-    color: #777;
     white-space: normal !important;
 
     span.line {
@@ -30,8 +29,9 @@ samp.dump.source {
             background: rgba(black, 0.2);
         }
     }
+}
 
-
+.source {
     .keyword {
         color: lighten($green, 15%);
 
@@ -54,6 +54,10 @@ samp.dump.source {
         &.function + .name {
             font-weight: bold;
         }
+    }
+
+    .g {
+        opacity: 0.5;
     }
 
     .cast {
@@ -81,7 +85,7 @@ samp.dump.source {
     }
 
     .int, .float {
-        color: lighten($pink, 10%);
+        color: lighten($indigo, 30%);
         font-weight: bold;
     }
 

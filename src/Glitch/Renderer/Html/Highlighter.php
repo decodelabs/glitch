@@ -194,7 +194,7 @@ class Highlighter
                 }
 
                 if ($tokens[1] === '{') {
-                    return 'class';
+                    return 'class return';
                 }
                 break;
         }

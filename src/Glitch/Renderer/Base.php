@@ -546,7 +546,13 @@ trait Base
         $output = [];
 
         if (substr((string)$class, 0, 1) !== '~') {
-            $output[] = $this->renderSignatureNamespace($namespace);
+            $parts = explode('\\', $namespace);
+
+            foreach ($parts as $i => $part) {
+                $parts[$i] = empty($part) ? null : $this->renderSignatureNamespace($part);
+            }
+
+            $output[] = implode($this->renderGrammar('\\'), $parts);
         }
 
         if ($class !== null) {
@@ -572,7 +578,13 @@ trait Base
             $class = $frame::normalizeClassName($class);
 
             if (substr((string)$class, 0, 1) !== '~') {
-                $output[] = $this->renderSignatureNamespace($frame->getNamespace().'\\');
+                $parts = explode('\\', $frame->getNamespace().'\\');
+
+                foreach ($parts as $i => $part) {
+                    $parts[$i] = empty($part) ? null : $this->renderSignatureNamespace($part);
+                }
+
+                $output[] = implode($this->renderGrammar('\\'), $parts);
             }
 
             $output[] = $this->renderSignatureClass($class);

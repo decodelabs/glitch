@@ -1,24 +1,6 @@
 span.signature {
-    i {
-        font-style: normal;
-
-        &.ns {
-            color: lighten($cyan, 10%);
-            opacity: 0.85;
-        }
-
-        &.cl {
-            color: lighten($cyan, 15%);
-            font-weight: bold;
-        }
-
-        &.ty {
-            color: $gray;
-            opacity: 0.6;
-        }
-
-        &.fn {
-            color: lighten($blue, 20%);
+    span.name {
+        &.function {
             font-weight: bold;
 
             &.closure {
@@ -39,14 +21,9 @@ span.signature {
             }
         }
 
-        &.ob {
+        &.class.param {
             color: lighten($cyan, 15%);
             font-style: italic;
-        }
-
-        &.co {
-            color: lighten($purple, 20%);
-            font-weight: bold;
         }
     }
 
