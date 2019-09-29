@@ -682,14 +682,15 @@ class Inspector
     {
         $className = get_class($object);
 
-        // Object inspector
-        if (isset($this->objectInspectors[$className])) {
-            call_user_func($this->objectInspectors[$className], $object, $entity, $this);
-            return;
 
         // Inspectable
-        } elseif ($object instanceof Inspectable) {
+        if ($object instanceof Inspectable) {
             $object->glitchInspect($entity, $this);
+            return;
+
+        // Object inspector
+        } elseif (isset($this->objectInspectors[$className])) {
+            call_user_func($this->objectInspectors[$className], $object, $entity, $this);
             return;
 
         // Debug info
@@ -703,6 +704,18 @@ class Inspector
         foreach (array_reverse($reflections) as $className => $reflection) {
             if (isset($this->objectInspectors[$className])) {
                 call_user_func($this->objectInspectors[$className], $object, $entity, $this);
+                return;
+            }
+        }
+
+        // Interfaces
+        $ref = new \ReflectionClass($object);
+
+        foreach ($ref->getInterfaces() as $interface) {
+            $interfaceName = $interface->getName();
+
+            if (isset($this->objectInspectors[$interfaceName])) {
+                call_user_func($this->objectInspectors[$interfaceName], $object, $entity, $this);
                 return;
             }
         }
