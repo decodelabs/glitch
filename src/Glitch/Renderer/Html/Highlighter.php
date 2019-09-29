@@ -33,7 +33,7 @@ class Highlighter
             $startLine = max(1, $startLine);
         }
 
-        $tokens = token_get_all($source);
+        $tokens = token_get_all($source, \TOKEN_PARSE);
         $source = '';
 
         if ($endLine !== null && $startLine === null) {
@@ -41,9 +41,15 @@ class Highlighter
         }
 
         $lastLine = 1;
+        $history = [];
 
         while (!empty($tokens)) {
             $token = array_shift($tokens);
+            array_unshift($history, $token);
+
+            if (count($history) > 20) {
+                array_pop($history);
+            }
 
             if (is_array($token)) {
                 $lastLine = $token[2];
@@ -91,6 +97,14 @@ class Highlighter
                     case 'variable':
                         if ($token[1] === '$this') {
                             $name .= ' this';
+                        }
+                        break;
+
+                    case 'string':
+                        $type = $this->getNameType($history, $tokens);
+
+                        if ($type !== null) {
+                            $name .= ' '.$type;
                         }
                         break;
                 }
@@ -150,6 +164,108 @@ class Highlighter
         }
 
         return $this->highlight(file_get_contents($path), $startLine, $endLine, $highlight);
+    }
+
+    /**
+     * Attempt to parse name token type
+     */
+    protected function getNameType(array $history, array $tokens): ?string
+    {
+        $maybeFunction = false;
+
+        switch ($tokens[0][0]) {
+            case \T_OBJECT_OPERATOR:
+                return 'member';
+
+            case \T_PAAMAYIM_NEKUDOTAYIM:
+                return 'class';
+
+            case \T_NS_SEPARATOR:
+                return 'namespace';
+
+            case \T_VARIABLE:
+                return 'class';
+
+            case \T_WHITESPACE:
+                switch ($tokens[1][0]) {
+                    case \T_VARIABLE:
+                    case \T_ELLIPSIS:
+                        return 'class';
+                }
+
+                if ($tokens[1] === '{') {
+                    return 'class';
+                }
+                break;
+        }
+
+        if ($tokens[0] === '(') {
+            $maybeFunction = true;
+        }
+
+        $current = array_shift($history);
+
+        if (preg_match('/^[A-Z_]+$/', $current[1]) && !$maybeFunction) {
+            return 'constant';
+        }
+
+        while (!empty($history)) {
+            $token = array_shift($history);
+
+            if (is_array($token)) {
+                if ($token[0] === \T_WHITESPACE) {
+                    continue;
+                }
+
+                if ($maybeFunction) {
+                    switch ($token[0]) {
+                        case \T_NS_SEPARATOR:
+                        case \T_STRING:
+                            continue 2;
+
+                        case \T_NEW:
+                            return 'class';
+
+                        default:
+                            return 'function';
+                    }
+                }
+
+                switch ($token[0]) {
+                    case \T_CONST:
+                        return 'constant';
+
+                    case \T_PAAMAYIM_NEKUDOTAYIM:
+                        if (!$maybeFunction) {
+                            return 'constant';
+                        }
+                        return null;
+
+                    case \T_OBJECT_OPERATOR:
+                        if (!$maybeFunction) {
+                            return 'member';
+                        }
+                        return null;
+                }
+
+                return null;
+            } else {
+                if ($maybeFunction) {
+                    return 'function';
+                } elseif ($token === ';') {
+                    return null;
+                }
+
+                switch ($token) {
+                    case ':':
+                        if ($tokens[0] === '{' || $tokens[1] === '{') {
+                            return 'class return';
+                        }
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
