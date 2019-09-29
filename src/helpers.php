@@ -30,6 +30,22 @@ namespace
         }
     }
 
+    if (!function_exists('dd2')) {
+        /**
+         * Last gasp dumper when testing Glitch
+         */
+        function dd2($var, ...$vars): void
+        {
+            $output = [];
+
+            foreach (func_get_args() as $arg) {
+                echo '<div><pre>'.print_r($arg, true).'</pre></div>';
+            }
+
+            exit;
+        }
+    }
+
     if (!function_exists('dump')) {
         /**
          * Quick dump
