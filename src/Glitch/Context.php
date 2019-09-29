@@ -29,7 +29,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
     use FacadeTargetTrait;
 
     const FACADE = 'Glitch';
-    const VERSION = 'v0.11.0';
+    const VERSION = 'v0.12.0';
 
     protected $startTime;
     protected $runMode = 'development';
@@ -219,6 +219,21 @@ class Context implements LoggerAwareInterface, FacadeTarget
             explode(',', $method),
             1,
             ...$args
+        );
+    }
+
+    /**
+     * Create generic exception
+     */
+    public function Exception($message, ?array $params=[], $data=null): \EGlitch
+    {
+        return Factory::create(
+            null,
+            [],
+            1,
+            $message,
+            $params,
+            $data
         );
     }
 

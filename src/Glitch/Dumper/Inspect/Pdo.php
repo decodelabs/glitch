@@ -44,7 +44,7 @@ class Pdo
         foreach (self::ATTRS as $name) {
             try {
                 $entity->setMeta($name, $inspector($pdo->getAttribute(constant('PDO::ATTR_'.$name))));
-            } catch (\ErrorException $e) {
+            } catch (\Throwable $e) {
             }
         }
 

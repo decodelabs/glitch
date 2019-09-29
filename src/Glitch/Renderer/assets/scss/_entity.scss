@@ -1,12 +1,6 @@
 section.dump.entity {
-    background: darken($cream, 5%);
-}
-
-html.dark section.dump.entity {
     background: rgba(#333, 0.6);
 }
-
-
 
 
 div.entity {
@@ -25,7 +19,7 @@ div.entity {
         }
 
         .name {
-            color: $green;
+            color: lighten($green, 10%);
             cursor: pointer;
             text-decoration: none;
 
@@ -46,27 +40,17 @@ div.entity {
             }
         }
 
-        /*
-        a.name.collapsed ~ a.badge.body {
-            opacity: 0.1;
-
-            &.values {
-                opacity: 0.3;
-            }
-        }
-        */
-
         &.t-stack .name {
             color: $gray !important;
         }
         &.t-flags {
             .name {
-                color: $purple !important;
+                color: lighten($purple, 25%) !important;
             }
 
             ~ .body > .inner > .values > ul.list.values > li:before {
                 content: 'ⓒ';
-                color: $purple;
+                color: lighten($purple, 25%);
             }
         }
         &.t-const .name {
@@ -74,12 +58,12 @@ div.entity {
         }
 
         .class {
-            color: $gray-700;
+            color: $gray-300;
         }
 
 
         .length {
-            color: $teal;
+            color: lighten($teal, 10%);
         }
 
         .oid {
@@ -109,7 +93,7 @@ div.entity {
             }
 
             > .oid {
-                background: $purple;
+                background: lighten($purple, 10%);
                 color: white;
                 border-radius: 0.3em;
                 padding: 0 0.3em;
@@ -129,7 +113,7 @@ div.entity {
 
     > div.body {
         padding: 0 0 0 2rem;
-        border-left: 1px solid rgba($gray, 0.18);
+        border-left: 1px solid rgba($gray, 0.06);
         position: relative;
         height: 0;
         display: none;
@@ -150,7 +134,7 @@ div.entity {
 
         &.t-stack > div.stack:before {
             content: 'ⓢ';
-            color: $gray-800;
+            color: $gray;
             opacity: 0.5;
             position: relative;
             margin-top: 0.3em;
@@ -161,7 +145,7 @@ div.entity {
         }
 
         > div.text {
-            color: $red;
+            color: lighten($red, 10%);
 
             &:before {
                 content: 'ⓣ';
@@ -174,7 +158,7 @@ div.entity {
 
             &.binary > i {
                 margin-right: 0.5em;
-                color: $indigo;
+                color: lighten($indigo, 25%);
             }
         }
 
@@ -211,65 +195,6 @@ div.entity {
         > .inner {
             overflow-y: hidden;
             //width: 100vw;
-        }
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-html.dark div.entity {
-    > div.title {
-        .name {
-            color: lighten($green, 10%);
-        }
-
-        &.t-flags {
-            .name {
-                color: lighten($purple, 25%) !important;
-            }
-
-            ~ .body > .inner > .values > ul.list.values > li:before {
-                color: lighten($purple, 25%);
-            }
-        }
-
-        .length {
-            color: lighten($teal, 10%);
-        }
-
-        .class {
-            color: $gray-300;
-        }
-
-        &:target > .oid {
-            background: lighten($purple, 10%);
-        }
-    }
-
-    div.inner {
-        &.body {
-            border-left: 1px solid rgba($gray, 0.06);
-        }
-
-        &.t-stack > div.stack:before {
-            content: 'ⓢ';
-            color: $gray;
-        }
-
-        > div.text {
-            color: lighten($red, 10%);
-
-            &.binary > i {
-                color: lighten($indigo, 25%);
-            }
         }
     }
 }

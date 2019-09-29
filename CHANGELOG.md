@@ -1,3 +1,13 @@
+## v0.12.0 (2019-09-30)
+* Add className display option to Entities
+* Fixed PDO attribute error catching
+* Added r7 dump support
+* Included interfaces in dump inspector lookup stack
+* Added dd2 test dump helper
+* Removed dark mode switch
+* Simplified source styling
+* Moved source highlighter to Enlighten library
+
 ## v0.11.1 (2019-09-27)
 * Added static glitch facade instantiation
 * Added Carbon inspect support

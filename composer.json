@@ -15,6 +15,7 @@
         "symfony/polyfill-mbstring": "^1.7",
 
         "decodelabs/veneer": "~0.4",
+        "decodelabs/enlighten": "~0.5",
         "psr/log": "^1.0",
 
         "components/jquery": "~3.3"

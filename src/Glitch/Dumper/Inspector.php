@@ -86,6 +86,9 @@ class Inspector
         'ReflectionType' => [Inspect\Reflection::class, 'inspectReflectionType'],
         'ReflectionGenerator' => [Inspect\Reflection::class, 'inspectReflectionGenerator'],
 
+        // R7
+        'df\\core\\IDumpable' => [Inspect\R7::class, 'inspectDumpable'],
+
         // Spl
         'ArrayObject' => [Inspect\Spl::class, 'inspectArrayObject'],
         'ArrayIterator' => [Inspect\Spl::class, 'inspectArrayIterator'],
@@ -392,17 +395,17 @@ class Inspector
         // Class name
         } elseif ($isPossibleClass && class_exists($string, $loadClasses)) {
             return (new Entity('class'))
-                ->setClass($string);
+                ->setClassName($string);
 
         // Interface name
         } elseif ($isPossibleClass && interface_exists($string, $loadClasses)) {
             return (new Entity('interface'))
-                ->setClass($string);
+                ->setClassName($string);
 
         // Trait name
         } elseif ($isPossibleClass && trait_exists($string, $loadClasses)) {
             return (new Entity('trait'))
-                ->setClass($string);
+                ->setClassName($string);
 
 
         // Standard string
@@ -544,7 +547,7 @@ class Inspector
         }
 
         $entity = (new Entity($isRef ? 'arrayReference' : 'array'))
-            //->setClass('array')
+            ->setClass('array')
             ->setLength($empty ? 0 : count($array) - 1)
             ->setHash($hash)
             ->setId($id)
@@ -584,7 +587,7 @@ class Inspector
 
         $entity = (new Entity($isRef ? 'objectReference' : 'object'))
             ->setName($this->normalizeClassName($reflection->getShortName(), $reflection))
-            //->setClass($className)
+            ->setClass($className)
             ->setObjectId($objectId)
             ->setHash(spl_object_hash($object));
 
@@ -679,14 +682,15 @@ class Inspector
     {
         $className = get_class($object);
 
-        // Object inspector
-        if (isset($this->objectInspectors[$className])) {
-            call_user_func($this->objectInspectors[$className], $object, $entity, $this);
-            return;
 
         // Inspectable
-        } elseif ($object instanceof Inspectable) {
+        if ($object instanceof Inspectable) {
             $object->glitchInspect($entity, $this);
+            return;
+
+        // Object inspector
+        } elseif (isset($this->objectInspectors[$className])) {
+            call_user_func($this->objectInspectors[$className], $object, $entity, $this);
             return;
 
         // Debug info
@@ -700,6 +704,16 @@ class Inspector
         foreach (array_reverse($reflections) as $className => $reflection) {
             if (isset($this->objectInspectors[$className])) {
                 call_user_func($this->objectInspectors[$className], $object, $entity, $this);
+                return;
+            }
+        }
+
+        // Interfaces
+        $ref = new \ReflectionClass($object);
+
+        foreach ($ref->getInterfaceNames() as $interfaceName) {
+            if (isset($this->objectInspectors[$interfaceName])) {
+                call_user_func($this->objectInspectors[$interfaceName], $object, $entity, $this);
                 return;
             }
         }

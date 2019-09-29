@@ -10,16 +10,15 @@ use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Renderer;
-use DecodeLabs\Glitch\Renderer\Html\Highlighter;
 use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
 use DecodeLabs\Glitch\Exception\EIncomplete;
 
+use DecodeLabs\Enlighten\Highlighter;
+
 class Html implements Renderer
 {
-    const DARK = true;
-
     const RENDER_IN_PRODUCTION = false;
     const SPACES = 0;
     const RENDER_CLOSED = true;
@@ -164,10 +163,6 @@ class Html implements Renderer
      */
     protected function renderHeader(string $class): string
     {
-        if (static::DARK) {
-            $class .= ' dark';
-        }
-
         $output = [];
         $output[] = '<!doctype html>';
         $output[] = '<html lang="en" class="'.$class.'">';
@@ -482,7 +477,7 @@ class Html implements Renderer
             return null;
         }
 
-        return (new Highlighter())->extractFile($path, $line);
+        return (new Highlighter())->extractFromFile($path, $line);
     }
 
     /**
@@ -672,7 +667,7 @@ class Html implements Renderer
      */
     protected function wrapSignature(string $signature, ?string $class=null): string
     {
-        return '<span class="signature'.($class ? ' '.$class : null).'">'.$signature.'</span>';
+        return '<span class="signature source'.($class ? ' '.$class : null).'">'.$signature.'</span>';
     }
 
     /**
@@ -680,7 +675,7 @@ class Html implements Renderer
      */
     protected function renderSignatureNamespace(string $namespace): string
     {
-        return '<i class="ns">'.$this->esc($namespace).'</i>';
+        return '<span class="name namespace">'.$this->esc($namespace).'</span>';
     }
 
     /**
@@ -688,7 +683,7 @@ class Html implements Renderer
      */
     protected function renderSignatureClass(string $class): string
     {
-        return '<i class="cl">'.$this->esc($class).'</i>';
+        return '<span class="name class">'.$this->esc($class).'</span>';
     }
 
     /**
@@ -696,7 +691,7 @@ class Html implements Renderer
      */
     protected function renderSignatureConstant(string $constant): string
     {
-        return '<i class="co">'.$this->esc($constant).'</i>';
+        return '<span class="name constact">'.$this->esc($constant).'</span>';
     }
 
     /**
@@ -704,7 +699,7 @@ class Html implements Renderer
      */
     protected function wrapSignatureFunction(string $function, ?string $class=null): string
     {
-        return '<i class="fn'.($class ? ' '.$class : null).'">'.$function.'</i>';
+        return '<span class="name function'.($class ? ' '.$class : null).'">'.$function.'</span>';
     }
 
     /**
@@ -720,7 +715,7 @@ class Html implements Renderer
      */
     protected function renderSignatureObject(string $object): string
     {
-        return '<i class="ob">'.$this->esc($object).'</i>';
+        return '<span class="name class param">'.$this->esc($object).'</span>';
     }
 
 
