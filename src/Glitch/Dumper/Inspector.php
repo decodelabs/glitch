@@ -711,9 +711,7 @@ class Inspector
         // Interfaces
         $ref = new \ReflectionClass($object);
 
-        foreach ($ref->getInterfaces() as $interface) {
-            $interfaceName = $interface->getName();
-
+        foreach ($ref->getInterfaceNames() as $interfaceName) {
             if (isset($this->objectInspectors[$interfaceName])) {
                 call_user_func($this->objectInspectors[$interfaceName], $object, $entity, $this);
                 return;
