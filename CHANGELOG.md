@@ -1,3 +1,6 @@
+## v0.13.0 (2019-09-30)
+* Converted styling to use root css variables
+
 ## v0.12.0 (2019-09-30)
 * Add className display option to Entities
 * Fixed PDO attribute error catching

@@ -31,7 +31,7 @@ ul.stack {
         border: 3px solid transparent;
         transition: all 0.5s;
 
-        samp.dump.source {
+        samp.source {
             height: 0;
             transition: height 0.35s;
         }
@@ -47,21 +47,41 @@ ul.stack {
                 cursor: n-resize;
             }
 
-            samp.dump.source {
+            samp.source {
                 height: auto;
             }
         }
+    }
 
-        span {
+    &:first-child div.stack-frame.w-source {
+        margin-top: 0;
+    }
+
+    samp.dump.trace {
+        padding: 0.5rem 0.75rem 0.5rem 3.5rem;
+        cursor: s-resize;
+        transition: margin-top 0.2s, border-color 0.2s ease-out;
+        overflow-x: auto;
+        border: none;
+        position: relative;
+
+        > span {
             &.number {
-                color: $gray;
+                color: var(--frame-number);
                 width: 2em;
-                margin-right: 0.5em;
-                display: inline-block;
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 text-align: right;
+                position: absolute;
+                width: 2.9rem;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                height: 100%;
+                background: rgba(white, 0.04);
             }
             &.signature {
-                color: $gray;
                 padding-right: 1rem;
 
                 &:after {
@@ -74,12 +94,11 @@ ul.stack {
                 }
             }
             &.file {
-                color: lighten($orange, 25%);
-                margin-left: 2.45em;
+                color: var(--frame-file);
 
                 + .line:before {
                     content: ' : ';
-                    color: $gray;
+                    color: var(--grammar);
                     opacity: 0.5;
                 }
 
@@ -88,42 +107,22 @@ ul.stack {
                 }
             }
             &.line {
-                color: lighten($pink, 15%);
+                color: var(--frame-line);
                 padding-right: 1rem;
             }
         }
     }
 
-    &:first-child div.stack-frame.w-source {
-        margin-top: 0;
-    }
-
-    samp.dump.trace {
+    samp.source {
         padding: 0.5rem 0.75rem;
-        cursor: s-resize;
-        transition: margin-top 0.2s, border-color 0.2s ease-out;
-        overflow-x: auto;
-        border: none;
-    }
-
-    samp.dump.source {
-        padding: 0.5rem 0.75rem;
-        background: rgba(#333, 0.35);
         border-radius: 0 0 2px 2px;
+        font-size: 0.8em;
 
         &:before {
             content: '';
             display: block;
             width: 100%;
             border-top: 1px solid rgba(#333, 0.8) !important;
-        }
-
-        span.line {
-            opacity: 1;
-
-            span.number {
-                background: rgba(darken($cream, 35%), 0.3);
-            }
         }
     }
 }

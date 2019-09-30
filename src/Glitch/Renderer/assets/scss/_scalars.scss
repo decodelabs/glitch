@@ -2,18 +2,22 @@
 .bool,
 .int,
 .float {
-    color: lighten($pink, 10%);
+    color: var(--scalar);
     font-weight: 600;
 }
 .bool {
     font-style: italic;
 }
 .int, .float {
-    color: lighten($indigo, 30%);
+    color: var(--number);
+}
+
+.resource {
+    color: var(--resource);
 }
 
 .g, .pointer {
-    color: $gray;
+    color: var(--grammar);
 }
 .pointer {
     opacity: 0.5;
@@ -22,11 +26,11 @@
 
 .string {
     > .line {
-        color: $red-bright;
+        color: var(--string);
     }
 
     > .length {
-        color: $teal;
+        color: var(--length);
         margin-left: 0.5em;
         display: none;
     }
@@ -36,22 +40,18 @@
     }
 
     &.identifier {
-        color: lighten($orange, 10%);
+        color: var(--identifier);
 
         &:before, &:after {
             display: none;
         }
     }
 
-    &.def {
-        color: $gray-300;
-    }
-
     &.s {
         > .line {
             &:before, &:after {
                 content: '"';
-                color: $gray;
+                color: var(--grammar);
                 opacity: 0.5;
             }
         }
@@ -64,7 +64,7 @@
 
         &:before, &:after {
             content: '"""';
-            color: $gray;
+            color: var(--grammar);
             opacity: 0.6;
         }
 
@@ -76,7 +76,7 @@
 
             &:after {
                 content: '⏎';
-                color: $gray;
+                color: var(--grammar);
                 opacity: 0.5;
                 font-size: 1.3em;
                 line-height: 1;
@@ -100,7 +100,8 @@
             }
 
             > .line {
-                color: lighten($orange, 30%);
+                color: var(--definition);
+                padding-left: 0.1rem;
             }
         }
 
@@ -146,7 +147,7 @@
     }
 
     span.control {
-        color: lighten($orange, 10%);
+        color: var(--identifier);
         opacity: 0.85;
 
         &.tab {

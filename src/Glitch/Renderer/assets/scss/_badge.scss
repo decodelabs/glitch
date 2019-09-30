@@ -2,7 +2,6 @@ a.badge {
     cursor: help;
     font-size: 0.9em;
     color: white !important;
-    background: pink;
     padding: 0 0.5em;
     border-radius: 0.25em;
     transition: background-color 0.35s, opacity 0.2s;
@@ -14,10 +13,10 @@ a.badge {
     }
 
     &.info {
-        background-color: $cyan;
+        background-color: var(--badge-info);
 
         &:hover {
-            background-color: darken($cyan, 10%);
+            background-color: var(--badge-info-hover);
         }
 
         i {
@@ -25,17 +24,17 @@ a.badge {
         }
     }
     &.meta {
-        background-color: $pink;
+        background-color: var(--badge-meta);
 
         &:hover {
-            background-color: darken($pink, 10%);
+            background-color: var(--badge-meta-hover);
         }
     }
     &.text {
-        background-color: $red;
+        background-color: var(--badge-text);
 
         &:hover {
-            background-color: darken($red, 10%);
+            background-color: var(--badge-text-hover);
         }
 
         i {
@@ -43,17 +42,17 @@ a.badge {
         }
     }
     &.def {
-        background-color: $orange;
+        background-color: var(--badge-definition);
 
         &:hover {
-            background-color: darken($orange, 15%);
+            background-color: var(--badge-definition-hover);
         }
     }
     &.props {
-        background-color: $blue;
+        background-color: var(--badge-properties);
 
         &:hover {
-            background-color: darken($blue, 10%);
+            background-color: var(--badge-properties-hover);
         }
 
         i {
@@ -61,17 +60,17 @@ a.badge {
         }
     }
     &.values {
-        background-color: $yellow;
+        background-color: var(--badge-values);
 
         &:hover {
-            background-color: darken($yellow, 15%);
+            background-color: var(--badge-values-hover);
         }
     }
     &.stack {
-        background-color: $gray-600;
+        background-color: var(--badge-stack);
 
         &:hover {
-            background-color: darken($gray-600, 15%);
+            background-color: var(--badge-stack-hover);
         }
     }
 }

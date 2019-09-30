@@ -226,6 +226,13 @@ class Html implements Renderer
             return;
         }
 
+
+        $enlightenPath = $vendor.'/decodelabs/enlighten/src/resources/styles.css';
+        $_sourcePath = $vendor.'/decodelabs/glitch/src/Glitch/Renderer/assets/scss/auto/_source.scss';
+        file_put_contents($_sourcePath, file_get_contents($enlightenPath));
+
+
+
         $scssPath = substr($cssPath, 0, -3).'scss';
 
         if (!file_exists($scssPath)) {
@@ -446,9 +453,7 @@ class Html implements Renderer
             $line[] = '</samp>';
 
             if (null !== ($source = $this->renderFrameSource($frame))) {
-                $line[] = '<samp class="dump source">';
                 $line[] = $source;
-                $line[] = '</samp>';
             }
 
             $line[] = '</div>';
@@ -619,6 +624,15 @@ class Html implements Renderer
 
         return '<span class="'.$class.'">'.$control.'</span>';
     }
+
+    /**
+     * Passthrough resource
+     */
+    protected function renderResource($value, ?string $class=null): string
+    {
+        return '<span class="resource">resource</span>';
+    }
+
 
     /**
      * Render structure grammer

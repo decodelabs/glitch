@@ -1,4 +1,4 @@
-span.signature {
+span.signature.source {
     span.name {
         &.function {
             font-weight: bold;
@@ -7,7 +7,7 @@ span.signature {
                 font-style: italic;
 
                 &:before, &:after {
-                    color: $gray;
+                    color: var(--grammar);
                     opacity: 0.9;
                 }
 
@@ -22,18 +22,17 @@ span.signature {
         }
 
         &.class.param {
-            color: lighten($cyan, 15%);
+            color: var(--source-class);
             font-style: italic;
         }
     }
 
     span.ar {
-        color: $cyan;
-        font-style: italic;
+        color: var(--number);
 
-        i.br:first-child:after {
+        .g:first-child:after {
             content: '…';
-            color: $gray;
+            color: var(--grammar);
             opacity: 0.7;
         }
     }
