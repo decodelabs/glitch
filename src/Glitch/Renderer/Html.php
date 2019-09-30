@@ -79,6 +79,25 @@ class Html implements Renderer
 
     use Base;
 
+    protected $customCssFile = null;
+
+    /**
+     * Set custom css file
+     */
+    public function setCustomCssFile(?string $path): Html
+    {
+        $this->customCssFile = $path;
+        return $this;
+    }
+
+    /**
+     * Get custom css file
+     */
+    public function getCustomCssFile(): ?string
+    {
+        return $this->customCssFile;
+    }
+
 
     /**
      * Convert Dump object to HTML string
@@ -183,6 +202,10 @@ class Html implements Renderer
         $css = [
             'glitch' => $sassCss
         ];
+
+        if (isset($this->customCssFile)) {
+            $css['custom'] = $this->customCssFile;
+        }
 
         foreach ($css as $name => $cssPath) {
             if (file_exists($cssPath)) {

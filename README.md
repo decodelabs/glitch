@@ -74,6 +74,25 @@ The dump output is rendered by an instance of <code>DecodeLabs\Glitch\Renderer</
 
 Custom renderers may convert <code>Entities</code> to other output formats depending on where they should be sent, such as Xml or Json for example.
 
+#### Custom colours
+The HTML renderer uses css variables to style individual element colours and can be overridden with custom values.
+Create a custom css file with variable overrides:
+
+```css
+:root {
+    --string: purple;
+    --binary: green;
+}
+```
+
+See [colours.scss](./src/Glitch/Renderer/assets/_colours.scss) for all of the current colour override options.
+
+Then load the file into the HTML renderer:
+
+```php
+Glitch::getRenderer()->setCustomCssFile('path/to/my/file.css');
+```
+
 #### Transports
 Once rendered, the dump information is delivered via an instance of <code>DecodeLabs\Glitch\Transport</code>, also overridable on the default <code>Context</code>. It is the responsibility of the <code>Transport</code> to deliver the rendered dump.
 
@@ -154,4 +173,4 @@ class Thing {
 
 
 ## Licensing
-Glitch is licensed under the MIT License. See [LICENSE](https://github.com/decodelabs/glitch/blob/master/LICENSE) for the full license text.
+Glitch is licensed under the MIT License. See [LICENSE](./LICENSE) for the full license text.
