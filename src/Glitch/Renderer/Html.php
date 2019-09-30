@@ -79,6 +79,25 @@ class Html implements Renderer
 
     use Base;
 
+    protected $customCssFile = null;
+
+    /**
+     * Set custom css file
+     */
+    public function setCustomCssFile(?string $path): Html
+    {
+        $this->customCssFile = $path;
+        return $this;
+    }
+
+    /**
+     * Get custom css file
+     */
+    public function getCustomCssFile(): ?string
+    {
+        return $this->customCssFile;
+    }
+
 
     /**
      * Convert Dump object to HTML string
@@ -184,6 +203,10 @@ class Html implements Renderer
             'glitch' => $sassCss
         ];
 
+        if (isset($this->customCssFile)) {
+            $css['custom'] = $this->customCssFile;
+        }
+
         foreach ($css as $name => $cssPath) {
             if (file_exists($cssPath)) {
                 $output[] = '<style id="style-'.$name.'">';
@@ -225,6 +248,13 @@ class Html implements Renderer
         if (!static::DEV || !$isDev) {
             return;
         }
+
+
+        $enlightenPath = $vendor.'/decodelabs/enlighten/src/resources/styles.css';
+        $_sourcePath = $vendor.'/decodelabs/glitch/src/Glitch/Renderer/assets/scss/auto/_source.scss';
+        file_put_contents($_sourcePath, file_get_contents($enlightenPath));
+
+
 
         $scssPath = substr($cssPath, 0, -3).'scss';
 
@@ -446,9 +476,7 @@ class Html implements Renderer
             $line[] = '</samp>';
 
             if (null !== ($source = $this->renderFrameSource($frame))) {
-                $line[] = '<samp class="dump source">';
                 $line[] = $source;
-                $line[] = '</samp>';
             }
 
             $line[] = '</div>';
@@ -619,6 +647,15 @@ class Html implements Renderer
 
         return '<span class="'.$class.'">'.$control.'</span>';
     }
+
+    /**
+     * Passthrough resource
+     */
+    protected function renderResource($value, ?string $class=null): string
+    {
+        return '<span class="resource">resource</span>';
+    }
+
 
     /**
      * Render structure grammer

@@ -424,7 +424,7 @@ class Inspector
 
         $entity = (new Entity('resource'))
             ->setName('resource')
-            ->setClass($rType = get_resource_type($resource))
+            ->setClassName($rType = get_resource_type($resource))
             ->setObjectId((int)$id);
 
         $typeName = str_replace(' ', '', ucwords($rType));

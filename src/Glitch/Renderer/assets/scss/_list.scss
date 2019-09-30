@@ -20,7 +20,7 @@ ul.list {
 
             &:before {
                 content: 'ⓟ';
-                color: lighten($green, 10%);
+                color: var(--list-property-icon-public);
                 opacity: 1;
                 display: none;
                 position: relative;
@@ -42,15 +42,14 @@ ul.list {
         > li {
 
             > .identifier {
-                color: lighten($cyan, 10%);
+                color: var(--list-info);
 
                 &.key {
-                    color: $gray-300;
-                    opacity: 0.75;
+                    color: var(--list-info-key);
 
                     &:before {
                         content: 'ⓘ';
-                        color: lighten($cyan, 10%);
+                        color: var(--list-info-icon);
                         display: inline;
                     }
                 }
@@ -65,15 +64,14 @@ ul.list {
     &.meta {
         > li {
             > .identifier {
-                color: $red-bright;
+                color: var(--list-meta);
 
                 &.key {
-                    color: $gray-200;
-                    opacity: 0.75;
+                    color: var(--list-meta-key);
 
                     &:before {
                         content: 'ⓜ';
-                        color: lighten($red-bright, 10%);
+                        color: var(--list-meta-icon);
                         display: inline;
                     }
                 }
@@ -85,26 +83,26 @@ ul.list {
         > li {
             > .identifier {
                 &.key {
-                    color: lighten($blue, 25%);
+                    color: var(--list-property-key);
 
                     &:before {
                         content: 'ⓟ';
-                        color: lighten($green, 10%);
+                        color: var(--public);
                         display: inline;
                     }
 
                     &.protected:before {
-                        color: lighten($yellow, 15%);
+                        color: var(--list-property-icon-protected);
                     }
                     &.private:before {
-                        color: lighten($red-bright, 15%);
+                        color: var(--list-property-icon-private);
                     }
                     &.public:before {
-                        color: lighten($green, 15%);
+                        color: var(--list-property-icon-public);
                     }
                     &.virtual:before {
                         content: 'ⓧ';
-                        color: lighten($purple, 20%);
+                        color: var(--list-property-icon-virtual);
                     }
                 }
             }
@@ -115,13 +113,16 @@ ul.list {
         > li {
             &:before {
                 content: 'ⓥ';
-                color: lighten($yellow, 15%);
+                color: var(--list-values-icon);
                 position: relative;
                 margin-top: 0.3em;
                 font-size: 0.8em;
                 display: inline;
-                opacity: 0.75;
                 font-weight: bold;
+            }
+
+            > .identifier {
+                color: var(--list-values-key);
             }
         }
     }
@@ -135,7 +136,7 @@ ul.list {
         > li {
             &:after {
                 content: ',';
-                color: $gray;
+                color: var(--grammar);
                 opacity: 0.5;
                 margin-right: 1em;
             }

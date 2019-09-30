@@ -1,6 +1,9 @@
 @import "./scss/_variables.scss";
+@import "./scss/_colours.scss";
 @import "./scss/_fonts.scss";
 @import "./scss/_reboot.scss";
+
+@import "./scss/auto/_source.scss";
 
 @import "./scss/_container.scss";
 @import "./scss/_header.scss";
@@ -16,4 +19,3 @@
 
 @import "./scss/_badge.scss";
 @import "./scss/_scalars.scss";
-@import "./scss/_source.scss";

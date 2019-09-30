@@ -477,6 +477,14 @@ trait Base
     }
 
     /**
+     * Passthrough resource
+     */
+    protected function renderResource($value, ?string $class=null): string
+    {
+        return 'resource';
+    }
+
+    /**
      * Render grammar
      */
     protected function renderGrammar(string $grammar): string
@@ -652,6 +660,10 @@ trait Base
 
                     case is_string($arg):
                         $args[] = $this->renderString($arg, null, 16);
+                        break;
+
+                    case is_resource($arg):
+                        $args[] = $this->renderResource($arg);
                         break;
 
                     default:

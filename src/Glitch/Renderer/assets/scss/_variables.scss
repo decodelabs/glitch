@@ -25,3 +25,7 @@ $cream: lighten(desaturate(#F1F2E2, 25%), 6%);
 
 $font-scale: true;
 $font-base-size: 16px;
+
+html {
+    visibility: visible;
+}

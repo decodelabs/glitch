@@ -19,13 +19,13 @@ div.entity {
         }
 
         .name {
-            color: lighten($green, 10%);
+            color: var(--keyword);
             cursor: pointer;
             text-decoration: none;
 
             &.ref:before {
                 content: '&';
-                color: $gray;
+                color: var(--grammar);
                 opacity: 0.5;
                 margin-right: 0.2em;
             }
@@ -35,22 +35,22 @@ div.entity {
             }
 
             .g {
-                color: $gray;
+                color: var(--grammar);
                 opacity: 0.5;
             }
         }
 
         &.t-stack .name {
-            color: $gray !important;
+            color: var(--grammar) !important;
         }
         &.t-flags {
             .name {
-                color: lighten($purple, 25%) !important;
+                color: var(--constant) !important;
             }
 
             ~ .body > .inner > .values > ul.list.values > li:before {
                 content: 'ⓒ';
-                color: lighten($purple, 25%);
+                color: var(--constant);
             }
         }
         &.t-const .name {
@@ -58,21 +58,21 @@ div.entity {
         }
 
         .class {
-            color: $gray-300;
+            color: var(--type-name);
         }
 
 
         .length {
-            color: lighten($teal, 10%);
+            color: var(--length);
         }
 
         .oid {
             margin-right: 0 !important;
-            color: $gray;
+            color: var(--id);
 
             &:before {
                 content: '#';
-                color: $gray;
+                color: var(--grammar);
                 opacity: 0.5;
                 margin-right: 0.2em;
             }
@@ -84,7 +84,7 @@ div.entity {
 
         &:target {
             > .name {
-                background: $green;
+                background: var(--keyword-target);
                 color: white !important;
                 border-radius: 0.3em;
                 padding: 0 0.3em;
@@ -93,7 +93,7 @@ div.entity {
             }
 
             > .oid {
-                background: lighten($purple, 10%);
+                background: var(--id-target);
                 color: white;
                 border-radius: 0.3em;
                 padding: 0 0.3em;
@@ -134,7 +134,7 @@ div.entity {
 
         &.t-stack > div.stack:before {
             content: 'ⓢ';
-            color: $gray;
+            color: var(--list-stack-icon);
             opacity: 0.5;
             position: relative;
             margin-top: 0.3em;
@@ -142,37 +142,6 @@ div.entity {
         }
         &.stack > div.stack:before {
             display: none;
-        }
-
-        > div.text {
-            color: lighten($red, 10%);
-
-            &:before {
-                content: 'ⓣ';
-                color: $gray;
-                opacity: 0.5;
-                position: relative;
-                margin-top: 0.3em;
-                font-size: 0.8em;
-            }
-
-            &.binary > i {
-                margin-right: 0.5em;
-                color: lighten($indigo, 25%);
-            }
-        }
-
-        > div.def {
-            color: $orange;
-
-            &:before {
-                content: 'ⓓ';
-                color: $orange;
-                opacity: 1;
-                position: relative;
-                margin-top: 0.3em;
-                font-size: 0.8em;
-            }
         }
     }
 
