@@ -23,15 +23,15 @@ div.entity {
             cursor: pointer;
             text-decoration: none;
 
+            i {
+                font-style: normal;
+            }
+
             &.ref:before {
                 content: '&';
                 color: var(--grammar);
                 opacity: 0.5;
                 margin-right: 0.2em;
-            }
-
-            i {
-                font-style: normal;
             }
 
             .g {

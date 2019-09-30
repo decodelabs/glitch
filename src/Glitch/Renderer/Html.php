@@ -712,7 +712,7 @@ class Html implements Renderer
      */
     protected function renderSignatureNamespace(string $namespace): string
     {
-        return '<span class="name namespace">'.$this->esc($namespace).'</span>';
+        return '<span class="namespace">'.$this->esc($namespace).'</span>';
     }
 
     /**
@@ -720,7 +720,7 @@ class Html implements Renderer
      */
     protected function renderSignatureClass(string $class): string
     {
-        return '<span class="name class">'.$this->esc($class).'</span>';
+        return '<span class="class">'.$this->esc($class).'</span>';
     }
 
     /**
@@ -728,7 +728,7 @@ class Html implements Renderer
      */
     protected function renderSignatureConstant(string $constant): string
     {
-        return '<span class="name constact">'.$this->esc($constant).'</span>';
+        return '<span class="constant">'.$this->esc($constant).'</span>';
     }
 
     /**
@@ -736,7 +736,7 @@ class Html implements Renderer
      */
     protected function wrapSignatureFunction(string $function, ?string $class=null): string
     {
-        return '<span class="name function'.($class ? ' '.$class : null).'">'.$function.'</span>';
+        return '<span class="function'.($class ? ' '.$class : null).'">'.$function.'</span>';
     }
 
     /**
@@ -752,7 +752,7 @@ class Html implements Renderer
      */
     protected function renderSignatureObject(string $object): string
     {
-        return '<span class="name class param">'.$this->esc($object).'</span>';
+        return '<span class="class param">'.$this->esc($object).'</span>';
     }
 
 
