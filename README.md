@@ -37,8 +37,7 @@ app://models/MyModel.php
 Pass the <code>microtime()</code> of initial app launch if necessary:
 
 ```php
-$time = microtime(true);
-Glitch::setStartTime($time);
+Glitch::setStartTime(microtime(true));
 ```
 
 
@@ -57,7 +56,7 @@ dump($myObject);
 dd($myObject);
 ```
 
-You can mark also functions as incomplete whilst in development:
+You can also mark functions as incomplete whilst in development:
 ```php
 function myFunction() {
     // This will throw a Glitch exception
@@ -70,7 +69,7 @@ function myFunction() {
 #### Renderers
 The resulting dump UI (when using the HTML renderer, the default option) is injected into an iframe at runtime so can be rendered into any HTML page without breaking anything. If the page is otherwise empty, the iframe will expand to fill the viewport if possible.
 
-The dump output is rendered by an instance of <code>DecodeLabs\Glitch\Renderer</code> which can be overridden on the default <code>Context</code> at startup. By default the <code>Html</code> renderer is loaded under normal circumstances, the <code>Cli</code> renderer is used when under the CLI sapi.
+The dump output is rendered by an instance of <code>DecodeLabs\Glitch\Renderer</code> which can be overridden on the default <code>Context</code> at startup. The <code>Html</code> renderer is loaded under http sapi, the <code>Cli</code> renderer is used when under the CLI sapi.
 
 Custom renderers may convert <code>Entities</code> to other output formats depending on where they should be sent, such as Xml or Json for example.
 
@@ -85,7 +84,7 @@ Create a custom css file with variable overrides:
 }
 ```
 
-See [colours.scss](./src/Glitch/Renderer/assets/_colours.scss) for all of the current colour override options.
+See [colours.scss](./src/Glitch/Renderer/assets/scss/_colours.scss) for all of the current colour override options.
 
 Then load the file into the HTML renderer:
 
