@@ -1,3 +1,6 @@
+## v0.13.1 (2019-09-30)
+* Updated default styles
+
 ## v0.13.0 (2019-09-30)
 * Converted styling to use root css variables
 

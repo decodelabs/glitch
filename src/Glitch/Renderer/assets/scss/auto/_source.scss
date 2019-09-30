@@ -10,7 +10,7 @@
     --source-operator-special: #3CE0AF;
     --source-string: var(--string, #F37782);
     --source-string-quote: var(--grammar, #ADB5BD);
-    --source-number: var(--number, #C4A1FA);
+    --source-number: var(--number, #BB9AF6);
     --source-variable: #E9ECEF;
     --source-comment: var(--comment, #DDB79E);
     --source-html: #E83E8C;
@@ -153,19 +153,19 @@ samp.source span.line.spacer::after {
 .source .name {
     color: var(--source-name);
 }
-.source .name.return {
+.source .return {
     font-style: italic;
 }
-.source .name.member {
+.source .member {
     color: var(--source-member);
 }
-.source .name.class {
+.source .class {
     color: var(--source-class);
 }
-.source .name.namespace {
+.source .namespace {
     color: var(--source-namespace);
 }
-.source .name.function {
+.source .function {
     color: var(--source-function);
 }
 
