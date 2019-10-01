@@ -1,3 +1,7 @@
+## v0.14.1 (2019-10-02)
+* Improved HTTP header handling
+* Added Packet class for Transport passthrough
+
 ## v0.14.0 (2019-10-01)
 * Simplified dump interface
 * Added header buffer sender mechanism
