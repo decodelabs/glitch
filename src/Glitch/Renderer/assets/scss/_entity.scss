@@ -130,16 +130,19 @@ div.entity {
                 height: auto;
                 display: block;
             }
+
+            &.t-stack > div.stack:before {
+                content: 'ⓢ';
+                color: var(--list-stack-icon);
+                opacity: 0.5;
+                position: relative;
+                margin-top: 0.3em;
+                font-size: 0.8em;
+                font-weight: bold;
+            }
         }
 
-        &.t-stack > div.stack:before {
-            content: 'ⓢ';
-            color: var(--list-stack-icon);
-            opacity: 0.5;
-            position: relative;
-            margin-top: 0.3em;
-            font-size: 0.8em;
-        }
+
         &.stack > div.stack:before {
             display: none;
         }

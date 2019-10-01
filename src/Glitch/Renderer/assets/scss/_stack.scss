@@ -58,7 +58,7 @@ ul.stack {
     }
 
     samp.dump.trace {
-        padding: 0.5rem 0.75rem 0.5rem 3.5rem;
+        padding: 0.5rem 0.75rem 0.5rem 4em;
         cursor: s-resize;
         transition: margin-top 0.2s, border-color 0.2s ease-out;
         overflow-x: auto;
@@ -74,7 +74,7 @@ ul.stack {
                 justify-content: center;
                 text-align: right;
                 position: absolute;
-                width: 2.9rem;
+                width: 2.9em;
                 top: 0;
                 left: 0;
                 bottom: 0;
@@ -125,6 +125,12 @@ ul.stack {
             border-top: 1px solid rgba(#333, 0.8) !important;
         }
     }
+}
+
+div.stack-list ul.stack div.stack-frame samp.dump.trace {
+    padding-top: 0;
+    padding-bottom: 0;
+    cursor: default;
 }
 
 

@@ -247,7 +247,7 @@ class Frame
         if ($alias) {
             if (false !== strpos($class, 'Glitch/Exception/Factory.php')) {
                 return 'EGlitch';
-            } elseif (false !== strpos($class, 'veneer/src/Binding.php')) {
+            } elseif (false !== strpos($class, 'veneer/src/Veneer/Binding.php')) {
                 return '~'.$class::FACADE;
             }
         }
