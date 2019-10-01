@@ -140,6 +140,14 @@ div.entity {
                 font-size: 0.8em;
                 font-weight: bold;
             }
+
+
+            &.t-text > div.binary {
+                i {
+                    margin-right: 0.5em;
+                    color: var(--binary);
+                }
+            }
         }
 
 
