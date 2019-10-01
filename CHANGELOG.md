@@ -1,5 +1,6 @@
 ## v0.14.0 (2019-10-01)
 * Simplified dump interface
+* Added header buffer sender mechanism
 
 ## v0.13.3 (2019-10-01)
 * Fixed binary rendering
