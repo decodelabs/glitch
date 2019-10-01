@@ -185,7 +185,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
         unset($inspector);
 
         $packet = $this->getRenderer()->renderDump($dump);
-        $this->getTransport()->sendDump($packet);
+        $this->getTransport()->sendDump($packet, $exit);
 
         if ($exit) {
             exit(1);
@@ -230,7 +230,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
         unset($inspector);
 
         $packet = $this->getRenderer()->renderException($exception, $entity, $dump);
-        $this->getTransport()->sendException($packet);
+        $this->getTransport()->sendException($packet, $exit);
 
         if ($exit) {
             exit(1);
