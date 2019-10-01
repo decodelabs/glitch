@@ -391,6 +391,8 @@ class Html implements Renderer
      */
     protected function renderExceptionEntity(Entity $entity): string
     {
+        $entity->setSectionVisible('info', true);
+
         $output = [];
         $output[] = '<section class="dump object">';
         $output[] = '<h3>Exception object</h3>';
