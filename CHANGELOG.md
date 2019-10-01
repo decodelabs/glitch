@@ -1,3 +1,6 @@
+## v0.14.0 (2019-10-01)
+* Simplified dump interface
+
 ## v0.13.3 (2019-10-01)
 * Fixed binary rendering
 

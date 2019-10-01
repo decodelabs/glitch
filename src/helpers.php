@@ -26,7 +26,7 @@ namespace
          */
         function dd($var, ...$vars): void
         {
-            Facade::dumpDie(func_get_args(), 1);
+            Facade::dumpValues(func_get_args(), 1, true);
         }
     }
 
@@ -52,7 +52,7 @@ namespace
          */
         function dump($var, ...$vars): void
         {
-            Facade::dump(func_get_args(), 1);
+            Facade::dumpValues(func_get_args(), 1, false);
         }
     } elseif (class_exists(VarDumper::class)) {
         VarDumper::setHandler(function ($var) {
@@ -75,7 +75,7 @@ namespace
                     $args = func_get_args();
                 }
 
-                Facade::dump($args, 3);
+                Facade::dumpValues($args, 3, $func == 'dd');
             } else {
                 $skip--;
                 return;

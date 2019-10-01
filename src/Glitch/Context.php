@@ -130,8 +130,35 @@ class Context implements LoggerAwareInterface, FacadeTarget
     /**
      * Send variables to dump, carry on execution
      */
-    public function dump(array $values, int $rewind=0): void
+    public function dump($var, ...$vars): void
     {
+        $this->dumpValues(func_get_args(), 1, false);
+    }
+
+    /**
+     * Send variables to dump, exit and render
+     */
+    public function dumpDie($var, ...$vars): void
+    {
+        $this->dumpValues(func_get_args(), 1, true);
+    }
+
+
+    /**
+     * Send variables to dump, carry on execution
+     */
+    public function dumpValues(array $values, int $rewind=0, bool $exit=true): void
+    {
+        if ($exit) {
+            while (ob_get_level()) {
+                if ($this->dumpedInBuffer) {
+                    echo ob_get_clean();
+                } else {
+                    ob_end_clean();
+                }
+            }
+        }
+
         $trace = Trace::create($rewind - 1);
 
         if (null !== $trace->getFirstFrame()->getVeneerFacade()) {
@@ -158,31 +185,27 @@ class Context implements LoggerAwareInterface, FacadeTarget
 
         $packet = $this->getRenderer()->renderDump($dump);
         $this->getTransport()->sendDump($packet);
-    }
 
-    /**
-     * Send variables to dump, exit and render
-     */
-    public function dumpDie(array $values, int $rewind=0): void
-    {
-        while (ob_get_level()) {
-            if ($this->dumpedInBuffer) {
-                echo ob_get_clean();
-            } else {
-                ob_end_clean();
-            }
+        if ($exit) {
+            exit(1);
         }
-
-        $this->dump($values, $rewind + 1);
-        exit(1);
     }
-
 
     /**
      * Dump and render exception
      */
-    public function dumpException(\Throwable $exception): void
+    public function dumpException(\Throwable $exception, bool $exit=true): void
     {
+        if ($exit) {
+            while (ob_get_level()) {
+                if ($this->dumpedInBuffer) {
+                    echo ob_get_clean();
+                } else {
+                    ob_end_clean();
+                }
+            }
+        }
+
         if ($exception instanceof \EGlitch) {
             $data = $exception->getData();
             $trace = $exception->getStackTrace();
@@ -207,8 +230,15 @@ class Context implements LoggerAwareInterface, FacadeTarget
 
         $packet = $this->getRenderer()->renderException($exception, $entity, $dump);
         $this->getTransport()->sendException($packet);
-        exit(1);
+
+        if ($exit) {
+            exit(1);
+        }
     }
+
+
+
+
 
 
     /**
