@@ -46,6 +46,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
     protected $dumpRenderer;
     protected $transport;
 
+    protected $headerBufferSender;
     protected $errorPageRenderer;
 
 
@@ -184,7 +185,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
         unset($inspector);
 
         $packet = $this->getRenderer()->renderDump($dump);
-        $this->getTransport()->sendDump($packet);
+        $this->getTransport()->sendDump($packet, $this->headerBufferSender);
 
         if ($exit) {
             exit(1);
@@ -229,7 +230,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
         unset($inspector);
 
         $packet = $this->getRenderer()->renderException($exception, $entity, $dump);
-        $this->getTransport()->sendException($packet);
+        $this->getTransport()->sendException($packet, $this->headerBufferSender);
 
         if ($exit) {
             exit(1);
@@ -412,6 +413,25 @@ class Context implements LoggerAwareInterface, FacadeTarget
         $errors |= E_COMPILE_WARNING;
 
         return ($level & $errors) > 0;
+    }
+
+
+
+    /**
+     * Set header buffer sender
+     */
+    public function setHeaderBufferSender(?callable $sender): Context
+    {
+        $this->headerBufferSender = $sender;
+        return $this;
+    }
+
+    /**
+     * Get header buffer sender
+     */
+    public function getHeaderBufferSender(): ?callable
+    {
+        return $this->headerBufferSender;
     }
 
 

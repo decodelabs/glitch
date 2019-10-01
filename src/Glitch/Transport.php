@@ -8,6 +8,6 @@ namespace DecodeLabs\Glitch;
 
 interface Transport
 {
-    public function sendDump(string $packet): void;
-    public function sendException(string $packet): void;
+    public function sendDump(string $packet, ?callable $headerBufferSender): void;
+    public function sendException(string $packet, ?callable $headerBufferSender): void;
 }

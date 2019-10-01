@@ -13,16 +13,25 @@ class Stdout implements Transport
     /**
      * Send dump straight to output
      */
-    public function sendDump(string $packet): void
+    public function sendDump(string $packet, ?callable $headerBufferSender): void
     {
-        echo $packet;
+        $this->sendPacket($packet, $headerBufferSender);
     }
 
     /**
      * Send exception dump straight to output
      */
-    public function sendException(string $packet): void
+    public function sendException(string $packet, ?callable $headerBufferSender): void
     {
+        $this->sendPacket($packet, $headerBufferSender);
+    }
+
+    protected function sendPacket(string $packet, ?callable $headerBufferSender): void
+    {
+        if (!in_array(\PHP_SAPI, ['cli', 'phpdbg']) && !headers_sent() && $headerBufferSender) {
+            $headerBufferSender();
+        }
+
         echo $packet;
     }
 }
