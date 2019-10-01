@@ -78,30 +78,11 @@ class Cli implements Renderer
         $output = [];
 
         foreach ($stats as $key => $stat) {
-            if (null === ($statString = $stat->render('text'))) {
+            if (null === ($statString = $stat->render())) {
                 continue;
             }
 
-            $color = 'cyan';
-            $options = [];
-
-            switch ($stat->getClass()) {
-                case 'danger':
-                    $color = 'red';
-                    $options[] = 'bold';
-                    break;
-
-                case 'warning':
-                    $color = 'yellow';
-                    break;
-
-                case 'success':
-                    $color = 'green';
-                    //$options[] = 'bold';
-                    break;
-            }
-
-            $output[] = $this->format($statString, $color, null, ...$options);
+            $output[] = $this->format($statString, 'cyan');
         }
 
         return implode(' | ', $output);

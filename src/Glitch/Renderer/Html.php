@@ -216,16 +216,18 @@ class Html implements Renderer
         }
 
         // Js
-        $js = [
-            'jQuery' => $vendor.'/components/jquery/jquery.min.js',
-            'glitch' => __DIR__.'/assets/glitch.js'
-        ];
+        if ($this->shouldRender()) {
+            $js = [
+                'jQuery' => $vendor.'/components/jquery/jquery.min.js',
+                'glitch' => __DIR__.'/assets/glitch.js'
+            ];
 
-        foreach ($js as $name => $jsPath) {
-            if (file_exists($jsPath)) {
-                $output[] = '<script id="script-'.$name.'">';
-                $output[] = file_get_contents($jsPath);
-                $output[] = '</script>';
+            foreach ($js as $name => $jsPath) {
+                if (file_exists($jsPath)) {
+                    $output[] = '<script id="script-'.$name.'">';
+                    $output[] = file_get_contents($jsPath);
+                    $output[] = '</script>';
+                }
             }
         }
 
@@ -350,6 +352,14 @@ class Html implements Renderer
     }
 
     /**
+     * Render a default message in production mode
+     */
+    protected function renderProductionExceptionMessage(\Throwable $exception): string
+    {
+        return '<section class="production exception">There was a problem serving your request - please try again later</section>';
+    }
+
+    /**
      * Render dump entity list
      */
     protected function renderDumpEntities(Dump $dump): string
@@ -406,7 +416,7 @@ class Html implements Renderer
         $array = [];
 
         foreach ($stats as $name => $stat) {
-            $array[$name] = $stat->render('text');
+            $array[$name] = $stat->render();
         }
 
         $array = array_merge($array, [
@@ -946,7 +956,7 @@ class Html implements Renderer
      */
     protected function wrapStackFrame(string $frame): string
     {
-        return '<div class="stack-frame">'.$frame.'</div>';
+        return '<div class="stack-frame"><samp class="dump trace">'.$frame.'</samp></div>';
     }
 
 

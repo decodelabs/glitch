@@ -138,7 +138,7 @@ trait Base
         $output = [];
 
         foreach ($stats as $stat) {
-            if (null === ($statString = $stat->render('text'))) {
+            if (null === ($statString = $stat->render())) {
                 continue;
             }
 

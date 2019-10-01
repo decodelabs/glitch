@@ -29,7 +29,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
     use FacadeTargetTrait;
 
     const FACADE = 'Glitch';
-    const VERSION = 'v0.13.0';
+    const VERSION = 'v0.13.2';
 
     protected $startTime;
     protected $runMode = 'development';
@@ -45,6 +45,8 @@ class Context implements LoggerAwareInterface, FacadeTarget
     protected $logger;
     protected $dumpRenderer;
     protected $transport;
+
+    protected $errorPageRenderer;
 
 
     /**
@@ -177,13 +179,36 @@ class Context implements LoggerAwareInterface, FacadeTarget
 
 
     /**
-     * Log an exception... somewhere :)
+     * Dump and render exception
      */
-    public function logException(\Throwable $e): void
+    public function dumpException(\Throwable $exception): void
     {
-        // TODO: put this somewhere
-    }
+        if ($exception instanceof \EGlitch) {
+            $data = $exception->getData();
+            $trace = $exception->getStackTrace();
+        } else {
+            $data = null;
+            $trace = Trace::fromException($exception);
+        }
 
+        $inspector = new Inspector($this);
+        $dump = new Dump($trace);
+
+        foreach ($this->statGatherers as $gatherer) {
+            $gatherer($dump, $this);
+        }
+
+        $entity = $inspector->inspectValue($exception)
+            ->removeProperty('*code')
+            ->removeProperty('*http');
+
+        $inspector->reset();
+        unset($inspector);
+
+        $packet = $this->getRenderer()->renderException($exception, $entity, $dump);
+        $this->getTransport()->sendException($packet);
+        exit(1);
+    }
 
 
     /**
@@ -301,38 +326,30 @@ class Context implements LoggerAwareInterface, FacadeTarget
      */
     public function handleException(\Throwable $exception): void
     {
-        if ($this->logger) {
-            $this->logger->critical($exception->getMessage(), [
-                'exception' => $exception
-            ]);
-        }
+        $this->logException($exception);
 
-        if ($exception instanceof \EGlitch) {
-            $data = $exception->getData();
-            $trace = $exception->getStackTrace();
+        if ($this->isProduction() && $this->errorPageRenderer) {
+            ($this->errorPageRenderer)($exception, $this);
         } else {
-            $data = null;
-            $trace = Trace::fromException($exception);
+            $this->dumpException($exception);
         }
-
-        $inspector = new Inspector($this);
-        $dump = new Dump($trace);
-
-        foreach ($this->statGatherers as $gatherer) {
-            $gatherer($dump, $this);
-        }
-
-        $entity = $inspector->inspectValue($exception)
-            ->removeProperty('*code')
-            ->removeProperty('*http');
-
-        $inspector->reset();
-        unset($inspector);
-
-        $packet = $this->getRenderer()->renderException($exception, $entity, $dump);
-        $this->getTransport()->sendException($packet);
-        exit(1);
     }
+
+
+    /**
+     * Log an exception... somewhere :)
+     */
+    public function logException(\Throwable $e): void
+    {
+        if (!$this->logger) {
+            return;
+        }
+
+        $this->logger->critical($exception->getMessage(), [
+            'exception' => $exception
+        ]);
+    }
+
 
     /**
      * Try and do something about fatal errors after shutdown
@@ -365,6 +382,25 @@ class Context implements LoggerAwareInterface, FacadeTarget
         $errors |= E_COMPILE_WARNING;
 
         return ($level & $errors) > 0;
+    }
+
+
+
+    /**
+     * Set error page renderer
+     */
+    public function setErrorPageRenderer(?callable $renderer): Context
+    {
+        $this->errorPageRenderer = $renderer;
+        return $this;
+    }
+
+    /**
+     * Get error page renderer
+     */
+    public function getErrorPageRenderer(): ?callable
+    {
+        return $this->errorPageRenderer;
     }
 
 
@@ -455,52 +491,25 @@ class Context implements LoggerAwareInterface, FacadeTarget
         $dump->addStats(
             // Time
             (new Stat('time', 'Running time', microtime(true) - $this->getStartTime()))
-                ->applyClass(function ($value) {
-                    switch (true) {
-                        case $value > 0.1:
-                            return 'danger';
-
-                        case $value > 0.025:
-                            return 'warning';
-
-                        default:
-                            return 'success';
-                    }
-                })
-                ->setRenderer('text', function ($time) {
-                    return self::formatMicrotime($time);
+                ->setRenderer(function ($time) {
+                    return number_format($time * 1000, 2).' ms';
                 }),
 
             // Memory
             (new Stat('memory', 'Memory usage', memory_get_usage()))
-                ->applyClass($memApp = function ($value) {
-                    $mb = 1024 * 1024;
-
-                    switch (true) {
-                        case $value > (10 * $mb):
-                            return 'danger';
-
-                        case $value > (5 * $mb):
-                            return 'warning';
-
-                        default:
-                            return 'success';
-                    }
-                })
-                ->setRenderer('text', function ($memory) {
+                ->setRenderer(function ($memory) {
                     return self::formatFilesize($memory);
                 }),
 
             // Peak memory
             (new Stat('peakMemory', 'Peak memory usage', memory_get_peak_usage()))
-                ->applyClass($memApp)
-                ->setRenderer('text', function ($memory) {
+                ->setRenderer(function ($memory) {
                     return self::formatFilesize($memory);
                 }),
 
             // Location
             (new Stat('location', 'Dump location', $frame))
-                ->setRenderer('text', function ($frame) {
+                ->setRenderer(function ($frame) {
                     if (null === ($file = $frame->getCallingFile())) {
                         return null;
                     }
@@ -511,7 +520,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
     }
 
     /**
-     * TODO: move these to a shared location
+     * Format filesize bytes as human readable
      */
     public static function formatFilesize($bytes)
     {
@@ -522,11 +531,6 @@ class Context implements LoggerAwareInterface, FacadeTarget
         }
 
         return round($bytes, 2).' '.$units[$i];
-    }
-
-    public static function formatMicrotime($time)
-    {
-        return number_format($time * 1000, 2).' ms';
     }
 
 

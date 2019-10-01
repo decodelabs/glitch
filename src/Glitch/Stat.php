@@ -11,9 +11,7 @@ class Stat
     protected $name;
     protected $key;
     protected $value;
-    protected $class = 'info';
-
-    protected $renderers = [];
+    protected $renderer;
 
     /**
      * Construct with main info
@@ -44,49 +42,21 @@ class Stat
 
 
     /**
-     * Set badge class
-     */
-    public function setClass(string $class): Stat
-    {
-        $this->class = $class;
-        return $this;
-    }
-
-    /**
-     * Get badge class
-     */
-    public function getClass(): string
-    {
-        return $this->class;
-    }
-
-    /**
-     * Apply class with value
-     */
-    public function applyClass(callable $applicator): Stat
-    {
-        return $this->setClass($applicator($this->value));
-    }
-
-
-    /**
      * Add a named renderer
      */
-    public function setRenderer(string $type, callable $renderer): Stat
+    public function setRenderer(?callable $renderer): Stat
     {
-        $this->renderers[$type] = $renderer;
+        $this->renderer = $renderer;
         return $this;
     }
 
     /**
      * Render to string using stack of named renderers
      */
-    public function render(string $type): ?string
+    public function render(): ?string
     {
-        if (isset($this->renderers[$type])) {
-            $output = $this->renderers[$type]($this->value);
-        } elseif ($type !== 'text' && isset($this->renderers['text'])) {
-            $output = $this->renderers['text']($this->value);
+        if (isset($this->renderer)) {
+            $output = ($this->renderer)($this->value);
         } else {
             $output = $this->value;
         }
