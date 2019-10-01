@@ -1,3 +1,8 @@
+## v0.13.2 (2019-10-01)
+* Simplified stat rendering
+* Fixed stack trace rendering
+* Improved production mode handling
+
 ## v0.13.1 (2019-09-30)
 * Updated default styles
 
