@@ -1,3 +1,6 @@
+## v0.13.3 (2019-10-01)
+* Fixed binary rendering
+
 ## v0.13.2 (2019-10-01)
 * Simplified stat rendering
 * Fixed stack trace rendering
