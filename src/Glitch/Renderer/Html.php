@@ -406,7 +406,7 @@ class Html implements Renderer
         $array = [];
 
         foreach ($stats as $name => $stat) {
-            $array[$name] = $stat->render('text');
+            $array[$name] = $stat->render();
         }
 
         $array = array_merge($array, [
@@ -946,7 +946,7 @@ class Html implements Renderer
      */
     protected function wrapStackFrame(string $frame): string
     {
-        return '<div class="stack-frame">'.$frame.'</div>';
+        return '<div class="stack-frame"><samp class="dump trace">'.$frame.'</samp></div>';
     }
 
 

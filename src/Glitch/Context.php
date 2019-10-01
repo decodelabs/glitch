@@ -177,16 +177,6 @@ class Context implements LoggerAwareInterface, FacadeTarget
 
 
     /**
-     * Log an exception... somewhere :)
-     */
-    public function logException(\Throwable $e): void
-    {
-        // TODO: put this somewhere
-    }
-
-
-
-    /**
      * Override app start time
      */
     public function setStartTime(float $time): Context
@@ -301,11 +291,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
      */
     public function handleException(\Throwable $exception): void
     {
-        if ($this->logger) {
-            $this->logger->critical($exception->getMessage(), [
-                'exception' => $exception
-            ]);
-        }
+        $this->logException($exception);
 
         if ($exception instanceof \EGlitch) {
             $data = $exception->getData();
@@ -333,6 +319,22 @@ class Context implements LoggerAwareInterface, FacadeTarget
         $this->getTransport()->sendException($packet);
         exit(1);
     }
+
+
+    /**
+     * Log an exception... somewhere :)
+     */
+    public function logException(\Throwable $e): void
+    {
+        if (!$this->logger) {
+            return;
+        }
+
+        $this->logger->critical($exception->getMessage(), [
+            'exception' => $exception
+        ]);
+    }
+
 
     /**
      * Try and do something about fatal errors after shutdown
@@ -455,52 +457,25 @@ class Context implements LoggerAwareInterface, FacadeTarget
         $dump->addStats(
             // Time
             (new Stat('time', 'Running time', microtime(true) - $this->getStartTime()))
-                ->applyClass(function ($value) {
-                    switch (true) {
-                        case $value > 0.1:
-                            return 'danger';
-
-                        case $value > 0.025:
-                            return 'warning';
-
-                        default:
-                            return 'success';
-                    }
-                })
-                ->setRenderer('text', function ($time) {
-                    return self::formatMicrotime($time);
+                ->setRenderer(function ($time) {
+                    return number_format($time * 1000, 2).' ms';
                 }),
 
             // Memory
             (new Stat('memory', 'Memory usage', memory_get_usage()))
-                ->applyClass($memApp = function ($value) {
-                    $mb = 1024 * 1024;
-
-                    switch (true) {
-                        case $value > (10 * $mb):
-                            return 'danger';
-
-                        case $value > (5 * $mb):
-                            return 'warning';
-
-                        default:
-                            return 'success';
-                    }
-                })
-                ->setRenderer('text', function ($memory) {
+                ->setRenderer(function ($memory) {
                     return self::formatFilesize($memory);
                 }),
 
             // Peak memory
             (new Stat('peakMemory', 'Peak memory usage', memory_get_peak_usage()))
-                ->applyClass($memApp)
-                ->setRenderer('text', function ($memory) {
+                ->setRenderer(function ($memory) {
                     return self::formatFilesize($memory);
                 }),
 
             // Location
             (new Stat('location', 'Dump location', $frame))
-                ->setRenderer('text', function ($frame) {
+                ->setRenderer(function ($frame) {
                     if (null === ($file = $frame->getCallingFile())) {
                         return null;
                     }
@@ -511,7 +486,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
     }
 
     /**
-     * TODO: move these to a shared location
+     * Format filesize bytes as human readable
      */
     public static function formatFilesize($bytes)
     {
@@ -522,11 +497,6 @@ class Context implements LoggerAwareInterface, FacadeTarget
         }
 
         return round($bytes, 2).' '.$units[$i];
-    }
-
-    public static function formatMicrotime($time)
-    {
-        return number_format($time * 1000, 2).' ms';
     }
 
 
