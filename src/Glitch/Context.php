@@ -46,6 +46,8 @@ class Context implements LoggerAwareInterface, FacadeTarget
     protected $dumpRenderer;
     protected $transport;
 
+    protected $errorPageRenderer;
+
 
     /**
      * Construct
@@ -177,6 +179,39 @@ class Context implements LoggerAwareInterface, FacadeTarget
 
 
     /**
+     * Dump and render exception
+     */
+    public function dumpException(\Throwable $exception): void
+    {
+        if ($exception instanceof \EGlitch) {
+            $data = $exception->getData();
+            $trace = $exception->getStackTrace();
+        } else {
+            $data = null;
+            $trace = Trace::fromException($exception);
+        }
+
+        $inspector = new Inspector($this);
+        $dump = new Dump($trace);
+
+        foreach ($this->statGatherers as $gatherer) {
+            $gatherer($dump, $this);
+        }
+
+        $entity = $inspector->inspectValue($exception)
+            ->removeProperty('*code')
+            ->removeProperty('*http');
+
+        $inspector->reset();
+        unset($inspector);
+
+        $packet = $this->getRenderer()->renderException($exception, $entity, $dump);
+        $this->getTransport()->sendException($packet);
+        exit(1);
+    }
+
+
+    /**
      * Override app start time
      */
     public function setStartTime(float $time): Context
@@ -293,31 +328,11 @@ class Context implements LoggerAwareInterface, FacadeTarget
     {
         $this->logException($exception);
 
-        if ($exception instanceof \EGlitch) {
-            $data = $exception->getData();
-            $trace = $exception->getStackTrace();
+        if ($this->isProduction() && $this->errorPageRenderer) {
+            ($this->errorPageRenderer)($exception, $this);
         } else {
-            $data = null;
-            $trace = Trace::fromException($exception);
+            $this->dumpException($exception);
         }
-
-        $inspector = new Inspector($this);
-        $dump = new Dump($trace);
-
-        foreach ($this->statGatherers as $gatherer) {
-            $gatherer($dump, $this);
-        }
-
-        $entity = $inspector->inspectValue($exception)
-            ->removeProperty('*code')
-            ->removeProperty('*http');
-
-        $inspector->reset();
-        unset($inspector);
-
-        $packet = $this->getRenderer()->renderException($exception, $entity, $dump);
-        $this->getTransport()->sendException($packet);
-        exit(1);
     }
 
 
@@ -367,6 +382,25 @@ class Context implements LoggerAwareInterface, FacadeTarget
         $errors |= E_COMPILE_WARNING;
 
         return ($level & $errors) > 0;
+    }
+
+
+
+    /**
+     * Set error page renderer
+     */
+    public function setErrorPageRenderer(?callable $renderer): Context
+    {
+        $this->errorPageRenderer = $renderer;
+        return $this;
+    }
+
+    /**
+     * Get error page renderer
+     */
+    public function getErrorPageRenderer(): ?callable
+    {
+        return $this->errorPageRenderer;
     }
 
 

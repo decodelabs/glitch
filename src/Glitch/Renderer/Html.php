@@ -216,16 +216,18 @@ class Html implements Renderer
         }
 
         // Js
-        $js = [
-            'jQuery' => $vendor.'/components/jquery/jquery.min.js',
-            'glitch' => __DIR__.'/assets/glitch.js'
-        ];
+        if ($this->shouldRender()) {
+            $js = [
+                'jQuery' => $vendor.'/components/jquery/jquery.min.js',
+                'glitch' => __DIR__.'/assets/glitch.js'
+            ];
 
-        foreach ($js as $name => $jsPath) {
-            if (file_exists($jsPath)) {
-                $output[] = '<script id="script-'.$name.'">';
-                $output[] = file_get_contents($jsPath);
-                $output[] = '</script>';
+            foreach ($js as $name => $jsPath) {
+                if (file_exists($jsPath)) {
+                    $output[] = '<script id="script-'.$name.'">';
+                    $output[] = file_get_contents($jsPath);
+                    $output[] = '</script>';
+                }
             }
         }
 
@@ -347,6 +349,14 @@ class Html implements Renderer
         $output[] = '</samp>';
         $output[] = '</section>';
         return implode("\n", $output);
+    }
+
+    /**
+     * Render a default message in production mode
+     */
+    protected function renderProductionExceptionMessage(\Throwable $exception): string
+    {
+        return '<section class="production exception">There was a problem serving your request - please try again later</section>';
     }
 
     /**
