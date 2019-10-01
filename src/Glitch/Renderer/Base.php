@@ -8,6 +8,7 @@ namespace DecodeLabs\Glitch\Renderer;
 
 use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Renderer;
+use DecodeLabs\Glitch\Packet;
 use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Dumper\Dump;
@@ -62,7 +63,7 @@ trait Base
     /**
      * Convert Dump object to HTML string
      */
-    public function renderDump(Dump $dump): string
+    public function renderDump(Dump $dump): Packet
     {
         if (!$this->shouldRender()) {
             return '';
@@ -92,7 +93,7 @@ trait Base
     /**
      * Inspect handled exception
      */
-    public function renderException(\Throwable $exception, Entity $entity, Dump $dataDump): string
+    public function renderException(\Throwable $exception, Entity $entity, Dump $dataDump): Packet
     {
         $output = [];
 
@@ -247,15 +248,16 @@ trait Base
     /**
      * Flatten buffer for final render
      */
-    protected function exportBuffer(array $buffer): string
+    protected function exportBuffer(array $buffer): Packet
     {
-        return implode("\n\n", $buffer);
+        $output = implode("\n\n", $buffer);
+        return new Packet($output, 'text/plain');
     }
 
     /**
      * Flatten dump buffer for final render
      */
-    protected function exportDumpBuffer(array $buffer): string
+    protected function exportDumpBuffer(array $buffer): Packet
     {
         return $this->exportBuffer($buffer);
     }
@@ -263,7 +265,7 @@ trait Base
     /**
      * Flatten dump buffer for final render
      */
-    protected function exportExceptionBuffer(array $buffer): string
+    protected function exportExceptionBuffer(array $buffer): Packet
     {
         return $this->exportBuffer($buffer);
     }

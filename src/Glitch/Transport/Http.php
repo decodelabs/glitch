@@ -9,7 +9,7 @@ namespace DecodeLabs\Glitch\Transport;
 use DecodeLabs\Glitch\Transport;
 use DecodeLabs\Glitch\Packet;
 
-class Stdout implements Transport
+class Http implements Transport
 {
     /**
      * Send dump straight to output
@@ -32,6 +32,17 @@ class Stdout implements Transport
      */
     protected function sendPacket(Packet $packet, bool $final): void
     {
+        if ($final && !headers_sent()) {
+            header('HTTP/1.1 501');
+            header('Content-Type: '.$packet->getContentType().'; charset=UTF-8');
+            header('Cache-Control: no-cache, no-store, must-revalidate');
+            header('Pragma: no-cache');
+
+            if ($headerBufferSender = Glitch::getHeaderBufferSender()) {
+                $headerBufferSender();
+            }
+        }
+
         echo $packet->getBody();
     }
 }

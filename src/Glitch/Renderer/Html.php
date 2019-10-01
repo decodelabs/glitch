@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace DecodeLabs\Glitch\Renderer;
 
 use DecodeLabs\Glitch\Context;
+use DecodeLabs\Glitch\Packet;
 use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Renderer;
@@ -102,7 +103,7 @@ class Html implements Renderer
     /**
      * Convert Dump object to HTML string
      */
-    public function renderDump(Dump $dump): string
+    public function renderDump(Dump $dump): Packet
     {
         if (!$this->shouldRender()) {
             return '';
@@ -137,7 +138,7 @@ class Html implements Renderer
     /**
      * Inspect handled exception
      */
-    public function renderException(\Throwable $exception, Entity $entity, Dump $dataDump): string
+    public function renderException(\Throwable $exception, Entity $entity, Dump $dataDump): Packet
     {
         $output = [];
 
@@ -534,7 +535,7 @@ class Html implements Renderer
     /**
      * Implode buffer and wrap it in JS iframe injector
      */
-    protected function exportBuffer(array $buffer): string
+    protected function exportBuffer(array $buffer): Packet
     {
         $html = implode("\n", $buffer);
         $id = uniqid('glitch-dump');
@@ -554,7 +555,8 @@ class Html implements Renderer
         $output[] = '</script>';
         $output[] = '</div>';
 
-        return implode("\n", $output);
+        $output = implode("\n", $output);
+        return new Packet($output, 'text/html');
     }
 
 

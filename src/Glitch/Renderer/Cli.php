@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace DecodeLabs\Glitch\Renderer;
 
 use DecodeLabs\Glitch\Context;
+use DecodeLabs\Glitch\Packet;
 use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Renderer;
@@ -122,9 +123,10 @@ class Cli implements Renderer
     /**
      * Flatten buffer for final render
      */
-    protected function exportBuffer(array $buffer): string
+    protected function exportBuffer(array $buffer): Packet
     {
-        return "\n".implode("\n\n", $buffer)."\n\n";
+        $output = "\n".implode("\n\n", $buffer)."\n\n";
+        return new Packet($output, 'text/plain');
     }
 
     /**

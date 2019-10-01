@@ -185,7 +185,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
         unset($inspector);
 
         $packet = $this->getRenderer()->renderDump($dump);
-        $this->getTransport()->sendDump($packet, $this->headerBufferSender);
+        $this->getTransport()->sendDump($packet);
 
         if ($exit) {
             exit(1);
@@ -230,7 +230,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
         unset($inspector);
 
         $packet = $this->getRenderer()->renderException($exception, $entity, $dump);
-        $this->getTransport()->sendException($packet, $this->headerBufferSender);
+        $this->getTransport()->sendException($packet);
 
         if ($exit) {
             exit(1);
@@ -680,7 +680,11 @@ class Context implements LoggerAwareInterface, FacadeTarget
     public function getTransport(): Transport
     {
         if (!$this->transport) {
-            $this->transport = new Transport\Stdout($this);
+            if (in_array(\PHP_SAPI, ['cli', 'phpdbg'])) {
+                $this->transport = new Transport\Stdout($this);
+            } else {
+                $this->transport = new Transport\Http($this);
+            }
         }
 
         return $this->transport;
