@@ -763,7 +763,7 @@ trait Base
 
         $sections = [
             'info' => true,
-            'meta' => (bool)$entity->getAllMeta(),
+            'meta' => (bool)$entity->getMetaList(),
             'text' => $entity->getText() !== null,
             'def' => $entity->getDefinition() !== null,
             'props' => (bool)$entity->getProperties(),
@@ -1271,7 +1271,7 @@ trait Base
         $id = $entity->getId();
 
         $output = $this->indent(
-            $this->renderList($entity->getAllMeta(), 'meta', true, null, $level + 1)
+            $this->renderList($entity->getMetaList(), 'meta', true, null, $level + 1)
         );
 
         return $this->wrapEntityBodyBlock($output, 'meta', false, $id);

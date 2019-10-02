@@ -180,8 +180,7 @@ class Dom
                 'XML_ENTITY_DECL_NODE',
                 'XML_NAMESPACE_DECL_NODE'
             ]))
-            ->setValues([$inspector($node->nodeValue)])
-            ->setShowKeys(false);
+            ->setSingleValue($inspector($node->nodeValue));
     }
 
     /**

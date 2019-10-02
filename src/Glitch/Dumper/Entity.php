@@ -400,9 +400,21 @@ class Entity
     }
 
     /**
+     * Set meta list
+     */
+    public function setMetaList(array $meta): Entity
+    {
+        foreach ($meta as $key => $value) {
+            $this->setMeta($key, $value);
+        }
+
+        return $this;
+    }
+
+    /**
      * Get all meta data
      */
-    public function getAllMeta(): ?array
+    public function getMetaList(): ?array
     {
         return $this->meta;
     }
@@ -428,7 +440,53 @@ class Entity
         return $this;
     }
 
+    /**
+     * Clear meta list
+     */
+    public function clearMeta(): Entity
+    {
+        $this->meta = [];
+        return $this;
+    }
 
+
+
+    /**
+     * Set value by key
+     */
+    public function setValue($key, $value): Entity
+    {
+        $this->checkValidity($value);
+
+        $this->values[$key] = $value;
+        return $this;
+    }
+
+    /**
+     * Get value by key
+     */
+    public function getValue($key)
+    {
+        return $this->values[$key] ?? null;
+    }
+
+    /**
+     * Set single value
+     */
+    public function setSingleValue($value): Entity
+    {
+        $this->setValues([$value]);
+        $this->setShowKeys(false);
+        return $this;
+    }
+
+    /**
+     * Get single value
+     */
+    public function getSingleValue()
+    {
+        return $this->values[0] ?? null;
+    }
 
     /**
      * Set values list
@@ -451,6 +509,32 @@ class Entity
     public function getValues(): ?array
     {
         return $this->values;
+    }
+
+    /**
+     * Has value
+     */
+    public function hasValue($key): bool
+    {
+        return isset($this->values[$key]);
+    }
+
+    /**
+     * Remove value
+     */
+    public function removeValue($key): Entity
+    {
+        unset($this->values[$key]);
+        return $this;
+    }
+
+    /**
+     * Clear values
+     */
+    public function clearValues(): Entity
+    {
+        $this->values = [];
+        return $this;
     }
 
 
