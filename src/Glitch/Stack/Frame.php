@@ -248,18 +248,29 @@ class Frame
             if (false !== strpos($class, 'Glitch/Exception/Factory.php')) {
                 return 'EGlitch';
             } elseif (false !== strpos($class, 'veneer/src/Veneer/Binding.php')) {
-                return '~'.$class::FACADE;
+                if (defined($class.'::FACADE')) {
+                    return '~'.$class::FACADE;
+                }
             }
         }
 
         $name = [];
         $parts = explode(':', $class);
 
+
         while (!empty($parts)) {
             $part = trim(array_shift($parts));
 
             if (preg_match('/^class@anonymous(.+)(\(([0-9]+)\))/', $part, $matches)) {
                 $name[] = Glitch::normalizePath(trim($matches[1])).' : '.($matches[3] ?? null);
+            } elseif (preg_match('/^class@anonymous(.+)(0x[0-9a-f]+)/', $part, $matches)) {
+                $partName = Glitch::normalizePath(trim($matches[1]));
+
+                if ($partName === trim($matches[1])) {
+                    $partName = basename($partName);
+                }
+
+                $name[] = '@anonymous : '.$partName;
             } elseif (preg_match('/^eval\(\)\'d/', $part)) {
                 $name = ['eval[ '.implode(' : ', $name).' ]'];
             } else {
