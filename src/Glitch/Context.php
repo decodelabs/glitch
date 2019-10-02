@@ -360,10 +360,14 @@ class Context implements LoggerAwareInterface, FacadeTarget
         $this->logException($exception);
 
         if ($this->isProduction() && $this->errorPageRenderer) {
-            ($this->errorPageRenderer)($exception, $this);
-        } else {
-            $this->dumpException($exception);
+            try {
+                ($this->errorPageRenderer)($exception, $this);
+                return;
+            } catch (\Throwable $e) {
+            }
         }
+
+        $this->dumpException($exception);
     }
 
 

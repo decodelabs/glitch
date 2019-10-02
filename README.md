@@ -34,10 +34,24 @@ app://models/MyModel.php
 */
 ```
 
-Pass the <code>microtime()</code> of initial app launch if necessary:
+Pass the <code>microtime()</code> of initial app launch for timing purposes:
 
 ```php
 Glitch::setStartTime(microtime(true));
+```
+
+
+Set run mode (<code>development | testing | production</code>) so Glitch can format output correctly:
+
+```php
+Glitch::setRunMode('development');
+```
+
+
+Register as the default error handler:
+
+```php
+Glitch::registerAsErrorHandler();
 ```
 
 
