@@ -1,3 +1,9 @@
+## v0.14.2 (2019-10-02)
+* Updated errorPageRenderer logic
+* Make exception info section visible
+* Removed r7 inspector
+* Updated entity value handling
+
 ## v0.14.1 (2019-10-02)
 * Improved HTTP header handling
 * Added Packet class for Transport passthrough
