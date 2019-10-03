@@ -1,3 +1,6 @@
+## v0.14.3 (2019-10-03)
+* Updated text and definition rendering
+
 ## v0.14.2 (2019-10-02)
 * Updated errorPageRenderer logic
 * Make exception info section visible
