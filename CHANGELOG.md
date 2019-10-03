@@ -1,3 +1,6 @@
+## v0.14.4 (2019-10-03)
+* Fixed identifier rendering
+
 ## v0.14.3 (2019-10-03)
 * Updated text and definition rendering
 
