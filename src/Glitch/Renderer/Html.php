@@ -106,7 +106,7 @@ class Html implements Renderer
     public function renderDump(Dump $dump): Packet
     {
         if (!$this->shouldRender()) {
-            return '';
+            return $this->exportDumpBuffer([]);
         }
 
         $output = [];
@@ -357,8 +357,8 @@ class Html implements Renderer
      */
     protected function renderProductionExceptionMessage(\Throwable $exception): string
     {
-        $output[] = '<section class="production exception">There was a problem serving your request - please try again later</section>';
-        $output[] = '<!--'."\n".(string)$exception."\n".'-->';
+        $output[] = '<section class="production message">There was a problem serving your request - please try again later</section>';
+        $output[] = '<section class="production exception">'.(string)$exception.'</section>';
         return implode("\n", $output);
     }
 

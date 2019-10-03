@@ -19,7 +19,7 @@ section {
         padding: 1.25rem 2rem;
     }
 
-    &.production.exception {
+    &.production.message {
         margin: 2rem;
         padding: 1rem 2rem;
         color: rgba(white, 0.5);
@@ -27,5 +27,9 @@ section {
         background: rgba(white, 0.04);
         border-radius: 0.25rem;
         text-align: center;
+    }
+
+    &.production.exception {
+        display: none;
     }
 }
