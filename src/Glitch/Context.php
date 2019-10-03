@@ -29,7 +29,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
     use FacadeTargetTrait;
 
     const FACADE = 'Glitch';
-    const VERSION = 'v0.14.6';
+    const VERSION = 'v0.14.7';
 
     protected $startTime;
     protected $runMode = 'development';

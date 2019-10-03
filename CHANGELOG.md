@@ -1,3 +1,6 @@
+## v0.14.7 (2019-10-03)
+* Added production render override option
+
 ## v0.14.6 (2019-10-03)
 * Added emergency exception trace in production mode
 
