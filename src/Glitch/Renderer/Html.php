@@ -357,7 +357,9 @@ class Html implements Renderer
      */
     protected function renderProductionExceptionMessage(\Throwable $exception): string
     {
-        return '<section class="production exception">There was a problem serving your request - please try again later</section>';
+        $output[] = '<section class="production exception">There was a problem serving your request - please try again later</section>';
+        $output[] = '<!--'."\n".(string)$exception."\n".'-->';
+        return implode("\n", $output);
     }
 
     /**
