@@ -1,3 +1,6 @@
+## v0.14.5 (2019-10-03)
+* Fixed identifier lists
+
 ## v0.14.4 (2019-10-03)
 * Fixed identifier rendering
 
