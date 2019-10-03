@@ -32,6 +32,7 @@ trait Base
     //const RENDER_STACK = true;
 
     protected $context;
+    protected $productionOverride = false;
 
     /**
      * Construct with Context
@@ -41,6 +42,23 @@ trait Base
         $this->context = $context;
     }
 
+
+    /**
+     * Override production rendering
+     */
+    public function setProductionOverride(bool $flag): Renderer
+    {
+        $this->productionOverride = $flag;
+        return $this;
+    }
+
+    /**
+     * Get production override
+     */
+    public function getProductionOverride(): bool
+    {
+        return $this->productionOverride;
+    }
 
     /**
      * Should render in production?
@@ -56,7 +74,7 @@ trait Base
      */
     protected function shouldRender(): bool
     {
-        return !$this->context->isProduction() || $this->shouldRenderInProduction();
+        return !$this->context->isProduction() || $this->shouldRenderInProduction() || $this->productionOverride;
     }
 
 
