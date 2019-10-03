@@ -237,7 +237,7 @@ class Cli implements Renderer
     /**
      * Render a standard single line string
      */
-    protected function renderSingleLineString(string $string, int $forceSingleLineMax=null): string
+    protected function renderSingleLineString(string $string, string $class=null, int $forceSingleLineMax=null): string
     {
         $output = $this->format('"', 'white', null, 'dim');
         $output .= $this->stackFormat('red', null, 'bold');

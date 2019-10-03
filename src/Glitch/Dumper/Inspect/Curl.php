@@ -16,8 +16,6 @@ class Curl
      */
     public static function inspectCurl($resource, Entity $entity, Inspector $inspector): void
     {
-        foreach (curl_getinfo($resource) as $key => $value) {
-            $entity->setMeta($key, $inspector->inspectValue($value));
-        }
+        $entity->setMetaList($inspector->inspectList(curl_getinfo($resource)));
     }
 }

@@ -16,10 +16,7 @@ class Stream
      */
     public static function inspectStream($resource, Entity $entity, Inspector $inspector): void
     {
-        foreach (stream_get_meta_data($resource) as $key => $value) {
-            $entity->setMeta($key, $inspector->inspectValue($value));
-        }
-
+        $entity->setMetaList($inspector->inspectList(stream_get_meta_data($resource)));
         self::inspectStreamContext($resource, $entity, $inspector);
     }
 
@@ -32,8 +29,6 @@ class Stream
             return;
         }
 
-        foreach ($params as $key => $value) {
-            $entity->setMeta($key, $inspector->inspectValue($value));
-        }
+        $entity->setMetaList($inspector->inspectList($params));
     }
 }

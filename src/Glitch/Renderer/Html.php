@@ -627,9 +627,9 @@ class Html implements Renderer
     /**
      * Render a standard single line string
      */
-    protected function renderSingleLineString(string $string, int $forceSingleLineMax=null): string
+    protected function renderSingleLineString(string $string, string $class=null, int $forceSingleLineMax=null): string
     {
-        $output = '<span class="string s"><span class="line">'.$this->renderStringLine($string, $forceSingleLineMax).'</span>';
+        $output = '<span class="string s '.$class.'"><span class="line">'.$this->renderStringLine($string, $forceSingleLineMax).'</span>';
 
         if ($forceSingleLineMax === null) {
             $output .= '<span class="length">'.mb_strlen($string).'</span>';

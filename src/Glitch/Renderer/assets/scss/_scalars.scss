@@ -47,12 +47,26 @@
         }
     }
 
+    &.def {
+        > .line {
+            color: var(--definition);
+        }
+    }
+
     &.s {
         > .line {
             &:before, &:after {
                 content: '"';
                 color: var(--grammar);
                 opacity: 0.5;
+            }
+        }
+
+        &.def {
+            > .line {
+                &:before, &:after {
+                    display: none;
+                }
             }
         }
     }
@@ -70,7 +84,7 @@
 
         > .line {
             margin-left: -0.1rem;
-            padding-left: 0.6rem;
+            padding-left: 0.1rem;
             border-left: 1px solid rgba($gray, 0.06);
             white-space: pre;
 
@@ -89,18 +103,11 @@
         }
 
         &.def {
-            display: block;
-
             &:before, &:after {
-                display: none;
-            }
-
-            > .length {
-                display: none !important;
+                content: '$$$';
             }
 
             > .line {
-                color: var(--definition);
                 padding-left: 0.1rem;
             }
         }

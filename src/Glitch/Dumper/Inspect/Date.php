@@ -22,10 +22,10 @@ class Date
 
         $entity
             ->setText($date->format('H:i:s jS M Y T'))
-            ->setMeta('w3c', $date->format($date::W3C))
-            ->setMeta('timezone', $date->format('e'))
-            ->setMeta('utc', $date->format('P'))
-            ->setMeta('fromNow', self::formatInterval($fromNow))
+            ->setMeta('w3c', $inspector($date->format($date::W3C)))
+            ->setMeta('timezone', $inspector($date->format('e')))
+            ->setMeta('utc', $inspector($date->format('P')))
+            ->setMeta('fromNow', $inspector(self::formatInterval($fromNow)))
             ;
     }
 

@@ -16,8 +16,6 @@ class Process
      */
     public static function inspectProcess($resource, Entity $entity, Inspector $inspector): void
     {
-        foreach (proc_get_status($resource) as $key => $value) {
-            $entity->setMeta($key, $inspector->inspectValue($value));
-        }
+        $entity->setMetaList($inspector->inspectList(proc_get_status($resource)));
     }
 }
