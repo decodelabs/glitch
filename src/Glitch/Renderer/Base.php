@@ -1497,7 +1497,7 @@ trait Base
                     $this->renderList($value, $style, $isAssoc, $isAssoc ? 'map' : 'inline', $level + 1).
                     $this->renderGrammar('}');
             } else {
-                $line[] = $this->renderScalar($value, $asIdentifier ? 'identifier' : null);
+                $line[] = $this->renderScalar($value, $asIdentifier ? 'identifier' : null, $asIdentifier);
             }
 
             $lines[] = implode(' ', $line);
