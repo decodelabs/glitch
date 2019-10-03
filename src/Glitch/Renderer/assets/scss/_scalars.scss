@@ -27,6 +27,7 @@
 .string {
     > .line {
         color: var(--string);
+        white-space: pre;
     }
 
     > .length {
