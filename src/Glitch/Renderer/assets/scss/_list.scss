@@ -127,6 +127,11 @@ ul.list {
 
             > .identifier {
                 color: var(--list-values-key);
+
+                &.int {
+                    color: var(--list-values-key-int);
+                    font-style: italic;
+                }
             }
         }
     }
