@@ -31,6 +31,10 @@ ul.list {
             }
         }
 
+        > .string.m > .line {
+            border-left: 1rem solid rgba($red-bright, 0.06);
+        }
+
         > *:last-child {
             padding-right: 1rem;
         }
