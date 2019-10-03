@@ -1,3 +1,6 @@
+## v0.14.6 (2019-10-03)
+* Added emergency exception trace in production mode
+
 ## v0.14.5 (2019-10-03)
 * Fixed identifier lists
 
