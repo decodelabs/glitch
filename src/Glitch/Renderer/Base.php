@@ -84,7 +84,7 @@ trait Base
     public function renderDump(Dump $dump): Packet
     {
         if (!$this->shouldRender()) {
-            return '';
+            return $this->exportDumpBuffer([]);
         }
 
         $output = [];
