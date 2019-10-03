@@ -275,7 +275,7 @@ trait Base
     /**
      * Render a scalar value
      */
-    protected function renderScalar($value, ?string $class=null): string
+    protected function renderScalar($value, ?string $class=null, bool $asIdentifier=false): string
     {
         switch (true) {
             case $value === null:
@@ -295,7 +295,7 @@ trait Base
                 break;
 
             case is_string($value):
-                $output = $this->renderString($value, $class);
+                $output = $this->renderString($value, $class, null, $asIdentifier);
                 break;
 
             default:
@@ -357,8 +357,12 @@ trait Base
     /**
      * Render standard string
      */
-    protected function renderString(string $string, ?string $class=null, int $forceSingleLineMax=null): string
+    protected function renderString(string $string, ?string $class=null, int $forceSingleLineMax=null, bool $asIdentifier=false): string
     {
+        if ($asIdentifier) {
+            return $this->renderIdentifierString($string, $class, $forceSingleLineMax);
+        }
+
         $isMultiLine = $forceSingleLineMax === null && false !== strpos($string, "\n");
 
         if ($isMultiLine) {
@@ -1481,7 +1485,7 @@ trait Base
                     }
                 }
 
-                $line[] = $this->renderScalar($key, 'identifier key '.$style.' '.$mod);
+                $line[] = $this->renderScalar($key, 'identifier key '.$style.' '.$mod, true);
                 $line[] = $this->renderPointer($pointer);
             }
 
