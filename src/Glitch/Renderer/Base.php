@@ -361,12 +361,10 @@ trait Base
     {
         $isMultiLine = $forceSingleLineMax === null && false !== strpos($string, "\n");
 
-        if ($class !== null) {
-            return $this->renderIdentifierString($string, $class, $forceSingleLineMax);
-        } elseif ($isMultiLine) {
-            return $this->renderMultiLineString($string);
+        if ($isMultiLine) {
+            return $this->renderMultiLineString($string, $class);
         } else {
-            return $this->renderSingleLineString($string, $forceSingleLineMax);
+            return $this->renderSingleLineString($string, $class, $forceSingleLineMax);
         }
     }
 
@@ -389,7 +387,7 @@ trait Base
     /**
      * Passthrough string
      */
-    protected function renderSingleLineString(string $string, int $forceSingleLineMax=null): string
+    protected function renderSingleLineString(string $string, string $class=null, int $forceSingleLineMax=null): string
     {
         return $string;
     }
@@ -618,7 +616,7 @@ trait Base
                 $function[] = $this->renderGrammar('{');
 
                 foreach ($parts as $part) {
-                    $fArgs[] = $this->renderString($part, 'identifier');
+                    $fArgs[] = $this->renderIdentifierString($part, 'identifier');
                 }
 
                 $function[] = implode($this->renderGrammar(',').' ', $fArgs);
@@ -1318,7 +1316,7 @@ trait Base
         $type = $entity->getType();
 
         $output = $this->indent(
-            $this->renderMultiLineString($entity->getDefinition(), 'def')
+            $this->renderScalar($entity->getDefinition(), 'def')
         );
 
         return $this->wrapEntityBodyBlock($output, 'def', true, $id, $type);
