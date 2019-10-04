@@ -1,3 +1,12 @@
+## v0.14.8 (2019-10-04)
+* Fixed base renderDump in production mode
+* Updated text icon rendering
+* Updated string styling in lists
+* Fixed whitespace in strings
+* Updated array key colours
+* Added parent namespace to class name if also interface
+* Added scalarToString() for Reflection inspector
+
 ## v0.14.7 (2019-10-03)
 * Added production render override option
 

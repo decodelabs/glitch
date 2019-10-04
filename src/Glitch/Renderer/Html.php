@@ -35,7 +35,7 @@ class Html implements Renderer
 
     const RENDER_STACK = true;
 
-    const DEV = true;
+    const DEV = false;
 
     const HTTP_STATUSES = [
         100 => 'Continue',

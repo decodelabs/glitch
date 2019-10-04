@@ -297,6 +297,43 @@ class Inspector
 
 
     /**
+     * Convert scalar to string
+     */
+    public static function scalarToString($value): string
+    {
+        switch (true) {
+            case $value === null:
+                return 'null';
+
+            case is_bool($value):
+                return $value ? 'true' : 'false';
+
+            case is_int($value):
+            case is_float($value):
+                return (string)$value;
+
+            case is_string($value):
+                return '"'.$value.'"';
+
+            case is_resource($value):
+                return (string)$value;
+
+
+            default:
+                try {
+                    return (string)$value;
+                } catch (\Throwable $e) {
+                    throw Glitch::EUnexpectedValue(
+                        'Value is not a scalar',
+                        null,
+                        $value
+                    );
+                }
+        }
+    }
+
+
+    /**
      * Invoke wrapper
      */
     public function __invoke($value, callable $entityCallback=null, bool $asList=false)
@@ -584,9 +621,29 @@ class Inspector
         $reflection = new \ReflectionObject($object);
         $className = $reflection->getName();
         $isRef = isset($this->objectIds[$objectId]);
+        $shortName = $reflection->getShortName();
+        $name = $this->normalizeClassName($shortName, $reflection);
+
+        // Add parent namespace to name if it's also an interface
+        if ($name === $shortName) {
+            $parts = explode('\\', $className);
+            array_pop($parts);
+            $parentNs = array_pop($parts);
+
+            if (!empty($parentNs)) {
+                foreach ($reflection->getInterfaces() as $interface) {
+                    $interfaceName = $interface->getShortName();
+
+                    if ($parentNs === $interfaceName) {
+                        $name = $parentNs.'\\'.$name;
+                        break;
+                    }
+                }
+            }
+        }
 
         $entity = (new Entity($isRef ? 'objectReference' : 'object'))
-            ->setName($this->normalizeClassName($reflection->getShortName(), $reflection))
+            ->setName($name)
             ->setClass($className)
             ->setObjectId($objectId)
             ->setHash(spl_object_hash($object));
