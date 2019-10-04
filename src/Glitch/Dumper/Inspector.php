@@ -297,6 +297,43 @@ class Inspector
 
 
     /**
+     * Convert scalar to string
+     */
+    public static function scalarToString($value): string
+    {
+        switch (true) {
+            case $value === null:
+                return 'null';
+
+            case is_bool($value):
+                return $value ? 'true' : 'false';
+
+            case is_int($value):
+            case is_float($value):
+                return (string)$value;
+
+            case is_string($value):
+                return '"'.$value.'"';
+
+            case is_resource($value):
+                return (string)$value;
+
+
+            default:
+                try {
+                    return (string)$value;
+                } catch (\Throwable $e) {
+                    throw Glitch::EUnexpectedValue(
+                        'Value is not a scalar',
+                        null,
+                        $value
+                    );
+                }
+        }
+    }
+
+
+    /**
      * Invoke wrapper
      */
     public function __invoke($value, callable $entityCallback=null, bool $asList=false)
