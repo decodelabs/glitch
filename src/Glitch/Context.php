@@ -367,6 +367,11 @@ class Context implements LoggerAwareInterface, FacadeTarget
             }
         }
 
+        if (!class_exists(Trace::class)) {
+            echo (string)$exception;
+            exit(1);
+        }
+
         $this->dumpException($exception);
     }
 
