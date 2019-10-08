@@ -16,7 +16,7 @@ class Inspector
 {
     const OBJECTS = [
         // Core
-        'Exception' => [Inspect\Core::class, 'inspectException'],
+        'Throwable' => [Inspect\Core::class, 'inspectException'],
         'Closure' => [Inspect\Core::class, 'inspectClosure'],
         'Generator' => [Inspect\Core::class, 'inspectGenerator'],
         '__PHP_Incomplete_Class' => [Inspect\Core::class, 'inspectIncompleteClass'],

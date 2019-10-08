@@ -357,22 +357,26 @@ class Context implements LoggerAwareInterface, FacadeTarget
      */
     public function handleException(\Throwable $exception): void
     {
-        $this->logException($exception);
+        try {
+            $this->logException($exception);
 
-        if ($this->isProduction() && $this->errorPageRenderer) {
-            try {
-                ($this->errorPageRenderer)($exception, $this);
-                return;
-            } catch (\Throwable $e) {
+            if ($this->isProduction() && $this->errorPageRenderer) {
+                try {
+                    ($this->errorPageRenderer)($exception, $this);
+                    return;
+                } catch (\Throwable $e) {
+                }
             }
-        }
 
-        if (!class_exists(Trace::class)) {
-            echo (string)$exception;
-            exit(1);
-        }
+            if (!class_exists(Trace::class)) {
+                echo (string)$exception;
+                exit(1);
+            }
 
-        $this->dumpException($exception);
+            $this->dumpException($exception);
+        } catch (\Throwable $e) {
+            dd($exception, $e);
+        }
     }
 
 
