@@ -12,6 +12,9 @@ use DecodeLabs\Glitch\Dumper\Inspector;
 use DecodeLabs\Glitch\Dumper\Dump;
 
 use DecodeLabs\Glitch\Renderer;
+use DecodeLabs\Glitch\Renderer\Text as TextRenderer;
+use DecodeLabs\Glitch\Renderer\Cli as CliRenderer;
+use DecodeLabs\Glitch\Renderer\Html as HtmlRenderer;
 use DecodeLabs\Glitch\Transport;
 
 use DecodeLabs\Glitch\Exception\Factory;
@@ -184,7 +187,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
         $inspector->reset();
         unset($inspector);
 
-        $packet = $this->getRenderer()->renderDump($dump);
+        $packet = $this->getActiveRenderer()->renderDump($dump);
         $this->getTransport()->sendDump($packet, $exit);
 
         if ($exit) {
@@ -668,13 +671,32 @@ class Context implements LoggerAwareInterface, FacadeTarget
     {
         if (!$this->dumpRenderer) {
             if (in_array(\PHP_SAPI, ['cli', 'phpdbg'])) {
-                $this->dumpRenderer = new Renderer\Cli($this);
+                $this->dumpRenderer = new CliRenderer($this);
             } else {
-                $this->dumpRenderer = new Renderer\Html($this);
+                $this->dumpRenderer = new HtmlRenderer($this);
             }
         }
 
         return $this->dumpRenderer;
+    }
+
+    /**
+     * Get active renderer for current context
+     */
+    public function getActiveRenderer(): Renderer
+    {
+        $renderer = $this->getRenderer();
+
+        if ($renderer instanceof HtmlRenderer && headers_sent()) {
+            foreach (headers_list() as $header) {
+                if (false !== stripos($header, 'content-type: text/plain')) {
+                    $renderer = new TextRenderer($this);
+                    break;
+                }
+            }
+        }
+
+        return $renderer;
     }
 
 
