@@ -15,10 +15,28 @@ composer require decodelabs/glitch
 ```
 
 
-### Setup
-Glitch will work out of the box with minimal setup. It uses a [Veneer Facade](https://github.com/decodelabs/veneer) so you can use it in any namespace context without having to import anything.
+### Importing
 
+Glitch uses a [Veneer Facade](https://github.com/decodelabs/veneer) so you don't _need_ to add any <code>use</code> declarations to your code, the class will be aliased into whatever namespace you are working in.
+
+However, if you want to avoid filling your namespace with class aliases, you can import the Facade with:
+
+```php
+use DecodeLabs\Glitch;
+```
+
+### Setup
+
+Otherwise, Glitch works out of the box without any special setup.
 There are however some optional steps you can take to customise operation.
+
+
+Register as the default error handler:
+
+```php
+Glitch::registerAsErrorHandler();
+```
+
 
 Register base path aliases for easier reading of file names in dumps:
 
@@ -45,13 +63,6 @@ Set run mode (<code>development | testing | production</code>) so Glitch can for
 
 ```php
 Glitch::setRunMode('development');
-```
-
-
-Register as the default error handler:
-
-```php
-Glitch::registerAsErrorHandler();
 ```
 
 
