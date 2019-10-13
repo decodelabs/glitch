@@ -193,8 +193,8 @@ class Thing {
 
 
 ## Other information
-[Rationale for Glitch Exceptions](docs/Rationale.md)
-[An explanation of how the Glitch interface works](docs/HowItWorks.md)
+- [Rationale for Glitch Exceptions](docs/Rationale.md)
+- [An explanation of how the Glitch interface works](docs/HowItWorks.md)
 
 
 ## Licensing
