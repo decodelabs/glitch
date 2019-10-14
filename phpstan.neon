@@ -1,0 +1,7 @@
+parameters:
+    earlyTerminatingMethodCalls:
+        DecodeLabs\Glitch\Context:
+            - dumpDie
+            - dumpValues
+            - dumpException
+            - incomplete
