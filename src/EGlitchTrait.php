@@ -65,7 +65,11 @@ trait EGlitchTrait
         $this->type = $params['type'] ?? null;
         $this->interfaces = (array)($params['interfaces'] ?? []);
 
-        unset($params['data'], $params['rewind'], $params['http'], $params['type'], $params['interfaces']);
+        if (isset($params['stackTrace']) && $params['stackTrace'] instanceof Trace) {
+            $this->stackTrace = $params['stackTrace'];
+        }
+
+        unset($params['data'], $params['rewind'], $params['http'], $params['type'], $params['interfaces'], $params['stackTrace']);
         $this->params = $params;
     }
 

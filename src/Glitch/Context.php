@@ -432,6 +432,44 @@ class Context implements LoggerAwareInterface, FacadeTarget
     }
 
 
+    /**
+     * Wrap exceptions thrown from $callable as Glitches
+     */
+    public function contain(callable $callback, ?callable $inspector=null)
+    {
+        try {
+            return $callback();
+        } catch (\Throwable $e) {
+            if ($e instanceof \EGlitch) {
+                throw $e;
+            }
+
+            if ($inspector) {
+                $types = $inspector($e);
+
+                if (!is_array($types)) {
+                    $types = explode(',', (string)$types);
+                }
+            } else {
+                $types = ['ERuntime'];
+            }
+
+            throw Factory::create(
+                null,
+                $types,
+                1,
+                $e->getMessage(),
+                [
+                    'previous' => $e,
+                    'stackTrace' => Trace::fromException($e, 1),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ]
+            );
+        }
+    }
+
+
 
     /**
      * Set header buffer sender
