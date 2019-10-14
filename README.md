@@ -191,6 +191,61 @@ class Thing {
 ```
 
 
+## Wrapping exceptions
+
+If you want to present a unified interface in your own libraries, you ideally need to ensure that the only exceptions you throw from your library are from your libraries namespace - exceptions thrown by third party libraries called by _your_ library may need to be wrapped to maintain namespace isolation.
+
+The old, long way:
+
+```php
+namespace My\Library;
+
+use Someone\Elses\Thing;
+
+class MyClass {
+    public function doSomething() {
+        $thing = new Thing();
+
+        try {
+            return $thing->doIt();
+        } catch(Someone\Elses\ThingException $e) {
+            throw new My\Library\ThingException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+}
+```
+
+Glitch offers a <code>contain()</code> method that will wrap your third party code and automatically convert any throw exceptions to Glitch exceptions from the primary stack frame and namespace of your library:
+
+```php
+namespace My\Library;
+
+use Someone\Elses\Thing;
+
+class MyClass {
+    public function doSomething() {
+        $thing = new Thing();
+
+        /*
+         * If doIt() throws an exception from Someone\Elses namespace, Glitch will
+         * wrap it and throw a Glitch exception from My\Library.
+         */
+        return Glitch::contain(function() use($thing) {
+            return $thing->doIt();
+        }, function($e) {
+            /*
+             * Optionally, you can send a second function to contain() inspect the source
+             * exception and return the required types for the output Glitch
+             */
+            if($e instanceof Someone\Elses\ThingException) {
+                return 'EThingGoneWrong';
+            } else {
+                return 'ERuntime';
+            }
+        });
+    }
+}
+```
 
 ## Other information
 - [Rationale for Glitch Exceptions](docs/Rationale.md)
