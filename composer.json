@@ -20,6 +20,9 @@
 
         "components/jquery": "~3.3"
     },
+    "require-dev": {
+        "phpstan/phpstan": "^0.11.16"
+    },
     "autoload": {
         "psr-4": {
             "DecodeLabs\\Glitch\\": "src/Glitch"
@@ -34,8 +37,5 @@
         "branch-alias": {
             "dev-develop": "1.0.x-dev"
         }
-    },
-    "require-dev": {
-        "phpstan/phpstan": "^0.11.16"
     }
 }
