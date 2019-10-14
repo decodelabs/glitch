@@ -39,11 +39,20 @@ trait EGlitchTrait
             $message = 'blah';
         }
 
-        parent::__construct(
+        $args = [
             $message,
-            $params['code'] ?? 0,
-            $params['previous'] ?? null
-        );
+            (int)($params['code'] ?? 0)
+        ];
+
+        if ($this instanceof \ErrorException) {
+            $args[] = (int)($params['severity'] ?? 0);
+            $args[] = (string)($params['file'] ?? '');
+            $args[] = (int)($params['line'] ?? 0);
+        }
+
+        $args[] = $params['previous'] ?? null;
+
+        parent::__construct(...$args);
 
         if (isset($params['file'])) {
             $this->file = $params['file'];

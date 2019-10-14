@@ -352,7 +352,18 @@ class Context implements LoggerAwareInterface, FacadeTarget
             return false;
         }
 
-        throw new \ErrorException($message, 0, $level, $file, $line);
+        throw Factory::create(
+            null,
+            ['ESystemError'],
+            1,
+            $message,
+            [
+                'stackTrace' => Trace::create(),
+                'file' => $file,
+                'line' => $line,
+                'severity' => $level
+            ]
+        );
     }
 
     /**

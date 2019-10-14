@@ -108,7 +108,11 @@ class Factory
             'EServiceUnavailable' => [
                 'extend' => 'ERuntime',
                 'http' => 503
-            ]
+            ],
+
+        'ESystemError' => [
+            'type' => 'ErrorException'
+        ]
     ];
 
     const REWIND = 3;
@@ -527,12 +531,11 @@ class Factory
         // Put the eval code in $GLOBALS to dump if it dies
         $GLOBALS['__eval'] = $defs."\n".$this->exceptionDef;
 
-        @eval($defs);
-
+        eval($defs);
         $hash = md5($this->exceptionDef);
 
         if (!isset(self::$instances[$hash])) {
-            self::$instances[$hash] = @eval($this->exceptionDef);
+            self::$instances[$hash] = eval($this->exceptionDef);
         }
 
         // Remove defs from $GLOBALS again
