@@ -6,6 +6,7 @@
 declare(strict_types=1);
 namespace DecodeLabs\Glitch\Dumper;
 
+use DecodeLabs\Glitch;
 use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Inspectable;
 use DecodeLabs\Glitch\Stack\Trace;
@@ -66,8 +67,8 @@ class Inspector
         'GMP' => [Inspect\Gmp::class, 'inspectGmp'],
 
         // PDO
-        'PDO' => [Inspect\PDO::class, 'inspectPdo'],
-        'PDOStatement' => [Inspect\PDO::class, 'inspectPdoStatement'],
+        'PDO' => [Inspect\Pdo::class, 'inspectPdo'],
+        'PDOStatement' => [Inspect\Pdo::class, 'inspectPdoStatement'],
 
         // Redis
         'Redis' => [Inspect\Redis::class, 'inspectRedis'],
@@ -85,9 +86,6 @@ class Inspector
         'ReflectionProperty' => [Inspect\Reflection::class, 'inspectReflectionProperty'],
         'ReflectionType' => [Inspect\Reflection::class, 'inspectReflectionType'],
         'ReflectionGenerator' => [Inspect\Reflection::class, 'inspectReflectionGenerator'],
-
-        // R7
-        'df\\core\\IDumpable' => [Inspect\R7::class, 'inspectDumpable'],
 
         // Spl
         'ArrayObject' => [Inspect\Spl::class, 'inspectArrayObject'],

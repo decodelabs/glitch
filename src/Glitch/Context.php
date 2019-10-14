@@ -6,6 +6,7 @@
 declare(strict_types=1);
 namespace DecodeLabs\Glitch;
 
+use DecodeLabs\Glitch;
 use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Dumper\Inspector;
@@ -397,7 +398,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
     /**
      * Log an exception... somewhere :)
      */
-    public function logException(\Throwable $e): void
+    public function logException(\Throwable $exception): void
     {
         if (!$this->logger) {
             return;
@@ -765,9 +766,9 @@ class Context implements LoggerAwareInterface, FacadeTarget
     {
         if (!$this->transport) {
             if (in_array(\PHP_SAPI, ['cli', 'phpdbg'])) {
-                $this->transport = new Transport\Stdout($this);
+                $this->transport = new Transport\Stdout();
             } else {
-                $this->transport = new Transport\Http($this);
+                $this->transport = new Transport\Http();
             }
         }
 

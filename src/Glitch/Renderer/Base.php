@@ -1061,7 +1061,7 @@ trait Base
     /**
      * Wrap entity
      */
-    protected function wrapEntity(string $entity): string
+    protected function wrapEntity(string $entity, ?string $class=null): string
     {
         return $entity;
     }

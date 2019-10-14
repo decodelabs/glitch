@@ -27,7 +27,7 @@ class Gd
     public static function inspectGdFont($resource, Entity $entity, Inspector $inspector): void
     {
         $entity
-            ->setMeta('width', $inspector->inspectValue(imagesfontwidth($resource)))
-            ->setMeta('height', $inspector->inspectValue(imagesfontheight($resource)));
+            ->setMeta('width', $inspector->inspectValue(imagefontwidth($resource)))
+            ->setMeta('height', $inspector->inspectValue(imagefontheight($resource)));
     }
 }
