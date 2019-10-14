@@ -520,7 +520,11 @@ class Html implements Renderer
             return null;
         }
 
-        return (new Highlighter())->extractFromFile($path, $line);
+        try {
+            return (new Highlighter())->extractFromFile($path, $line);
+        } catch (\EUnexpectedValue $e) {
+            return null;
+        }
     }
 
     /**

@@ -16,7 +16,7 @@ use DecodeLabs\Glitch\Dumper\Entity;
 class Text implements Renderer
 {
     const RENDER_IN_PRODUCTION = true;
-    const SPACES = 0;
+    const SPACES = 2;
     const RENDER_CLOSED = false;
 
     const RENDER_SECTIONS = [

@@ -16,7 +16,7 @@ class Inspector
 {
     const OBJECTS = [
         // Core
-        'Exception' => [Inspect\Core::class, 'inspectException'],
+        'Throwable' => [Inspect\Core::class, 'inspectException'],
         'Closure' => [Inspect\Core::class, 'inspectClosure'],
         'Generator' => [Inspect\Core::class, 'inspectGenerator'],
         '__PHP_Incomplete_Class' => [Inspect\Core::class, 'inspectIncompleteClass'],
@@ -618,14 +618,26 @@ class Inspector
     public function inspectObject(object $object, bool $properties=true): ?Entity
     {
         $objectId = spl_object_id($object);
-        $reflection = new \ReflectionObject($object);
-        $className = $reflection->getName();
+        $reflection = null;
+        $className = get_class($object);
+
+        switch ($className) {
+            // Skip these
+            case 'EventBase':
+                $name = $shortName = $className;
+                break;
+
+            default:
+                $reflection = new \ReflectionObject($object);
+                $shortName = $reflection->getShortName();
+                $name = $this->normalizeClassName($shortName, $reflection);
+                break;
+        }
+
         $isRef = isset($this->objectIds[$objectId]);
-        $shortName = $reflection->getShortName();
-        $name = $this->normalizeClassName($shortName, $reflection);
 
         // Add parent namespace to name if it's also an interface
-        if ($name === $shortName) {
+        if ($name === $shortName && $reflection) {
             $parts = explode('\\', $className);
             array_pop($parts);
             $parentNs = array_pop($parts);
@@ -650,6 +662,10 @@ class Inspector
 
         if ($object instanceof \Countable) {
             $entity->setLength($object->count());
+        }
+
+        if (!$reflection) {
+            return $entity;
         }
 
 

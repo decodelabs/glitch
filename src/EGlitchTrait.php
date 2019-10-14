@@ -39,11 +39,20 @@ trait EGlitchTrait
             $message = 'blah';
         }
 
-        parent::__construct(
+        $args = [
             $message,
-            $params['code'] ?? 0,
-            $params['previous'] ?? null
-        );
+            (int)($params['code'] ?? 0)
+        ];
+
+        if ($this instanceof \ErrorException) {
+            $args[] = (int)($params['severity'] ?? 0);
+            $args[] = (string)($params['file'] ?? '');
+            $args[] = (int)($params['line'] ?? 0);
+        }
+
+        $args[] = $params['previous'] ?? null;
+
+        parent::__construct(...$args);
 
         if (isset($params['file'])) {
             $this->file = $params['file'];
@@ -65,7 +74,11 @@ trait EGlitchTrait
         $this->type = $params['type'] ?? null;
         $this->interfaces = (array)($params['interfaces'] ?? []);
 
-        unset($params['data'], $params['rewind'], $params['http'], $params['type'], $params['interfaces']);
+        if (isset($params['stackTrace']) && $params['stackTrace'] instanceof Trace) {
+            $this->stackTrace = $params['stackTrace'];
+        }
+
+        unset($params['data'], $params['rewind'], $params['http'], $params['type'], $params['interfaces'], $params['stackTrace']);
         $this->params = $params;
     }
 

@@ -12,6 +12,9 @@ use DecodeLabs\Glitch\Dumper\Inspector;
 use DecodeLabs\Glitch\Dumper\Dump;
 
 use DecodeLabs\Glitch\Renderer;
+use DecodeLabs\Glitch\Renderer\Text as TextRenderer;
+use DecodeLabs\Glitch\Renderer\Cli as CliRenderer;
+use DecodeLabs\Glitch\Renderer\Html as HtmlRenderer;
 use DecodeLabs\Glitch\Transport;
 
 use DecodeLabs\Glitch\Exception\Factory;
@@ -29,7 +32,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
     use FacadeTargetTrait;
 
     const FACADE = 'Glitch';
-    const VERSION = 'v0.14.8';
+    const VERSION = 'v0.15.0';
 
     protected $startTime;
     protected $runMode = 'development';
@@ -184,7 +187,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
         $inspector->reset();
         unset($inspector);
 
-        $packet = $this->getRenderer()->renderDump($dump);
+        $packet = $this->getActiveRenderer()->renderDump($dump);
         $this->getTransport()->sendDump($packet, $exit);
 
         if ($exit) {
@@ -349,7 +352,18 @@ class Context implements LoggerAwareInterface, FacadeTarget
             return false;
         }
 
-        throw new \ErrorException($message, 0, $level, $file, $line);
+        throw Factory::create(
+            null,
+            ['ESystemError'],
+            1,
+            $message,
+            [
+                'stackTrace' => Trace::create(),
+                'file' => $file,
+                'line' => $line,
+                'severity' => $level
+            ]
+        );
     }
 
     /**
@@ -357,17 +371,26 @@ class Context implements LoggerAwareInterface, FacadeTarget
      */
     public function handleException(\Throwable $exception): void
     {
-        $this->logException($exception);
+        try {
+            $this->logException($exception);
 
-        if ($this->isProduction() && $this->errorPageRenderer) {
-            try {
-                ($this->errorPageRenderer)($exception, $this);
-                return;
-            } catch (\Throwable $e) {
+            if ($this->isProduction() && $this->errorPageRenderer) {
+                try {
+                    ($this->errorPageRenderer)($exception, $this);
+                    return;
+                } catch (\Throwable $e) {
+                }
             }
-        }
 
-        $this->dumpException($exception);
+            if (!class_exists(Trace::class)) {
+                echo (string)$exception;
+                exit(1);
+            }
+
+            $this->dumpException($exception);
+        } catch (\Throwable $e) {
+            dd($exception, $e);
+        }
     }
 
 
@@ -417,6 +440,44 @@ class Context implements LoggerAwareInterface, FacadeTarget
         $errors |= E_COMPILE_WARNING;
 
         return ($level & $errors) > 0;
+    }
+
+
+    /**
+     * Wrap exceptions thrown from $callable as Glitches
+     */
+    public function contain(callable $callback, ?callable $inspector=null)
+    {
+        try {
+            return $callback();
+        } catch (\Throwable $e) {
+            if ($e instanceof \EGlitch) {
+                throw $e;
+            }
+
+            if ($inspector) {
+                $types = $inspector($e);
+
+                if (!is_array($types)) {
+                    $types = explode(',', (string)$types);
+                }
+            } else {
+                $types = ['ERuntime'];
+            }
+
+            throw Factory::create(
+                null,
+                $types,
+                1,
+                $e->getMessage(),
+                [
+                    'previous' => $e,
+                    'stackTrace' => Trace::fromException($e, 1),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ]
+            );
+        }
     }
 
 
@@ -659,13 +720,32 @@ class Context implements LoggerAwareInterface, FacadeTarget
     {
         if (!$this->dumpRenderer) {
             if (in_array(\PHP_SAPI, ['cli', 'phpdbg'])) {
-                $this->dumpRenderer = new Renderer\Cli($this);
+                $this->dumpRenderer = new CliRenderer($this);
             } else {
-                $this->dumpRenderer = new Renderer\Html($this);
+                $this->dumpRenderer = new HtmlRenderer($this);
             }
         }
 
         return $this->dumpRenderer;
+    }
+
+    /**
+     * Get active renderer for current context
+     */
+    public function getActiveRenderer(): Renderer
+    {
+        $renderer = $this->getRenderer();
+
+        if ($renderer instanceof HtmlRenderer && headers_sent()) {
+            foreach (headers_list() as $header) {
+                if (false !== stripos($header, 'content-type: text/plain')) {
+                    $renderer = new TextRenderer($this);
+                    break;
+                }
+            }
+        }
+
+        return $renderer;
     }
 
 

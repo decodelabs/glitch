@@ -5,7 +5,7 @@ Glitch is a standalone PHP package designed to improve end-to-end error generati
 
 The project aims to provide a radically enhanced Exception framework that decouples the _meaning_ of an Exception from the underlying _implementation_ functionality, alongside deep data inspection tools and an Exception handling interface.
 
-![v0.13.0 interface](docs/ui-v0.13.0.png)
+![v0.15.0 interface](docs/ui-v0.15.0.png)
 
 ## Installation
 Glitch should be installed via composer
@@ -15,10 +15,28 @@ composer require decodelabs/glitch
 ```
 
 
-### Setup
-Glitch will work out of the box with minimal setup. It uses a [Veneer Facade](https://github.com/decodelabs/veneer) so you can use it in any namespace context without having to import anything.
+### Importing
 
+Glitch uses a [Veneer Facade](https://github.com/decodelabs/veneer) so you don't _need_ to add any <code>use</code> declarations to your code, the class will be aliased into whatever namespace you are working in.
+
+However, if you want to avoid filling your namespace with class aliases, you can import the Facade with:
+
+```php
+use DecodeLabs\Glitch;
+```
+
+### Setup
+
+Otherwise, Glitch works out of the box without any special setup.
 There are however some optional steps you can take to customise operation.
+
+
+Register as the default error handler:
+
+```php
+Glitch::registerAsErrorHandler();
+```
+
 
 Register base path aliases for easier reading of file names in dumps:
 
@@ -45,13 +63,6 @@ Set run mode (<code>development | testing | production</code>) so Glitch can for
 
 ```php
 Glitch::setRunMode('development');
-```
-
-
-Register as the default error handler:
-
-```php
-Glitch::registerAsErrorHandler();
 ```
 
 
@@ -180,9 +191,65 @@ class Thing {
 ```
 
 
+## Wrapping exceptions
+
+If you want to present a unified interface in your own libraries, you ideally need to ensure that the only exceptions you throw from your library are from your libraries namespace - exceptions thrown by third party libraries called by _your_ library may need to be wrapped to maintain namespace isolation.
+
+The old, long way:
+
+```php
+namespace My\Library;
+
+use Someone\Elses\Thing;
+
+class MyClass {
+    public function doSomething() {
+        $thing = new Thing();
+
+        try {
+            return $thing->doIt();
+        } catch(Someone\Elses\ThingException $e) {
+            throw new My\Library\ThingException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+}
+```
+
+Glitch offers a <code>contain()</code> method that will wrap your third party code and automatically convert any throw exceptions to Glitch exceptions from the primary stack frame and namespace of your library:
+
+```php
+namespace My\Library;
+
+use Someone\Elses\Thing;
+
+class MyClass {
+    public function doSomething() {
+        $thing = new Thing();
+
+        /*
+         * If doIt() throws an exception from Someone\Elses namespace, Glitch will
+         * wrap it and throw a Glitch exception from My\Library.
+         */
+        return Glitch::contain(function() use($thing) {
+            return $thing->doIt();
+        }, function($e) {
+            /*
+             * Optionally, you can send a second function to contain() inspect the source
+             * exception and return the required types for the output Glitch
+             */
+            if($e instanceof Someone\Elses\ThingException) {
+                return 'EThingGoneWrong';
+            } else {
+                return 'ERuntime';
+            }
+        });
+    }
+}
+```
 
 ## Other information
-[Rationale for Glitch Exceptions](docs/Rationale.md)
+- [Rationale for Glitch Exceptions](docs/Rationale.md)
+- [An explanation of how the Glitch interface works](docs/HowItWorks.md)
 
 
 ## Licensing

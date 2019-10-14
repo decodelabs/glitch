@@ -1,3 +1,12 @@
+## v0.15.0 (2019-10-14)
+* Added production mode error message page
+* Added ability to gracefully handle parse errors
+* Automatically detect text/plain header and switch renderer
+* Bypass segfault with EventBase class
+* Added contain() helper to Context
+* Fully wrap ErrorException in error_handler()
+* Updated docs
+
 ## v0.14.8 (2019-10-04)
 * Fixed base renderDump in production mode
 * Updated text icon rendering
