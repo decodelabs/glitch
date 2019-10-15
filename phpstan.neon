@@ -1,0 +1,18 @@
+parameters:
+    paths:
+        - src
+    level: max
+    inferPrivatePropertyTypeFromConstructor: true
+    ignoreErrors:
+        -
+            message: '#Ternary operator condition is always true#'
+            path: src/Glitch/Dumper/Inspect/Date.php
+        -
+            message: '#Result of method ReflectionExtension\:\:isPersistent\(\) \(void\) is used#'
+            path: src/Glitch/Dumper/Inspect/Reflection.php
+        -
+            message: '#Parameter \#1 \$flags of method DecodeLabs\\Glitch\\Dumper\\Inspector\:\:inspectFlagSet\(\) expects int\|null\, void given#'
+            path: src/Glitch/Dumper/Inspect/Spl.php
+        -
+            message: '#Result of method ArrayIterator\:\:getFlags\(\) \(void\) is used#'
+            path: src/Glitch/Dumper/Inspect/Spl.php

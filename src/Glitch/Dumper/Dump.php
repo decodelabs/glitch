@@ -44,7 +44,7 @@ class Dump implements \IteratorAggregate, \Countable
      */
     public function getStat(string $key): ?Stat
     {
-        return $this->stats[$name] ?? null;
+        return $this->stats[$key] ?? null;
     }
 
     /**

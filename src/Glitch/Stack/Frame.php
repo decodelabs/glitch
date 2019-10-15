@@ -6,6 +6,7 @@
 declare(strict_types=1);
 namespace DecodeLabs\Glitch\Stack;
 
+use DecodeLabs\Glitch;
 use DecodeLabs\Glitch\Context;
 
 /**

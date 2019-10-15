@@ -5,7 +5,7 @@ Glitch is a standalone PHP package designed to improve end-to-end error generati
 
 The project aims to provide a radically enhanced Exception framework that decouples the _meaning_ of an Exception from the underlying _implementation_ functionality, alongside deep data inspection tools and an Exception handling interface.
 
-![v0.15.0 interface](docs/ui-v0.15.0.png)
+![v0.15.0 interface](docs/v0.15.0.png)
 
 ## Installation
 Glitch should be installed via composer

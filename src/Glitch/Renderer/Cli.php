@@ -164,12 +164,19 @@ class Cli implements Renderer
     /**
      * Render a single identifier string
      */
-    protected function renderIdentifierString(string $string, string $class, int $forceSingleLineMax=null): string
+    protected function renderIdentifierString(string $string, ?string $class, int $forceSingleLineMax=null): string
     {
         $options = [];
-        $parts = explode(' ', $class);
-        $mod = array_pop($parts);
-        $style = array_pop($parts);
+
+        if ($class !== null) {
+            $parts = explode(' ', $class);
+            $mod = array_pop($parts);
+            $style = array_pop($parts);
+        } else {
+            $mod = 'public';
+            $style = 'values';
+        }
+        
         $color = 'white';
         $output = '';
 
@@ -410,8 +417,14 @@ class Cli implements Renderer
      */
     protected function renderBasicList(array $lines, ?string $class=null): string
     {
-        $classes = explode(' ', $class);
-        $isInline = in_array('inline', $classes);
+        if ($class !== null) {
+            $classes = explode(' ', $class);
+            $isInline = in_array('inline', $classes);
+        } else {
+            $classes = [];
+            $isInline = false;
+        }
+
         $wrap = false;
 
         if ($isInline) {
@@ -462,6 +475,8 @@ class Cli implements Renderer
 
     protected function setFormat(?string $fgColor, ?string $bgColor=null, string ...$options): string
     {
+        $setCodes = [];
+
         if ($fgColor !== null) {
             $setCodes[] = static::FG_COLORS[$fgColor];
         }

@@ -6,6 +6,7 @@
 declare(strict_types=1);
 namespace DecodeLabs\Glitch;
 
+use DecodeLabs\Glitch;
 use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Dumper\Inspector;
@@ -32,7 +33,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
     use FacadeTargetTrait;
 
     const FACADE = 'Glitch';
-    const VERSION = 'v0.15.0';
+    const VERSION = 'v0.15.1';
 
     protected $startTime;
     protected $runMode = 'development';
@@ -164,8 +165,9 @@ class Context implements LoggerAwareInterface, FacadeTarget
         }
 
         $trace = Trace::create($rewind - 1);
+        $first = $trace->getFirstFrame();
 
-        if (null !== $trace->getFirstFrame()->getVeneerFacade()) {
+        if ($first !== null && $first->getVeneerFacade() !== null) {
             $trace->shift();
         }
 
@@ -397,7 +399,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
     /**
      * Log an exception... somewhere :)
      */
-    public function logException(\Throwable $e): void
+    public function logException(\Throwable $exception): void
     {
         if (!$this->logger) {
             return;
@@ -564,6 +566,10 @@ class Context implements LoggerAwareInterface, FacadeTarget
      */
     public function normalizePath(?string $path): ?string
     {
+        if ($path === null) {
+            return null;
+        }
+
         $path = str_replace('\\', '/', $path);
 
         foreach ($this->pathAliases as $name => $test) {
@@ -697,7 +703,12 @@ class Context implements LoggerAwareInterface, FacadeTarget
 
         if (!isset($output)) {
             $ref = new \ReflectionClass(ClassLoader::class);
-            $output = dirname(dirname($ref->getFileName()));
+
+            if (false === ($file = $ref->getFileName())) {
+                throw $this->ERuntime('Unable to work out vendor path');
+            }
+
+            $output = dirname(dirname($file));
         }
 
         return $output;
@@ -765,9 +776,9 @@ class Context implements LoggerAwareInterface, FacadeTarget
     {
         if (!$this->transport) {
             if (in_array(\PHP_SAPI, ['cli', 'phpdbg'])) {
-                $this->transport = new Transport\Stdout($this);
+                $this->transport = new Transport\Stdout();
             } else {
-                $this->transport = new Transport\Http($this);
+                $this->transport = new Transport\Http();
             }
         }
 

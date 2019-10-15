@@ -20,9 +20,15 @@ class Ds
      */
     public static function inspectCollection(Collection $collection, Entity $entity, Inspector $inspector): void
     {
+        if (method_exists($collection, 'capacity')) {
+            $capacity = $collection->capacity();
+        } else {
+            $capacity = 0;
+        }
+
         $entity
             ->setLength(count($collection))
-            ->setMeta('capacity', $inspector($collection->capacity()))
+            ->setMeta('capacity', $inspector($capacity))
             ->setValues($inspector->inspectList($collection->toArray()));
     }
 

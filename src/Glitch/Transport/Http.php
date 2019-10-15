@@ -6,6 +6,7 @@
 declare(strict_types=1);
 namespace DecodeLabs\Glitch\Transport;
 
+use DecodeLabs\Glitch;
 use DecodeLabs\Glitch\Transport;
 use DecodeLabs\Glitch\Packet;
 
