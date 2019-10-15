@@ -668,10 +668,22 @@ class Inspector
 
 
         if (!$reflection->isInternal()) {
+            if (false === ($file = $reflection->getFileName())) {
+                $file = null;
+            }
+
+            if (false === ($startLine = $reflection->getStartLine())) {
+                $startLine = null;
+            }
+
+            if (false === ($endLine = $reflection->getEndLine())) {
+                $endLine = null;
+            }
+
             $entity
-                ->setFile($reflection->getFileName())
-                ->setStartLine($reflection->getStartLine())
-                ->setEndLine($reflection->getEndLine());
+                ->setFile($file)
+                ->setStartLine($startLine)
+                ->setEndLine($endLine);
         }
 
         $parents = $this->inspectObjectParents($reflection, $entity);

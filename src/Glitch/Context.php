@@ -165,8 +165,9 @@ class Context implements LoggerAwareInterface, FacadeTarget
         }
 
         $trace = Trace::create($rewind - 1);
+        $first = $trace->getFirstFrame();
 
-        if (null !== $trace->getFirstFrame()->getVeneerFacade()) {
+        if ($first !== null && $first->getVeneerFacade() !== null) {
             $trace->shift();
         }
 
@@ -565,6 +566,10 @@ class Context implements LoggerAwareInterface, FacadeTarget
      */
     public function normalizePath(?string $path): ?string
     {
+        if ($path === null) {
+            return null;
+        }
+
         $path = str_replace('\\', '/', $path);
 
         foreach ($this->pathAliases as $name => $test) {
@@ -698,7 +703,12 @@ class Context implements LoggerAwareInterface, FacadeTarget
 
         if (!isset($output)) {
             $ref = new \ReflectionClass(ClassLoader::class);
-            $output = dirname(dirname($ref->getFileName()));
+
+            if (false === ($file = $ref->getFileName())) {
+                throw $this->ERuntime('Unable to work out vendor path');
+            }
+
+            $output = dirname(dirname($file));
         }
 
         return $output;

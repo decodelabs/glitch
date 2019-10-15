@@ -17,10 +17,10 @@ class Xml
     public static function inspectXmlResource($resource, Entity $entity, Inspector $inspector): void
     {
         $entity
-            ->setMeta('current_byte_index', $inspector->inspectValue(xml_get_current_byte_index($resource)))
-            ->setMeta('current_column_number', $inspector->inspectValue(xml_get_current_column_number($resource)))
-            ->setMeta('current_line_number', $inspector->inspectValue(xml_get_current_line_number($resource)))
-            ->setMeta('error_code', $inspector->inspectValue(xml_get_error_code($resource)));
+            ->setMeta('current_byte_index', $inspector(xml_get_current_byte_index($resource)))
+            ->setMeta('current_column_number', $inspector(xml_get_current_column_number($resource)))
+            ->setMeta('current_line_number', $inspector(xml_get_current_line_number($resource)))
+            ->setMeta('error_code', $inspector(xml_get_error_code($resource)));
     }
 
     /**
@@ -36,12 +36,17 @@ class Xml
             $values[$name] = $inspector($property->getValue($element));
         }
 
+        $xml = $element->asXML();
+
+        if (is_bool($xml)) {
+            $xml = null;
+        }
+
         $entity
             ->setText(empty($values) ? (string)$element : null)
-            ->setDefinition($element->asXML())
+            ->setDefinition($xml)
             ->setValues($values)
-            ->setSectionVisible('definition', false)
-            ;
+            ->setSectionVisible('definition', false);
     }
 
     /**

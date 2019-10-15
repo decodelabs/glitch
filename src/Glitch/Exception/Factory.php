@@ -181,8 +181,8 @@ class Factory
             $this->params['rewind'] = $rewind;
         }
 
-        $this->params['rewind'] = $rewind = max((int)($this->params['rewind'] ?? 0), 0);
-        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $rewind + static::REWIND + 2);
+        $this->params['rewind'] = $rewind = (int)max((int)($this->params['rewind'] ?? 0), 0);
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, (int)($rewind + static::REWIND + 2));
         $key = $rewind + static::REWIND;
         $lastTrace = $trace[$key - 1];
 
@@ -321,7 +321,7 @@ class Factory
     protected function indexInterface(string $interface): ?string
     {
         $parts = explode('\\', $interface);
-        $name = array_pop($parts);
+        $name = (string)array_pop($parts);
         $traitName = implode('\\', $parts).'\\'.$name.'Trait';
         $isEFormat = preg_match('/^(E)[A-Z][a-zA-Z0-9_]+$/', $name);
 

@@ -6,6 +6,7 @@
 declare(strict_types=1);
 namespace DecodeLabs\Glitch\Dumper\Inspect;
 
+use DecodeLabs\Glitch\Exception\Factory as Glitch;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
 use DecodeLabs\Glitch\Stack\Trace;
@@ -58,8 +59,13 @@ class Date
         if ($interval->y === 0 && $interval->m === 0 &&
             ($interval->h >= 24 || $interval->i >= 60 || $interval->s >= 60)
         ) {
-            $date = new \DateTime();
-            $interval = date_diff($date, date_add(clone $date, $interval));
+            $date1 = new \DateTime();
+
+            if (false === ($date2 = date_add(clone $date1, $interval))) {
+                throw Glitch::ERuntime('Unable to create date from interval');
+            }
+
+            $interval = date_diff($date1, $date2);
             $format .= 0 < $interval->days ? '%ad ' : '';
         } else {
             if ($interval->y) {

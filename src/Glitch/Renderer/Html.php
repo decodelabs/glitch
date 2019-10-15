@@ -276,11 +276,14 @@ class Html implements Renderer
                 $build = true;
             }
         } else {
+            $cssTime = 0;
             $build = true;
         }
 
         if (!$build) {
-            $test = scandir(__DIR__.'/assets/scss/');
+            if (false === ($test = scandir(__DIR__.'/assets/scss/'))) {
+                $test = [];
+            }
 
             foreach ($test as $testFileName) {
                 if ($testFileName === '.' || $testFileName === '..') {
@@ -521,11 +524,11 @@ class Html implements Renderer
             return null;
         }
 
-        try {
-            return (new Highlighter())->extractFromFile($path, $line);
-        } catch (\EUnexpectedValue $e) {
+        if ($line === null) {
             return null;
         }
+
+        return (new Highlighter())->extractFromFile($path, $line);
     }
 
     /**
@@ -606,7 +609,7 @@ class Html implements Renderer
     /**
      * Render a single identifier string
      */
-    protected function renderIdentifierString(string $string, string $class, int $forceSingleLineMax=null): string
+    protected function renderIdentifierString(string $string, ?string $class, int $forceSingleLineMax=null): string
     {
         return '<span class="string '.$class.'">'.$this->renderStringLine($string, $forceSingleLineMax).'</span>';
     }

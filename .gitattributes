@@ -5,3 +5,4 @@ CHANGELOG.md export-ignore
 phpunit.xml.dist export-ignore
 /docs export-ignore
 /tests export-ignore
+/src/Glitch/PHPStan export-ignore

@@ -61,7 +61,10 @@ class Pdo
     {
         ob_start();
         $statement->debugDumpParams();
-        $dump = ob_get_clean();
+
+        if (false === ($dump = ob_get_clean())) {
+            $dump = null;
+        }
 
         $entity
             ->setText($dump)

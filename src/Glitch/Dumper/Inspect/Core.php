@@ -42,11 +42,23 @@ class Core
     {
         $reflection = new \ReflectionFunction($closure);
 
+        if (false === ($file = $reflection->getFileName())) {
+            $file = null;
+        }
+
+        if (false === ($startLine = $reflection->getStartLine())) {
+            $startLine = null;
+        }
+
+        if (false === ($endLine = $reflection->getEndLine())) {
+            $endLine = null;
+        }
+
         $entity
             ->setDefinition(Reflection::getFunctionDefinition($reflection))
-            ->setFile($reflection->getFileName())
-            ->setStartLine($reflection->getStartLine())
-            ->setEndLine($reflection->getEndLine());
+            ->setFile($file)
+            ->setStartLine($startLine)
+            ->setEndLine($endLine);
     }
 
     /**
@@ -62,11 +74,23 @@ class Core
 
         $function = $reflection->getFunction();
 
+        if (false === ($file = $function->getFileName())) {
+            $file = null;
+        }
+
+        if (false === ($startLine = $function->getStartLine())) {
+            $startLine = null;
+        }
+
+        if (false === ($endLine = $function->getEndLine())) {
+            $endLine = null;
+        }
+
         $entity
             ->setDefinition(Reflection::getFunctionDefinition($function))
-            ->setFile($function->getFileName())
-            ->setStartLine($function->getStartLine())
-            ->setEndLine($function->getEndLine());
+            ->setFile($file)
+            ->setStartLine($startLine)
+            ->setEndLine($endLine);
     }
 
     /**
