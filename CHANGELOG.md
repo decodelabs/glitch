@@ -1,3 +1,7 @@
+## v0.15.1 (2019-10-16)
+* Added PHPStan support
+* Bugfixes and updates from max level PHPStan scan
+
 ## v0.15.0 (2019-10-14)
 * Added production mode error message page
 * Added ability to gracefully handle parse errors
