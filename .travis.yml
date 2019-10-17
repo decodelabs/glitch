@@ -14,4 +14,4 @@ install:
     - composer install --prefer-dist
 
 script:
-  - vendor/bin/phpstan analyse --no-interaction --no-progress
+    - vendor/bin/phpstan analyse --no-interaction --no-progress
