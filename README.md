@@ -13,6 +13,7 @@ The project aims to provide a radically enhanced Exception framework that decoup
 
 ![v0.15.0 interface](docs/v0.15.0.png)
 
+
 ## Installation
 Glitch should be installed via composer
 
