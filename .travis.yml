@@ -1,0 +1,14 @@
+language: php
+php:
+    - '7.2'
+    - '7.3'
+
+cache:
+    directories:
+        - $HOME/.composer/cache/files
+
+install:
+    - composer install --prefer-dist
+
+script:
+  - vendor/bin/phpstan analyse --no-interaction --no-progress
