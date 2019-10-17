@@ -24,8 +24,9 @@
         "phpstan/phpstan": "^0.11.16",
         "phpstan/extension-installer": "^1.0",
         "decodelabs/phpstan-decodelabs": "^0.1",
-        
-        "symfony/var-dumper": "^4.3"
+
+        "symfony/var-dumper": "^4.3",
+        "php-ds/php-ds": "~1.2"
     },
     "autoload": {
         "psr-4": {
