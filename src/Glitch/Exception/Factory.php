@@ -329,11 +329,6 @@ class Factory
             $this->traits[$traitName] = true;
         }
 
-        if (interface_exists($interface)) {
-            $this->interfaceIndex[$interface] = [];
-            return null;
-        }
-
         if (!$isEFormat) {
             return null;
         }
