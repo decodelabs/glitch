@@ -528,6 +528,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
      */
     public function registerPathAlias(string $name, string $path): Context
     {
+        $path = rtrim($path, '/').'/';
         $this->pathAliases[$name] = $path;
 
         uasort($this->pathAliases, function ($a, $b) {
@@ -543,6 +544,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
     public function registerPathAliases(array $aliases): Context
     {
         foreach ($aliases as $name => $path) {
+            $path = rtrim($path, '/').'/';
             $this->pathAliases[$name] = $path;
         }
 
