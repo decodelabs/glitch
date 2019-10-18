@@ -573,12 +573,12 @@ class Context implements LoggerAwareInterface, FacadeTarget
         }
 
         $path = str_replace('\\', '/', $path);
-        $path = rtrim($path, '/').'/';
+        $testPath = rtrim($path, '/').'/';
 
         foreach ($this->pathAliases as $name => $test) {
             $len = strlen($test);
 
-            if (substr($path, 0, $len) == $test) {
+            if (substr($testPath, 0, $len) == $test) {
                 return $name.'://'.ltrim(substr($path, $len), '/');
             }
         }
