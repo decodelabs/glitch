@@ -578,7 +578,9 @@ class Context implements LoggerAwareInterface, FacadeTarget
         foreach ($this->pathAliases as $name => $test) {
             $len = strlen($test);
 
-            if (substr($testPath, 0, $len) == $test) {
+            if ($testPath === $test) {
+                return $name.'://'.ltrim($path, '/');
+            } elseif (substr($testPath, 0, $len) == $test) {
                 return $name.'://'.ltrim(substr($path, $len), '/');
             }
         }
