@@ -430,13 +430,19 @@ class Context implements LoggerAwareInterface, FacadeTarget
     public function logException(\Throwable $exception): void
     {
         if ($this->logger) {
-            $this->logger->critical($exception->getMessage(), [
-                'exception' => $exception
-            ]);
+            try {
+                $this->logger->critical($exception->getMessage(), [
+                    'exception' => $exception
+                ]);
+            } catch (\Throwable $e) {
+            }
         }
 
         if ($this->logListener) {
-            ($this->logListener)($exception);
+            try {
+                ($this->logListener)($exception);
+            } catch (\Throwable $e) {
+            }
         }
     }
 
