@@ -17,8 +17,6 @@ namespace
 
     use Symfony\Component\VarDumper\VarDumper;
 
-    require_once __DIR__.'/EGlitch.php';
-
     // Register the Veneer facade
     Context::registerFacade(Facade::class);
 
