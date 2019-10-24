@@ -47,6 +47,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
     protected $dumpedInBuffer = false;
 
     protected $logger;
+    protected $logListener;
     protected $dumpRenderer;
     protected $transport;
 
@@ -123,9 +124,36 @@ class Context implements LoggerAwareInterface, FacadeTarget
     /**
      * Set PSR logger
      */
-    public function setLogger(LoggerInterface $logger): void
+    public function setLogger(LoggerInterface $logger): Context
     {
         $this->logger = $logger;
+        return $this;
+    }
+
+    /**
+     * Get registered
+     */
+    public function getLogger(): ?LoggerInterface
+    {
+        return $this->logger;
+    }
+
+
+    /**
+     * Add a logger listener callback
+     */
+    public function setLogListener(?callable $listener): Context
+    {
+        $this->logListener = $listener;
+        return $this;
+    }
+
+    /**
+     * Get registered logger listener
+     */
+    public function getLogListener(): ?callable
+    {
+        return $this->logListener;
     }
 
 
@@ -401,13 +429,15 @@ class Context implements LoggerAwareInterface, FacadeTarget
      */
     public function logException(\Throwable $exception): void
     {
-        if (!$this->logger) {
-            return;
+        if ($this->logger) {
+            $this->logger->critical($exception->getMessage(), [
+                'exception' => $exception
+            ]);
         }
 
-        $this->logger->critical($exception->getMessage(), [
-            'exception' => $exception
-        ]);
+        if ($this->logListener) {
+            ($this->logListener)($exception);
+        }
     }
 
 
