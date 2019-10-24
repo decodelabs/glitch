@@ -102,11 +102,15 @@ class Factory
                 'extend' => 'ERuntime',
                 //'http' => 404
             ],
-            'EComponentUnavailable' => [
+
+            'ESetup' => [
                 'extend' => 'ERuntime'
             ],
+            'EComponentUnavailable' => [
+                'extend' => 'ESetup'
+            ],
             'EServiceUnavailable' => [
-                'extend' => 'ERuntime',
+                'extend' => 'ESetup',
                 'http' => 503
             ],
 
