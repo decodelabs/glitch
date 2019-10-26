@@ -1,11 +1,20 @@
 # Glitch
-### Better exceptions for PHP.
+
+[![PHP from Packagist](https://img.shields.io/packagist/php-v/decodelabs/glitch?style=flat-square)](https://packagist.org/packages/decodelabs/glitch)
+[![Latest Version](https://img.shields.io/packagist/v/decodelabs/glitch.svg?style=flat-square)](https://packagist.org/packages/decodelabs/glitch)
+[![Total Downloads](https://img.shields.io/packagist/dt/decodelabs/glitch.svg?style=flat-square)](https://packagist.org/packages/decodelabs/glitch)
+[![Build Status](https://img.shields.io/travis/decodelabs/glitch/develop.svg?style=flat-square)](https://travis-ci.org/decodelabs/glitch)
+[![PHPStan](https://img.shields.io/badge/PHPStan-enabled-44CC11.svg?longCache=true&style=flat-square)](https://github.com/phpstan/phpstan)
+[![License](https://img.shields.io/packagist/l/decodelabs/glitch?style=flat-square)](https://packagist.org/packages/decodelabs/glitch)
+
+### Better exceptions for PHP
 
 Glitch is a standalone PHP package designed to improve end-to-end error generation, handling and inspection when developing your applications.
 
 The project aims to provide a radically enhanced Exception framework that decouples the _meaning_ of an Exception from the underlying _implementation_ functionality, alongside deep data inspection tools and an Exception handling interface.
 
 ![v0.15.0 interface](docs/v0.15.0.png)
+
 
 ## Installation
 Glitch should be installed via composer

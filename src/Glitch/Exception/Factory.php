@@ -102,11 +102,15 @@ class Factory
                 'extend' => 'ERuntime',
                 //'http' => 404
             ],
-            'EComponentUnavailable' => [
+
+            'ESetup' => [
                 'extend' => 'ERuntime'
             ],
+            'EComponentUnavailable' => [
+                'extend' => 'ESetup'
+            ],
             'EServiceUnavailable' => [
-                'extend' => 'ERuntime',
+                'extend' => 'ESetup',
                 'http' => 503
             ],
 
@@ -327,11 +331,6 @@ class Factory
 
         if ($isEFormat && trait_exists($traitName, true)) {
             $this->traits[$traitName] = true;
-        }
-
-        if (interface_exists($interface)) {
-            $this->interfaceIndex[$interface] = [];
-            return null;
         }
 
         if (!$isEFormat) {
