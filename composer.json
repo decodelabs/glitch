@@ -14,7 +14,7 @@
         "php": "^7.2",
         "symfony/polyfill-mbstring": "^1.7",
 
-        "decodelabs/veneer": "~0.4",
+        "decodelabs/veneer": "~0.5",
         "decodelabs/enlighten": "~0.7",
         "psr/log": "^1.0",
 
