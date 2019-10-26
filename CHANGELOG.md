@@ -1,3 +1,10 @@
+## v0.15.2 (2019-10-26)
+* Added log listener callback
+* Added ESetup glitch type
+* Fixed interface inheritance bug in Glitch Factory
+* Improved path normalizer
+* Improved PHPStan setup
+
 ## v0.15.1 (2019-10-16)
 * Added PHPStan support
 * Bugfixes and updates from max level PHPStan scan
