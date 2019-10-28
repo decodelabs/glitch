@@ -30,7 +30,7 @@ class Core
 
         $reflection = new \ReflectionObject($exception);
         $inspector->inspectClassMembers($exception, $reflection, $entity, [
-            'code', 'previous', 'message', 'file', 'line', 'trace', 'string'
+            'code', 'previous', 'message', 'file', 'line', 'stackTrace', 'string', 'xdebug_message'
         ]);
     }
 

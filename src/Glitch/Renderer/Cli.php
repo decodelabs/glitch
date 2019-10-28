@@ -90,6 +90,29 @@ class Cli implements Renderer
     }
 
     /**
+     * Inspect handled exception
+     */
+    public function renderException(\Throwable $exception, Entity $entity, Dump $dataDump): Packet
+    {
+        $output = [];
+
+        if (!empty($header = $this->renderHeader('exception'))) {
+            $output[] = $header;
+        }
+
+        $output[] = $this->renderStats($dataDump->getStats());
+        $output[] = $this->renderExceptionEntity($entity);
+        $output[] = $this->renderExceptionMessage($exception);
+        $output[] = $this->renderTrace($dataDump->getTrace(), true);
+
+        if (!empty($footer = $this->renderFooter())) {
+            $output[] = $footer;
+        }
+
+        return $this->exportExceptionBuffer($output);
+    }
+
+    /**
      * Render exception message
      */
     protected function renderExceptionMessage(\Throwable $exception): string
@@ -176,7 +199,7 @@ class Cli implements Renderer
             $mod = 'public';
             $style = 'values';
         }
-        
+
         $color = 'white';
         $output = '';
 
