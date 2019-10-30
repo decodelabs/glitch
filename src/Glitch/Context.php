@@ -766,6 +766,15 @@ class Context implements LoggerAwareInterface, FacadeTarget
     }
 
     /**
+     * Fallback to text renderer
+     */
+    public function useTextRenderer(): Context
+    {
+        $this->dumpRenderer = new TextRenderer($this);
+        return $this;
+    }
+
+    /**
      * Get dump renderer
      */
     public function getRenderer(): Renderer
