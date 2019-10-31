@@ -431,9 +431,10 @@ class Html implements Renderer
         $array = array_merge($array, [
             'php' => phpversion(),
             'headers' => getallheaders(),
+            /*
             'includes' => array_map(function ($val) {
                 return $this->context->normalizePath($val);
-            }, get_included_files()),
+            }, get_included_files()),*/
             '$_SERVER' => $_SERVER,
             '$_GET' => $_GET,
             '$_POST' => $_POST,
