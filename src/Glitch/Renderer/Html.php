@@ -436,13 +436,28 @@ class Html implements Renderer
                 return $this->context->normalizePath($val);
             }, get_included_files()),*/
             '$_SERVER' => $_SERVER,
+            '$_ENV' => $_ENV,
             '$_GET' => $_GET,
             '$_POST' => $_POST,
             '$_FILES' => $_FILES,
-            '$_COOKIE' => $_COOKIE,
-            '$GLOBALS' => $GLOBALS
+            '$_COOKIE' => $_COOKIE
         ]);
 
+        $globals = [];
+        $filter = [
+            '_SERVER', '_ENV', '_GET', '_POST',
+            '_FILES', '_COOKIE', '_REQUEST', 'GLOBALS'
+        ];
+
+        foreach ($GLOBALS as $key => $value) {
+            if (in_array($key, $filter)) {
+                continue;
+            }
+
+            $globals[$key] = $value;
+        }
+
+        $array['$GLOBALS'] = $globals;
         $inspector = new Inspector($this->context);
 
         foreach ($array as $key => $value) {
