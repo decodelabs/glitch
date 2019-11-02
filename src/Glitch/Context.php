@@ -157,6 +157,13 @@ class Context implements LoggerAwareInterface, FacadeTarget
     }
 
 
+    /**
+     * Create a new stack trace
+     */
+    public function stackTrace(int $rewind=0): Trace
+    {
+        return Trace::create($rewind + 1);
+    }
 
 
 

@@ -9,6 +9,8 @@ namespace DecodeLabs\Glitch\Stack;
 use DecodeLabs\Glitch;
 use DecodeLabs\Glitch\Context;
 
+use JsonSerializable;
+
 /**
  * Represents a single entry in a stack trace
  */
@@ -463,6 +465,18 @@ class Frame
             'namespace' => $this->namespace,
             'type' => $this->type,
             'args' => $this->args
+        ];
+    }
+
+    /**
+     * Convert to json serializable state
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'file' => Glitch::normalizePath($this->getFile()),
+            'line' => $this->getLine(),
+            'signature' => $this->getSignature()
         ];
     }
 }

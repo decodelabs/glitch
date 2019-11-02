@@ -13,10 +13,15 @@ use DecodeLabs\Glitch\Inspectable;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
 
+use IteratorAggregate;
+use ArrayAccess;
+use JsonSerializable;
+use Countable;
+
 /**
  * Represents a normalized stack trace
  */
-class Trace implements \IteratorAggregate, \ArrayAccess, \Countable, Inspectable
+class Trace implements IteratorAggregate, ArrayAccess, JsonSerializable, Countable, Inspectable
 {
     protected $frames = [];
 
@@ -192,6 +197,16 @@ class Trace implements \IteratorAggregate, \ArrayAccess, \Countable, Inspectable
     {
         return array_map(function ($frame) {
             return $frame->toArray();
+        }, $this->frames);
+    }
+
+    /**
+     * Convert to json serializable state
+     */
+    public function jsonSerialize()
+    {
+        return array_map(function ($frame) {
+            return $frame->jsonSerialize();
         }, $this->frames);
     }
 
