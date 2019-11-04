@@ -54,7 +54,10 @@ class Xml
      */
     public static function inspectXmlWriter(\XMLWriter $writer, Entity $entity, Inspector $inspector): void
     {
-        $entity
-            ->setText($writer->outputMemory(false));
+        try {
+            $xml = $writer->outputMemory(false);
+            $entity->setText($xml);
+        } catch (\Throwable $e) {
+        }
     }
 }
