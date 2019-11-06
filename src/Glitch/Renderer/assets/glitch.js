@@ -30,6 +30,7 @@ $(function() {
             $target.css({ display: 'block' });
             height = $target.prop('scrollHeight');
             $target.css({ height: height });
+
             $parent.toggleClass('w-'+targetClass, !open).toggleClass('transitioning', true);
 
             setTimeout(function() {
@@ -49,14 +50,17 @@ $(function() {
                 $target.css({ display: 'block' });
                 height = $target.prop('scrollHeight');
                 $target.css({ height: height });
-                $parent.toggleClass('w-'+targetClass, !open);
-                $target.css({ height: '' });
-                $parent.toggleClass('transitioning', true);
 
                 setTimeout(function() {
-                    $target.css({ display: '' });
-                    $parent.toggleClass('transitioning', false);
-                }, 250);
+                    $parent.toggleClass('w-'+targetClass, !open);
+                    $target.css({ height: '' });
+                    $parent.toggleClass('transitioning', true);
+
+                    setTimeout(function() {
+                        $target.css({ display: '' });
+                        $parent.toggleClass('transitioning', false);
+                    }, 250);
+                }, 1);
             }
         }
     });

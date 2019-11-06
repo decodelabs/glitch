@@ -33,7 +33,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
     use FacadeTargetTrait;
 
     const FACADE = 'Glitch';
-    const VERSION = 'v0.15.1';
+    const VERSION = 'v0.15.3';
 
     protected $startTime;
     protected $runMode = 'development';
@@ -157,6 +157,13 @@ class Context implements LoggerAwareInterface, FacadeTarget
     }
 
 
+    /**
+     * Create a new stack trace
+     */
+    public function stackTrace(int $rewind=0): Trace
+    {
+        return Trace::create($rewind + 1);
+    }
 
 
 
@@ -762,6 +769,15 @@ class Context implements LoggerAwareInterface, FacadeTarget
     public function setRenderer(Renderer $renderer): Context
     {
         $this->dumpRenderer = $renderer;
+        return $this;
+    }
+
+    /**
+     * Fallback to text renderer
+     */
+    public function useTextRenderer(): Context
+    {
+        $this->dumpRenderer = new TextRenderer($this);
         return $this;
     }
 
