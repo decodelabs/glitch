@@ -1,3 +1,13 @@
+## v0.15.3 (2019-11-06)
+* Improved CLI exception dump consistency
+* Added useTextRenderer() shortcut to Context
+* Removed includes from environment list
+* Improved globals handling in environment
+* Fixed open / close transition animation
+* Added json serialize support to stack trace / frame
+* Updated XMLWriter dumper
+* Updated Veneer dependency
+
 ## v0.15.2 (2019-10-26)
 * Added log listener callback
 * Added ESetup glitch type
