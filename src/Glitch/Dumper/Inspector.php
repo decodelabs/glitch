@@ -767,7 +767,7 @@ class Inspector
 
 
         // Inspectable
-        if ($object instanceof Inspectable) {
+        if ($object instanceof Inspectable || method_exists($object, 'glitchInspect')) {
             $object->glitchInspect($entity, $this);
             return;
 
