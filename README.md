@@ -132,6 +132,40 @@ Once rendered, the dump information is delivered via an instance of <code>Decode
 By default, the render is just echoed out to <code>STDOUT</code>, however custom transports may send information to other interfaces, browser extensions, logging systems, etc.
 
 
+### Custom dumps
+You can customise how your own class instances are dumped by providing a <code>glitchInspect</code> method.
+The method takes a pre-initiated <code>entity</code> object and the active inspector.
+
+```php
+use DecodeLabs\Glitch\Inspectable;
+use DecodeLabs\Glitch\Dumper\Entity;
+use DecodeLabs\Glitch\Dumper\Inspector;
+
+class MyClass {
+
+    public $myValue = 'Some text';
+
+    private $otherObject;
+
+    protected $arrayValues = [
+        'row1' => [1, 2, 3]
+    ];
+
+    public function glitchInspect(Entity $entity, Inspector $inspector) {
+        $entity
+            ->setText($this->myValue)
+
+            // !private, *protected
+            ->setProperty('!otherObject', $inspector($this->otherObject))
+
+            ->setValues($inspector->inspectList($this->arrayValues));
+    }
+}
+```
+
+The <code>Inspectable</code> interface is **NOT** required - Glitch will check for the existence of the method regardless, which is useful if you do not want to rely on a dependency on the Glitch library just to provide better dump handling. However if you _do_ have Glitch in your dependency tree, it is recommended you fully implement the <code>Inspectable</code> interface for the best possible compatibility.
+
+
 ## Exceptions
 Glitch exceptions can be used to greatly simplify how you create and throw errors in your code, especially if you are writing a shared library.
 
