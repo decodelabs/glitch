@@ -1,3 +1,6 @@
+## v0.15.4 (2019-11-07)
+* Removed need for Inspectable interface to provide custom dumping
+
 ## v0.15.3 (2019-11-06)
 * Improved CLI exception dump consistency
 * Added useTextRenderer() shortcut to Context
