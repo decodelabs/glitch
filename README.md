@@ -134,7 +134,7 @@ By default, the render is just echoed out to <code>STDOUT</code>, however custom
 
 ### Custom dumps
 You can customise how your own class instances are dumped by providing a <code>glitchInspect</code> method.
-The method takes a pre-initiated <code>entity</code> object and the active inspector.
+The method takes a pre-initiated <code>entity</code> object and the active inspector. It is the responsibility of this method to add whatever data you would like to display to the <code>entity</code> object.
 
 ```php
 use DecodeLabs\Glitch\Inspectable;
