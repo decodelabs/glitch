@@ -574,6 +574,13 @@ class Context implements LoggerAwareInterface, FacadeTarget
         $path = rtrim($path, '/').'/';
         $this->pathAliases[$name] = $path;
 
+        try {
+            if (($realPath = realpath($path)) && $realPath.'/' !== $path) {
+                $this->pathAliases[$name.'*'] = $realPath.'/';
+            }
+        } catch (\Throwable $e) {
+        }
+
         uasort($this->pathAliases, function ($a, $b) {
             return strlen($b) - strlen($a);
         });
@@ -589,6 +596,13 @@ class Context implements LoggerAwareInterface, FacadeTarget
         foreach ($aliases as $name => $path) {
             $path = rtrim($path, '/').'/';
             $this->pathAliases[$name] = $path;
+
+            try {
+                if (($realPath = realpath($path)) && $realPath.'/' !== $path) {
+                    $this->pathAliases[$name.'*'] = $realPath.'/';
+                }
+            } catch (\Throwable $e) {
+            }
         }
 
         uasort($this->pathAliases, function ($a, $b) {
@@ -622,9 +636,9 @@ class Context implements LoggerAwareInterface, FacadeTarget
             $len = strlen($test);
 
             if ($testPath === $test) {
-                return $name.'://'.ltrim($path, '/');
+                return rtrim($name, '*').'://'.ltrim($path, '/');
             } elseif (substr($testPath, 0, $len) == $test) {
-                return $name.'://'.ltrim(substr($path, $len), '/');
+                return rtrim($name, '*').'://'.ltrim(substr($path, $len), '/');
             }
         }
 

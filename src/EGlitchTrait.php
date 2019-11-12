@@ -144,7 +144,7 @@ trait EGlitchTrait
     public function __toString(): string
     {
         $output = $this->getMessage()."\n".
-            'in '.$this->getFile().' : '.$this->getLine()."\n\n".
+            'in '.Glitch::normalizePath($this->getFile()).' : '.$this->getLine()."\n\n".
             $this->getStackTrace();
 
         return $output;
