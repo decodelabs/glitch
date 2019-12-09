@@ -516,7 +516,7 @@ class Factory
             return;
         }
 
-        $this->interfaceDefs[$interface] = 'namespace '.implode($parts, '\\').' {interface '.$name.' extends '.$parent.' {}}';
+        $this->interfaceDefs[$interface] = 'namespace '.implode('\\', $parts).' {interface '.$name.' extends '.$parent.' {}}';
     }
 
 
