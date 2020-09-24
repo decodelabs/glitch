@@ -1,3 +1,6 @@
+## v0.15.5 (2020-09-24)
+* Updated Composer dependency handling
+
 ## v0.15.4 (2019-11-07)
 * Removed need for Inspectable interface to provide custom dumping
 
