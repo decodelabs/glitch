@@ -453,6 +453,15 @@ class Frame
 
 
     /**
+     * Convert to string
+     */
+    public function __toString(): string
+    {
+        return $this->getSignature()."\n  ".Glitch::normalizePath($this->getCallingFile()).' : '.$this->getCallingLine();
+    }
+
+
+    /**
      * Convert to a generic array
      */
     public function toArray(): array

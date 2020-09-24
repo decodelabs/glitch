@@ -220,6 +220,27 @@ class Trace implements IteratorAggregate, ArrayAccess, JsonSerializable, Countab
 
 
     /**
+     * Convert to string
+     */
+    public function __toString(): string
+    {
+        $output = '';
+        $count = $this->count();
+        $pad = strlen((string)$count);
+
+        foreach ($this->frames as $frame) {
+            $frameString = $frame->getSignature()."\n".
+                str_repeat(' ', $pad + 1).
+                Glitch::normalizePath($frame->getCallingFile()).' : '.$frame->getCallingLine();
+
+            $output .= str_pad((string)$count--, $pad, ' ', \STR_PAD_LEFT).': '.$frameString."\n";
+        }
+
+        return $output;
+    }
+
+
+    /**
      * Set offset
      */
     public function offsetSet($offset, $value)

@@ -138,6 +138,18 @@ trait EGlitchTrait
         return $this->stackTrace;
     }
 
+    /**
+     * Convert to string
+     */
+    public function __toString(): string
+    {
+        $output = $this->getMessage()."\n".
+            'in '.Glitch::normalizePath($this->getFile()).' : '.$this->getLine()."\n\n".
+            $this->getStackTrace();
+
+        return $output;
+    }
+
 
     /**
      * Inspect for Glitch
