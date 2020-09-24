@@ -9,9 +9,7 @@ use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Stack\Trace;
 
 use DecodeLabs\Glitch\Context;
-use DecodeLabs\Glitch\Inspectable;
-use DecodeLabs\Glitch\Dumper\Entity;
-use DecodeLabs\Glitch\Dumper\Inspector;
+use DecodeLabs\Glitch\Dumpable;
 
 /**
  * Main root exception inheritance
@@ -154,7 +152,7 @@ trait EGlitchTrait
     /**
      * Inspect for Glitch
      */
-    public function glitchInspect(Entity $entity, Inspector $inspector): void
+    public function glitchDump(): iterable
     {
         $parts = [];
 
@@ -173,31 +171,24 @@ trait EGlitchTrait
             }
 
             $parts = array_unique($parts);
-            $name = implode(' | ', $parts);
-        } else {
-            $name = $entity->getName();
+            yield 'name' => implode(' | ', $parts);
         }
 
-        $entity
-            ->setType('exception')
-            ->setName($name)
-            ->setText($this->message)
-            ->setClass('@EGlitch')
-            ->setProperty('*code', $inspector($this->code))
-            ->setProperty('*http', $inspector($this->http));
+        yield 'type' => 'exception';
+        yield 'text' => $this->message;
+        yield 'class' => '@EGlitch';
+        yield 'property:*code' => $this->code;
+        yield 'property:*http' => $this->http;
 
         foreach ($this->params as $key => $value) {
-            $entity->setProperty('*'.$key, $inspector($value));
+            yield 'property:*'.$key => $value;
         }
 
-        $entity
-            ->setProperty('!previous', $inspector($this->getPrevious(), function ($entity) {
-                $entity->setOpen(false);
-            }))
-            ->setValues($this->data !== null ? ['data' => $inspector($this->data)] : null)
-            ->setShowKeys(false)
-            ->setFile($this->file)
-            ->setStartLine($this->line)
-            ->setStackTrace($this->getStackTrace());
+        yield '^property:!previous' => $this->getPrevious();
+        yield 'values' => $this->data !== null ? ['data' => $this->data] : null;
+        yield 'showKeys' => false;
+        yield 'file' => $this->file;
+        yield 'startLine' => $this->line;
+        yield 'stackTrace' => $this->getStackTrace();
     }
 }

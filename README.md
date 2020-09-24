@@ -133,15 +133,13 @@ By default, the render is just echoed out to <code>STDOUT</code>, however custom
 
 
 ### Custom dumps
-You can customise how your own class instances are dumped by providing a <code>glitchInspect</code> method.
-The method takes a pre-initiated <code>entity</code> object and the active inspector. It is the responsibility of this method to add whatever data you would like to display to the <code>entity</code> object.
+You can customise how your own class instances are dumped by implementing <code>DecodeLabs\Glitch\Dumpable</code> and / or providing a <code>glitchDump</code> method.
+The method should either yield or return a list of key / value pairs that populate the requisite fields of the dumper entity.
 
 ```php
-use DecodeLabs\Glitch\Inspectable;
-use DecodeLabs\Glitch\Dumper\Entity;
-use DecodeLabs\Glitch\Dumper\Inspector;
+use DecodeLabs\Glitch\Dumpable;
 
-class MyClass {
+class MyClass implements Dumpable {
 
     public $myValue = 'Some text';
 
@@ -151,19 +149,18 @@ class MyClass {
         'row1' => [1, 2, 3]
     ];
 
-    public function glitchInspect(Entity $entity, Inspector $inspector) {
-        $entity
-            ->setText($this->myValue)
+    public function glitchDump(): iterable {
+        yield 'text' => $this->myValue;
 
-            // !private, *protected
-            ->setProperty('!otherObject', $inspector($this->otherObject))
+        // !private, *protected
+        yield 'property:!otherObject' => $this->otherObject;
 
-            ->setValues($inspector->inspectList($this->arrayValues));
+        yield 'values' => $this->arrayValues;
     }
 }
 ```
 
-The <code>Inspectable</code> interface is **NOT** required - Glitch will check for the existence of the method regardless, which is useful if you do not want to rely on a dependency on the Glitch library just to provide better dump handling. However if you _do_ have Glitch in your dependency tree, it is recommended you fully implement the <code>Inspectable</code> interface for the best possible compatibility.
+The <code>Dumpable</code> interface is **NOT** _required_ - Glitch will check for the existence of the method regardless, which is useful if you do not want to rely on a dependency on the Glitch library just to provide better dump handling. However if you _do_ have Glitch in your dependency tree, it is recommended you fully implement the <code>Dumpable</code> interface for the best possible compatibility.
 
 
 ## Exceptions

@@ -8,6 +8,7 @@ namespace DecodeLabs\Glitch\Dumper;
 
 use DecodeLabs\Glitch;
 use DecodeLabs\Glitch\Context;
+use DecodeLabs\Glitch\Dumpable;
 use DecodeLabs\Glitch\Inspectable;
 use DecodeLabs\Glitch\Stack\Trace;
 
@@ -765,10 +766,16 @@ class Inspector
     {
         $className = get_class($object);
 
-
         // Inspectable
         if ($object instanceof Inspectable || method_exists($object, 'glitchInspect')) {
             $object->glitchInspect($entity, $this);
+            return;
+
+        // Export
+        } elseif ($object instanceof Dumpable || method_exists($object, 'glitchDump')) {
+            foreach ($object->glitchDump() as $key => $value) {
+                $entity->importDumpValue($key, $value, $this);
+            }
             return;
 
         // Object inspector

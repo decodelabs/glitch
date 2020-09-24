@@ -9,9 +9,7 @@ namespace DecodeLabs\Glitch\Stack;
 use DecodeLabs\Glitch;
 use DecodeLabs\Glitch\Context;
 
-use DecodeLabs\Glitch\Inspectable;
-use DecodeLabs\Glitch\Dumper\Entity;
-use DecodeLabs\Glitch\Dumper\Inspector;
+use DecodeLabs\Glitch\Dumpable;
 
 use IteratorAggregate;
 use ArrayAccess;
@@ -21,7 +19,7 @@ use Countable;
 /**
  * Represents a normalized stack trace
  */
-class Trace implements IteratorAggregate, ArrayAccess, JsonSerializable, Countable, Inspectable
+class Trace implements IteratorAggregate, ArrayAccess, JsonSerializable, Countable, Dumpable
 {
     protected $frames = [];
 
@@ -296,13 +294,12 @@ class Trace implements IteratorAggregate, ArrayAccess, JsonSerializable, Countab
 
 
     /**
-     * Inspect for Glitch
+     * Dump for Glitch
      */
-    public function glitchInspect(Entity $entity, Inspector $inspector): void
+    public function glitchDump(): iterable
     {
-        $entity
-            ->setType('stack')
-            ->setLength(count($this->frames))
-            ->setStackTrace($this);
+        yield 'type' => 'stack';
+        yield 'length' => count($this->frames);
+        yield 'stackTrace' => $this;
     }
 }
