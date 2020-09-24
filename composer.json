@@ -4,12 +4,10 @@
     "type": "library",
     "keywords": ["dump", "dumper", "exception", "debug"],
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Tom Wright",
-            "email": "tom@inflatablecookie.com"
-        }
-    ],
+    "authors": [{
+        "name": "Tom Wright",
+        "email": "tom@inflatablecookie.com"
+    }],
     "require": {
         "php": "^7.2",
         "symfony/polyfill-mbstring": "^1.7",
@@ -41,7 +39,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-develop": "1.0.x-dev"
+            "dev-develop": "0.x-dev"
         }
     }
 }
