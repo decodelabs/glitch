@@ -766,16 +766,16 @@ class Inspector
     {
         $className = get_class($object);
 
-        // Inspectable
-        if ($object instanceof Inspectable || method_exists($object, 'glitchInspect')) {
-            $object->glitchInspect($entity, $this);
+        // Export
+        if ($object instanceof Dumpable || method_exists($object, 'glitchDump')) {
+            foreach ($object->glitchDump() as $key => $value) {
+                $entity->importDumpValue($object, $key, $value, $this);
+            }
             return;
 
-        // Export
-        } elseif ($object instanceof Dumpable || method_exists($object, 'glitchDump')) {
-            foreach ($object->glitchDump() as $key => $value) {
-                $entity->importDumpValue($key, $value, $this);
-            }
+        // Inspectable
+        } elseif ($object instanceof Inspectable || method_exists($object, 'glitchInspect')) {
+            $object->glitchInspect($entity, $this);
             return;
 
         // Object inspector

@@ -61,14 +61,26 @@ class Entity
     /**
      * Import from dump yield
      */
-    public function importDumpValue(string $target, $value, Inspector $inspector): void
+    public function importDumpValue(object $object, string $target, $value, Inspector $inspector): void
     {
         $parts = explode(':', $target, 2);
         $target = (string)array_shift($parts);
         $key = array_pop($parts);
 
-        $method = 'set'.ucfirst($target);
         $type = null;
+
+        if (substr($target, 0, 1) === '^') {
+            $target = substr($target, 1);
+
+            $closer = function ($entity) {
+                $entity->setOpen(false);
+            };
+        } else {
+            $closer = null;
+        }
+
+        $method = 'set'.ucfirst($target);
+
 
         switch ($target) {
             case 'open':
@@ -105,41 +117,50 @@ class Entity
                 break;
 
             case 'value':
-                $method = 'setSingleValue';
-                $value = $inspector($value);
+                if ($key === null) {
+                    $method = 'setSingleValue';
+                }
+
+                $value = $inspector($value, $closer);
                 break;
 
             case 'meta':
             case 'property':
-            case 'value':
-                $value = $inspector($value);
-                break;
-
-            case '^meta':
-            case '^property':
-            case '^value':
-                $method = 'set'.ucfirst(substr($target, 1));
-
-                $value = $inspector($value, function ($entity) {
-                    $entity->setOpen(false);
-                });
+                $value = $inspector($value, $closer);
                 break;
 
             case 'values':
             case 'properties':
-            case 'sections':
             case 'metaList':
                 if ($value === null) {
                     return;
                 }
 
-                $value = $inspector->inspectList($value);
+                $value = $inspector->inspectList($value, $closer);
                 $type = 'array';
+                break;
+
+            case 'section':
+                $method = 'setSectionVisible';
+                $type = 'bool';
+                break;
+
+            case 'sections':
+                $method = 'setSectionsVisible';
+                $type = 'bool[]';
                 break;
 
             case 'stackTrace':
                 $type = Trace::class;
                 break;
+
+            case 'classMembers':
+                $this->checkValidity($value, 'string[]');
+
+                $inspector->inspectClassMembers(
+                    $object, new \ReflectionClass($object), $this, $value
+                );
+                return;
 
             default:
                 throw \Glitch::EUnexpectedValue(
