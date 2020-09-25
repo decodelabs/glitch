@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace DecodeLabs\Glitch\Dumper;
 
 use DecodeLabs\Glitch\Stack\Trace;
+use DecodeLabs\Glitch\Dumper\Inspector;
 
 class Entity
 {
@@ -55,6 +56,128 @@ class Entity
     {
         $this->setType($type);
     }
+
+
+    /**
+     * Import from dump yield
+     */
+    public function importDumpValue(object $object, string $target, $value, Inspector $inspector): void
+    {
+        $parts = explode(':', $target, 2);
+        $target = (string)array_shift($parts);
+        $key = array_pop($parts);
+
+        $type = null;
+
+        if (substr($target, 0, 1) === '^') {
+            $target = substr($target, 1);
+
+            $closer = function ($entity) {
+                $entity->setOpen(false);
+            };
+        } else {
+            $closer = null;
+        }
+
+        $method = 'set'.ucfirst($target);
+
+
+        switch ($target) {
+            case 'open':
+            case 'showKeys':
+                $type = 'bool';
+                break;
+
+            case 'startLine':
+            case 'endLine':
+            case 'length':
+                $type = '?int';
+                break;
+
+            case 'type':
+                $type = 'string';
+                break;
+
+            case 'name':
+            case 'id':
+            case 'objectId':
+            case 'hash':
+            case 'class':
+            case 'className':
+            case 'file':
+            case 'text':
+            case 'definition':
+                $type = '?string';
+                break;
+
+            case 'parentClasses':
+            case 'interfaces':
+            case 'traits':
+                $type = 'string[]';
+                break;
+
+            case 'value':
+                if ($key === null) {
+                    $method = 'setSingleValue';
+                }
+
+                $value = $inspector($value, $closer);
+                break;
+
+            case 'meta':
+            case 'property':
+                $value = $inspector($value, $closer);
+                break;
+
+            case 'values':
+            case 'properties':
+            case 'metaList':
+                if ($value === null) {
+                    return;
+                }
+
+                $value = $inspector->inspectList($value, $closer);
+                $type = 'array';
+                break;
+
+            case 'section':
+                $method = 'setSectionVisible';
+                $type = 'bool';
+                break;
+
+            case 'sections':
+                $method = 'setSectionsVisible';
+                $type = 'bool[]';
+                break;
+
+            case 'stackTrace':
+                $type = Trace::class;
+                break;
+
+            case 'classMembers':
+                $this->checkValidity($value, 'string[]');
+
+                $inspector->inspectClassMembers(
+                    $object, new \ReflectionClass($object), $this, $value
+                );
+                return;
+
+            default:
+                throw \Glitch::EUnexpectedValue(
+                    'Invalid dump yield key : '.$target
+                );
+        }
+
+        $this->checkValidity($value, $type);
+
+        if ($key !== null) {
+            $this->{$method}($key, $value);
+        } else {
+            $this->{$method}($value);
+        }
+    }
+
+
 
     /**
      * Override type
@@ -650,14 +773,26 @@ class Entity
     /**
      * Check value for Entity validity
      */
-    protected function checkValidity($value): void
+    protected function checkValidity($value, string $type=null): void
     {
+        if ($type !== null) {
+            if (!$this->checkTypeValidity($value, $type)) {
+                throw \Glitch::EUnexpectedValue(
+                    'Invalid dump yield value type ('.$type.')'
+                );
+            }
+        }
+
         switch (true) {
             case $value === null:
             case is_bool($value):
             case is_int($value):
             case is_float($value):
             case is_string($value):
+            case $type !== null && (
+                is_array($value) ||
+                $value instanceof $type
+            ):
             case $value instanceof Entity:
                 return;
 
@@ -667,6 +802,45 @@ class Entity
                     null,
                     $value
                 );
+        }
+    }
+
+    /**
+     * Check value type
+     */
+    protected function checkTypeValidity($value, string $type): bool
+    {
+        if ($nullable = (substr($type, 0, 1) === '?')) {
+            if ($value === null) {
+                return true;
+            }
+
+            $type = substr($type, 1);
+        }
+
+        if (substr($type, -2) == '[]') {
+            if (!is_array($value)) {
+                return false;
+            }
+
+            $type = substr($type, 0, -2);
+
+            foreach ($value as $innerVal) {
+                if (!$this->checkTypeValidity($innerVal, $type)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        switch ($type) {
+            case 'bool': return is_bool($value);
+            case 'int': return is_int($value);
+            case 'float': return is_float($value);
+            case 'string': return is_string($value);
+            case 'array': return is_array($value);
+            default: return $value instanceof $type;
         }
     }
 

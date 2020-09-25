@@ -227,7 +227,7 @@ class Factory
 
         $this->params['interfaces'] = [];
 
-        $this->interfaces['\\DecodeLabs\\Glitch\\Inspectable'] = true;
+        $this->interfaceIndex['\\DecodeLabs\\Glitch\\Dumpable'] = [];
         $this->traits['\\EGlitchTrait'] = true;
 
         $this->prepareInterfaces($interfaces);
@@ -276,7 +276,9 @@ class Factory
 
             $this->interfaces[$interface] = true;
 
-            if ($interface !== '\\DecodeLabs\\Glitch\\Inspectable') {
+            if (
+                $interface !== '\\DecodeLabs\\Glitch\\Dumpable'
+            ) {
                 $this->params['interfaces'][] = ltrim($interface, '\\');
             }
         }
