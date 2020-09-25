@@ -1,3 +1,7 @@
+## v0.15.6 (2020-09-25)
+* Added Dumpable interface and inspector support
+* Converted EGlitch to use Dumpable interface
+
 ## v0.15.5 (2020-09-24)
 * Updated Composer dependency handling
 
