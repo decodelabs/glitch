@@ -20,9 +20,9 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^8",
-        "phpstan/phpstan": "^0.11.16",
+        "phpstan/phpstan": "^0.12.19",
         "phpstan/extension-installer": "^1.0",
-        "decodelabs/phpstan-decodelabs": "^0.2",
+        "decodelabs/phpstan-decodelabs": "^0.3",
 
         "symfony/var-dumper": "^4.3",
         "php-ds/php-ds": "~1.2"
