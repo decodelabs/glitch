@@ -166,6 +166,8 @@ The <code>Dumpable</code> interface is **NOT** _required_ - Glitch will check fo
 
 
 ## Exceptions
+**Please be aware, Glitch Exceptions are being deprecated in favour of a new standalone library (TBC)**
+
 Glitch exceptions can be used to greatly simplify how you create and throw errors in your code, especially if you are writing a shared library.
 
 Throw <code>Glitches</code> rather than <code>Exceptions</code>, passing interface names to be mixed in as the method name (custom generated error interfaces must be prefixed with E) to the Glitch call.
