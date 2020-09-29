@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace DecodeLabs\Glitch;
 
 use DecodeLabs\Glitch;
+use DecodeLabs\Glitch\Path\Normalizer as Path;
 use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Dumper\Inspector;
@@ -37,7 +38,6 @@ class Context implements LoggerAwareInterface, FacadeTarget
 
     protected $startTime;
     protected $runMode = 'development';
-    protected $pathAliases = [];
 
     protected $statGatherers = [];
 
@@ -61,8 +61,8 @@ class Context implements LoggerAwareInterface, FacadeTarget
     public function __construct()
     {
         $this->startTime = microtime(true);
-        $this->pathAliases['glitch'] = dirname(__DIR__);
 
+        Path::registerAlias('glitch', dirname(__DIR__));
         $this->registerStatGatherer('default', [$this, 'gatherDefaultStats']);
     }
 
@@ -579,20 +579,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
      */
     public function registerPathAlias(string $name, string $path): Context
     {
-        $path = rtrim($path, '/').'/';
-        $this->pathAliases[$name] = $path;
-
-        try {
-            if (($realPath = realpath($path)) && $realPath.'/' !== $path) {
-                $this->pathAliases[$name.'*'] = $realPath.'/';
-            }
-        } catch (\Throwable $e) {
-        }
-
-        uasort($this->pathAliases, function ($a, $b) {
-            return strlen($b) - strlen($a);
-        });
-
+        Path::registerAlias($name, $path);
         return $this;
     }
 
@@ -601,22 +588,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
      */
     public function registerPathAliases(array $aliases): Context
     {
-        foreach ($aliases as $name => $path) {
-            $path = rtrim($path, '/').'/';
-            $this->pathAliases[$name] = $path;
-
-            try {
-                if (($realPath = realpath($path)) && $realPath.'/' !== $path) {
-                    $this->pathAliases[$name.'*'] = $realPath.'/';
-                }
-            } catch (\Throwable $e) {
-            }
-        }
-
-        uasort($this->pathAliases, function ($a, $b) {
-            return strlen($b) - strlen($a);
-        });
-
+        Path::registerAliases($aliases);
         return $this;
     }
 
@@ -625,7 +597,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
      */
     public function getPathAliases(): array
     {
-        return $this->pathAliases;
+        return Path::getAliases();
     }
 
     /**
@@ -633,24 +605,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
      */
     public function normalizePath(?string $path): ?string
     {
-        if ($path === null) {
-            return null;
-        }
-
-        $path = str_replace('\\', '/', $path);
-        $testPath = rtrim($path, '/').'/';
-
-        foreach ($this->pathAliases as $name => $test) {
-            $len = strlen($test);
-
-            if ($testPath === $test) {
-                return rtrim($name, '*').'://'.ltrim($path, '/');
-            } elseif (substr($testPath, 0, $len) == $test) {
-                return rtrim($name, '*').'://'.ltrim(substr($path, $len), '/');
-            }
-        }
-
-        return $path;
+        return Path::normalize($path);
     }
 
 
