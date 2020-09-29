@@ -1,3 +1,6 @@
+## v0.15.8 (2020-09-29)
+* Moved Stack and Dumpable to glitch-support
+
 ## v0.15.7 (2020-09-29)
 * Only wrap HTML render in iframe if dumped in buffer
 * Updated project description
