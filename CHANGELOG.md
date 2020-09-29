@@ -1,3 +1,7 @@
+## v0.15.7 (2020-09-29)
+* Only wrap HTML render in iframe if dumped in buffer
+* Updated project description
+
 ## v0.15.6 (2020-09-25)
 * Added Dumpable interface and inspector support
 * Converted EGlitch to use Dumpable interface
