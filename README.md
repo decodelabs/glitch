@@ -26,12 +26,14 @@ composer require decodelabs/glitch
 
 ### Importing
 
-Glitch uses a [Veneer Facade](https://github.com/decodelabs/veneer) so you don't _need_ to add any <code>use</code> declarations to your code, the class will be aliased into whatever namespace you are working in.
-
-However, if you want to avoid filling your namespace with class aliases, you can import the Facade with:
+Glitch uses [Veneer](https://github.com/decodelabs/veneer) with its frontage registered at <code>DecodeLabs\\Glitch</code>.
+You can access all of the primary functionality through this frontage:
 
 ```php
 use DecodeLabs\Glitch;
+
+Glitch::getRunMode();
+Glitch::dump('hello');
 ```
 
 ### Setup
