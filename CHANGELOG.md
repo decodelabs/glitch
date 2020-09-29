@@ -1,3 +1,6 @@
+## v0.15.9 (2020-09-29)
+* Reverted to PHPUnit 8
+
 ## v0.15.8 (2020-09-29)
 * Moved Stack and Dumpable to glitch-support
 
