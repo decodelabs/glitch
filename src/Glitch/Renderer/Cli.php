@@ -146,7 +146,7 @@ class Cli implements Renderer
     /**
      * Flatten buffer for final render
      */
-    protected function exportBuffer(array $buffer): Packet
+    protected function exportBuffer(array $buffer, bool $final): Packet
     {
         $output = "\n".implode("\n\n", $buffer)."\n\n";
         return new Packet($output, 'text/plain');

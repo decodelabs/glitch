@@ -7,7 +7,7 @@
 [![PHPStan](https://img.shields.io/badge/PHPStan-enabled-44CC11.svg?longCache=true&style=flat-square)](https://github.com/phpstan/phpstan)
 [![License](https://img.shields.io/packagist/l/decodelabs/glitch?style=flat-square)](https://packagist.org/packages/decodelabs/glitch)
 
-### Better exceptions for PHP
+### Better tools for when things go wrong
 
 Glitch is a standalone PHP package designed to improve end-to-end error generation, handling and inspection when developing your applications.
 
@@ -26,12 +26,14 @@ composer require decodelabs/glitch
 
 ### Importing
 
-Glitch uses a [Veneer Facade](https://github.com/decodelabs/veneer) so you don't _need_ to add any <code>use</code> declarations to your code, the class will be aliased into whatever namespace you are working in.
-
-However, if you want to avoid filling your namespace with class aliases, you can import the Facade with:
+Glitch uses [Veneer](https://github.com/decodelabs/veneer) with its frontage registered at <code>DecodeLabs\\Glitch</code>.
+You can access all of the primary functionality through this frontage:
 
 ```php
 use DecodeLabs\Glitch;
+
+Glitch::getRunMode();
+Glitch::dump('hello');
 ```
 
 ### Setup
@@ -164,6 +166,8 @@ The <code>Dumpable</code> interface is **NOT** _required_ - Glitch will check fo
 
 
 ## Exceptions
+**Please be aware, Glitch Exceptions are being deprecated in favour of a new standalone library (TBC)**
+
 Glitch exceptions can be used to greatly simplify how you create and throw errors in your code, especially if you are writing a shared library.
 
 Throw <code>Glitches</code> rather than <code>Exceptions</code>, passing interface names to be mixed in as the method name (custom generated error interfaces must be prefixed with E) to the Glitch call.

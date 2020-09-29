@@ -104,10 +104,10 @@ class Html implements Renderer
     /**
      * Convert Dump object to HTML string
      */
-    public function renderDump(Dump $dump): Packet
+    public function renderDump(Dump $dump, bool $final): Packet
     {
         if (!$this->shouldRender()) {
-            return $this->exportDumpBuffer([]);
+            return $this->exportDumpBuffer([], $final);
         }
 
         $output = [];
@@ -132,7 +132,7 @@ class Html implements Renderer
         $output[] = '</div>';
 
         $output[] = $this->renderFooter();
-        return $this->exportDumpBuffer($output);
+        return $this->exportDumpBuffer($output, $final);
     }
 
 
@@ -563,27 +563,33 @@ class Html implements Renderer
     /**
      * Implode buffer and wrap it in JS iframe injector
      */
-    protected function exportBuffer(array $buffer): Packet
+    protected function exportBuffer(array $buffer, bool $final): Packet
     {
         $html = implode("\n", $buffer);
-        $id = uniqid('glitch-dump');
 
-        $output = [];
-        $output[] = '<div class="glitch-dump">';
-        $output[] = '<style>';
-        $output[] = '.glitch-dump > iframe { width: 100%; max-width: 100vw; min-width: 100%; height: 100%; resize: both; }';
-        $output[] = 'body > .glitch-dump > iframe { height: 50vh; }';
-        $output[] = 'body > .glitch-dump:only-child > iframe { height:100vh; }';
-        $output[] = 'body > .glitch-dump:only-child { height:100%; border: none; resize: none; position: absolute; width: 100%; top: 0; left: 0; }';
-        $output[] = '</style>';
-        $output[] = '<iframe id="'.$id.'" width="100%" height="100%" frameborder="0"></iframe>';
-        $output[] = '<script>';
-        $output[] = 'var doc = document.getElementById(\''.$id.'\').contentWindow.document;';
-        $output[] = 'doc.open();doc.write('.json_encode($html).');doc.close();';
-        $output[] = '</script>';
-        $output[] = '</div>';
+        if ($final && !$this->context->hasDumpedInBuffer()) {
+            $output = $html;
+        } else {
+            $id = uniqid('glitch-dump');
+            $output = [];
 
-        $output = implode("\n", $output);
+            $output[] = '<div class="glitch-dump">';
+            $output[] = '<style>';
+            $output[] = '.glitch-dump > iframe { width: 100%; max-width: 100vw; min-width: 100%; height: 100%; resize: both; }';
+            $output[] = 'body > .glitch-dump > iframe { height: 50vh; }';
+            $output[] = 'body > .glitch-dump:only-child > iframe { height:100vh; }';
+            $output[] = 'body > .glitch-dump:only-child { height:100%; border: none; resize: none; position: absolute; width: 100%; top: 0; left: 0; }';
+            $output[] = '</style>';
+            $output[] = '<iframe id="'.$id.'" width="100%" height="100%" frameborder="0"></iframe>';
+            $output[] = '<script>';
+            $output[] = 'var doc = document.getElementById(\''.$id.'\').contentWindow.document;';
+            $output[] = 'doc.open();doc.write('.json_encode($html).');doc.close();';
+            $output[] = '</script>';
+            $output[] = '</div>';
+
+            $output = implode("\n", $output);
+        }
+
         return new Packet($output, 'text/html');
     }
 

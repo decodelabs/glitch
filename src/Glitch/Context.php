@@ -33,7 +33,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
     use FacadeTargetTrait;
 
     const FACADE = 'Glitch';
-    const VERSION = 'v0.15.4';
+    const VERSION = 'v0.15.7';
 
     protected $startTime;
     protected $runMode = 'development';
@@ -183,6 +183,14 @@ class Context implements LoggerAwareInterface, FacadeTarget
         $this->dumpValues(func_get_args(), 1, true);
     }
 
+    /**
+     * Has dumped in output buffer
+     */
+    public function hasDumpedInBuffer(): bool
+    {
+        return $this->dumpedInBuffer;
+    }
+
 
     /**
      * Send variables to dump, carry on execution
@@ -224,7 +232,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
         $inspector->reset();
         unset($inspector);
 
-        $packet = $this->getActiveRenderer()->renderDump($dump);
+        $packet = $this->getActiveRenderer()->renderDump($dump, $exit);
         $this->getTransport()->sendDump($packet, $exit);
 
         if ($exit) {
