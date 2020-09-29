@@ -12,6 +12,6 @@ use DecodeLabs\Glitch\Dumper\Entity;
 
 interface Renderer
 {
-    public function renderDump(Dump $dump): Packet;
+    public function renderDump(Dump $dump, bool $final): Packet;
     public function renderException(\Throwable $exception, Entity $entity, Dump $dataDump): Packet;
 }

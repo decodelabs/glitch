@@ -81,10 +81,10 @@ trait Base
     /**
      * Convert Dump object to HTML string
      */
-    public function renderDump(Dump $dump): Packet
+    public function renderDump(Dump $dump, bool $final): Packet
     {
         if (!$this->shouldRender()) {
-            return $this->exportDumpBuffer([]);
+            return $this->exportDumpBuffer([], $final);
         }
 
         $output = [];
@@ -104,7 +104,7 @@ trait Base
             $output[] = $footer;
         }
 
-        return $this->exportDumpBuffer($output);
+        return $this->exportDumpBuffer($output, $final);
     }
 
 
@@ -263,7 +263,7 @@ trait Base
     /**
      * Flatten buffer for final render
      */
-    protected function exportBuffer(array $buffer): Packet
+    protected function exportBuffer(array $buffer, bool $final): Packet
     {
         $output = implode("\n\n", $buffer);
         return new Packet($output, 'text/plain');
@@ -272,9 +272,9 @@ trait Base
     /**
      * Flatten dump buffer for final render
      */
-    protected function exportDumpBuffer(array $buffer): Packet
+    protected function exportDumpBuffer(array $buffer, bool $final): Packet
     {
-        return $this->exportBuffer($buffer);
+        return $this->exportBuffer($buffer, $final);
     }
 
     /**
@@ -282,7 +282,7 @@ trait Base
      */
     protected function exportExceptionBuffer(array $buffer): Packet
     {
-        return $this->exportBuffer($buffer);
+        return $this->exportBuffer($buffer, true);
     }
 
 
