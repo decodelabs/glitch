@@ -12,6 +12,7 @@
         "php": "^7.2",
         "symfony/polyfill-mbstring": "^1.7",
 
+        "decodelabs/glitch-support": "^0.1",
         "decodelabs/veneer": "^0.5",
         "decodelabs/enlighten": "^0.7",
         "psr/log": "^1.0",
@@ -19,7 +20,7 @@
         "components/jquery": "~3.3"
     },
     "require-dev": {
-        "phpunit/phpunit": "^8",
+        "phpunit/phpunit": "^9",
         "phpstan/phpstan": "^0.12.19",
         "phpstan/extension-installer": "^1.0",
         "decodelabs/phpstan-decodelabs": "^0.3",
