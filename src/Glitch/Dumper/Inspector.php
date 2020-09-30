@@ -6,7 +6,6 @@
 declare(strict_types=1);
 namespace DecodeLabs\Glitch\Dumper;
 
-use DecodeLabs\Glitch;
 use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Dumpable;
 use DecodeLabs\Glitch\Inspectable;
