@@ -270,9 +270,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
             $gatherer($dump, $this);
         }
 
-        $entity = $inspector->inspectValue($exception)
-            ->removeProperty('*code')
-            ->removeProperty('*http');
+        $entity = $inspector->inspectValue($exception);
 
         $inspector->reset();
         unset($inspector);
