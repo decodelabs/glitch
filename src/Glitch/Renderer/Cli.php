@@ -119,7 +119,15 @@ class Cli implements Renderer
     {
         $message = $exception->getMessage();
         $code = $exception->getCode();
-        $httpCode = $exception instanceof \EGlitch ? $exception->getHttpCode() : null;
+
+        if ($exception instanceof \EGlitch) {
+            $httpCode = $exception->getHttpCode();
+        } elseif ($exception instanceof Exceptional\Exception) {
+            $httpCode = $exception->getHttpStatus();
+        } else {
+            $httpCode = null;
+        }
+
         $head = [];
 
         if ($code) {

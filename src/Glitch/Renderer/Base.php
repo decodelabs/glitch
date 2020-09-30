@@ -14,6 +14,8 @@ use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Dumper\Entity;
 
+use DecodeLabs\Exceptional;
+
 trait Base
 {
     //const RENDER_IN_PRODUCTION = false;
@@ -172,7 +174,14 @@ trait Base
     {
         $message = $exception->getMessage();
         $code = $exception->getCode();
-        $httpCode = $exception instanceof \EGlitch ? $exception->getHttpCode() : null;
+
+        if ($exception instanceof \EGlitch) {
+            $httpCode = $exception->getHttpCode();
+        } elseif ($exception instanceof Exceptional\Exception) {
+            $httpCode = $exception->getHttpStatus();
+        } else {
+            $httpCode = null;
+        }
 
         $head = [];
 

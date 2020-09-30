@@ -18,6 +18,7 @@ use DecodeLabs\Glitch\Dumper\Inspector;
 use DecodeLabs\Glitch\Exception\EIncomplete;
 
 use DecodeLabs\Enlighten\Highlighter;
+use DecodeLabs\Exceptional;
 
 class Html implements Renderer
 {
@@ -320,12 +321,15 @@ class Html implements Renderer
     {
         $message = $exception->getMessage();
         $code = $exception->getCode();
-        $httpCode = null;
         $file = $this->context->normalizePath($exception->getFile());
         $line = $exception->getLine();
 
         if ($exception instanceof \EGlitch) {
             $httpCode = $exception->getHttpCode();
+        } elseif ($exception instanceof Exceptional\Exception) {
+            $httpCode = $exception->getHttpStatus();
+        } else {
+            $httpCode = null;
         }
 
 

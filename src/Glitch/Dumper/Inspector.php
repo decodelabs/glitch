@@ -14,6 +14,8 @@ use DecodeLabs\Glitch\Stack\Trace;
 
 use DecodeLabs\Glitch\Dumper\Inspect;
 
+use DecodeLabs\Exceptional;
+
 class Inspector
 {
     const OBJECTS = [
@@ -322,7 +324,7 @@ class Inspector
                 try {
                     return (string)$value;
                 } catch (\Throwable $e) {
-                    throw Glitch::EUnexpectedValue(
+                    throw Exceptional::UnexpectedValue(
                         'Value is not a scalar',
                         null,
                         $value
@@ -402,7 +404,7 @@ class Inspector
                 try {
                     return $this->inspectString((string)$value);
                 } catch (\Throwable $e) {
-                    throw Glitch::EUnexpectedValue(
+                    throw Exceptional::UnexpectedValue(
                         'Unknown entity type',
                         null,
                         $value

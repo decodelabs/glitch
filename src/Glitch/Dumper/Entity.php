@@ -9,6 +9,8 @@ namespace DecodeLabs\Glitch\Dumper;
 use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Dumper\Inspector;
 
+use DecodeLabs\Exceptional;
+
 class Entity
 {
     protected $type;
@@ -163,7 +165,7 @@ class Entity
                 return;
 
             default:
-                throw \Glitch::EUnexpectedValue(
+                throw Exceptional::UnexpectedValue(
                     'Invalid dump yield key : '.$target
                 );
         }
@@ -777,7 +779,7 @@ class Entity
     {
         if ($type !== null) {
             if (!$this->checkTypeValidity($value, $type)) {
-                throw \Glitch::EUnexpectedValue(
+                throw Exceptional::UnexpectedValue(
                     'Invalid dump yield value type ('.$type.')'
                 );
             }
@@ -797,7 +799,7 @@ class Entity
                 return;
 
             default:
-                throw \Glitch::EUnexpectedValue(
+                throw Exceptional::UnexpectedValue(
                     'Invalid sub-entity type - must be scalar or Entity',
                     null,
                     $value
