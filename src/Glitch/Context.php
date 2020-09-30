@@ -20,6 +20,8 @@ use DecodeLabs\Glitch\Transport;
 
 use DecodeLabs\Glitch\Exception\Factory;
 
+use DecodeLabs\Exceptional;
+
 use Composer\Autoload\ClassLoader;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -80,7 +82,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
                 break;
 
             default:
-                throw \Glitch::EInvalidArgument('Invalid run mode', null, $mode);
+                throw Exceptional::InvalidArgument('Invalid run mode', null, $mode);
         }
 
         return $this;
@@ -255,7 +257,10 @@ class Context implements LoggerAwareInterface, FacadeTarget
             }
         }
 
-        if ($exception instanceof \EGlitch) {
+        if (
+            $exception instanceof \EGlitch ||
+            $exception instanceof Exceptional\Exception
+        ) {
             $data = $exception->getData();
             $trace = $exception->getStackTrace();
         } else {
@@ -270,9 +275,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
             $gatherer($dump, $this);
         }
 
-        $entity = $inspector->inspectValue($exception)
-            ->removeProperty('*code')
-            ->removeProperty('*http');
+        $entity = $inspector->inspectValue($exception);
 
         $inspector->reset();
         unset($inspector);
@@ -315,7 +318,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
     public function __call(string $method, array $args): \EGlitch
     {
         if (!preg_match('|[.\\/]|', $method) && !preg_match('/^[A-Z]/', $method)) {
-            throw Glitch::EBadMethodCall('Method '.$method.' is not available in Glitch');
+            throw Exceptional::BadMethodCall('Method '.$method.' is not available in Glitch');
         }
 
         return Factory::create(
@@ -504,7 +507,10 @@ class Context implements LoggerAwareInterface, FacadeTarget
         try {
             return $callback();
         } catch (\Throwable $e) {
-            if ($e instanceof \EGlitch) {
+            if (
+                $e instanceof \EGlitch ||
+                $e instanceof Exceptional\Exception
+            ) {
                 throw $e;
             }
 
@@ -775,7 +781,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
             $ref = new \ReflectionClass(ClassLoader::class);
 
             if (false === ($file = $ref->getFileName())) {
-                throw $this->ERuntime('Unable to work out vendor path');
+                throw Exceptional::Runtime('Unable to work out vendor path');
             }
 
             $output = dirname(dirname($file));

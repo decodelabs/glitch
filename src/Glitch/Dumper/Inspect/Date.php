@@ -11,6 +11,8 @@ use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
 use DecodeLabs\Glitch\Stack\Trace;
 
+use DecodeLabs\Exceptional;
+
 class Date
 {
     /**
@@ -62,7 +64,7 @@ class Date
             $date1 = new \DateTime();
 
             if (false === ($date2 = date_add(clone $date1, $interval))) {
-                throw Glitch::ERuntime('Unable to create date from interval');
+                throw Exceptional::Runtime('Unable to create date from interval');
             }
 
             $interval = date_diff($date1, $date2);

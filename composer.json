@@ -13,10 +13,11 @@
         "symfony/polyfill-mbstring": "^1.7",
 
         "decodelabs/glitch-support": "^0.1",
+        "decodelabs/exceptional": "^0.2",
         "decodelabs/veneer": "^0.5",
         "decodelabs/enlighten": "^0.7",
-        "psr/log": "^1.0",
 
+        "psr/log": "^1.0",
         "components/jquery": "~3.3"
     },
     "require-dev": {
