@@ -1,3 +1,6 @@
+## v0.15.10 (2020-09-30)
+* Switched to Exceptional for exception generation
+
 ## v0.15.9 (2020-09-29)
 * Reverted to PHPUnit 8
 
