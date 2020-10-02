@@ -313,29 +313,8 @@ class Context implements LoggerAwareInterface, FacadeTarget
      */
     public function incomplete($data=null, int $rewind=0): void
     {
-        $frame = $this->getLastFrame($rewind);
-
-        throw Exceptional::{'Implementation,./Exception/Incomplete'}([
-            'message' => $frame->getSignature().' has not been implemented yet',
-            'rewind' => 2 + $rewind,
-            'data' => $data
-        ]);
+        Exceptional::incomplete($data, $rewind + 1);
     }
-
-    /**
-     * Get last frame
-     */
-    protected function getLastFrame(int $rewind=0): Frame
-    {
-        $frame = Frame::create($rewind + 2);
-
-        if ($frame->getVeneerFacade() !== null) {
-            $frame = Frame::create($rewind + 3);
-        }
-
-        return $frame;
-    }
-
 
 
     /**

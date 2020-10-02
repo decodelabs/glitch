@@ -15,10 +15,10 @@ use DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
-use DecodeLabs\Glitch\Exception\IncompleteException;
 
 use DecodeLabs\Enlighten\Highlighter;
 use DecodeLabs\Exceptional;
+use DecodeLabs\Exceptional\IncompleteException;
 
 class Html implements Renderer
 {
