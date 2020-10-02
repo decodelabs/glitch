@@ -12,19 +12,19 @@
         "php": "^7.2",
         "symfony/polyfill-mbstring": "^1.7",
 
-        "decodelabs/glitch-support": "^0.1",
-        "decodelabs/exceptional": "^0.2",
-        "decodelabs/veneer": "^0.5",
-        "decodelabs/enlighten": "^0.7",
+        "decodelabs/glitch-support": "^0.1.4",
+        "decodelabs/exceptional": "^0.2.6",
+        "decodelabs/veneer": "^0.5.3",
+        "decodelabs/enlighten": "^0.7.4",
 
         "psr/log": "^1.0",
         "components/jquery": "~3.3"
     },
     "require-dev": {
         "phpunit/phpunit": "^8",
-        "phpstan/phpstan": "^0.12.19",
+        "phpstan/phpstan": "^0.12.45",
         "phpstan/extension-installer": "^1.0",
-        "decodelabs/phpstan-decodelabs": "^0.3",
+        "decodelabs/phpstan-decodelabs": "^0.3.4",
 
         "symfony/var-dumper": "^4.3",
         "php-ds/php-ds": "~1.2"
@@ -34,14 +34,12 @@
             "DecodeLabs\\Glitch\\": "src/Glitch"
         },
         "files": [
-            "src/EGlitch.php",
-            "src/EGlitchTrait.php",
             "src/helpers.php"
         ]
     },
     "extra": {
         "branch-alias": {
-            "dev-develop": "0.15.x-dev"
+            "dev-develop": "0.16.x-dev"
         }
     }
 }

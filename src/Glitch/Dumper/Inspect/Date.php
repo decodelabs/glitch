@@ -6,7 +6,6 @@
 declare(strict_types=1);
 namespace DecodeLabs\Glitch\Dumper\Inspect;
 
-use DecodeLabs\Glitch\Exception\Factory as Glitch;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
 use DecodeLabs\Glitch\Stack\Trace;

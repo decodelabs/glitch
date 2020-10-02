@@ -6,7 +6,6 @@
 declare(strict_types=1);
 namespace DecodeLabs\Glitch\Dumper;
 
-use DecodeLabs\Glitch;
 use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Dumpable;
 use DecodeLabs\Glitch\Inspectable;
@@ -715,9 +714,7 @@ class Inspector
      */
     protected function normalizeClassName(string $class, \ReflectionObject $reflection): string
     {
-        if (false !== strpos($class, 'Glitch/Exception/Factory.php')) {
-            $class = 'EGlitch';
-        } elseif (0 === strpos($class, "class@anonymous\x00")) {
+        if (0 === strpos($class, "class@anonymous\x00")) {
             if ($parent = $reflection->getParentClass()) {
                 $class = $parent->getShortName().'@anonymous';
             } else {

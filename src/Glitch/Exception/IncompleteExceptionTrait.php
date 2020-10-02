@@ -6,12 +6,14 @@
 declare(strict_types=1);
 namespace DecodeLabs\Glitch\Exception;
 
-trait EIncompleteTrait
+use ReflectionFunctionAbstract;
+
+trait IncompleteExceptionTrait
 {
     /**
      * Get Reflection object for active function in stack frame
      */
-    public function getReflection(): ?\ReflectionFunctionAbstract
+    public function getReflection(): ?ReflectionFunctionAbstract
     {
         return $this->getStackTrace()[1]->getReflection();
     }

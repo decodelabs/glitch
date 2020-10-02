@@ -6,6 +6,7 @@
 declare(strict_types=1);
 namespace DecodeLabs\Glitch\Dumper\Inspect;
 
+use DecodeLabs\Glitch;
 use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
@@ -120,7 +121,7 @@ class Spl
     public static function inspectSplFileInfo(\SplFileInfo $file, Entity $entity, Inspector $inspector): void
     {
         $entity
-            ->setText(\Glitch::normalizePath($file->getPathname()))
+            ->setText(Glitch::normalizePath($file->getPathname()))
             ->setMeta('type', $inspector($type = $file->getType()));
 
         if ($type == 'link') {
