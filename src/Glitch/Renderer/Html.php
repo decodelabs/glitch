@@ -15,7 +15,7 @@ use DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
-use DecodeLabs\Glitch\Exception\EIncomplete;
+use DecodeLabs\Glitch\Exception\IncompleteException;
 
 use DecodeLabs\Enlighten\Highlighter;
 use DecodeLabs\Exceptional;
@@ -146,7 +146,7 @@ class Html implements Renderer
 
         $class = 'exception';
 
-        if ($exception instanceof EIncomplete) {
+        if ($exception instanceof IncompleteException) {
             $class .= ' incomplete';
         }
 
@@ -324,9 +324,7 @@ class Html implements Renderer
         $file = $this->context->normalizePath($exception->getFile());
         $line = $exception->getLine();
 
-        if ($exception instanceof \EGlitch) {
-            $httpCode = $exception->getHttpCode();
-        } elseif ($exception instanceof Exceptional\Exception) {
+        if ($exception instanceof Exceptional\Exception) {
             $httpCode = $exception->getHttpStatus();
         } else {
             $httpCode = null;

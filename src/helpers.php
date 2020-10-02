@@ -12,7 +12,6 @@ namespace
 {
     use DecodeLabs\Glitch as Facade;
     use DecodeLabs\Glitch\Context;
-    use DecodeLabs\Glitch\Exception\Factory;
     use DecodeLabs\Glitch\Stack\Frame;
 
     use Symfony\Component\VarDumper\VarDumper;
@@ -81,22 +80,5 @@ namespace
                 return;
             }
         });
-    }
-
-    if (!function_exists('Glitch')) {
-        /**
-         * Generic root passthrough function
-         */
-        function Glitch($message, ?array $params=[], $data=null): \EGlitch
-        {
-            return Factory::create(
-                null,
-                [],
-                1,
-                $message,
-                $params,
-                $data
-            );
-        }
     }
 }

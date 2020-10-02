@@ -6,7 +6,6 @@
 declare(strict_types=1);
 namespace DecodeLabs\Glitch;
 
-use DecodeLabs\Glitch;
 use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Dumper\Inspector;
@@ -18,7 +17,9 @@ use DecodeLabs\Glitch\Renderer\Cli as CliRenderer;
 use DecodeLabs\Glitch\Renderer\Html as HtmlRenderer;
 use DecodeLabs\Glitch\Transport;
 
-use DecodeLabs\Glitch\Exception\Factory;
+use DecodeLabs\Veneer\FacadeTarget;
+use DecodeLabs\Veneer\FacadeTargetTrait;
+use DecodeLabs\Veneer\FacadePlugin;
 
 use DecodeLabs\Exceptional;
 
@@ -26,16 +27,15 @@ use Composer\Autoload\ClassLoader;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 
-use DecodeLabs\Veneer\FacadeTarget;
-use DecodeLabs\Veneer\FacadeTargetTrait;
-use DecodeLabs\Veneer\FacadePlugin;
+use Throwable;
+use ErrorException;
 
 class Context implements LoggerAwareInterface, FacadeTarget
 {
     use FacadeTargetTrait;
 
     const FACADE = 'Glitch';
-    const VERSION = 'v0.15.9';
+    const VERSION = 'v0.16.0';
 
     protected $startTime;
     protected $runMode = 'development';
@@ -245,7 +245,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
     /**
      * Dump and render exception
      */
-    public function dumpException(\Throwable $exception, bool $exit=true): void
+    public function dumpException(Throwable $exception, bool $exit=true): void
     {
         if ($exit) {
             while (ob_get_level()) {
@@ -257,10 +257,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
             }
         }
 
-        if (
-            $exception instanceof \EGlitch ||
-            $exception instanceof Exceptional\Exception
-        ) {
+        if ($exception instanceof Exceptional\Exception) {
             $data = $exception->getData();
             $trace = $exception->getStackTrace();
         } else {
@@ -311,40 +308,6 @@ class Context implements LoggerAwareInterface, FacadeTarget
     }
 
 
-
-    /**
-     * Redirect type list to Factory
-     */
-    public function __call(string $method, array $args): \EGlitch
-    {
-        if (!preg_match('|[.\\/]|', $method) && !preg_match('/^[A-Z]/', $method)) {
-            throw Exceptional::BadMethodCall('Method '.$method.' is not available in Glitch');
-        }
-
-        return Factory::create(
-            null,
-            explode(',', $method),
-            1,
-            ...$args
-        );
-    }
-
-    /**
-     * Create generic exception
-     */
-    public function Exception($message, ?array $params=[], $data=null): \EGlitch
-    {
-        return Factory::create(
-            null,
-            [],
-            1,
-            $message,
-            $params,
-            $data
-        );
-    }
-
-
     /**
      * Shortcut to incomplete context method
      */
@@ -352,14 +315,11 @@ class Context implements LoggerAwareInterface, FacadeTarget
     {
         $frame = $this->getLastFrame($rewind);
 
-        throw Factory::create(
-            null,
-            ['EImplementation', 'DecodeLabs/Glitch/Exception/EIncomplete'],
-            $rewind,
-            $frame->getSignature().' has not been implemented yet',
-            null,
-            $data
-        );
+        throw Exceptional::{'Implementation,./Exception/Incomplete'}([
+            'message' => $frame->getSignature().' has not been implemented yet',
+            'rewind' => 2 + $rewind,
+            'data' => $data
+        ]);
     }
 
     /**
@@ -400,24 +360,19 @@ class Context implements LoggerAwareInterface, FacadeTarget
             return false;
         }
 
-        throw Factory::create(
-            null,
-            ['ESystemError'],
-            1,
-            $message,
-            [
-                'stackTrace' => Trace::create(),
-                'file' => $file,
-                'line' => $line,
-                'severity' => $level
-            ]
-        );
+        throw Exceptional::Error([
+            'message' => $message,
+            'stackTrace' => Trace::create(),
+            'file' => $file,
+            'line' => $line,
+            'severity' => $level
+        ]);
     }
 
     /**
      * Last-ditch catch-all for exceptions
      */
-    public function handleException(\Throwable $exception): void
+    public function handleException(Throwable $exception): void
     {
         try {
             $this->logException($exception);
@@ -426,7 +381,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
                 try {
                     ($this->errorPageRenderer)($exception, $this);
                     return;
-                } catch (\Throwable $e) {
+                } catch (Throwable $e) {
                 }
             }
 
@@ -436,7 +391,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
             }
 
             $this->dumpException($exception);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             dd($exception, $e);
         }
     }
@@ -445,21 +400,21 @@ class Context implements LoggerAwareInterface, FacadeTarget
     /**
      * Log an exception... somewhere :)
      */
-    public function logException(\Throwable $exception): void
+    public function logException(Throwable $exception): void
     {
         if ($this->logger) {
             try {
                 $this->logger->critical($exception->getMessage(), [
                     'exception' => $exception
                 ]);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
             }
         }
 
         if ($this->logListener) {
             try {
                 ($this->logListener)($exception);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
             }
         }
     }
@@ -473,7 +428,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
         $error = error_get_last();
 
         if ($error && self::isErrorLevelFatal($error['type'])) {
-            $this->handleException(new \ErrorException(
+            $this->handleException(new ErrorException(
                 $error['message'],
                 0,
                 $error['type'],
@@ -497,48 +452,6 @@ class Context implements LoggerAwareInterface, FacadeTarget
 
         return ($level & $errors) > 0;
     }
-
-
-    /**
-     * Wrap exceptions thrown from $callable as Glitches
-     */
-    public function contain(callable $callback, ?callable $inspector=null)
-    {
-        try {
-            return $callback();
-        } catch (\Throwable $e) {
-            if (
-                $e instanceof \EGlitch ||
-                $e instanceof Exceptional\Exception
-            ) {
-                throw $e;
-            }
-
-            if ($inspector) {
-                $types = $inspector($e);
-
-                if (!is_array($types)) {
-                    $types = explode(',', (string)$types);
-                }
-            } else {
-                $types = ['ERuntime'];
-            }
-
-            throw Factory::create(
-                null,
-                $types,
-                1,
-                $e->getMessage(),
-                [
-                    'previous' => $e,
-                    'stackTrace' => Trace::fromException($e, 1),
-                    'file' => $e->getFile(),
-                    'line' => $e->getLine()
-                ]
-            );
-        }
-    }
-
 
 
     /**
@@ -592,7 +505,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
             if (($realPath = realpath($path)) && $realPath.'/' !== $path) {
                 $this->pathAliases[$name.'*'] = $realPath.'/';
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
         }
 
         uasort($this->pathAliases, function ($a, $b) {
@@ -615,7 +528,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
                 if (($realPath = realpath($path)) && $realPath.'/' !== $path) {
                     $this->pathAliases[$name.'*'] = $realPath.'/';
                 }
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
             }
         }
 
