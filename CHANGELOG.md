@@ -1,3 +1,6 @@
+## v0.16.1 (2020-10-02)
+* Updated dependencies
+
 ## v0.16.0 (2020-10-02)
 * Moved exception Factory to Exceptional
 * Removed all Exception generation functionality

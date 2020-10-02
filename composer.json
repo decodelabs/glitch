@@ -14,8 +14,8 @@
 
         "decodelabs/glitch-support": "^0.1.4",
         "decodelabs/exceptional": "^0.2.6",
-        "decodelabs/veneer": "^0.5.3",
-        "decodelabs/enlighten": "^0.7.4",
+        "decodelabs/veneer": "^0.5.4",
+        "decodelabs/enlighten": "^0.7.5",
 
         "psr/log": "^1.0",
         "components/jquery": "~3.3"
