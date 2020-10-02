@@ -1,3 +1,6 @@
+## v0.16.2 (2020-10-02)
+* Use Exceptional for incomplete()
+
 ## v0.16.1 (2020-10-02)
 * Updated dependencies
 
