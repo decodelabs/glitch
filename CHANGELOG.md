@@ -1,3 +1,7 @@
+## v0.16.0 (2020-10-02)
+* Moved exception Factory to Exceptional
+* Removed all Exception generation functionality
+
 ## v0.15.10 (2020-09-30)
 * Switched to Exceptional for exception generation
 
