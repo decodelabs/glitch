@@ -21,6 +21,7 @@ use DecodeLabs\Veneer\FacadeTarget;
 use DecodeLabs\Veneer\FacadeTargetTrait;
 use DecodeLabs\Veneer\FacadePlugin;
 
+use DecodeLabs\Glitch\IncompleteException;
 use DecodeLabs\Exceptional;
 
 use Composer\Autoload\ClassLoader;
@@ -209,7 +210,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
             }
         }
 
-        $trace = Trace::create($rewind - 1);
+        $trace = Trace::create($rewind);
         $first = $trace->getFirstFrame();
 
         if ($first !== null && $first->getVeneerFacade() !== null) {
@@ -257,7 +258,10 @@ class Context implements LoggerAwareInterface, FacadeTarget
             }
         }
 
-        if ($exception instanceof Exceptional\Exception) {
+        if (
+            $exception instanceof IncompleteException ||
+            $exception instanceof Exceptional\Exception
+        ) {
             $data = $exception->getData();
             $trace = $exception->getStackTrace();
         } else {
@@ -313,7 +317,10 @@ class Context implements LoggerAwareInterface, FacadeTarget
      */
     public function incomplete($data=null, int $rewind=0): void
     {
-        Exceptional::incomplete($data, $rewind + 1);
+        throw new IncompleteException(
+            Trace::create($rewind + 1),
+            $data
+        );
     }
 
 
@@ -341,7 +348,6 @@ class Context implements LoggerAwareInterface, FacadeTarget
 
         throw Exceptional::Error([
             'message' => $message,
-            'stackTrace' => Trace::create(),
             'file' => $file,
             'line' => $line,
             'severity' => $level

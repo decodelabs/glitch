@@ -17,8 +17,8 @@ use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
 
 use DecodeLabs\Enlighten\Highlighter;
+use DecodeLabs\Glitch\IncompleteException;
 use DecodeLabs\Exceptional;
-use DecodeLabs\Exceptional\IncompleteException;
 
 class Html implements Renderer
 {
