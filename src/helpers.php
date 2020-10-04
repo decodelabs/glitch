@@ -10,14 +10,15 @@ declare(strict_types=1);
  */
 namespace
 {
-    use DecodeLabs\Glitch as Facade;
+    use DecodeLabs\Glitch;
     use DecodeLabs\Glitch\Context;
     use DecodeLabs\Glitch\Stack\Frame;
+    use DecodeLabs\Veneer;
 
     use Symfony\Component\VarDumper\VarDumper;
 
-    // Register the Veneer facade
-    Context::registerFacade(Facade::class);
+    // Register the Veneer proxy
+    Veneer::register(Context::class, Glitch::class);
 
     if (!function_exists('dd')) {
         /**
@@ -25,7 +26,7 @@ namespace
          */
         function dd($var, ...$vars): void
         {
-            Facade::dumpValues(func_get_args(), 1, true);
+            Glitch::dumpValues(func_get_args(), 1, true);
         }
     }
 
@@ -51,7 +52,7 @@ namespace
          */
         function dump($var, ...$vars): void
         {
-            Facade::dumpValues(func_get_args(), 1, false);
+            Glitch::dumpValues(func_get_args(), 1, false);
         }
     } elseif (class_exists(VarDumper::class)) {
         VarDumper::setHandler(function ($var) {
@@ -74,7 +75,7 @@ namespace
                     $args = func_get_args();
                 }
 
-                Facade::dumpValues($args, 3, $func == 'dd');
+                Glitch::dumpValues($args, 3, $func == 'dd');
             } else {
                 $skip--;
                 return;
