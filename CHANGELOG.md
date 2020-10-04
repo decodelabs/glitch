@@ -1,3 +1,6 @@
+## v0.16.3 (2020-10-04)
+* Switched to Glitch Proxy incomplete()
+
 ## v0.16.2 (2020-10-02)
 * Use Exceptional for incomplete()
 
