@@ -12,9 +12,9 @@
         "php": "^7.2",
         "symfony/polyfill-mbstring": "^1.7",
 
-        "decodelabs/glitch-support": "^0.2.1",
+        "decodelabs/glitch-support": "^0.2.2",
         "decodelabs/exceptional": "^0.2.8",
-        "decodelabs/veneer": "^0.5.5",
+        "decodelabs/veneer": "^0.6",
         "decodelabs/enlighten": "^0.7.5",
 
         "psr/log": "^1.0",
@@ -24,7 +24,7 @@
         "phpunit/phpunit": "^8",
         "phpstan/phpstan": "^0.12.45",
         "phpstan/extension-installer": "^1.0",
-        "decodelabs/phpstan-decodelabs": "^0.3.5",
+        "decodelabs/phpstan-decodelabs": "^0.3.8",
 
         "symfony/var-dumper": "^4.3",
         "php-ds/php-ds": "~1.2"

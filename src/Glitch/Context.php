@@ -17,10 +17,6 @@ use DecodeLabs\Glitch\Renderer\Cli as CliRenderer;
 use DecodeLabs\Glitch\Renderer\Html as HtmlRenderer;
 use DecodeLabs\Glitch\Transport;
 
-use DecodeLabs\Veneer\FacadeTarget;
-use DecodeLabs\Veneer\FacadeTargetTrait;
-use DecodeLabs\Veneer\FacadePlugin;
-
 use DecodeLabs\Glitch\IncompleteException;
 use DecodeLabs\Exceptional;
 
@@ -31,12 +27,9 @@ use Psr\Log\LoggerInterface;
 use Throwable;
 use ErrorException;
 
-class Context implements LoggerAwareInterface, FacadeTarget
+class Context implements LoggerAwareInterface
 {
-    use FacadeTargetTrait;
-
-    const FACADE = 'Glitch';
-    const VERSION = 'v0.16.1';
+    const VERSION = 'v0.16.2';
 
     protected $startTime;
     protected $runMode = 'development';
@@ -213,7 +206,7 @@ class Context implements LoggerAwareInterface, FacadeTarget
         $trace = Trace::create($rewind);
         $first = $trace->getFirstFrame();
 
-        if ($first !== null && $first->getVeneerFacade() !== null) {
+        if ($first !== null && $first->getVeneerProxy() !== null) {
             $trace->shift();
         }
 
