@@ -12,9 +12,9 @@
         "php": "^7.2",
         "symfony/polyfill-mbstring": "^1.7",
 
-        "decodelabs/glitch-support": "^0.2",
-        "decodelabs/exceptional": "^0.2.7",
-        "decodelabs/veneer": "^0.5.4",
+        "decodelabs/glitch-support": "^0.2.1",
+        "decodelabs/exceptional": "^0.2.8",
+        "decodelabs/veneer": "^0.5.5",
         "decodelabs/enlighten": "^0.7.5",
 
         "psr/log": "^1.0",
