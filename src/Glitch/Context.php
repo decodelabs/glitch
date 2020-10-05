@@ -29,7 +29,7 @@ use ErrorException;
 
 class Context implements LoggerAwareInterface
 {
-    const VERSION = 'v0.16.2';
+    const VERSION = 'v0.16.5';
 
     protected $startTime;
     protected $runMode = 'development';
