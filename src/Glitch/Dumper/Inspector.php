@@ -1,23 +1,22 @@
 <?php
+
 /**
- * This file is part of the Glitch package
+ * @package Glitch
  * @license http://opensource.org/licenses/MIT
  */
+
 declare(strict_types=1);
+
 namespace DecodeLabs\Glitch\Dumper;
 
+use DecodeLabs\Exceptional;
 use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Dumpable;
 use DecodeLabs\Glitch\Inspectable;
-use DecodeLabs\Glitch\Stack\Trace;
-
-use DecodeLabs\Glitch\Dumper\Inspect;
-
-use DecodeLabs\Exceptional;
 
 class Inspector
 {
-    const OBJECTS = [
+    public const OBJECTS = [
         // Core
         'Throwable' => [Inspect\Core::class, 'inspectException'],
         'Closure' => [Inspect\Core::class, 'inspectClosure'],
@@ -106,7 +105,7 @@ class Inspector
         'XMLWriter' => [Inspect\Xml::class, 'inspectXmlWriter']
     ];
 
-    const RESOURCES = [
+    public const RESOURCES = [
         // Bzip
         'bzip2' => null,
 
@@ -313,7 +312,7 @@ class Inspector
                 return (string)$value;
 
             case is_string($value):
-                return '"'.$value.'"';
+                return '"' . $value . '"';
 
             case is_resource($value):
                 return (string)$value;
@@ -336,7 +335,7 @@ class Inspector
     /**
      * Invoke wrapper
      */
-    public function __invoke($value, callable $entityCallback=null, bool $asList=false)
+    public function __invoke($value, callable $entityCallback = null, bool $asList = false)
     {
         if ($asList) {
             return $this->inspectList((array)$value, $entityCallback);
@@ -348,7 +347,7 @@ class Inspector
     /**
      * Inspect and report
      */
-    public function inspect($value, callable $entityCallback=null)
+    public function inspect($value, callable $entityCallback = null)
     {
         $output = $this->inspectValue($value);
 
@@ -362,7 +361,7 @@ class Inspector
     /**
      * Inspect values list
      */
-    public function inspectList(array $values, callable $entityCallback=null): array
+    public function inspectList(array $values, callable $entityCallback = null): array
     {
         $output = [];
 
@@ -464,9 +463,6 @@ class Inspector
             ->setClassName($rType = get_resource_type($resource))
             ->setObjectId((int)$id);
 
-        $typeName = str_replace(' ', '', ucwords($rType));
-        $method = 'inspect'.ucfirst($typeName).'Resource';
-
         if (isset($this->resourceInspectors[$rType])) {
             call_user_func($this->resourceInspectors[$rType], $resource, $entity, $this);
         }
@@ -544,11 +540,9 @@ class Inspector
      */
     public function inspectConstant(string $const): Entity
     {
-        $entity = (new Entity('const'))
+        return (new Entity('const'))
             ->setName($const)
             ->setLength(constant($const));
-
-        return $entity;
     }
 
 
@@ -615,7 +609,7 @@ class Inspector
     /**
      * Convert object into Entity
      */
-    public function inspectObject(object $object, bool $properties=true): ?Entity
+    public function inspectObject(object $object, bool $properties = true): ?Entity
     {
         $objectId = spl_object_id($object);
         $reflection = null;
@@ -647,7 +641,7 @@ class Inspector
                     $interfaceName = $interface->getShortName();
 
                     if ($parentNs === $interfaceName) {
-                        $name = $parentNs.'\\'.$name;
+                        $name = $parentNs . '\\' . $name;
                         break;
                     }
                 }
@@ -716,7 +710,7 @@ class Inspector
     {
         if (0 === strpos($class, "class@anonymous\x00")) {
             if ($parent = $reflection->getParentClass()) {
-                $class = $parent->getShortName().'@anonymous';
+                $class = $parent->getShortName() . '@anonymous';
             } else {
                 $class = '@anonymous';
             }
@@ -809,7 +803,7 @@ class Inspector
 
 
         // Reflection members
-        foreach (array_reverse($reflections) as $className => $reflection) {
+        foreach (array_reverse($reflections) as $reflection) {
             $this->inspectClassMembers($object, $reflection, $entity);
         }
     }
@@ -817,7 +811,7 @@ class Inspector
     /**
      * Inspect class members
      */
-    public function inspectClassMembers(object $object, \ReflectionClass $reflection, Entity $entity, array $blackList=[], bool $asMeta=false): void
+    public function inspectClassMembers(object $object, \ReflectionClass $reflection, Entity $entity, array $blackList = [], bool $asMeta = false): void
     {
         foreach ($reflection->getProperties() as $property) {
             if ($property->isStatic()) {
@@ -849,7 +843,7 @@ class Inspector
             }
 
             if (!$asMeta) {
-                $name = $prefix.$name;
+                $name = $prefix . $name;
             }
 
             if ($asMeta && $entity->hasMeta($name)) {

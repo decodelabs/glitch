@@ -1,9 +1,12 @@
 <?php
+
 /**
- * This file is part of the Glitch package
+ * @package Glitch
  * @license http://opensource.org/licenses/MIT
  */
+
 declare(strict_types=1);
+
 namespace DecodeLabs\Glitch\Dumper\Inspect;
 
 use DecodeLabs\Glitch\Dumper\Entity;
@@ -11,7 +14,7 @@ use DecodeLabs\Glitch\Dumper\Inspector;
 
 class Pdo
 {
-    const ATTRS = [
+    public const ATTRS = [
         'AUTOCOMMIT',
         'PREFETCH',
         'TIMEOUT',
@@ -43,7 +46,7 @@ class Pdo
     {
         foreach (self::ATTRS as $name) {
             try {
-                $entity->setMeta($name, $inspector($pdo->getAttribute(constant('PDO::ATTR_'.$name))));
+                $entity->setMeta($name, $inspector($pdo->getAttribute(constant('PDO::ATTR_' . $name))));
             } catch (\Throwable $e) {
             }
         }

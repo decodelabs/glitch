@@ -1,26 +1,26 @@
 <?php
+
 /**
- * This file is part of the Glitch package
+ * @package Glitch
  * @license http://opensource.org/licenses/MIT
  */
+
 declare(strict_types=1);
+
 namespace DecodeLabs\Glitch\Renderer;
 
-use DecodeLabs\Glitch\Context;
-use DecodeLabs\Glitch\Packet;
-use DecodeLabs\Glitch\Stack\Trace;
-use DecodeLabs\Glitch\Stack\Frame;
-use DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Dumper\Entity;
+use DecodeLabs\Glitch\Packet;
+use DecodeLabs\Glitch\Renderer;
 
 class Cli implements Renderer
 {
-    const RENDER_IN_PRODUCTION = true;
-    const SPACES = 2;
-    const RENDER_CLOSED = false;
+    public const RENDER_IN_PRODUCTION = true;
+    public const SPACES = 2;
+    public const RENDER_CLOSED = false;
 
-    const RENDER_SECTIONS = [
+    public const RENDER_SECTIONS = [
         'info' => false,
         'meta' => false,
         'text' => true,
@@ -29,9 +29,9 @@ class Cli implements Renderer
         'stack' => true
     ];
 
-    const RENDER_STACK = false;
+    public const RENDER_STACK = false;
 
-    const FG_COLORS = [
+    public const FG_COLORS = [
         'black' => 30,
         'red' => 31,
         'green' => 32,
@@ -44,7 +44,7 @@ class Cli implements Renderer
         'reset' => 39
     ];
 
-    const BG_COLORS = [
+    public const BG_COLORS = [
         'black' => 40,
         'red' => 41,
         'green' => 42,
@@ -57,7 +57,7 @@ class Cli implements Renderer
         'reset' => 49
     ];
 
-    const OPTIONS = [
+    public const OPTIONS = [
         'bold' => [1, 22],
         'dim' => [2, 22],
         'underline' => [4, 24],
@@ -78,7 +78,7 @@ class Cli implements Renderer
     {
         $output = [];
 
-        foreach ($stats as $key => $stat) {
+        foreach ($stats as $stat) {
             if (null === ($statString = $stat->render())) {
                 continue;
             }
@@ -130,19 +130,19 @@ class Cli implements Renderer
 
         if ($code) {
             $head[] =
-                $this->format('#', 'white', null, 'dim').
+                $this->format('#', 'white', null, 'dim') .
                 $this->format((string)$code, 'magenta');
         }
         if ($httpCode) {
             $head[] =
-                $this->format('HTTP', 'white', null, 'dim').' '.
+                $this->format('HTTP', 'white', null, 'dim') . ' ' .
                 $this->format((string)$httpCode, 'magenta');
         }
 
         $output = '';
 
         if (!empty($head)) {
-            $output .= implode(' | ', $head)."\n";
+            $output .= implode(' | ', $head) . "\n";
         }
 
         $output .= $this->renderMultiLineString($message, 'exception');
@@ -154,14 +154,14 @@ class Cli implements Renderer
      */
     protected function exportBuffer(array $buffer, bool $final): Packet
     {
-        $output = "\n".implode("\n\n", $buffer)."\n\n";
+        $output = "\n" . implode("\n\n", $buffer) . "\n\n";
         return new Packet($output, 'text/plain');
     }
 
     /**
      * Render a null scalar
      */
-    protected function renderNull(?string $class=null): string
+    protected function renderNull(?string $class = null): string
     {
         return $this->format('null', 'magenta', null, 'bold');
     }
@@ -169,7 +169,7 @@ class Cli implements Renderer
     /**
      * Render a boolean scalar
      */
-    protected function renderBool(bool $value, ?string $class=null): string
+    protected function renderBool(bool $value, ?string $class = null): string
     {
         return $this->format($value ? 'true' : 'false', 'magenta', null, 'bold');
     }
@@ -177,7 +177,7 @@ class Cli implements Renderer
     /**
      * Render a integer scalar
      */
-    protected function renderInt(int $value, ?string $class=null): string
+    protected function renderInt(int $value, ?string $class = null): string
     {
         return $this->format((string)$value, 'blue', null, 'bold');
     }
@@ -185,7 +185,7 @@ class Cli implements Renderer
     /**
      * Render a float scalar
      */
-    protected function renderFloat(float $value, ?string $class=null): string
+    protected function renderFloat(float $value, ?string $class = null): string
     {
         return $this->format($this->normalizeFloat($value), 'blue', null, 'bold');
     }
@@ -193,7 +193,7 @@ class Cli implements Renderer
     /**
      * Render a single identifier string
      */
-    protected function renderIdentifierString(string $string, ?string $class, int $forceSingleLineMax=null): string
+    protected function renderIdentifierString(string $string, ?string $class, int $forceSingleLineMax = null): string
     {
         $options = [];
 
@@ -250,18 +250,17 @@ class Cli implements Renderer
     /**
      * Render a standard multi line string
      */
-    protected function renderMultiLineString(string $string, string $class=null): string
+    protected function renderMultiLineString(string $string, string $class = null): string
     {
         $string = str_replace("\r", '', $string);
         $parts = explode("\n", $string);
-        $count = count($parts);
         $quotes = $class === 'exception' ? '!!!' : '"""';
 
         $output = [];
-        $output[] = $this->format($quotes.' '.mb_strlen($string), 'white', null, 'dim');
+        $output[] = $this->format($quotes . ' ' . mb_strlen($string), 'white', null, 'dim');
 
         foreach ($parts as $part) {
-            $output[] = $this->format($this->renderStringLine($part), 'red', null, 'bold').
+            $output[] = $this->format($this->renderStringLine($part), 'red', null, 'bold') .
                 $this->format('⏎', 'white', null, 'dim');
         }
 
@@ -273,7 +272,7 @@ class Cli implements Renderer
     /**
      * Render a standard single line string
      */
-    protected function renderSingleLineString(string $string, string $class=null, int $forceSingleLineMax=null): string
+    protected function renderSingleLineString(string $string, string $class = null, int $forceSingleLineMax = null): string
     {
         $output = $this->format('"', 'white', null, 'dim');
         $output .= $this->stackFormat('red', null, 'bold');
@@ -289,7 +288,7 @@ class Cli implements Renderer
      */
     protected function renderBinaryStringChunk(string $chunk): string
     {
-        return $this->format($chunk, 'magenta').' ';
+        return $this->format($chunk, 'magenta') . ' ';
     }
 
     /**
@@ -328,7 +327,7 @@ class Cli implements Renderer
     /**
      * Render file path
      */
-    protected function renderSourceFile(string $path, ?string $class=null): string
+    protected function renderSourceFile(string $path, ?string $class = null): string
     {
         return $this->format($path, 'yellow');
     }
@@ -369,7 +368,7 @@ class Cli implements Renderer
     /**
      * Wrap signature function block
      */
-    protected function wrapSignatureFunction(string $function, ?string $class=null): string
+    protected function wrapSignatureFunction(string $function, ?string $class = null): string
     {
         $output = '';
 
@@ -400,7 +399,7 @@ class Cli implements Renderer
     protected function wrapReferenceName(string $name): string
     {
         return
-            $this->format('&', 'white', null, 'dim').
+            $this->format('&', 'white', null, 'dim') .
             //$this->format($name, 'green', null, 'bold');
             $name;
     }
@@ -435,7 +434,7 @@ class Cli implements Renderer
     protected function renderEntityOid(int $objectId, bool $isRef, string $id): string
     {
         return
-            $this->format('#', 'white', null, 'dim').
+            $this->format('#', 'white', null, 'dim') .
             $this->format((string)$objectId, 'white');
     }
 
@@ -444,13 +443,12 @@ class Cli implements Renderer
     /**
      * Render basic list
      */
-    protected function renderBasicList(array $lines, ?string $class=null): string
+    protected function renderBasicList(array $lines, ?string $class = null): string
     {
         if ($class !== null) {
             $classes = explode(' ', $class);
             $isInline = in_array('inline', $classes);
         } else {
-            $classes = [];
             $isInline = false;
         }
 
@@ -465,14 +463,14 @@ class Cli implements Renderer
             }
         }
 
-        $sep =  $isInline ? $this->format(', ', 'white', null, 'dim') : "\n";
+        $sep = $isInline ? $this->format(', ', 'white', null, 'dim') : "\n";
         $output = implode($sep, $lines);
 
         if ($wrap) {
             if ($isInline) {
-                $output = ' '.$output.' ';
+                $output = ' ' . $output . ' ';
             } else {
-                $output = $this->indent("\n".$output)."\n";
+                $output = $this->indent("\n" . $output) . "\n";
             }
         }
 
@@ -484,7 +482,7 @@ class Cli implements Renderer
     /**
      * Format output for colours
      */
-    protected function format(string $message, ?string $fgColor, ?string $bgColor=null, string ...$options): string
+    protected function format(string $message, ?string $fgColor, ?string $bgColor = null, string ...$options): string
     {
         $output = $this->setFormat(...($args = array_slice(func_get_args(), 1)));
         $output .= $message;
@@ -496,13 +494,13 @@ class Cli implements Renderer
     /**
      * Stack a format
      */
-    protected function stackFormat(?string $fgColor, ?string $bgColor=null, string ...$options): string
+    protected function stackFormat(?string $fgColor, ?string $bgColor = null, string ...$options): string
     {
         array_unshift($this->formatStack, $args = func_get_args());
         return $this->setFormat(...$args);
     }
 
-    protected function setFormat(?string $fgColor, ?string $bgColor=null, string ...$options): string
+    protected function setFormat(?string $fgColor, ?string $bgColor = null, string ...$options): string
     {
         $setCodes = [];
 
@@ -521,7 +519,7 @@ class Cli implements Renderer
         return sprintf("\033[%sm", implode(';', $setCodes));
     }
 
-    protected function resetFormat(?string $fgColor, ?string $bgColor=null, string ...$options): string
+    protected function resetFormat(?string $fgColor, ?string $bgColor = null, string ...$options): string
     {
         $setCodes[] = static::FG_COLORS['reset'];
         $setCodes[] = static::BG_COLORS['reset'];

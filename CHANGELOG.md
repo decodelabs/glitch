@@ -1,3 +1,6 @@
+* Applied full PSR12 standards
+* Added PSR12 check to Travis build
+
 ## v0.16.5 (2020-10-05)
 * Updated Veneer and PHPStan
 

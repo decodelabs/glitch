@@ -1,8 +1,10 @@
 <?php
+
 /**
- * This file is part of the Glitch package
+ * @package Glitch
  * @license http://opensource.org/licenses/MIT
  */
+
 declare(strict_types=1);
 
 /**
@@ -36,10 +38,8 @@ namespace
          */
         function dd2($var, ...$vars): void
         {
-            $output = [];
-
             foreach (func_get_args() as $arg) {
-                echo '<div><pre>'.print_r($arg, true).'</pre></div>';
+                echo '<div><pre>' . print_r($arg, true) . '</pre></div>';
             }
 
             exit;

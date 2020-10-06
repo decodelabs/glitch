@@ -1,15 +1,16 @@
 <?php
+
 /**
- * This file is part of the Glitch package
+ * @package Glitch
  * @license http://opensource.org/licenses/MIT
  */
+
 declare(strict_types=1);
+
 namespace DecodeLabs\Glitch\Dumper;
 
-use DecodeLabs\Glitch\Stack\Trace;
-use DecodeLabs\Glitch\Dumper\Inspector;
-
 use DecodeLabs\Exceptional;
+use DecodeLabs\Glitch\Stack\Trace;
 
 class Entity
 {
@@ -81,7 +82,7 @@ class Entity
             $closer = null;
         }
 
-        $method = 'set'.ucfirst($target);
+        $method = 'set' . ucfirst($target);
 
 
         switch ($target) {
@@ -160,13 +161,16 @@ class Entity
                 $this->checkValidity($value, 'string[]');
 
                 $inspector->inspectClassMembers(
-                    $object, new \ReflectionClass($object), $this, $value
+                    $object,
+                    new \ReflectionClass($object),
+                    $this,
+                    $value
                 );
                 return;
 
             default:
                 throw Exceptional::UnexpectedValue(
-                    'Invalid dump yield key : '.$target
+                    'Invalid dump yield key : ' . $target
                 );
         }
 
@@ -187,7 +191,7 @@ class Entity
     public function setType(string $type): Entity
     {
         $this->type = $type;
-        $this->id = str_replace('.', '-', uniqid($type.'-', true));
+        $this->id = str_replace('.', '-', uniqid($type . '-', true));
         return $this;
     }
 
@@ -775,12 +779,12 @@ class Entity
     /**
      * Check value for Entity validity
      */
-    protected function checkValidity($value, string $type=null): void
+    protected function checkValidity($value, string $type = null): void
     {
         if ($type !== null) {
             if (!$this->checkTypeValidity($value, $type)) {
                 throw Exceptional::UnexpectedValue(
-                    'Invalid dump yield value type ('.$type.')'
+                    'Invalid dump yield value type (' . $type . ')'
                 );
             }
         }
@@ -812,7 +816,8 @@ class Entity
      */
     protected function checkTypeValidity($value, string $type): bool
     {
-        if ($nullable = (substr($type, 0, 1) === '?')) {
+        // Nullable
+        if (substr($type, 0, 1) === '?') {
             if ($value === null) {
                 return true;
             }
@@ -820,6 +825,7 @@ class Entity
             $type = substr($type, 1);
         }
 
+        // List
         if (substr($type, -2) == '[]') {
             if (!is_array($value)) {
                 return false;
