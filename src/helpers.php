@@ -75,7 +75,7 @@ namespace
                     $args = func_get_args();
                 }
 
-                Glitch::dumpValues($args, 3, $func == 'dd');
+                Glitch::dumpValues($args, 4, $func == 'dd');
             } else {
                 $skip--;
                 return;
