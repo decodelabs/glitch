@@ -1,3 +1,5 @@
+## v0.17.0 (2021-03-18)
+* Enabled PHP8 testing
 * Fixed and updated Symfony var-dumper support
 * Applied full PSR12 standards
 * Added PSR12 check to Travis build
