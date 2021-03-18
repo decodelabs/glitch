@@ -1,0 +1,21 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [{
+        "label": "coding-standards",
+        "type": "shell",
+        "command": "./vendor/bin/ecs check",
+        "problemMatcher": []
+    }, {
+        "label": "coding-standards-fix",
+        "type": "shell",
+        "command": "./vendor/bin/ecs check --fix",
+        "problemMatcher": []
+    }, {
+        "label": "phpstan",
+        "type": "shell",
+        "command": "./vendor/bin/phpstan --memory-limit=1G analyze",
+        "problemMatcher": []
+    }]
+}
