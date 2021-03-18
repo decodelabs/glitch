@@ -9,13 +9,13 @@
         "email": "tom@inflatablecookie.com"
     }],
     "require": {
-        "php": "^7.2",
+        "php": "^7.2|^8.0",
         "symfony/polyfill-mbstring": "^1.7",
 
-        "decodelabs/veneer": "^0.6.2",
-        "decodelabs/glitch-support": "^0.2.2",
-        "decodelabs/exceptional": "^0.2.8",
-        "decodelabs/enlighten": "^0.7.5",
+        "decodelabs/veneer": "^0.7",
+        "decodelabs/glitch-support": "^0.3",
+        "decodelabs/exceptional": "^0.3",
+        "decodelabs/enlighten": "^0.8",
 
         "psr/log": "^1.0",
         "components/jquery": "~3.3"
@@ -24,7 +24,7 @@
         "phpunit/phpunit": "^8",
         "phpstan/phpstan": "^0.12.45",
         "phpstan/extension-installer": "^1.0",
-        "decodelabs/phpstan-decodelabs": "^0.3.11",
+        "decodelabs/phpstan-decodelabs": "^0.4",
         "symplify/easy-coding-standard": "^8.3",
 
         "symfony/var-dumper": "^5.1",
