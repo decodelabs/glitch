@@ -1,35 +1,31 @@
 <?php
+
 /**
- * This file is part of the Glitch package
+ * @package Glitch
  * @license http://opensource.org/licenses/MIT
  */
+
 declare(strict_types=1);
+
 namespace DecodeLabs\Glitch;
 
-use DecodeLabs\Glitch\Stack\Frame;
-use DecodeLabs\Glitch\Stack\Trace;
-use DecodeLabs\Glitch\Dumper\Inspector;
+use Composer\Autoload\ClassLoader;
+use DecodeLabs\Exceptional;
 use DecodeLabs\Glitch\Dumper\Dump;
-
-use DecodeLabs\Glitch\Renderer;
-use DecodeLabs\Glitch\Renderer\Text as TextRenderer;
+use DecodeLabs\Glitch\Dumper\Inspector;
 use DecodeLabs\Glitch\Renderer\Cli as CliRenderer;
 use DecodeLabs\Glitch\Renderer\Html as HtmlRenderer;
-use DecodeLabs\Glitch\Transport;
+use DecodeLabs\Glitch\Renderer\Text as TextRenderer;
+use DecodeLabs\Glitch\Stack\Trace;
 
-use DecodeLabs\Glitch\IncompleteException;
-use DecodeLabs\Exceptional;
-
-use Composer\Autoload\ClassLoader;
+use ErrorException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
-
 use Throwable;
-use ErrorException;
 
 class Context implements LoggerAwareInterface
 {
-    const VERSION = 'v0.16.5';
+    public const VERSION = 'v0.17.0';
 
     protected $startTime;
     protected $runMode = 'development';
@@ -156,7 +152,7 @@ class Context implements LoggerAwareInterface
     /**
      * Create a new stack trace
      */
-    public function stackTrace(int $rewind=0): Trace
+    public function stackTrace(int $rewind = 0): Trace
     {
         return Trace::create($rewind + 1);
     }
@@ -191,7 +187,7 @@ class Context implements LoggerAwareInterface
     /**
      * Send variables to dump, carry on execution
      */
-    public function dumpValues(array $values, int $rewind=0, bool $exit=true): void
+    public function dumpValues(array $values, int $rewind = 0, bool $exit = true): void
     {
         if ($exit) {
             while (ob_get_level()) {
@@ -239,7 +235,7 @@ class Context implements LoggerAwareInterface
     /**
      * Dump and render exception
      */
-    public function dumpException(Throwable $exception, bool $exit=true): void
+    public function dumpException(Throwable $exception, bool $exit = true): void
     {
         if ($exit) {
             while (ob_get_level()) {
@@ -255,10 +251,8 @@ class Context implements LoggerAwareInterface
             $exception instanceof IncompleteException ||
             $exception instanceof Exceptional\Exception
         ) {
-            $data = $exception->getData();
             $trace = $exception->getStackTrace();
         } else {
-            $data = null;
             $trace = Trace::fromException($exception);
         }
 
@@ -308,7 +302,7 @@ class Context implements LoggerAwareInterface
     /**
      * Shortcut to incomplete context method
      */
-    public function incomplete($data=null, int $rewind=0): void
+    public function incomplete($data = null, int $rewind = 0): void
     {
         throw new IncompleteException(
             Trace::create($rewind + 1),
@@ -335,7 +329,7 @@ class Context implements LoggerAwareInterface
      */
     public function handleError(int $level, string $message, string $file, int $line): bool
     {
-        if (!$current = error_reporting()) {
+        if (!error_reporting()) {
             return false;
         }
 
@@ -476,12 +470,12 @@ class Context implements LoggerAwareInterface
      */
     public function registerPathAlias(string $name, string $path): Context
     {
-        $path = rtrim($path, '/').'/';
+        $path = rtrim($path, '/') . '/';
         $this->pathAliases[$name] = $path;
 
         try {
-            if (($realPath = realpath($path)) && $realPath.'/' !== $path) {
-                $this->pathAliases[$name.'*'] = $realPath.'/';
+            if (($realPath = realpath($path)) && $realPath . '/' !== $path) {
+                $this->pathAliases[$name . '*'] = $realPath . '/';
             }
         } catch (Throwable $e) {
         }
@@ -499,12 +493,12 @@ class Context implements LoggerAwareInterface
     public function registerPathAliases(array $aliases): Context
     {
         foreach ($aliases as $name => $path) {
-            $path = rtrim($path, '/').'/';
+            $path = rtrim($path, '/') . '/';
             $this->pathAliases[$name] = $path;
 
             try {
-                if (($realPath = realpath($path)) && $realPath.'/' !== $path) {
-                    $this->pathAliases[$name.'*'] = $realPath.'/';
+                if (($realPath = realpath($path)) && $realPath . '/' !== $path) {
+                    $this->pathAliases[$name . '*'] = $realPath . '/';
                 }
             } catch (Throwable $e) {
             }
@@ -535,15 +529,15 @@ class Context implements LoggerAwareInterface
         }
 
         $path = str_replace('\\', '/', $path);
-        $testPath = rtrim($path, '/').'/';
+        $testPath = rtrim($path, '/') . '/';
 
         foreach ($this->pathAliases as $name => $test) {
             $len = strlen($test);
 
             if ($testPath === $test) {
-                return rtrim($name, '*').'://'.ltrim($path, '/');
+                return rtrim($name, '*') . '://' . ltrim($path, '/');
             } elseif (substr($testPath, 0, $len) == $test) {
-                return rtrim($name, '*').'://'.ltrim(substr($path, $len), '/');
+                return rtrim($name, '*') . '://' . ltrim(substr($path, $len), '/');
             }
         }
 
@@ -580,7 +574,7 @@ class Context implements LoggerAwareInterface
             // Time
             (new Stat('time', 'Running time', microtime(true) - $this->getStartTime()))
                 ->setRenderer(function ($time) {
-                    return number_format($time * 1000, 2).' ms';
+                    return number_format($time * 1000, 2) . ' ms';
                 }),
 
             // Memory
@@ -602,7 +596,7 @@ class Context implements LoggerAwareInterface
                         return null;
                     }
 
-                    return $this->normalizePath($file).' : '.$frame->getCallingLine();
+                    return $this->normalizePath($file) . ' : ' . $frame->getCallingLine();
                 })
         );
     }
@@ -618,7 +612,7 @@ class Context implements LoggerAwareInterface
             $bytes /= 1024;
         }
 
-        return round($bytes, 2).' '.$units[$i];
+        return round($bytes, 2) . ' ' . $units[$i];
     }
 
 

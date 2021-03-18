@@ -1,15 +1,17 @@
 <?php
+
 /**
- * This file is part of the Glitch package
+ * @package Glitch
  * @license http://opensource.org/licenses/MIT
  */
+
 declare(strict_types=1);
+
 namespace DecodeLabs\Glitch\Dumper;
 
-use \ArrayIterator;
-
-use DecodeLabs\Glitch\Stat;
+use ArrayIterator;
 use DecodeLabs\Glitch\Stack\Trace;
+use DecodeLabs\Glitch\Stat;
 
 class Dump implements \IteratorAggregate, \Countable
 {

@@ -3,7 +3,7 @@
 [![PHP from Packagist](https://img.shields.io/packagist/php-v/decodelabs/glitch?style=flat-square)](https://packagist.org/packages/decodelabs/glitch)
 [![Latest Version](https://img.shields.io/packagist/v/decodelabs/glitch.svg?style=flat-square)](https://packagist.org/packages/decodelabs/glitch)
 [![Total Downloads](https://img.shields.io/packagist/dt/decodelabs/glitch.svg?style=flat-square)](https://packagist.org/packages/decodelabs/glitch)
-[![Build Status](https://img.shields.io/travis/decodelabs/glitch/develop.svg?style=flat-square)](https://travis-ci.org/decodelabs/glitch)
+[![Build Status](https://img.shields.io/travis/com/decodelabs/glitch/main.svg?style=flat-square)](https://travis-ci.com/decodelabs/glitch)
 [![PHPStan](https://img.shields.io/badge/PHPStan-enabled-44CC11.svg?longCache=true&style=flat-square)](https://github.com/phpstan/phpstan)
 [![License](https://img.shields.io/packagist/l/decodelabs/glitch?style=flat-square)](https://packagist.org/packages/decodelabs/glitch)
 
@@ -45,6 +45,8 @@ There are however some optional steps you can take to customise operation.
 Register as the default error handler:
 
 ```php
+use DecodeLabs\Glitch;
+
 Glitch::registerAsErrorHandler();
 ```
 
@@ -52,6 +54,8 @@ Glitch::registerAsErrorHandler();
 Register base path aliases for easier reading of file names in dumps:
 
 ```php
+use DecodeLabs\Glitch;
+
 Glitch::registerPathAlias('app', '/path/to/my/app');
 
 /*
@@ -66,6 +70,8 @@ app://models/MyModel.php
 Pass the <code>microtime()</code> of initial app launch for timing purposes:
 
 ```php
+use DecodeLabs\Glitch;
+
 Glitch::setStartTime(microtime(true));
 ```
 
@@ -73,6 +79,8 @@ Glitch::setStartTime(microtime(true));
 Set run mode (<code>development | testing | production</code>) so Glitch can format output correctly:
 
 ```php
+use DecodeLabs\Glitch;
+
 Glitch::setRunMode('development');
 ```
 
@@ -82,6 +90,8 @@ Dump anything and everything easily, using simple global functions.
 The functions mirror those used in Symfony/VarDumper, maintaining compatibility by using Symfony's VarDumper interface if it is already loaded.
 
 ```php
+use DecodeLabs\Glitch;
+
 class MyThing {}
 $myObject = new MyThing();
 
@@ -94,6 +104,8 @@ dd($myObject);
 
 You can also mark functions as incomplete whilst in development:
 ```php
+use DecodeLabs\Glitch;
+
 function myFunction() {
     // This will throw a Glitch exception
     Glitch::incomplete([
@@ -125,6 +137,8 @@ See [colours.scss](./src/Glitch/Renderer/assets/scss/_colours.scss) for all of t
 Then load the file into the HTML renderer:
 
 ```php
+use DecodeLabs\Glitch;
+
 Glitch::getRenderer()->setCustomCssFile('path/to/my/file.css');
 ```
 
@@ -139,6 +153,8 @@ You can customise how your own class instances are dumped by implementing <code>
 The method should either yield or return a list of key / value pairs that populate the requisite fields of the dumper entity.
 
 ```php
+use DecodeLabs\Glitch;
+
 use DecodeLabs\Glitch\Dumpable;
 
 class MyClass implements Dumpable {

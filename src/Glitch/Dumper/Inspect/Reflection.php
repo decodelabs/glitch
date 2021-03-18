@@ -1,9 +1,12 @@
 <?php
+
 /**
- * This file is part of the Glitch package
+ * @package Glitch
  * @license http://opensource.org/licenses/MIT
  */
+
 declare(strict_types=1);
+
 namespace DecodeLabs\Glitch\Dumper\Inspect;
 
 use DecodeLabs\Glitch\Dumper\Entity;
@@ -141,11 +144,17 @@ class Reflection
      */
     public static function inspectReflectionType(\ReflectionType $reflection, Entity $entity, Inspector $inspector): void
     {
-        $entity->setProperties([
-            'name' => $reflection->getName(),
-            'allowsNull' => $reflection->allowsNull(),
-            'isBuiltin' => $reflection->isBuiltin()
-        ]);
+        if ($reflection instanceof \ReflectionNamedType) {
+            $entity->setProperties([
+                'name' => $reflection->getName(),
+                'allowsNull' => $reflection->allowsNull(),
+                'isBuiltin' => $reflection->isBuiltin()
+            ]);
+        } else {
+            $entity->setProperties([
+                'allowsNull' => $reflection->allowsNull()
+            ]);
+        }
     }
 
     /**
@@ -188,11 +197,11 @@ class Reflection
         if (0 === strpos($name, "class@anonymous\x00")) {
             $output .= '() ';
         } else {
-            $output .= $name.' ';
+            $output .= $name . ' ';
         }
 
         if ($parent = $reflection->getParentClass()) {
-            $output .= 'extends '.$parent->getName();
+            $output .= 'extends ' . $parent->getName();
         }
 
         $interfaces = [];
@@ -202,21 +211,21 @@ class Reflection
         }
 
         if (!empty($interfaces)) {
-            $output .= 'implements '.implode(', ', $interfaces).' ';
+            $output .= 'implements ' . implode(', ', $interfaces) . ' ';
         }
 
-        $output .= '{'."\n";
+        $output .= '{' . "\n";
 
         foreach ($reflection->getReflectionConstants() as $const) {
-            $output .= '    '.self::getConstantDefinition($const)."\n";
+            $output .= '    ' . self::getConstantDefinition($const) . "\n";
         }
 
         foreach ($reflection->getProperties() as $property) {
-            $output .= '    '.self::getPropertyDefinition($property)."\n";
+            $output .= '    ' . self::getPropertyDefinition($property) . "\n";
         }
 
         foreach ($reflection->getMethods() as $method) {
-            $output .= '    '.self::getFunctionDefinition($method)."\n";
+            $output .= '    ' . self::getFunctionDefinition($method) . "\n";
         }
 
         $output .= '}';
@@ -232,10 +241,10 @@ class Reflection
     {
         $output = implode(' ', \Reflection::getModifierNames($reflection->getModifiers()));
         $name = $reflection->getName();
-        $output .= ' $'.$name.' = ';
+        $output .= ' $' . $name . ' = ';
         $reflection->setAccessible(true);
         $props = $reflection->getDeclaringClass()->getDefaultProperties();
-        $value = $prop[$name] ?? null;
+        $value = $props[$name] ?? null;
 
         if (is_array($value)) {
             $output .= '[...]';
@@ -253,7 +262,7 @@ class Reflection
     public static function getConstantDefinition(\ReflectionClassConstant $reflection): string
     {
         $output = implode(' ', \Reflection::getModifierNames($reflection->getModifiers()));
-        $output .= ' const '.$reflection->getName().' = ';
+        $output .= ' const ' . $reflection->getName() . ' = ';
         $value = $reflection->getValue();
 
         if (is_array($value)) {
@@ -288,7 +297,7 @@ class Reflection
         }
 
         if (!$reflection->isClosure()) {
-            $output .= $reflection->getName().' ';
+            $output .= $reflection->getName() . ' ';
         }
 
         $output .= '(';
@@ -298,7 +307,7 @@ class Reflection
             $params[] = self::getParameterDefinition($parameter);
         }
 
-        $output .= implode(', ', $params).')';
+        $output .= implode(', ', $params) . ')';
 
         if ($returnType = $reflection->getReturnType()) {
             $output .= ': ';
@@ -325,7 +334,7 @@ class Reflection
         }
 
         if ($type = $parameter->getType()) {
-            $output .= $type->getName().' ';
+            $output .= $type->getName() . ' ';
         }
 
         if ($parameter->isPassedByReference()) {
@@ -336,10 +345,10 @@ class Reflection
             $output .= '...';
         }
 
-        $output .= '$'.$parameter->getName();
+        $output .= '$' . $parameter->getName();
 
         if ($parameter->isDefaultValueAvailable()) {
-            $output .= '='.(Inspector::scalarToString($parameter->getDefaultValue()) ?? '??');
+            $output .= '=' . (Inspector::scalarToString($parameter->getDefaultValue()) ?? '??');
         }
 
         return $output;

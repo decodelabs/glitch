@@ -1,20 +1,22 @@
 <?php
+
 /**
- * This file is part of the Glitch package
+ * @package Glitch
  * @license http://opensource.org/licenses/MIT
  */
+
 declare(strict_types=1);
+
 namespace DecodeLabs\Glitch\Renderer;
 
+use DecodeLabs\Exceptional;
 use DecodeLabs\Glitch\Context;
-use DecodeLabs\Glitch\Renderer;
-use DecodeLabs\Glitch\Packet;
-use DecodeLabs\Glitch\Stack\Trace;
-use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Dumper\Entity;
-
-use DecodeLabs\Exceptional;
+use DecodeLabs\Glitch\Packet;
+use DecodeLabs\Glitch\Renderer;
+use DecodeLabs\Glitch\Stack\Frame;
+use DecodeLabs\Glitch\Stack\Trace;
 
 trait Base
 {
@@ -184,16 +186,16 @@ trait Base
         $head = [];
 
         if ($code) {
-            $head[] = '#'.$code;
+            $head[] = '#' . $code;
         }
         if ($httpCode) {
-            $head[] = 'HTTP '.$httpCode;
+            $head[] = 'HTTP ' . $httpCode;
         }
 
         $output = '';
 
         if (!empty($head)) {
-            $output .= implode(' | ', $head)."\n";
+            $output .= implode(' | ', $head) . "\n";
         }
 
         $output .= $this->esc($message);
@@ -248,7 +250,7 @@ trait Base
     /**
      * Render final trace
      */
-    protected function renderTrace(Trace $trace, bool $open=false): string
+    protected function renderTrace(Trace $trace, bool $open = false): string
     {
         return $this->renderEntity(
             (new Entity('stack'))
@@ -297,7 +299,7 @@ trait Base
     /**
      * Render a scalar value
      */
-    protected function renderScalar($value, ?string $class=null, bool $asIdentifier=false): string
+    protected function renderScalar($value, ?string $class = null, bool $asIdentifier = false): string
     {
         switch (true) {
             case $value === null:
@@ -332,7 +334,7 @@ trait Base
     /**
      * Passthrough null
      */
-    protected function renderNull(?string $class=null): string
+    protected function renderNull(?string $class = null): string
     {
         return 'null';
     }
@@ -340,7 +342,7 @@ trait Base
     /**
      * Passthrough boolean
      */
-    protected function renderBool(bool $value, ?string $class=null): string
+    protected function renderBool(bool $value, ?string $class = null): string
     {
         return $value ? 'true' : 'false';
     }
@@ -348,7 +350,7 @@ trait Base
     /**
      * Passthrough integer
      */
-    protected function renderInt(int $value, ?string $class=null): string
+    protected function renderInt(int $value, ?string $class = null): string
     {
         return (string)$value;
     }
@@ -356,7 +358,7 @@ trait Base
     /**
      * Passthrough float
      */
-    protected function renderFloat(float $value, ?string $class=null): string
+    protected function renderFloat(float $value, ?string $class = null): string
     {
         return $this->normalizeFloat($value);
     }
@@ -379,7 +381,7 @@ trait Base
     /**
      * Render standard string
      */
-    protected function renderString(string $string, ?string $class=null, int $forceSingleLineMax=null, bool $asIdentifier=false): string
+    protected function renderString(string $string, ?string $class = null, int $forceSingleLineMax = null, bool $asIdentifier = false): string
     {
         if ($asIdentifier) {
             return $this->renderIdentifierString($string, $class, $forceSingleLineMax);
@@ -397,7 +399,7 @@ trait Base
     /**
      * Passthrough string
      */
-    protected function renderIdentifierString(string $string, ?string $class, int $forceSingleLineMax=null): string
+    protected function renderIdentifierString(string $string, ?string $class, int $forceSingleLineMax = null): string
     {
         return $string;
     }
@@ -405,7 +407,7 @@ trait Base
     /**
      * Passthrough string
      */
-    protected function renderMultiLineString(string $string, string $class=null): string
+    protected function renderMultiLineString(string $string, string $class = null): string
     {
         return $string;
     }
@@ -413,7 +415,7 @@ trait Base
     /**
      * Passthrough string
      */
-    protected function renderSingleLineString(string $string, string $class=null, int $forceSingleLineMax=null): string
+    protected function renderSingleLineString(string $string, string $class = null, int $forceSingleLineMax = null): string
     {
         return $string;
     }
@@ -422,7 +424,7 @@ trait Base
     /**
      * render string for rendering
      */
-    protected function renderStringLine(string $line, int $maxLength=null): string
+    protected function renderStringLine(string $line, int $maxLength = null): string
     {
         $shorten = false;
 
@@ -486,7 +488,7 @@ trait Base
                 break;
 
             default:
-                $output = '\\x'.$hex;
+                $output = '\\x' . $hex;
                 break;
         }
 
@@ -505,7 +507,7 @@ trait Base
     /**
      * Passthrough resource
      */
-    protected function renderResource($value, ?string $class=null): string
+    protected function renderResource($value, ?string $class = null): string
     {
         return 'resource';
     }
@@ -537,7 +539,7 @@ trait Base
     /**
      * Render file path
      */
-    protected function renderSourceFile(string $path, ?string $class=null): string
+    protected function renderSourceFile(string $path, ?string $class = null): string
     {
         return $path;
     }
@@ -612,7 +614,7 @@ trait Base
             $class = $frame::normalizeClassName($class);
 
             if (substr((string)$class, 0, 1) !== '~') {
-                $parts = explode('\\', $frame->getNamespace().'\\');
+                $parts = explode('\\', $frame->getNamespace() . '\\');
 
                 foreach ($parts as $i => $part) {
                     $parts[$i] = empty($part) ? null : $this->renderSignatureNamespace($part);
@@ -647,7 +649,7 @@ trait Base
                     $fArgs[] = $this->renderIdentifierString($part, 'identifier');
                 }
 
-                $function[] = implode($this->renderGrammar(',').' ', $fArgs);
+                $function[] = implode($this->renderGrammar(',') . ' ', $fArgs);
                 $function[] = $this->renderGrammar('}');
                 $function = implode($function);
             } else {
@@ -666,7 +668,7 @@ trait Base
                 $args[] = $this->renderSignatureObject($frame::normalizeClassName(get_class($arg)));
             } elseif (is_array($arg)) {
                 $args[] = $this->wrapSignatureArray(
-                    $this->renderGrammar('[').count($arg).$this->renderGrammar(']')
+                    $this->renderGrammar('[') . count($arg) . $this->renderGrammar(']')
                 );
             } else {
                 switch (true) {
@@ -701,7 +703,7 @@ trait Base
             }
         }
 
-        $output[] = implode($this->renderGrammar(', ').' ', $args);
+        $output[] = implode($this->renderGrammar(', ') . ' ', $args);
         $output[] = $this->renderGrammar(')');
 
         return implode('', $output);
@@ -711,7 +713,7 @@ trait Base
     /**
      * Passthrough signature
      */
-    protected function wrapSignature(string $signature, ?string $class=null): string
+    protected function wrapSignature(string $signature, ?string $class = null): string
     {
         return $signature;
     }
@@ -743,7 +745,7 @@ trait Base
     /**
      * Passthrough function
      */
-    protected function wrapSignatureFunction(string $function, ?string $class=null): string
+    protected function wrapSignatureFunction(string $function, ?string $class = null): string
     {
         return $function;
     }
@@ -759,7 +761,7 @@ trait Base
     /**
      * Passthrough
      */
-    protected function wrapSignatureArray(string $array, ?string $class=null): string
+    protected function wrapSignatureArray(string $array, ?string $class = null): string
     {
         return $array;
     }
@@ -779,7 +781,7 @@ trait Base
     /**
      * Render an individual entity
      */
-    protected function renderEntity(Entity $entity, int $level=0, array $overrides=null): string
+    protected function renderEntity(Entity $entity, int $level = 0, array $overrides = null): string
     {
         $id = $linkId = (string)$entity->getId();
         $name = $entity->getName() ?? $entity->getType();
@@ -802,7 +804,7 @@ trait Base
 
                 // no break
             case 'objectReference':
-                $linkId = 'ref-'.$id.'-'.spl_object_id($entity);
+                $linkId = 'ref-' . $id . '-' . spl_object_id($entity);
                 $isRef = true;
                 break;
 
@@ -871,7 +873,7 @@ trait Base
             }
 
             $g = $this->renderGrammar('|');
-            $name = implode(' '.$g.' ', $nameParts);
+            $name = implode(' ' . $g . ' ', $nameParts);
         }
 
 
@@ -1064,7 +1066,7 @@ trait Base
     /**
      * Wrap entity
      */
-    protected function wrapEntity(string $entity, ?string $class=null): string
+    protected function wrapEntity(string $entity, ?string $class = null): string
     {
         return $entity;
     }
@@ -1083,7 +1085,7 @@ trait Base
      */
     protected function wrapReferenceName(string $name): string
     {
-        return '&'.$name;
+        return '&' . $name;
     }
 
     /**
@@ -1200,7 +1202,7 @@ trait Base
      */
     protected function renderEntityOid(int $objectId, bool $isRef, string $id): string
     {
-        return '#'.$objectId;
+        return '#' . $objectId;
     }
 
 
@@ -1209,14 +1211,14 @@ trait Base
     /**
      * Render entity info block
      */
-    protected function renderInfoBlock(Entity $entity, int $level=0, bool $open): string
+    protected function renderInfoBlock(Entity $entity, int $level, bool $open): string
     {
         $id = $linkId = (string)$entity->getId();
 
         switch ($entity->getType()) {
             case 'arrayReference':
             case 'objectReference':
-                $linkId = 'ref-'.$id.'-'.spl_object_id($entity);
+                $linkId = 'ref-' . $id . '-' . spl_object_id($entity);
                 break;
         }
 
@@ -1256,7 +1258,7 @@ trait Base
 
         // Location
         if ($file = $entity->getFile()) {
-            $info['location'] = $this->context->normalizePath($file).' : '.$entity->getStartLine();
+            $info['location'] = $this->context->normalizePath($file) . ' : ' . $entity->getStartLine();
         }
 
         // Parents
@@ -1289,7 +1291,7 @@ trait Base
     /**
      * Render entity meta block
      */
-    protected function renderMetaBlock(Entity $entity, int $level=0, bool $open): string
+    protected function renderMetaBlock(Entity $entity, int $level, bool $open): string
     {
         $id = (string)$entity->getId();
 
@@ -1303,7 +1305,7 @@ trait Base
     /**
      * Render entity text block
      */
-    protected function renderTextBlock(Entity $entity, int $level=0, bool $open): string
+    protected function renderTextBlock(Entity $entity, int $level, bool $open): string
     {
         $id = (string)$entity->getId();
         $type = $entity->getType();
@@ -1336,7 +1338,7 @@ trait Base
     /**
      * Render entity text block
      */
-    protected function renderDefinitionBlock(Entity $entity, int $level=0, bool $open): string
+    protected function renderDefinitionBlock(Entity $entity, int $level, bool $open): string
     {
         $id = (string)$entity->getId();
         $type = $entity->getType();
@@ -1351,7 +1353,7 @@ trait Base
     /**
      * Render entity properties block
      */
-    protected function renderPropertiesBlock(Entity $entity, int $level=0, bool $open): string
+    protected function renderPropertiesBlock(Entity $entity, int $level, bool $open): string
     {
         $id = (string)$entity->getId();
 
@@ -1365,7 +1367,7 @@ trait Base
     /**
      * Render entity values block
      */
-    protected function renderValuesBlock(Entity $entity, int $level=0, bool $open): string
+    protected function renderValuesBlock(Entity $entity, int $level, bool $open): string
     {
         $id = (string)$entity->getId();
 
@@ -1380,7 +1382,7 @@ trait Base
     /**
      * Render entity stack trace block
      */
-    protected function renderStackBlock(Entity $entity, int $level=0, bool $open): string
+    protected function renderStackBlock(Entity $entity, int $level, bool $open): string
     {
         $id = (string)$entity->getId();
         $type = $entity->getType();
@@ -1453,7 +1455,7 @@ trait Base
     /**
      * Wrap entity body block
      */
-    protected function wrapEntityBodyBlock(string $block, string $type, bool $open, string $linkId, ?string $class=null): string
+    protected function wrapEntityBodyBlock(string $block, string $type, bool $open, string $linkId, ?string $class = null): string
     {
         return $block;
     }
@@ -1471,7 +1473,7 @@ trait Base
     /**
      * Render list
      */
-    protected function renderList(array $items, string $style, bool $includeKeys=true, string $class=null, int $level=0): string
+    protected function renderList(array $items, string $style, bool $includeKeys = true, string $class = null, int $level = 0): string
     {
         $lines = [];
         $pointer = '=>';
@@ -1510,7 +1512,7 @@ trait Base
                     }
                 }
 
-                $line[] = $this->renderScalar($key, 'identifier key '.$style.' '.$mod, true);
+                $line[] = $this->renderScalar($key, 'identifier key ' . $style . ' ' . $mod, true);
                 $line[] = $this->renderPointer($pointer);
             }
 
@@ -1518,8 +1520,8 @@ trait Base
                 $line[] = $this->renderEntity($value, $level + 1);
             } elseif (is_array($value)) {
                 $isAssoc = $this->arrayIsAssoc($value);
-                $line[] = $this->renderGrammar('{').
-                    $this->renderList($value, $style, $isAssoc, $isAssoc ? 'map' : 'inline', $level + 1).
+                $line[] = $this->renderGrammar('{') .
+                    $this->renderList($value, $style, $isAssoc, $isAssoc ? 'map' : 'inline', $level + 1) .
                     $this->renderGrammar('}');
             } else {
                 $line[] = $this->renderScalar($value, $asIdentifier ? 'identifier' : null, $asIdentifier);
@@ -1529,14 +1531,14 @@ trait Base
         }
 
 
-        return $this->renderBasicList($lines, 'list '.$style.' '.$class);
+        return $this->renderBasicList($lines, 'list ' . $style . ' ' . $class);
     }
 
 
     /**
      * Render basic list
      */
-    protected function renderBasicList(array $lines, ?string $class=null): string
+    protected function renderBasicList(array $lines, ?string $class = null): string
     {
         if ($class !== null) {
             $classes = explode(' ', $class);
@@ -1556,7 +1558,7 @@ trait Base
     {
         if ($spaces = static::SPACES ?? 2) {
             $space = str_repeat(' ', $spaces);
-            $lines = $space.str_replace("\n", "\n".$space, $lines);
+            $lines = $space . str_replace("\n", "\n" . $space, $lines);
         }
 
         return $lines;

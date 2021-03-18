@@ -1,16 +1,18 @@
 <?php
+
 /**
- * This file is part of the Glitch package
+ * @package Glitch
  * @license http://opensource.org/licenses/MIT
  */
+
 declare(strict_types=1);
+
 namespace DecodeLabs\Glitch\Dumper\Inspect;
 
-use DecodeLabs\Glitch\Dumper\Entity;
-use DecodeLabs\Glitch\Dumper\Inspector;
-use DecodeLabs\Glitch\Stack\Trace;
-
 use DecodeLabs\Exceptional;
+use DecodeLabs\Glitch\Dumper\Entity;
+
+use DecodeLabs\Glitch\Dumper\Inspector;
 
 class Date
 {
@@ -19,7 +21,6 @@ class Date
      */
     public static function inspectDateTime(\DateTime $date, Entity $entity, Inspector $inspector): void
     {
-        $location = $date->getTimezone()->getLocation();
         $fromNow = (new \DateTime())->diff($date);
 
         $entity
@@ -53,7 +54,7 @@ class Date
     /**
      * Format DateInterval
      */
-    protected static function formatInterval(\DateInterval $interval, bool $nominal=true): string
+    protected static function formatInterval(\DateInterval $interval, bool $nominal = true): string
     {
         $format = '';
 
@@ -61,8 +62,10 @@ class Date
             ($interval->h >= 24 || $interval->i >= 60 || $interval->s >= 60)
         ) {
             $date1 = new \DateTime();
+            $date2 = clone $date1;
 
-            if (false === ($date2 = date_add(clone $date1, $interval))) {
+            /** @phpstan-ignore-next-line */
+            if (false === $date2->add($interval)) {
                 throw Exceptional::Runtime('Unable to create date from interval');
             }
 
@@ -99,7 +102,7 @@ class Date
         }
 
         if ($nominal) {
-            $format = '%R '.$format;
+            $format = '%R ' . $format;
         }
 
         return $interval->format($format);
@@ -154,7 +157,7 @@ class Date
                 self::formatInterval($period->getDateInterval(), false),
                 $period->getStartDate()->format('Y-m-d H:i:s'),
                 $period->include_start_date ? ' inc' : '',
-                ($end = $period->getEndDate()) ? ' to '.$end->format('Y-m-d H:i:s') : ', '.$period->recurrences.' time(s)'
+                ($end = $period->getEndDate()) ? ' to ' . $end->format('Y-m-d H:i:s') : ', ' . $period->recurrences . ' time(s)'
             ));
 
         $inspector->inspectClassMembers(

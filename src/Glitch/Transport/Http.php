@@ -1,14 +1,17 @@
 <?php
+
 /**
- * This file is part of the Glitch package
+ * @package Glitch
  * @license http://opensource.org/licenses/MIT
  */
+
 declare(strict_types=1);
+
 namespace DecodeLabs\Glitch\Transport;
 
 use DecodeLabs\Glitch;
-use DecodeLabs\Glitch\Transport;
 use DecodeLabs\Glitch\Packet;
+use DecodeLabs\Glitch\Transport;
 
 class Http implements Transport
 {
@@ -35,7 +38,7 @@ class Http implements Transport
     {
         if ($final && !headers_sent()) {
             header('HTTP/1.1 501');
-            header('Content-Type: '.$packet->getContentType().'; charset=UTF-8');
+            header('Content-Type: ' . $packet->getContentType() . '; charset=UTF-8');
             header('Cache-Control: no-cache, no-store, must-revalidate');
             header('Pragma: no-cache');
 

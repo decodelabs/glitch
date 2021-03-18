@@ -1,17 +1,27 @@
-language: php
+# TravisCI configuration for decodelabs/glitch
+
+language: 'php'
+os:
+    - 'linux'
+dist: 'bionic'
+
 php:
-    - '7.2'
+    - '8.0'
+    - '7.4'
     - '7.3'
+    - '7.2'
 
 cache:
     directories:
-        - $HOME/.composer/cache/files
+        - '${HOME}/.composer/cache'
 
 before_install:
-    - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+    - 'echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini'
+    - 'composer validate --strict'
 
 install:
-    - composer install --prefer-dist
+    - 'composer update --no-interaction --prefer-dist'
 
 script:
-    - vendor/bin/phpstan analyse --no-interaction --no-progress
+    - 'composer run-script analyze -- --no-interaction'
+    - 'composer run-script psr12'

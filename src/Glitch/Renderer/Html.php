@@ -1,32 +1,34 @@
 <?php
+
 /**
- * This file is part of the Glitch package
+ * @package Glitch
  * @license http://opensource.org/licenses/MIT
  */
+
 declare(strict_types=1);
+
 namespace DecodeLabs\Glitch\Renderer;
 
+use DecodeLabs\Enlighten\Highlighter;
+use DecodeLabs\Exceptional;
 use DecodeLabs\Glitch;
 use DecodeLabs\Glitch\Context;
-use DecodeLabs\Glitch\Packet;
-use DecodeLabs\Glitch\Stack\Trace;
-use DecodeLabs\Glitch\Stack\Frame;
-use DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
-
-use DecodeLabs\Enlighten\Highlighter;
 use DecodeLabs\Glitch\IncompleteException;
-use DecodeLabs\Exceptional;
+use DecodeLabs\Glitch\Packet;
+use DecodeLabs\Glitch\Renderer;
+use DecodeLabs\Glitch\Stack\Frame;
+use DecodeLabs\Glitch\Stack\Trace;
 
 class Html implements Renderer
 {
-    const RENDER_IN_PRODUCTION = false;
-    const SPACES = 0;
-    const RENDER_CLOSED = true;
+    public const RENDER_IN_PRODUCTION = false;
+    public const SPACES = 0;
+    public const RENDER_CLOSED = true;
 
-    const RENDER_SECTIONS = [
+    public const RENDER_SECTIONS = [
         'info' => true,
         'meta' => true,
         'text' => true,
@@ -35,11 +37,11 @@ class Html implements Renderer
         'stack' => true
     ];
 
-    const RENDER_STACK = true;
+    public const RENDER_STACK = true;
 
-    const DEV = false;
+    public const DEV = false;
 
-    const HTTP_STATUSES = [
+    public const HTTP_STATUSES = [
         100 => 'Continue',
         101 => 'Switching Protocols',
         200 => 'OK',
@@ -116,7 +118,7 @@ class Html implements Renderer
         $output[] = $this->renderHeader('dump');
 
         $output[] = '<header class="title">';
-        $output[] = '<h1>Glitch <span class="version">'.Glitch::VERSION.'</span></h1>';
+        $output[] = '<h1>Glitch <span class="version">' . Glitch::VERSION . '</span></h1>';
         $output[] = '</header>';
 
         $output[] = '<div class="cols">';
@@ -156,7 +158,7 @@ class Html implements Renderer
             $output[] = $this->renderProductionExceptionMessage($exception);
         } else {
             $output[] = '<header class="title">';
-            $output[] = '<h1>Glitch <span class="version">'.Glitch::VERSION.'</span></h1>';
+            $output[] = '<h1>Glitch <span class="version">' . Glitch::VERSION . '</span></h1>';
             $output[] = '</header>';
 
             $output[] = '<div class="cols">';
@@ -187,7 +189,7 @@ class Html implements Renderer
     {
         $output = [];
         $output[] = '<!doctype html>';
-        $output[] = '<html lang="en" class="'.$class.'">';
+        $output[] = '<html lang="en" class="' . $class . '">';
         $output[] = '<head>';
 
         $vendor = $this->context->getVendorPath();
@@ -198,7 +200,7 @@ class Html implements Renderer
 
 
         // Css
-        $sassCss = $vendor.'/decodelabs/glitch/src/Glitch/Renderer/assets/glitch.css';
+        $sassCss = $vendor . '/decodelabs/glitch/src/Glitch/Renderer/assets/glitch.css';
         $this->buildScss($sassCss);
 
 
@@ -212,7 +214,7 @@ class Html implements Renderer
 
         foreach ($css as $name => $cssPath) {
             if (file_exists($cssPath)) {
-                $output[] = '<style id="style-'.$name.'">';
+                $output[] = '<style id="style-' . $name . '">';
                 $output[] = file_get_contents($cssPath);
                 $output[] = '</style>';
             }
@@ -221,13 +223,13 @@ class Html implements Renderer
         // Js
         if ($this->shouldRender()) {
             $js = [
-                'jQuery' => $vendor.'/components/jquery/jquery.min.js',
-                'glitch' => __DIR__.'/assets/glitch.js'
+                'jQuery' => $vendor . '/components/jquery/jquery.min.js',
+                'glitch' => __DIR__ . '/assets/glitch.js'
             ];
 
             foreach ($js as $name => $jsPath) {
                 if (file_exists($jsPath)) {
-                    $output[] = '<script id="script-'.$name.'">';
+                    $output[] = '<script id="script-' . $name . '">';
                     $output[] = file_get_contents($jsPath);
                     $output[] = '</script>';
                 }
@@ -248,20 +250,20 @@ class Html implements Renderer
     protected function buildScss(string $cssPath): void
     {
         $vendor = $this->context->getVendorPath();
-        $isDev = is_link($vendor.'/decodelabs/glitch');
+        $isDev = is_link($vendor . '/decodelabs/glitch');
 
         if (!static::DEV || !$isDev) {
             return;
         }
 
 
-        $enlightenPath = $vendor.'/decodelabs/enlighten/src/resources/styles.css';
-        $_sourcePath = $vendor.'/decodelabs/glitch/src/Glitch/Renderer/assets/scss/auto/_source.scss';
+        $enlightenPath = $vendor . '/decodelabs/enlighten/src/resources/styles.css';
+        $_sourcePath = $vendor . '/decodelabs/glitch/src/Glitch/Renderer/assets/scss/auto/_source.scss';
         file_put_contents($_sourcePath, file_get_contents($enlightenPath));
 
 
 
-        $scssPath = substr($cssPath, 0, -3).'scss';
+        $scssPath = substr($cssPath, 0, -3) . 'scss';
 
         if (!file_exists($scssPath)) {
             return;
@@ -282,7 +284,7 @@ class Html implements Renderer
         }
 
         if (!$build) {
-            if (false === ($test = scandir(__DIR__.'/assets/scss/'))) {
+            if (false === ($test = scandir(__DIR__ . '/assets/scss/'))) {
                 $test = [];
             }
 
@@ -291,7 +293,7 @@ class Html implements Renderer
                     continue;
                 }
 
-                $testFilePath = __DIR__.'/assets/scss/'.$testFileName;
+                $testFilePath = __DIR__ . '/assets/scss/' . $testFileName;
 
                 if (is_file($testFilePath)) {
                     $scssTime = filemtime($testFilePath);
@@ -306,10 +308,10 @@ class Html implements Renderer
 
 
         if ($build) {
-            exec('cd '.$vendor.'; sassc --style=compressed '.$scssPath.' '.$cssPath.' 2>&1', $execOut);
+            exec('cd ' . $vendor . '; sassc --style=compressed ' . $scssPath . ' ' . $cssPath . ' 2>&1', $execOut);
 
             if (!empty($execOut)) {
-                die('<pre>'.print_r($execOut, true));
+                die('<pre>' . print_r($execOut, true));
             }
         }
     }
@@ -335,22 +337,22 @@ class Html implements Renderer
         $output[] = '<section class="exception">';
         $output[] = '<h3>Exception</h3>';
         $output[] = '<samp class="dump exception">';
-        $output[] = '<div class="message">'.$this->renderMultiLineString($message).'</div>';
+        $output[] = '<div class="message">' . $this->renderMultiLineString($message) . '</div>';
 
         if ($file) {
-            $output[] = '<span class="attr file"><span class="label">File</span> '.$file.' <span class="g">:</span> '.$line.'</span>';
+            $output[] = '<span class="attr file"><span class="label">File</span> ' . $file . ' <span class="g">:</span> ' . $line . '</span>';
         }
 
         if ($code) {
-            $output[] = '<span class="attr code"><span class="label">Code</span> '.$code.'</span>';
+            $output[] = '<span class="attr code"><span class="label">Code</span> ' . $code . '</span>';
         }
 
         if ($httpCode) {
             if (isset(static::HTTP_STATUSES[$httpCode])) {
-                $httpCode .= ' '.static::HTTP_STATUSES[$httpCode];
+                $httpCode .= ' ' . static::HTTP_STATUSES[$httpCode];
             }
 
-            $output[] = '<div class="attr http"><span class="label">HTTP</span> '.$httpCode.'</div>';
+            $output[] = '<div class="attr http"><span class="label">HTTP</span> ' . $httpCode . '</div>';
         }
 
         $output[] = '</samp>';
@@ -364,7 +366,7 @@ class Html implements Renderer
     protected function renderProductionExceptionMessage(\Throwable $exception): string
     {
         $output[] = '<section class="production message">There was a problem serving your request - please try again later</section>';
-        $output[] = '<section class="production exception">'.(string)$exception.'</section>';
+        $output[] = '<section class="production exception">' . (string)$exception . '</section>';
         return implode("\n", $output);
     }
 
@@ -483,7 +485,7 @@ class Html implements Renderer
     /**
      * Render final stack trace
      */
-    protected function renderTrace(Trace $trace, bool $open=false): string
+    protected function renderTrace(Trace $trace, bool $open = false): string
     {
         $output = [];
         $output[] = '<section class="stack">';
@@ -495,7 +497,7 @@ class Html implements Renderer
 
         foreach ($trace as $i => $frame) {
             $line = $sig = [];
-            $line[] = '<div class="stack-frame group'.($first ? ' w-source' : null).'">';
+            $line[] = '<div class="stack-frame group' . ($first ? ' w-source' : null) . '">';
             $line[] = '<samp class="dump trace" data-open="source">';
 
             $sig[] = $this->renderLineNumber($count - $i);
@@ -582,10 +584,10 @@ class Html implements Renderer
             $output[] = 'body > .glitch-dump:only-child > iframe { height:100vh; }';
             $output[] = 'body > .glitch-dump:only-child { height:100%; border: none; resize: none; position: absolute; width: 100%; top: 0; left: 0; }';
             $output[] = '</style>';
-            $output[] = '<iframe id="'.$id.'" width="100%" height="100%" frameborder="0"></iframe>';
+            $output[] = '<iframe id="' . $id . '" width="100%" height="100%" frameborder="0"></iframe>';
             $output[] = '<script>';
-            $output[] = 'var doc = document.getElementById(\''.$id.'\').contentWindow.document;';
-            $output[] = 'doc.open();doc.write('.json_encode($html).');doc.close();';
+            $output[] = 'var doc = document.getElementById(\'' . $id . '\').contentWindow.document;';
+            $output[] = 'doc.open();doc.write(' . json_encode($html) . ');doc.close();';
             $output[] = '</script>';
             $output[] = '</div>';
 
@@ -599,33 +601,33 @@ class Html implements Renderer
     /**
      * Render a null scalar
      */
-    protected function renderNull(?string $class=null): string
+    protected function renderNull(?string $class = null): string
     {
-        return '<span class="null'.($class !== null ? ' '.$class : null).'">null</span>';
+        return '<span class="null' . ($class !== null ? ' ' . $class : null) . '">null</span>';
     }
 
     /**
      * Render a boolean scalar
      */
-    protected function renderBool(bool $value, ?string $class=null): string
+    protected function renderBool(bool $value, ?string $class = null): string
     {
-        return '<span class="bool'.($class !== null ? ' '.$class : null).'">'.($value ? 'true' : 'false').'</span>';
+        return '<span class="bool' . ($class !== null ? ' ' . $class : null) . '">' . ($value ? 'true' : 'false') . '</span>';
     }
 
     /**
      * Render a integer scalar
      */
-    protected function renderInt(int $value, ?string $class=null): string
+    protected function renderInt(int $value, ?string $class = null): string
     {
-        return '<span class="int'.($class !== null ? ' '.$class : null).'">'.$value.'</span>';
+        return '<span class="int' . ($class !== null ? ' ' . $class : null) . '">' . $value . '</span>';
     }
 
     /**
      * Render a float scalar
      */
-    protected function renderFloat(float $value, ?string $class=null): string
+    protected function renderFloat(float $value, ?string $class = null): string
     {
-        return '<span class="float'.($class !== null ? ' '.$class : null).'">'.$this->normalizeFloat($value).'</span>';
+        return '<span class="float' . ($class !== null ? ' ' . $class : null) . '">' . $this->normalizeFloat($value) . '</span>';
     }
 
 
@@ -633,25 +635,25 @@ class Html implements Renderer
     /**
      * Render a single identifier string
      */
-    protected function renderIdentifierString(string $string, ?string $class, int $forceSingleLineMax=null): string
+    protected function renderIdentifierString(string $string, ?string $class, int $forceSingleLineMax = null): string
     {
-        return '<span class="string '.$class.'">'.$this->renderStringLine($string, $forceSingleLineMax).'</span>';
+        return '<span class="string ' . $class . '">' . $this->renderStringLine($string, $forceSingleLineMax) . '</span>';
     }
 
     /**
      * Render a standard multi line string
      */
-    protected function renderMultiLineString(string $string, string $class=null): string
+    protected function renderMultiLineString(string $string, string $class = null): string
     {
         $string = str_replace("\r", '', $string);
         $parts = explode("\n", $string);
         $count = count($parts);
 
         $output = [];
-        $output[] = '<div class="string m'.($count > 10 ? ' large' : null).' '.$class.'"><span class="length">'.mb_strlen($string).'</span>';
+        $output[] = '<div class="string m' . ($count > 10 ? ' large' : null) . ' ' . $class . '"><span class="length">' . mb_strlen($string) . '</span>';
 
         foreach ($parts as $part) {
-            $output[] = '<div class="line">'.$this->renderStringLine($part).'</div>';
+            $output[] = '<div class="line">' . $this->renderStringLine($part) . '</div>';
         }
 
         $output[] = '</div>';
@@ -661,12 +663,12 @@ class Html implements Renderer
     /**
      * Render a standard single line string
      */
-    protected function renderSingleLineString(string $string, string $class=null, int $forceSingleLineMax=null): string
+    protected function renderSingleLineString(string $string, string $class = null, int $forceSingleLineMax = null): string
     {
-        $output = '<span class="string s '.$class.'"><span class="line">'.$this->renderStringLine($string, $forceSingleLineMax).'</span>';
+        $output = '<span class="string s ' . $class . '"><span class="line">' . $this->renderStringLine($string, $forceSingleLineMax) . '</span>';
 
         if ($forceSingleLineMax === null) {
-            $output .= '<span class="length">'.mb_strlen($string).'</span>';
+            $output .= '<span class="length">' . mb_strlen($string) . '</span>';
         }
 
         $output .= '</span>';
@@ -678,7 +680,7 @@ class Html implements Renderer
      */
     protected function renderBinaryStringChunk(string $chunk): string
     {
-        return '<i>'.$chunk.'</i>';
+        return '<i>' . $chunk . '</i>';
     }
 
 
@@ -693,13 +695,13 @@ class Html implements Renderer
             $class .= ' tab';
         }
 
-        return '<span class="'.$class.'">'.$control.'</span>';
+        return '<span class="' . $class . '">' . $control . '</span>';
     }
 
     /**
      * Passthrough resource
      */
-    protected function renderResource($value, ?string $class=null): string
+    protected function renderResource($value, ?string $class = null): string
     {
         return '<span class="resource">resource</span>';
     }
@@ -710,7 +712,7 @@ class Html implements Renderer
      */
     protected function renderGrammar(string $grammar): string
     {
-        return '<span class="g">'.$this->esc($grammar).'</span>';
+        return '<span class="g">' . $this->esc($grammar) . '</span>';
     }
 
     /**
@@ -718,7 +720,7 @@ class Html implements Renderer
      */
     protected function renderPointer(string $pointer): string
     {
-        return '<span class="pointer">'.$this->esc($pointer).'</span>';
+        return '<span class="pointer">' . $this->esc($pointer) . '</span>';
     }
 
     /**
@@ -726,15 +728,15 @@ class Html implements Renderer
      */
     protected function renderLineNumber(int $number): string
     {
-        return '<span class="number">'.$number.'</span>';
+        return '<span class="number">' . $number . '</span>';
     }
 
     /**
      * Render file path
      */
-    protected function renderSourceFile(string $path, ?string $class=null): string
+    protected function renderSourceFile(string $path, ?string $class = null): string
     {
-        return '<span class="file '.$class.'">'.$path.'</span>';
+        return '<span class="file ' . $class . '">' . $path . '</span>';
     }
 
     /**
@@ -742,7 +744,7 @@ class Html implements Renderer
      */
     protected function renderSourceLine(int $number): string
     {
-        return '<span class="line">'.$number.'</span>';
+        return '<span class="line">' . $number . '</span>';
     }
 
 
@@ -750,9 +752,9 @@ class Html implements Renderer
     /**
      * render a signature block
      */
-    protected function wrapSignature(string $signature, ?string $class=null): string
+    protected function wrapSignature(string $signature, ?string $class = null): string
     {
-        return '<span class="signature source'.($class ? ' '.$class : null).'">'.$signature.'</span>';
+        return '<span class="signature source' . ($class ? ' ' . $class : null) . '">' . $signature . '</span>';
     }
 
     /**
@@ -760,7 +762,7 @@ class Html implements Renderer
      */
     protected function renderSignatureNamespace(string $namespace): string
     {
-        return '<span class="namespace">'.$this->esc($namespace).'</span>';
+        return '<span class="namespace">' . $this->esc($namespace) . '</span>';
     }
 
     /**
@@ -768,7 +770,7 @@ class Html implements Renderer
      */
     protected function renderSignatureClass(string $class): string
     {
-        return '<span class="class">'.$this->esc($class).'</span>';
+        return '<span class="class">' . $this->esc($class) . '</span>';
     }
 
     /**
@@ -776,23 +778,23 @@ class Html implements Renderer
      */
     protected function renderSignatureConstant(string $constant): string
     {
-        return '<span class="constant">'.$this->esc($constant).'</span>';
+        return '<span class="constant">' . $this->esc($constant) . '</span>';
     }
 
     /**
      * Wrap signature function block
      */
-    protected function wrapSignatureFunction(string $function, ?string $class=null): string
+    protected function wrapSignatureFunction(string $function, ?string $class = null): string
     {
-        return '<span class="function'.($class ? ' '.$class : null).'">'.$function.'</span>';
+        return '<span class="function' . ($class ? ' ' . $class : null) . '">' . $function . '</span>';
     }
 
     /**
      * Wrap signature array
      */
-    protected function wrapSignatureArray(string $array, ?string $class=null): string
+    protected function wrapSignatureArray(string $array, ?string $class = null): string
     {
-        return '<span class="ar'.($class ? ' '.$class : null).'">'.$array.'</span>';
+        return '<span class="ar' . ($class ? ' ' . $class : null) . '">' . $array . '</span>';
     }
 
     /**
@@ -800,16 +802,16 @@ class Html implements Renderer
      */
     protected function renderSignatureObject(string $object): string
     {
-        return '<span class="class param">'.$this->esc($object).'</span>';
+        return '<span class="class param">' . $this->esc($object) . '</span>';
     }
 
 
     /**
      * Wrap entity
      */
-    protected function wrapEntity(string $entity, ?string $class=null): string
+    protected function wrapEntity(string $entity, ?string $class = null): string
     {
-        return '<div class="entity group '.$class.'">'.$entity.'</div>';
+        return '<div class="entity group ' . $class . '">' . $entity . '</div>';
     }
 
 
@@ -818,7 +820,7 @@ class Html implements Renderer
      */
     protected function wrapEntityHeader(string $header, string $type, string $linkId): string
     {
-        return '<div class="title t-'.$type.'" id="'.$linkId.'">'.$header.'</div>';
+        return '<div class="title t-' . $type . '" id="' . $linkId . '">' . $header . '</div>';
     }
 
     /**
@@ -826,7 +828,7 @@ class Html implements Renderer
      */
     protected function wrapReferenceName(string $name): string
     {
-        return '<span class="ref">'.$name.'</span>';
+        return '<span class="ref">' . $name . '</span>';
     }
 
 
@@ -836,7 +838,7 @@ class Html implements Renderer
      */
     protected function wrapEntityName(string $name, bool $open, string $linkId): string
     {
-        return '<a class="name code" data-open="body">'.$name.'</a>';
+        return '<a class="name code" data-open="body">' . $name . '</a>';
     }
 
     /**
@@ -844,7 +846,7 @@ class Html implements Renderer
      */
     protected function renderEntityNamePart(string $name): string
     {
-        return '<i>'.$this->esc($name).'</i>';
+        return '<i>' . $this->esc($name) . '</i>';
     }
 
     /**
@@ -852,7 +854,7 @@ class Html implements Renderer
      */
     protected function wrapEntityNameReference(string $name, bool $open, string $id): string
     {
-        return '<a class="name code ref" href="#'.$id.'">'.$name.'</a>';
+        return '<a class="name code ref" href="#' . $id . '">' . $name . '</a>';
     }
 
     /**
@@ -860,7 +862,7 @@ class Html implements Renderer
      */
     protected function renderEntityLength(int $length): string
     {
-        return '<span class="length">'.$length.'</span>';
+        return '<span class="length">' . $length . '</span>';
     }
 
     /**
@@ -868,7 +870,7 @@ class Html implements Renderer
      */
     protected function renderEntityClassName(string $class): string
     {
-        return '<span class="class">'.$this->esc($class).'</span>';
+        return '<span class="class">' . $this->esc($class) . '</span>';
     }
 
 
@@ -877,7 +879,7 @@ class Html implements Renderer
      */
     protected function wrapEntityButtons(string $buttons): string
     {
-        return '<span class="buttons">'.$buttons.'</span>';
+        return '<span class="buttons">' . $buttons . '</span>';
     }
 
     /**
@@ -951,9 +953,9 @@ class Html implements Renderer
     protected function renderEntityOid(int $objectId, bool $isRef, string $id): string
     {
         if ($isRef) {
-            return '<a href="#'.$id.'" class="ref oid">'.$this->esc((string)$objectId).'</a>';
+            return '<a href="#' . $id . '" class="ref oid">' . $this->esc((string)$objectId) . '</a>';
         } else {
-            return '<span class="oid">'.$this->esc((string)$objectId).'</span>';
+            return '<span class="oid">' . $this->esc((string)$objectId) . '</span>';
         }
     }
 
@@ -962,22 +964,22 @@ class Html implements Renderer
      */
     protected function wrapEntityBody(string $body, bool $open, string $linkId): string
     {
-        return '<div class="inner body">'.$body.'</div>';
+        return '<div class="inner body">' . $body . '</div>';
     }
 
     /**
      * Wrap entity body block
      */
-    protected function wrapEntityBodyBlock(string $block, string $type, bool $open, string $linkId, ?string $class=null): string
+    protected function wrapEntityBodyBlock(string $block, string $type, bool $open, string $linkId, ?string $class = null): string
     {
         if ($class && $class !== $type) {
-            $class = $class.' '.$type;
+            $class .= ' ' . $type;
         } else {
             $class = $type;
         }
 
-        return '<div class="inner t-'.$type.'"><div class="'.$class.'">'."\n".
-            $block."\n".
+        return '<div class="inner t-' . $type . '"><div class="' . $class . '">' . "\n" .
+            $block . "\n" .
         '</div></div>';
     }
 
@@ -986,7 +988,7 @@ class Html implements Renderer
      */
     protected function wrapEntityFooter(string $footer): string
     {
-        return '<div class="footer">'.$footer.'</div>';
+        return '<div class="footer">' . $footer . '</div>';
     }
 
     /**
@@ -994,25 +996,25 @@ class Html implements Renderer
      */
     protected function wrapStackFrame(string $frame): string
     {
-        return '<div class="stack-frame"><samp class="dump trace">'.$frame.'</samp></div>';
+        return '<div class="stack-frame"><samp class="dump trace">' . $frame . '</samp></div>';
     }
 
 
     /**
      * Render basic list
      */
-    protected function renderBasicList(array $lines, ?string $class=null): string
+    protected function renderBasicList(array $lines, ?string $class = null): string
     {
         $output = [];
-        $output[] = '<ul class="'.$class.'">';
+        $output[] = '<ul class="' . $class . '">';
 
         foreach ($lines as $line) {
-            $output[] = '<li>'."\n".$line."\n".'</li>';
+            $output[] = '<li>' . "\n" . $line . "\n" . '</li>';
         }
 
         $output[] = '</ul>';
 
-        return "\n".implode("\n", $output)."\n";
+        return "\n" . implode("\n", $output) . "\n";
     }
 
 

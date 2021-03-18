@@ -1,13 +1,16 @@
 <?php
+
 /**
- * This file is part of the Glitch package
+ * @package Glitch
  * @license http://opensource.org/licenses/MIT
  */
+
 declare(strict_types=1);
+
 namespace DecodeLabs\Glitch\Transport;
 
-use DecodeLabs\Glitch\Transport;
 use DecodeLabs\Glitch\Packet;
+use DecodeLabs\Glitch\Transport;
 
 class Stdout implements Transport
 {
