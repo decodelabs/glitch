@@ -12,12 +12,31 @@ namespace DecodeLabs\Glitch\Dumper\Inspect;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
 
+use DOMAttr;
+use DOMCdataSection;
+use DOMCharacterData;
+use DOMComment;
+use DOMDocument;
+use DOMDocumentFragment;
+use DOMDocumentType;
+use DOMElement;
+use DOMEntity;
+use DOMEntityReference;
+use DOMImplementation;
+use DOMNamedNodeMap;
+use DOMNode;
+use DOMNodeList;
+use DOMNotation;
+use DOMProcessingInstruction;
+use DOMText;
+use DOMXPath;
+
 class Dom
 {
     /**
      * Inspect attr
      */
-    public static function inspectAttr(\DOMAttr $attr, Entity $entity, Inspector $inspector): void
+    public static function inspectAttr(DOMAttr $attr, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setProperty('name', $attr->name)
@@ -28,7 +47,7 @@ class Dom
     /**
      * Inspect CData section
      */
-    public static function inspectCdataSection(\DOMCdataSection $section, Entity $entity, Inspector $inspector): void
+    public static function inspectCdataSection(DOMCdataSection $section, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setText($section->data);
@@ -37,7 +56,7 @@ class Dom
     /**
      * Inspect character data
      */
-    public static function inspectCharacterData(\DOMCharacterData $data, Entity $entity, Inspector $inspector): void
+    public static function inspectCharacterData(DOMCharacterData $data, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setText($data->data);
@@ -46,7 +65,7 @@ class Dom
     /**
      * Inspect comment
      */
-    public static function inspectComment(\DOMComment $comment, Entity $entity, Inspector $inspector): void
+    public static function inspectComment(DOMComment $comment, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setText($comment->data);
@@ -55,7 +74,7 @@ class Dom
     /**
      * Inspect document
      */
-    public static function inspectDocument(\DOMDocument $document, Entity $entity, Inspector $inspector): void
+    public static function inspectDocument(DOMDocument $document, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setDefinition($document->saveXML())
@@ -83,7 +102,7 @@ class Dom
     /**
      * Inspect document fragment
      */
-    public static function inspectDocumentFragment(\DOMDocumentFragment $fragment, Entity $entity, Inspector $inspector): void
+    public static function inspectDocumentFragment(DOMDocumentFragment $fragment, Entity $entity, Inspector $inspector): void
     {
         self::inspectNode($fragment, $entity, $inspector);
     }
@@ -91,7 +110,7 @@ class Dom
     /**
      * Inspect document type
      */
-    public static function inspectDocumentType(\DOMDocumentType $type, Entity $entity, Inspector $inspector): void
+    public static function inspectDocumentType(DOMDocumentType $type, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setDefinition($type->ownerDocument->saveXML($type))
@@ -108,7 +127,7 @@ class Dom
     /**
      * Inspect element
      */
-    public static function inspectElement(\DOMElement $element, Entity $entity, Inspector $inspector): void
+    public static function inspectElement(DOMElement $element, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setProperty('tagName', $inspector($element->tagName))
@@ -120,7 +139,7 @@ class Dom
     /**
      * Inspect entity
      */
-    public static function inspectEntity(\DOMEntity $domEntity, Entity $entity, Inspector $inspector): void
+    public static function inspectEntity(DOMEntity $domEntity, Entity $entity, Inspector $inspector): void
     {
         self::inspectNode($domEntity, $entity, $inspector);
     }
@@ -128,7 +147,7 @@ class Dom
     /**
      * Inspect entity reference
      */
-    public static function inspectEntityReference(\DOMEntityReference $reference, Entity $entity, Inspector $inspector): void
+    public static function inspectEntityReference(DOMEntityReference $reference, Entity $entity, Inspector $inspector): void
     {
         self::inspectNode($reference, $entity, $inspector);
     }
@@ -136,14 +155,14 @@ class Dom
     /**
      * Inspect implementation
      */
-    public static function inspectImplementation(\DOMImplementation $implementation, Entity $entity, Inspector $inspector): void
+    public static function inspectImplementation(DOMImplementation $implementation, Entity $entity, Inspector $inspector): void
     {
     }
 
     /**
      * Inspect node map
      */
-    public static function inspectNamedNodeMap(\DOMNamedNodeMap $map, Entity $entity, Inspector $inspector): void
+    public static function inspectNamedNodeMap(DOMNamedNodeMap $map, Entity $entity, Inspector $inspector): void
     {
         $values = [];
 
@@ -159,7 +178,7 @@ class Dom
     /**
      * Inspect node
      */
-    public static function inspectNode(\DOMNode $node, Entity $entity, Inspector $inspector): void
+    public static function inspectNode(DOMNode $node, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setProperty('nodeName', $inspector($node->nodeName))
@@ -189,7 +208,7 @@ class Dom
     /**
      * Inspect node list
      */
-    public static function inspectNodeList(\DOMNodeList $list, Entity $entity, Inspector $inspector): void
+    public static function inspectNodeList(DOMNodeList $list, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setLength($list->length)
@@ -200,7 +219,7 @@ class Dom
     /**
      * Inspect notation
      */
-    public static function inspectNotation(\DOMNotation $notation, Entity $entity, Inspector $inspector): void
+    public static function inspectNotation(DOMNotation $notation, Entity $entity, Inspector $inspector): void
     {
         self::inspectNode($notation, $entity, $inspector);
     }
@@ -208,7 +227,7 @@ class Dom
     /**
      * Inspect PI
      */
-    public static function inspectProcessingInstruction(\DOMProcessingInstruction $pi, Entity $entity, Inspector $inspector): void
+    public static function inspectProcessingInstruction(DOMProcessingInstruction $pi, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setDefinition($pi->data);
@@ -217,7 +236,7 @@ class Dom
     /**
      * Inspect text
      */
-    public static function inspectText(\DOMText $text, Entity $entity, Inspector $inspector): void
+    public static function inspectText(DOMText $text, Entity $entity, Inspector $inspector): void
     {
         $entity->setText($text->wholeText);
     }
@@ -225,7 +244,7 @@ class Dom
     /**
      * Inspect xpath
      */
-    public static function inspectXPath(\DOMXPath $xpath, Entity $entity, Inspector $inspector): void
+    public static function inspectXPath(DOMXPath $xpath, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setProperty('document', $inspector($xpath->document, function ($entity) {

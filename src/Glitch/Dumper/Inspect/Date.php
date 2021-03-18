@@ -9,19 +9,25 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Glitch\Dumper\Inspect;
 
+use DateInterval;
+use DatePeriod;
+use DateTime;
+use DateTimeZone;
+
 use DecodeLabs\Exceptional;
 use DecodeLabs\Glitch\Dumper\Entity;
-
 use DecodeLabs\Glitch\Dumper\Inspector;
+
+use ReflectionObject;
 
 class Date
 {
     /**
      * Inspect DateTime
      */
-    public static function inspectDateTime(\DateTime $date, Entity $entity, Inspector $inspector): void
+    public static function inspectDateTime(DateTime $date, Entity $entity, Inspector $inspector): void
     {
-        $fromNow = (new \DateTime())->diff($date);
+        $fromNow = (new DateTime())->diff($date);
 
         $entity
             ->setText($date->format('H:i:s jS M Y T'))
@@ -36,14 +42,14 @@ class Date
     /**
      * Inspect DateInterval
      */
-    public static function inspectDateInterval(\DateInterval $interval, Entity $entity, Inspector $inspector): void
+    public static function inspectDateInterval(DateInterval $interval, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setText(self::formatInterval($interval));
 
         $inspector->inspectClassMembers(
             $interval,
-            new \ReflectionObject($interval),
+            new ReflectionObject($interval),
             $entity,
             [],
             true
@@ -54,14 +60,14 @@ class Date
     /**
      * Format DateInterval
      */
-    protected static function formatInterval(\DateInterval $interval, bool $nominal = true): string
+    protected static function formatInterval(DateInterval $interval, bool $nominal = true): string
     {
         $format = '';
 
         if ($interval->y === 0 && $interval->m === 0 &&
             ($interval->h >= 24 || $interval->i >= 60 || $interval->s >= 60)
         ) {
-            $date1 = new \DateTime();
+            $date1 = new DateTime();
             $date2 = clone $date1;
 
             /** @phpstan-ignore-next-line */
@@ -111,14 +117,14 @@ class Date
     /**
      * Inspect DateTimeZone
      */
-    public static function inspectDateTimeZone(\DateTimeZone $timezone, Entity $entity, Inspector $inspector): void
+    public static function inspectDateTimeZone(DateTimeZone $timezone, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setText($timezone->getName());
 
         $inspector->inspectClassMembers(
             $timezone,
-            new \ReflectionObject($timezone),
+            new ReflectionObject($timezone),
             $entity,
             ['timezone'],
             true
@@ -149,7 +155,7 @@ class Date
     /**
      * Inspect DatePeriod
      */
-    public static function inspectDatePeriod(\DatePeriod $period, Entity $entity, Inspector $inspector): void
+    public static function inspectDatePeriod(DatePeriod $period, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setText(sprintf(
@@ -162,7 +168,7 @@ class Date
 
         $inspector->inspectClassMembers(
             $period,
-            new \ReflectionObject($period),
+            new ReflectionObject($period),
             $entity,
             [],
             true

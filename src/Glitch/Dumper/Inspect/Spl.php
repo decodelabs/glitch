@@ -9,17 +9,28 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Glitch\Dumper\Inspect;
 
+use ArrayIterator;
+use ArrayObject;
+
 use DecodeLabs\Glitch;
 use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
+
+use SplDoublyLinkedList;
+use SplFileInfo;
+use SplFileObject;
+use SplFixedArray;
+use SplHeap;
+use SplObjectStorage;
+use SplPriorityQueue;
 
 class Spl
 {
     /**
      * Inspect array object
      */
-    public static function inspectArrayObject(\ArrayObject $arr, Entity $entity, Inspector $inspector): void
+    public static function inspectArrayObject(ArrayObject $arr, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setProperty('!flags', $inspector->inspectFlagSet($arr->getFlags(), [
@@ -32,7 +43,7 @@ class Spl
     /**
      * Inspect array iterator
      */
-    public static function inspectArrayIterator(\ArrayIterator $arr, Entity $entity, Inspector $inspector): void
+    public static function inspectArrayIterator(ArrayIterator $arr, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setProperty('!flags', $inspector->inspectFlagSet($arr->getFlags(), [
@@ -45,7 +56,7 @@ class Spl
     /**
      * Inspect SPL Doubly Linked List
      */
-    public static function inspectSplDoublyLinkedList(\SplDoublyLinkedList $list, Entity $entity, Inspector $inspector): void
+    public static function inspectSplDoublyLinkedList(SplDoublyLinkedList $list, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setProperty('!iteratorMode', $inspector->inspectFlagSet($list->getIteratorMode(), [
@@ -61,7 +72,7 @@ class Spl
     /**
      * Inspect SPL Heap
      */
-    public static function inspectSplHeap(\SplHeap $heap, Entity $entity, Inspector $inspector): void
+    public static function inspectSplHeap(SplHeap $heap, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setLength(count($heap))
@@ -72,7 +83,7 @@ class Spl
     /**
      * Inspect SPL PriorityQueue
      */
-    public static function inspectSplPriorityQueue(\SplPriorityQueue $queue, Entity $entity, Inspector $inspector): void
+    public static function inspectSplPriorityQueue(SplPriorityQueue $queue, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setLength($queue->count())
@@ -88,7 +99,7 @@ class Spl
     /**
      * Inspect SPL Fixed Array
      */
-    public static function inspectSplFixedArray(\SplFixedArray $arr, Entity $entity, Inspector $inspector): void
+    public static function inspectSplFixedArray(SplFixedArray $arr, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setLength($arr->getSize())
@@ -98,7 +109,7 @@ class Spl
     /**
      * Inspect SPL ObjectStorage
      */
-    public static function inspectSplObjectStorage(\SplObjectStorage $store, Entity $entity, Inspector $inspector): void
+    public static function inspectSplObjectStorage(SplObjectStorage $store, Entity $entity, Inspector $inspector): void
     {
         $values = [];
 
@@ -121,7 +132,7 @@ class Spl
     /**
      * Inspect SPL FileInfo
      */
-    public static function inspectSplFileInfo(\SplFileInfo $file, Entity $entity, Inspector $inspector): void
+    public static function inspectSplFileInfo(SplFileInfo $file, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setText(Glitch::normalizePath($file->getPathname()))
@@ -142,7 +153,7 @@ class Spl
     /**
      * Inspect SPL FileObject
      */
-    public static function inspectSplFileObject(\SplFileObject $file, Entity $entity, Inspector $inspector): void
+    public static function inspectSplFileObject(SplFileObject $file, Entity $entity, Inspector $inspector): void
     {
         self::inspectSplFileInfo($file, $entity, $inspector);
 

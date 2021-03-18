@@ -11,16 +11,20 @@ namespace DecodeLabs\Glitch;
 
 use Composer\Autoload\ClassLoader;
 use DecodeLabs\Exceptional;
+use DecodeLabs\Exceptional\Exception as ExceptionalException;
 use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Dumper\Inspector;
 use DecodeLabs\Glitch\Renderer\Cli as CliRenderer;
 use DecodeLabs\Glitch\Renderer\Html as HtmlRenderer;
 use DecodeLabs\Glitch\Renderer\Text as TextRenderer;
 use DecodeLabs\Glitch\Stack\Trace;
+use DecodeLabs\Glitch\Transport\Http as HttpTransport;
+use DecodeLabs\Glitch\Transport\Stdout as StdoutTransport;
 
 use ErrorException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use ReflectionClass;
 use Throwable;
 
 class Context implements LoggerAwareInterface
@@ -249,7 +253,7 @@ class Context implements LoggerAwareInterface
 
         if (
             $exception instanceof IncompleteException ||
-            $exception instanceof Exceptional\Exception
+            $exception instanceof ExceptionalException
         ) {
             $trace = $exception->getStackTrace();
         } else {
@@ -663,7 +667,7 @@ class Context implements LoggerAwareInterface
         static $output;
 
         if (!isset($output)) {
-            $ref = new \ReflectionClass(ClassLoader::class);
+            $ref = new ReflectionClass(ClassLoader::class);
 
             if (false === ($file = $ref->getFileName())) {
                 throw Exceptional::Runtime('Unable to work out vendor path');
@@ -746,9 +750,9 @@ class Context implements LoggerAwareInterface
     {
         if (!$this->transport) {
             if (in_array(\PHP_SAPI, ['cli', 'phpdbg'])) {
-                $this->transport = new Transport\Stdout();
+                $this->transport = new StdoutTransport();
             } else {
-                $this->transport = new Transport\Http();
+                $this->transport = new HttpTransport();
             }
         }
 

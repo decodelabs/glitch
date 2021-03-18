@@ -10,10 +10,14 @@ declare(strict_types=1);
 namespace DecodeLabs\Glitch\Dumper;
 
 use ArrayIterator;
+use Countable;
+
 use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Stat;
 
-class Dump implements \IteratorAggregate, \Countable
+use IteratorAggregate;
+
+class Dump implements IteratorAggregate, Countable
 {
     protected $stats = [];
     protected $entities = [];

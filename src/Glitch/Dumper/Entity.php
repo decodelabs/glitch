@@ -12,6 +12,8 @@ namespace DecodeLabs\Glitch\Dumper;
 use DecodeLabs\Exceptional;
 use DecodeLabs\Glitch\Stack\Trace;
 
+use ReflectionClass;
+
 class Entity
 {
     protected $type;
@@ -162,7 +164,7 @@ class Entity
 
                 $inspector->inspectClassMembers(
                     $object,
-                    new \ReflectionClass($object),
+                    new ReflectionClass($object),
                     $this,
                     $value
                 );

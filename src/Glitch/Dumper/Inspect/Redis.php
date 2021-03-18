@@ -12,12 +12,14 @@ namespace DecodeLabs\Glitch\Dumper\Inspect;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
 
+use Redis as RedisResource;
+
 class Redis
 {
     /**
      * Inspect Redis connection
      */
-    public static function inspectRedis(\Redis $redis, Entity $entity, Inspector $inspector): void
+    public static function inspectRedis(RedisResource $redis, Entity $entity, Inspector $inspector): void
     {
         $isConnected = $redis->isConnected();
         $entity->setMeta('connected', $inspector($isConnected));

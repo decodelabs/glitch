@@ -12,6 +12,11 @@ namespace DecodeLabs\Glitch\Dumper\Inspect;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
 
+use ReflectionObject;
+use SimpleXMLElement;
+use Throwable;
+use XMLWriter;
+
 class Xml
 {
     /**
@@ -29,9 +34,9 @@ class Xml
     /**
      * Inspect simple Xml
      */
-    public static function inspectSimpleXmlElement(\SimpleXMLElement $element, Entity $entity, Inspector $inspector): void
+    public static function inspectSimpleXmlElement(SimpleXMLElement $element, Entity $entity, Inspector $inspector): void
     {
-        $ref = new \ReflectionObject($element);
+        $ref = new ReflectionObject($element);
         $values = [];
 
         foreach ($ref->getProperties() as $property) {
@@ -55,12 +60,12 @@ class Xml
     /**
      * Inspect Xml writer
      */
-    public static function inspectXmlWriter(\XMLWriter $writer, Entity $entity, Inspector $inspector): void
+    public static function inspectXmlWriter(XMLWriter $writer, Entity $entity, Inspector $inspector): void
     {
         try {
             $xml = $writer->outputMemory(false);
             $entity->setText($xml);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
         }
     }
 }

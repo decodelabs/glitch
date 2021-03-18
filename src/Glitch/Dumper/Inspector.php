@@ -9,100 +9,121 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Glitch\Dumper;
 
+use Countable;
+
 use DecodeLabs\Exceptional;
 use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Dumpable;
+use DecodeLabs\Glitch\Dumper\Inspect\Core as InspectCore;
+use DecodeLabs\Glitch\Dumper\Inspect\Curl as InspectCurl;
+use DecodeLabs\Glitch\Dumper\Inspect\Date as InspectDate;
+use DecodeLabs\Glitch\Dumper\Inspect\Dba as InspectDba;
+use DecodeLabs\Glitch\Dumper\Inspect\Dom as InspectDom;
+use DecodeLabs\Glitch\Dumper\Inspect\Ds as InspectDs;
+use DecodeLabs\Glitch\Dumper\Inspect\Gd as InspectGd;
+use DecodeLabs\Glitch\Dumper\Inspect\Gmp as InspectGmp;
+use DecodeLabs\Glitch\Dumper\Inspect\Pdo as InspectPdo;
+use DecodeLabs\Glitch\Dumper\Inspect\Process as InspectProcess;
+use DecodeLabs\Glitch\Dumper\Inspect\Redis as InspectRedis;
+use DecodeLabs\Glitch\Dumper\Inspect\Reflection as InspectReflection;
+use DecodeLabs\Glitch\Dumper\Inspect\Spl as InspectSpl;
+use DecodeLabs\Glitch\Dumper\Inspect\Stream as InspectStream;
+use DecodeLabs\Glitch\Dumper\Inspect\Xml as InspectXml;
 use DecodeLabs\Glitch\Inspectable;
+
+use ReflectionClass;
+use ReflectionObject;
+use Throwable;
 
 class Inspector
 {
     public const OBJECTS = [
         // Core
-        'Throwable' => [Inspect\Core::class, 'inspectException'],
-        'Closure' => [Inspect\Core::class, 'inspectClosure'],
-        'Generator' => [Inspect\Core::class, 'inspectGenerator'],
-        '__PHP_Incomplete_Class' => [Inspect\Core::class, 'inspectIncompleteClass'],
+        'Throwable' => [InspectCore::class, 'inspectException'],
+        'Closure' => [InspectCore::class, 'inspectClosure'],
+        'Generator' => [InspectCore::class, 'inspectGenerator'],
+        '__PHP_Incomplete_Class' => [InspectCore::class, 'inspectIncompleteClass'],
 
         // Date
-        'DateTime' => [Inspect\Date::class, 'inspectDateTime'],
-        'Carbon\\Carbon' => [Inspect\Date::class, 'inspectDateTime'],
-        'DateInterval' => [Inspect\Date::class, 'inspectDateInterval'],
-        'Carbon\\CarbonInterval' => [Inspect\Date::class, 'inspectDateInterval'],
-        'DateTimeZone' => [Inspect\Date::class, 'inspectDateTimeZone'],
-        'Carbon\\CarbonTimeZone' => [Inspect\Date::class, 'inspectDateTimeZone'],
-        'DatePeriod' => [Inspect\Date::class, 'inspectDatePeriod'],
-        'Carbon\\CarbonPeriod' => [Inspect\Date::class, 'inspectDatePeriod'],
+        'DateTime' => [InspectDate::class, 'inspectDateTime'],
+        'Carbon\\Carbon' => [InspectDate::class, 'inspectDateTime'],
+        'DateInterval' => [InspectDate::class, 'inspectDateInterval'],
+        'Carbon\\CarbonInterval' => [InspectDate::class, 'inspectDateInterval'],
+        'DateTimeZone' => [InspectDate::class, 'inspectDateTimeZone'],
+        'Carbon\\CarbonTimeZone' => [InspectDate::class, 'inspectDateTimeZone'],
+        'DatePeriod' => [InspectDate::class, 'inspectDatePeriod'],
+        'Carbon\\CarbonPeriod' => [InspectDate::class, 'inspectDatePeriod'],
 
         // DOM
-        'DOMAttr' => [Inspect\Dom::class, 'inspectAttr'],
-        'DOMCdataSection' => [Inspect\Dom::class, 'inspectCdataSection'],
-        'DOMCharacterData' => [Inspect\Dom::class, 'inspectCharacterData'],
-        'DOMComment' => [Inspect\Dom::class, 'inspectComment'],
-        'DOMDocument' => [Inspect\Dom::class, 'inspectDocument'],
-        'DOMDocumentFragment' => [Inspect\Dom::class, 'inspectDocumentFragment'],
-        'DOMDocumentType' => [Inspect\Dom::class, 'inspectDocumentType'],
-        'DOMElement' => [Inspect\Dom::class, 'inspectElement'],
-        'DOMEntity' => [Inspect\Dom::class, 'inspectEntity'],
-        'DOMEntityReference' => [Inspect\Dom::class, 'inspectEntityReference'],
-        'DOMImplementation' => [Inspect\Dom::class, 'inspectImplementation'],
-        'DOMNamedNodeMap' => [Inspect\Dom::class, 'inspectNamedNodeMap'],
-        'DOMNode' => [Inspect\Dom::class, 'inspectNode'],
-        'DOMNodeList' => [Inspect\Dom::class, 'inspectNodeList'],
-        'DOMNotation' => [Inspect\Dom::class, 'inspectNotation'],
-        'DOMProcessingInstruction' => [Inspect\Dom::class, 'inspectProcessingInstruction'],
-        'DOMText' => [Inspect\Dom::class, 'inspectText'],
-        'DOMXPath' => [Inspect\Dom::class, 'inspectXPath'],
+        'DOMAttr' => [InspectDom::class, 'inspectAttr'],
+        'DOMCdataSection' => [InspectDom::class, 'inspectCdataSection'],
+        'DOMCharacterData' => [InspectDom::class, 'inspectCharacterData'],
+        'DOMComment' => [InspectDom::class, 'inspectComment'],
+        'DOMDocument' => [InspectDom::class, 'inspectDocument'],
+        'DOMDocumentFragment' => [InspectDom::class, 'inspectDocumentFragment'],
+        'DOMDocumentType' => [InspectDom::class, 'inspectDocumentType'],
+        'DOMElement' => [InspectDom::class, 'inspectElement'],
+        'DOMEntity' => [InspectDom::class, 'inspectEntity'],
+        'DOMEntityReference' => [InspectDom::class, 'inspectEntityReference'],
+        'DOMImplementation' => [InspectDom::class, 'inspectImplementation'],
+        'DOMNamedNodeMap' => [InspectDom::class, 'inspectNamedNodeMap'],
+        'DOMNode' => [InspectDom::class, 'inspectNode'],
+        'DOMNodeList' => [InspectDom::class, 'inspectNodeList'],
+        'DOMNotation' => [InspectDom::class, 'inspectNotation'],
+        'DOMProcessingInstruction' => [InspectDom::class, 'inspectProcessingInstruction'],
+        'DOMText' => [InspectDom::class, 'inspectText'],
+        'DOMXPath' => [InspectDom::class, 'inspectXPath'],
 
 
         // Ds
-        'Ds\\Vector' => [Inspect\Ds::class, 'inspectCollection'],
-        'Ds\\Map' => [Inspect\Ds::class, 'inspectCollection'],
-        'Ds\\Deque' => [Inspect\Ds::class, 'inspectCollection'],
-        'Ds\\Pair' => [Inspect\Ds::class, 'inspectPair'],
-        'Ds\\Set' => [Inspect\Ds::class, 'inspectSet'],
-        'Ds\\Stack' => [Inspect\Ds::class, 'inspectCollection'],
-        'Ds\\Queue' => [Inspect\Ds::class, 'inspectCollection'],
-        'Ds\\PriorityQueue' => [Inspect\Ds::class, 'inspectCollection'],
+        'Ds\\Vector' => [InspectDs::class, 'inspectCollection'],
+        'Ds\\Map' => [InspectDs::class, 'inspectCollection'],
+        'Ds\\Deque' => [InspectDs::class, 'inspectCollection'],
+        'Ds\\Pair' => [InspectDs::class, 'inspectPair'],
+        'Ds\\Set' => [InspectDs::class, 'inspectSet'],
+        'Ds\\Stack' => [InspectDs::class, 'inspectCollection'],
+        'Ds\\Queue' => [InspectDs::class, 'inspectCollection'],
+        'Ds\\PriorityQueue' => [InspectDs::class, 'inspectCollection'],
 
         // GMP
-        'GMP' => [Inspect\Gmp::class, 'inspectGmp'],
+        'GMP' => [InspectGmp::class, 'inspectGmp'],
 
         // PDO
-        'PDO' => [Inspect\Pdo::class, 'inspectPdo'],
-        'PDOStatement' => [Inspect\Pdo::class, 'inspectPdoStatement'],
+        'PDO' => [InspectPdo::class, 'inspectPdo'],
+        'PDOStatement' => [InspectPdo::class, 'inspectPdoStatement'],
 
         // Redis
-        'Redis' => [Inspect\Redis::class, 'inspectRedis'],
+        'Redis' => [InspectRedis::class, 'inspectRedis'],
 
 
         // Reflection
-        'ReflectionClass' => [Inspect\Reflection::class, 'inspectReflectionClass'],
-        'ReflectionClassConstant' => [Inspect\Reflection::class, 'inspectReflectionClassConstant'],
-        'ReflectionZendExtension' => [Inspect\Reflection::class, 'inspectReflectionZendExtension'],
-        'ReflectionExtension' => [Inspect\Reflection::class, 'inspectReflectionExtension'],
-        'ReflectionFunction' => [Inspect\Reflection::class, 'inspectReflectionFunction'],
-        'ReflectionFunctionAbstract' => [Inspect\Reflection::class, 'inspectReflectionFunction'],
-        'ReflectionMethod' => [Inspect\Reflection::class, 'inspectReflectionMethod'],
-        'ReflectionParameter' => [Inspect\Reflection::class, 'inspectReflectionParameter'],
-        'ReflectionProperty' => [Inspect\Reflection::class, 'inspectReflectionProperty'],
-        'ReflectionType' => [Inspect\Reflection::class, 'inspectReflectionType'],
-        'ReflectionGenerator' => [Inspect\Reflection::class, 'inspectReflectionGenerator'],
+        'ReflectionClass' => [InspectReflection::class, 'inspectReflectionClass'],
+        'ReflectionClassConstant' => [InspectReflection::class, 'inspectReflectionClassConstant'],
+        'ReflectionZendExtension' => [InspectReflection::class, 'inspectReflectionZendExtension'],
+        'ReflectionExtension' => [InspectReflection::class, 'inspectReflectionExtension'],
+        'ReflectionFunction' => [InspectReflection::class, 'inspectReflectionFunction'],
+        'ReflectionFunctionAbstract' => [InspectReflection::class, 'inspectReflectionFunction'],
+        'ReflectionMethod' => [InspectReflection::class, 'inspectReflectionMethod'],
+        'ReflectionParameter' => [InspectReflection::class, 'inspectReflectionParameter'],
+        'ReflectionProperty' => [InspectReflection::class, 'inspectReflectionProperty'],
+        'ReflectionType' => [InspectReflection::class, 'inspectReflectionType'],
+        'ReflectionGenerator' => [InspectReflection::class, 'inspectReflectionGenerator'],
 
         // Spl
-        'ArrayObject' => [Inspect\Spl::class, 'inspectArrayObject'],
-        'ArrayIterator' => [Inspect\Spl::class, 'inspectArrayIterator'],
-        'SplDoublyLinkedList' => [Inspect\Spl::class, 'inspectSplDoublyLinkedList'],
-        'SplHeap' => [Inspect\Spl::class, 'inspectSplHeap'],
-        'SplPriorityQueue' => [Inspect\Spl::class, 'inspectSplPriorityQueue'],
-        'SplFixedArray' => [Inspect\Spl::class, 'inspectSplFixedArray'],
-        'SplObjectStorage' => [Inspect\Spl::class, 'inspectSplObjectStorage'],
+        'ArrayObject' => [InspectSpl::class, 'inspectArrayObject'],
+        'ArrayIterator' => [InspectSpl::class, 'inspectArrayIterator'],
+        'SplDoublyLinkedList' => [InspectSpl::class, 'inspectSplDoublyLinkedList'],
+        'SplHeap' => [InspectSpl::class, 'inspectSplHeap'],
+        'SplPriorityQueue' => [InspectSpl::class, 'inspectSplPriorityQueue'],
+        'SplFixedArray' => [InspectSpl::class, 'inspectSplFixedArray'],
+        'SplObjectStorage' => [InspectSpl::class, 'inspectSplObjectStorage'],
 
-        'SplFileInfo' => [Inspect\Spl::class, 'inspectSplFileInfo'],
-        'SplFileObject' => [Inspect\Spl::class, 'inspectSplFileObject'],
+        'SplFileInfo' => [InspectSpl::class, 'inspectSplFileInfo'],
+        'SplFileObject' => [InspectSpl::class, 'inspectSplFileObject'],
 
         // Xml
-        'SimpleXMLElement' => [Inspect\Xml::class, 'inspectSimpleXmlElement'],
-        'XMLWriter' => [Inspect\Xml::class, 'inspectXmlWriter']
+        'SimpleXMLElement' => [InspectXml::class, 'inspectSimpleXmlElement'],
+        'XMLWriter' => [InspectXml::class, 'inspectXmlWriter']
     ];
 
     public const RESOURCES = [
@@ -117,11 +138,11 @@ class Inspector
         'cubrid lob2' => null,
 
         // Curl
-        'curl' => [Inspect\Curl::class, 'inspectCurl'],
+        'curl' => [InspectCurl::class, 'inspectCurl'],
 
         // Dba
-        'dba' => [Inspect\Dba::class, 'inspectDba'],
-        'dba persistent' => [Inspect\Dba::class, 'inspectDba'],
+        'dba' => [InspectDba::class, 'inspectDba'],
+        'dba persistent' => [InspectDba::class, 'inspectDba'],
 
         // Dbase
         'dbase' => null,
@@ -142,8 +163,8 @@ class Inspector
         'ftp' => null,
 
         // GD
-        'gd' => [Inspect\Gd::class, 'inspectGd'],
-        'gd font' => [Inspect\Gd::class, 'inspectGdFont'],
+        'gd' => [InspectGd::class, 'inspectGd'],
+        'gd font' => [InspectGd::class, 'inspectGdFont'],
 
         // Imap
         'imap' => null,
@@ -200,7 +221,7 @@ class Inspector
         'pgsql result' => null,
 
         // Process
-        'process' => [Inspect\Process::class, 'inspectProcess'],
+        'process' => [InspectProcess::class, 'inspectProcess'],
 
         // Pspell
         'pspell' => null,
@@ -210,7 +231,7 @@ class Inspector
         'shmop' => null,
 
         // Stream
-        'stream' => [Inspect\Stream::class, 'inspectStream'],
+        'stream' => [InspectStream::class, 'inspectStream'],
 
         // Socket
         'socket' => null,
@@ -231,7 +252,7 @@ class Inspector
         'wddx' => null,
 
         // Xml
-        'xml' => [Inspect\Xml::class, 'inspectXmlResource'],
+        'xml' => [InspectXml::class, 'inspectXmlResource'],
 
         // Zlib
         'zlib' => null,
@@ -321,7 +342,7 @@ class Inspector
             default:
                 try {
                     return (string)$value;
-                } catch (\Throwable $e) {
+                } catch (Throwable $e) {
                     throw Exceptional::UnexpectedValue(
                         'Value is not a scalar',
                         null,
@@ -401,7 +422,7 @@ class Inspector
             default:
                 try {
                     return $this->inspectString((string)$value);
-                } catch (\Throwable $e) {
+                } catch (Throwable $e) {
                     throw Exceptional::UnexpectedValue(
                         'Unknown entity type',
                         null,
@@ -622,7 +643,7 @@ class Inspector
                 break;
 
             default:
-                $reflection = new \ReflectionObject($object);
+                $reflection = new ReflectionObject($object);
                 $shortName = $reflection->getShortName();
                 $name = $this->normalizeClassName($shortName, $reflection);
                 break;
@@ -654,7 +675,7 @@ class Inspector
             ->setObjectId($objectId)
             ->setHash(spl_object_hash($object));
 
-        if ($object instanceof \Countable) {
+        if ($object instanceof Countable) {
             $entity->setLength($object->count());
         }
 
@@ -706,7 +727,7 @@ class Inspector
     /**
      * Normalize virtual class name
      */
-    protected function normalizeClassName(string $class, \ReflectionObject $reflection): string
+    protected function normalizeClassName(string $class, ReflectionObject $reflection): string
     {
         if (0 === strpos($class, "class@anonymous\x00")) {
             if ($parent = $reflection->getParentClass()) {
@@ -723,7 +744,7 @@ class Inspector
     /**
      * Inspect object parents
      */
-    protected function inspectObjectParents(\ReflectionObject $reflection, Entity $entity): array
+    protected function inspectObjectParents(ReflectionObject $reflection, Entity $entity): array
     {
         // Parents
         $reflectionBase = $reflection;
@@ -792,7 +813,7 @@ class Inspector
         }
 
         // Interfaces
-        $ref = new \ReflectionClass($object);
+        $ref = new ReflectionClass($object);
 
         foreach ($ref->getInterfaceNames() as $interfaceName) {
             if (isset($this->objectInspectors[$interfaceName])) {
@@ -811,7 +832,7 @@ class Inspector
     /**
      * Inspect class members
      */
-    public function inspectClassMembers(object $object, \ReflectionClass $reflection, Entity $entity, array $blackList = [], bool $asMeta = false): void
+    public function inspectClassMembers(object $object, ReflectionClass $reflection, Entity $entity, array $blackList = [], bool $asMeta = false): void
     {
         foreach ($reflection->getProperties() as $property) {
             if ($property->isStatic()) {

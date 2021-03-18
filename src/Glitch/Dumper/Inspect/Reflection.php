@@ -12,12 +12,25 @@ namespace DecodeLabs\Glitch\Dumper\Inspect;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
 
+use Reflection as ReflectionRoot;
+use ReflectionClass;
+use ReflectionClassConstant;
+use ReflectionExtension;
+use ReflectionFunctionAbstract;
+use ReflectionGenerator;
+use ReflectionMethod;
+use ReflectionNamedType;
+use ReflectionParameter;
+use ReflectionProperty;
+use ReflectionType;
+use ReflectionZendExtension;
+
 class Reflection
 {
     /**
      * Inspect ReflectionClass
      */
-    public static function inspectReflectionClass(\ReflectionClass $reflection, Entity $entity, Inspector $inspector): void
+    public static function inspectReflectionClass(ReflectionClass $reflection, Entity $entity, Inspector $inspector): void
     {
         $entity->setDefinition(Reflection::getClassDefinition($reflection));
 
@@ -44,7 +57,7 @@ class Reflection
     /**
      * Inspect ReflectionClassConstant
      */
-    public static function inspectReflectionClassConstant(\ReflectionClassConstant $reflection, Entity $entity, Inspector $inspector): void
+    public static function inspectReflectionClassConstant(ReflectionClassConstant $reflection, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setDefinition(Reflection::getConstantDefinition($reflection))
@@ -56,7 +69,7 @@ class Reflection
     /**
      * Inspect ReflectionZendExtension
      */
-    public static function inspectReflectionZendExtension(\ReflectionZendExtension $reflection, Entity $entity, Inspector $inspector): void
+    public static function inspectReflectionZendExtension(ReflectionZendExtension $reflection, Entity $entity, Inspector $inspector): void
     {
         $entity->setProperties($inspector->inspectList([
             'version' => $reflection->getVersion(),
@@ -69,7 +82,7 @@ class Reflection
     /**
      * Inspect ReflectionExtension
      */
-    public static function inspectReflectionExtension(\ReflectionExtension $reflection, Entity $entity, Inspector $inspector): void
+    public static function inspectReflectionExtension(ReflectionExtension $reflection, Entity $entity, Inspector $inspector): void
     {
         $entity->setProperties($inspector->inspectList([
             'version' => $reflection->getVersion(),
@@ -86,7 +99,7 @@ class Reflection
     /**
      * Inspect ReflectionFunction
      */
-    public static function inspectReflectionFunction(\ReflectionFunctionAbstract $reflection, Entity $entity, Inspector $inspector): void
+    public static function inspectReflectionFunction(ReflectionFunctionAbstract $reflection, Entity $entity, Inspector $inspector): void
     {
         if (false === ($file = $reflection->getFileName())) {
             $file = null;
@@ -110,7 +123,7 @@ class Reflection
     /**
      * Inspect ReflectionMethod
      */
-    public static function inspectReflectionMethod(\ReflectionMethod $reflection, Entity $entity, Inspector $inspector): void
+    public static function inspectReflectionMethod(ReflectionMethod $reflection, Entity $entity, Inspector $inspector): void
     {
         self::inspectReflectionFunction($reflection, $entity, $inspector);
 
@@ -122,7 +135,7 @@ class Reflection
     /**
      * Inspect ReflectionParameter
      */
-    public static function inspectReflectionParameter(\ReflectionParameter $reflection, Entity $entity, Inspector $inspector): void
+    public static function inspectReflectionParameter(ReflectionParameter $reflection, Entity $entity, Inspector $inspector): void
     {
         $entity->setDefinition(self::getParameterDefinition($reflection));
     }
@@ -130,7 +143,7 @@ class Reflection
     /**
      * Inspect ReflectionProperty
      */
-    public static function inspectReflectionProperty(\ReflectionProperty $reflection, Entity $entity, Inspector $inspector): void
+    public static function inspectReflectionProperty(ReflectionProperty $reflection, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setDefinition(self::getPropertyDefinition($reflection))
@@ -142,9 +155,9 @@ class Reflection
     /**
      * Inspect ReflectionType
      */
-    public static function inspectReflectionType(\ReflectionType $reflection, Entity $entity, Inspector $inspector): void
+    public static function inspectReflectionType(ReflectionType $reflection, Entity $entity, Inspector $inspector): void
     {
-        if ($reflection instanceof \ReflectionNamedType) {
+        if ($reflection instanceof ReflectionNamedType) {
             $entity->setProperties([
                 'name' => $reflection->getName(),
                 'allowsNull' => $reflection->allowsNull(),
@@ -160,7 +173,7 @@ class Reflection
     /**
      * Inspect ReflectionGenerator
      */
-    public static function inspectReflectionGenerator(\ReflectionGenerator $reflection, Entity $entity, Inspector $inspector): void
+    public static function inspectReflectionGenerator(ReflectionGenerator $reflection, Entity $entity, Inspector $inspector): void
     {
         $function = $reflection->getFunction();
 
@@ -189,7 +202,7 @@ class Reflection
     /**
      * Export class definitoin
      */
-    public static function getClassDefinition(\ReflectionClass $reflection): string
+    public static function getClassDefinition(ReflectionClass $reflection): string
     {
         $output = 'class ';
         $name = $reflection->getName();
@@ -237,9 +250,9 @@ class Reflection
     /**
      * Export property definition
      */
-    public static function getPropertyDefinition(\ReflectionProperty $reflection): string
+    public static function getPropertyDefinition(ReflectionProperty $reflection): string
     {
-        $output = implode(' ', \Reflection::getModifierNames($reflection->getModifiers()));
+        $output = implode(' ', ReflectionRoot::getModifierNames($reflection->getModifiers()));
         $name = $reflection->getName();
         $output .= ' $' . $name . ' = ';
         $reflection->setAccessible(true);
@@ -259,9 +272,9 @@ class Reflection
     /**
      * Export class constant definition
      */
-    public static function getConstantDefinition(\ReflectionClassConstant $reflection): string
+    public static function getConstantDefinition(ReflectionClassConstant $reflection): string
     {
-        $output = implode(' ', \Reflection::getModifierNames($reflection->getModifiers()));
+        $output = implode(' ', ReflectionRoot::getModifierNames($reflection->getModifiers()));
         $output .= ' const ' . $reflection->getName() . ' = ';
         $value = $reflection->getValue();
 
@@ -278,12 +291,12 @@ class Reflection
     /**
      * Export function definition
      */
-    public static function getFunctionDefinition(\ReflectionFunctionAbstract $reflection): string
+    public static function getFunctionDefinition(ReflectionFunctionAbstract $reflection): string
     {
         $output = '';
 
-        if ($reflection instanceof \ReflectionMethod) {
-            $output = implode(' ', \Reflection::getModifierNames($reflection->getModifiers()));
+        if ($reflection instanceof ReflectionMethod) {
+            $output = implode(' ', ReflectionRoot::getModifierNames($reflection->getModifiers()));
 
             if (!empty($output)) {
                 $output .= ' ';
@@ -325,7 +338,7 @@ class Reflection
     /**
      * Export parameter definition
      */
-    public static function getParameterDefinition(\ReflectionParameter $parameter): string
+    public static function getParameterDefinition(ReflectionParameter $parameter): string
     {
         $output = '';
 
