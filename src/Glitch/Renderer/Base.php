@@ -1211,7 +1211,7 @@ trait Base
     /**
      * Render entity info block
      */
-    protected function renderInfoBlock(Entity $entity, int $level = 0, bool $open): string
+    protected function renderInfoBlock(Entity $entity, int $level, bool $open): string
     {
         $id = $linkId = (string)$entity->getId();
 
@@ -1291,7 +1291,7 @@ trait Base
     /**
      * Render entity meta block
      */
-    protected function renderMetaBlock(Entity $entity, int $level = 0, bool $open): string
+    protected function renderMetaBlock(Entity $entity, int $level, bool $open): string
     {
         $id = (string)$entity->getId();
 
@@ -1305,7 +1305,7 @@ trait Base
     /**
      * Render entity text block
      */
-    protected function renderTextBlock(Entity $entity, int $level = 0, bool $open): string
+    protected function renderTextBlock(Entity $entity, int $level, bool $open): string
     {
         $id = (string)$entity->getId();
         $type = $entity->getType();
@@ -1338,7 +1338,7 @@ trait Base
     /**
      * Render entity text block
      */
-    protected function renderDefinitionBlock(Entity $entity, int $level = 0, bool $open): string
+    protected function renderDefinitionBlock(Entity $entity, int $level, bool $open): string
     {
         $id = (string)$entity->getId();
         $type = $entity->getType();
@@ -1353,7 +1353,7 @@ trait Base
     /**
      * Render entity properties block
      */
-    protected function renderPropertiesBlock(Entity $entity, int $level = 0, bool $open): string
+    protected function renderPropertiesBlock(Entity $entity, int $level, bool $open): string
     {
         $id = (string)$entity->getId();
 
@@ -1367,7 +1367,7 @@ trait Base
     /**
      * Render entity values block
      */
-    protected function renderValuesBlock(Entity $entity, int $level = 0, bool $open): string
+    protected function renderValuesBlock(Entity $entity, int $level, bool $open): string
     {
         $id = (string)$entity->getId();
 
@@ -1382,7 +1382,7 @@ trait Base
     /**
      * Render entity stack trace block
      */
-    protected function renderStackBlock(Entity $entity, int $level = 0, bool $open): string
+    protected function renderStackBlock(Entity $entity, int $level, bool $open): string
     {
         $id = (string)$entity->getId();
         $type = $entity->getType();

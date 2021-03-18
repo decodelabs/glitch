@@ -62,8 +62,10 @@ class Date
             ($interval->h >= 24 || $interval->i >= 60 || $interval->s >= 60)
         ) {
             $date1 = new \DateTime();
+            $date2 = clone $date1;
 
-            if (false === ($date2 = date_add(clone $date1, $interval))) {
+            /** @phpstan-ignore-next-line */
+            if (false === $date2->add($interval)) {
                 throw Exceptional::Runtime('Unable to create date from interval');
             }
 

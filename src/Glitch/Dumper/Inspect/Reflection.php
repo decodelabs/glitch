@@ -144,11 +144,17 @@ class Reflection
      */
     public static function inspectReflectionType(\ReflectionType $reflection, Entity $entity, Inspector $inspector): void
     {
-        $entity->setProperties([
-            'name' => $reflection->getName(),
-            'allowsNull' => $reflection->allowsNull(),
-            'isBuiltin' => $reflection->isBuiltin()
-        ]);
+        if ($reflection instanceof \ReflectionNamedType) {
+            $entity->setProperties([
+                'name' => $reflection->getName(),
+                'allowsNull' => $reflection->allowsNull(),
+                'isBuiltin' => $reflection->isBuiltin()
+            ]);
+        } else {
+            $entity->setProperties([
+                'allowsNull' => $reflection->allowsNull()
+            ]);
+        }
     }
 
     /**
