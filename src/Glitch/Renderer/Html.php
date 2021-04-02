@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace DecodeLabs\Glitch\Renderer;
 
 use DecodeLabs\Enlighten\Highlighter;
-use DecodeLabs\Exceptional;
+use DecodeLabs\Exceptional\Exception as ExceptionalException;
 use DecodeLabs\Glitch;
 use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Dumper\Dump;
@@ -21,6 +21,8 @@ use DecodeLabs\Glitch\Packet;
 use DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Stack\Trace;
+
+use Throwable;
 
 class Html implements Renderer
 {
@@ -142,7 +144,7 @@ class Html implements Renderer
     /**
      * Inspect handled exception
      */
-    public function renderException(\Throwable $exception, Entity $entity, Dump $dataDump): Packet
+    public function renderException(Throwable $exception, Entity $entity, Dump $dataDump): Packet
     {
         $output = [];
 
@@ -319,14 +321,14 @@ class Html implements Renderer
     /**
      * Render exception message
      */
-    protected function renderExceptionMessage(\Throwable $exception): string
+    protected function renderExceptionMessage(Throwable $exception): string
     {
         $message = $exception->getMessage();
         $code = $exception->getCode();
         $file = $this->context->normalizePath($exception->getFile());
         $line = $exception->getLine();
 
-        if ($exception instanceof Exceptional\Exception) {
+        if ($exception instanceof ExceptionalException) {
             $httpCode = $exception->getHttpStatus();
         } else {
             $httpCode = null;
@@ -363,7 +365,7 @@ class Html implements Renderer
     /**
      * Render a default message in production mode
      */
-    protected function renderProductionExceptionMessage(\Throwable $exception): string
+    protected function renderProductionExceptionMessage(Throwable $exception): string
     {
         $output[] = '<section class="production message">There was a problem serving your request - please try again later</section>';
         $output[] = '<section class="production exception">' . (string)$exception . '</section>';

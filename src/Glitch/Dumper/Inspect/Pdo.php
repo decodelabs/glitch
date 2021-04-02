@@ -12,6 +12,10 @@ namespace DecodeLabs\Glitch\Dumper\Inspect;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
 
+use PDO as PDOAdapter;
+use PDOStatement;
+use Throwable;
+
 class Pdo
 {
     public const ATTRS = [
@@ -42,12 +46,12 @@ class Pdo
     /**
      * Inspect PDO connection
      */
-    public static function inspectPdo(\PDO $pdo, Entity $entity, Inspector $inspector): void
+    public static function inspectPdo(PDOAdapter $pdo, Entity $entity, Inspector $inspector): void
     {
         foreach (self::ATTRS as $name) {
             try {
                 $entity->setMeta($name, $inspector($pdo->getAttribute(constant('PDO::ATTR_' . $name))));
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
             }
         }
 
@@ -60,7 +64,7 @@ class Pdo
     /**
      * Inspect PDO statement
      */
-    public static function inspectPdoStatement(\PDOStatement $statement, Entity $entity, Inspector $inspector): void
+    public static function inspectPdoStatement(PDOStatement $statement, Entity $entity, Inspector $inspector): void
     {
         ob_start();
         $statement->debugDumpParams();

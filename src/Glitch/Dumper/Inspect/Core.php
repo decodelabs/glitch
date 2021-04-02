@@ -9,16 +9,26 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Glitch\Dumper\Inspect;
 
+use __PHP_Incomplete_Class;
+use Closure;
+
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
 use DecodeLabs\Glitch\Stack\Trace;
+
+use Exception;
+use Generator;
+use ReflectionFunction;
+use ReflectionGenerator;
+use ReflectionObject;
+use Throwable;
 
 class Core
 {
     /**
      * Inspect generic exception
      */
-    public static function inspectException(\Throwable $exception, Entity $entity, Inspector $inspector): void
+    public static function inspectException(Throwable $exception, Entity $entity, Inspector $inspector): void
     {
         $entity
             ->setType('exception')
@@ -31,7 +41,7 @@ class Core
             ->setStartLine($exception->getLine())
             ->setStackTrace(Trace::fromException($exception));
 
-        $reflection = new \ReflectionObject($exception);
+        $reflection = new ReflectionObject($exception);
         $inspector->inspectClassMembers($exception, $reflection, $entity, [
             'code', 'previous', 'message', 'file', 'line', 'trace', 'stackTrace', 'string', 'xdebug_message'
         ]);
@@ -41,9 +51,9 @@ class Core
     /**
      * Inspect Closure
      */
-    public static function inspectClosure(\Closure $closure, Entity $entity, Inspector $inspector): void
+    public static function inspectClosure(Closure $closure, Entity $entity, Inspector $inspector): void
     {
-        $reflection = new \ReflectionFunction($closure);
+        $reflection = new ReflectionFunction($closure);
 
         if (false === ($file = $reflection->getFileName())) {
             $file = null;
@@ -67,11 +77,11 @@ class Core
     /**
      * Inspect Generator
      */
-    public static function inspectGenerator(\Generator $generator, Entity $entity, Inspector $inspector): void
+    public static function inspectGenerator(Generator $generator, Entity $entity, Inspector $inspector): void
     {
         try {
-            $reflection = new \ReflectionGenerator($generator);
-        } catch (\Exception $e) {
+            $reflection = new ReflectionGenerator($generator);
+        } catch (Exception $e) {
             return;
         }
 
@@ -99,7 +109,7 @@ class Core
     /**
      * Inspect __PHP_Incomplete_Class
      */
-    public static function inspectIncompleteClass(\__PHP_Incomplete_Class $class, Entity $entity, Inspector $inspector): void
+    public static function inspectIncompleteClass(__PHP_Incomplete_Class $class, Entity $entity, Inspector $inspector): void
     {
         $vars = (array)$class;
         $entity->setDefinition($vars['__PHP_Incomplete_Class_Name']);

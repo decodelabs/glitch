@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Glitch\Renderer;
 
-use DecodeLabs\Exceptional;
+use DecodeLabs\Exceptional\Exception as ExceptionalException;
 use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Dumper\Entity;
@@ -17,6 +17,8 @@ use DecodeLabs\Glitch\Packet;
 use DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Stack\Trace;
+
+use Throwable;
 
 trait Base
 {
@@ -115,7 +117,7 @@ trait Base
     /**
      * Inspect handled exception
      */
-    public function renderException(\Throwable $exception, Entity $entity, Dump $dataDump): Packet
+    public function renderException(Throwable $exception, Entity $entity, Dump $dataDump): Packet
     {
         $output = [];
 
@@ -172,12 +174,12 @@ trait Base
     /**
      * Render exception message
      */
-    protected function renderExceptionMessage(\Throwable $exception): string
+    protected function renderExceptionMessage(Throwable $exception): string
     {
         $message = $exception->getMessage();
         $code = $exception->getCode();
 
-        if ($exception instanceof Exceptional\Exception) {
+        if ($exception instanceof ExceptionalException) {
             $httpCode = $exception->getHttpStatus();
         } else {
             $httpCode = null;
@@ -205,7 +207,7 @@ trait Base
     /**
      * Render a default message in production mode
      */
-    protected function renderProductionExceptionMessage(\Throwable $exception): string
+    protected function renderProductionExceptionMessage(Throwable $exception): string
     {
         return '';
     }

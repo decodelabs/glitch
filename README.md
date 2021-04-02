@@ -23,8 +23,14 @@ Glitch should be installed via composer
 composer require decodelabs/glitch
 ```
 
+### PHP version
 
-### Importing
+_Please note, the final v1 releases of all Decode Labs libraries will target **PHP8** or above._
+
+Current support for earlier versions of PHP will be phased out in the coming months.
+
+
+## Usage
 
 Glitch uses [Veneer](https://github.com/decodelabs/veneer) with its frontage registered at <code>DecodeLabs\\Glitch</code>.
 You can access all of the primary functionality through this frontage:

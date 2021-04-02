@@ -1,3 +1,7 @@
+## v0.17.1 (2021-04-02)
+* Fixed error handler error_reporting level check
+* Add ReflectionUnionType support
+
 ## v0.17.0 (2021-03-18)
 * Enabled PHP8 testing
 * Fixed and updated Symfony var-dumper support
