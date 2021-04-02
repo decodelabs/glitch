@@ -23,6 +23,7 @@ use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionProperty;
 use ReflectionType;
+use ReflectionUnionType;
 use ReflectionZendExtension;
 
 class Reflection
@@ -162,6 +163,17 @@ class Reflection
                 'name' => $reflection->getName(),
                 'allowsNull' => $reflection->allowsNull(),
                 'isBuiltin' => $reflection->isBuiltin()
+            ]);
+        } elseif ($reflection instanceof ReflectionUnionType) {
+            $parts = [];
+
+            foreach ($reflection->getTypes() as $inner) {
+                $parts[] = $inner->getName();
+            }
+
+            $entity->setProperties([
+                'name' => implode('|', $parts),
+                'allowsNull' => $reflection->allowsNull()
             ]);
         } else {
             $entity->setProperties([
@@ -347,7 +359,17 @@ class Reflection
         }
 
         if ($type = $parameter->getType()) {
-            $output .= $type->getName() . ' ';
+            if ($type instanceof ReflectionNamedType) {
+                $output .= $type->getName() . ' ';
+            } elseif ($type instanceof ReflectionUnionType) {
+                $parts = [];
+
+                foreach ($type->getTypes() as $innerType) {
+                    $parts[] = $innerType->getName();
+                }
+
+                $output .= implode('|', $parts) . ' ';
+            }
         }
 
         if ($parameter->isPassedByReference()) {
