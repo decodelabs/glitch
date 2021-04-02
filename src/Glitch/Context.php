@@ -333,7 +333,7 @@ class Context implements LoggerAwareInterface
      */
     public function handleError(int $level, string $message, string $file, int $line): bool
     {
-        if (!error_reporting()) {
+        if (!(error_reporting() & $level)) {
             return false;
         }
 
