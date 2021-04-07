@@ -92,9 +92,7 @@ class Reflection
             'version' => $reflection->getVersion(),
             'dependencies' => $reflection->getDependencies(),
             'iniEntries' => $reflection->getIniEntries(),
-            'isPersistent' =>
-                /** @phpstan-ignore-next-line */
-                $reflection->isPersistent(),
+            'isPersistent' => $reflection->isPersistent(),
             'isTemporary' => $reflection->isTemporary(),
             'constants' => $reflection->getConstants(),
             'functions' => $reflection->getFunctions(),
@@ -173,7 +171,9 @@ class Reflection
             $parts = [];
 
             foreach ($reflection->getTypes() as $inner) {
-                $parts[] = $inner->getName();
+                if ($inner instanceof ReflectionNamedType) {
+                    $parts[] = $inner->getName();
+                }
             }
 
             $entity->setProperties([
@@ -401,7 +401,9 @@ class Reflection
             $parts = [];
 
             foreach ($type->getTypes() as $innerType) {
-                $parts[] = $innerType->getName();
+                if ($innerType instanceof ReflectionNamedType) {
+                    $parts[] = $innerType->getName();
+                }
             }
 
             return implode('|', $parts) . ' ';

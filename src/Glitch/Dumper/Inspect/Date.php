@@ -166,8 +166,7 @@ class Date
                 $period->getStartDate()->format('Y-m-d H:i:s'),
                 $period->include_start_date ? ' inc' : '',
                 null !== ($end = $period->getEndDate()) ?
-                ' to ' . $end->format('Y-m-d H:i:s') :
-                    /** @phpstan-ignore-next-line */
+                    ' to ' . $end->format('Y-m-d H:i:s') :
                     ', ' . $period->recurrences . ' time(s)'
             ));
 
