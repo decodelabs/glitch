@@ -1,19 +1,17 @@
 parameters:
     paths:
         - src
-    level: 5
-    inferPrivatePropertyTypeFromConstructor: true
+    level: max
     ignoreErrors:
         -
-            message: '#Ternary operator condition is always true#'
+            message: '#has invalid typehint type CurlHandle#'
+            path: src/Glitch/Dumper/Inspect/Curl.php
+        -
+            message: '#Else branch is unreachable because ternary operator condition is always true#'
             path: src/Glitch/Dumper/Inspect/Date.php
+        -
+            message: '#has invalid typehint type GdImage#'
+            path: src/Glitch/Dumper/Inspect/Gd.php
         -
             message: '#Result of method ReflectionExtension\:\:isPersistent\(\) \(void\) is used#'
             path: src/Glitch/Dumper/Inspect/Reflection.php
-        -
-            message: '#Parameter \#1 \$flags of method DecodeLabs\\Glitch\\Dumper\\Inspector\:\:inspectFlagSet\(\) expects int\|null\, void given#'
-            path: src/Glitch/Dumper/Inspect/Spl.php
-        -
-            message: '#Result of method ArrayIterator\:\:getFlags\(\) \(void\) is used#'
-            path: src/Glitch/Dumper/Inspect/Spl.php
-        - '#^Call to an undefined method ReflectionType\:\:getName\(\)\.$#'

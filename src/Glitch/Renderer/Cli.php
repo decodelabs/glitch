@@ -15,11 +15,14 @@ use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Packet;
 use DecodeLabs\Glitch\Renderer;
+use DecodeLabs\Glitch\Stat;
 
 use Throwable;
 
 class Cli implements Renderer
 {
+    use Base;
+
     public const RENDER_IN_PRODUCTION = true;
     public const SPACES = 2;
     public const RENDER_CLOSED = false;
@@ -70,13 +73,16 @@ class Cli implements Renderer
         'private' => [8, 28]
     ];
 
-    use Base;
-
+    /**
+     * @var array<array>
+     */
     protected $formatStack = [];
 
 
     /**
      * Build a stat list header bar
+     *
+     * @param array<Stat> $stats
      */
     protected function renderStats(array $stats): string
     {
@@ -155,6 +161,8 @@ class Cli implements Renderer
 
     /**
      * Flatten buffer for final render
+     *
+     * @param array<string> $buffer
      */
     protected function exportBuffer(array $buffer, bool $final): Packet
     {
@@ -446,6 +454,8 @@ class Cli implements Renderer
 
     /**
      * Render basic list
+     *
+     * @param array<string> $lines
      */
     protected function renderBasicList(array $lines, ?string $class = null): string
     {
@@ -541,11 +551,18 @@ class Cli implements Renderer
     protected function popFormat(): string
     {
         $args = array_shift($this->formatStack);
+
+        if ($args === null) {
+            return '';
+        }
+
         return $this->applyStackedFormat($args);
     }
 
     /**
      * Apply stacked args
+     *
+     * @param array<mixed> $args
      */
     protected function applyStackedFormat(array $args): string
     {

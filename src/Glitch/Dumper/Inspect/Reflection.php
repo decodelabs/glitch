@@ -30,6 +30,9 @@ class Reflection
 {
     /**
      * Inspect ReflectionClass
+     *
+     * @template T of object
+     * @param ReflectionClass<T> $reflection
      */
     public static function inspectReflectionClass(ReflectionClass $reflection, Entity $entity, Inspector $inspector): void
     {
@@ -168,7 +171,9 @@ class Reflection
             $parts = [];
 
             foreach ($reflection->getTypes() as $inner) {
-                $parts[] = $inner->getName();
+                if ($inner instanceof ReflectionNamedType) {
+                    $parts[] = $inner->getName();
+                }
             }
 
             $entity->setProperties([
@@ -212,7 +217,10 @@ class Reflection
 
 
     /**
-     * Export class definitoin
+     * Export class definition
+     *
+     * @template T of object
+     * @param ReflectionClass<T> $reflection
      */
     public static function getClassDefinition(ReflectionClass $reflection): string
     {
@@ -341,7 +349,7 @@ class Reflection
                 $output .= '?';
             }
 
-            $output .= $returnType->getName();
+            $output .= static::getTypeName($returnType);
         }
 
         return $output;
@@ -359,17 +367,7 @@ class Reflection
         }
 
         if ($type = $parameter->getType()) {
-            if ($type instanceof ReflectionNamedType) {
-                $output .= $type->getName() . ' ';
-            } elseif ($type instanceof ReflectionUnionType) {
-                $parts = [];
-
-                foreach ($type->getTypes() as $innerType) {
-                    $parts[] = $innerType->getName();
-                }
-
-                $output .= implode('|', $parts) . ' ';
-            }
+            $output .= static::getTypeName($type);
         }
 
         if ($parameter->isPassedByReference()) {
@@ -387,5 +385,30 @@ class Reflection
         }
 
         return $output;
+    }
+
+
+    /**
+     * Get type name
+     */
+    protected static function getTypeName(ReflectionType $type): string
+    {
+        if ($type instanceof ReflectionNamedType) {
+            return $type->getName() . ' ';
+        }
+
+        if ($type instanceof ReflectionUnionType) {
+            $parts = [];
+
+            foreach ($type->getTypes() as $innerType) {
+                if ($innerType instanceof ReflectionNamedType) {
+                    $parts[] = $innerType->getName();
+                }
+            }
+
+            return implode('|', $parts) . ' ';
+        }
+
+        return '??';
     }
 }

@@ -260,15 +260,41 @@ class Inspector
         'zlib.inflate' => null
     ];
 
+    /**
+     * @var array<string, callable>
+     */
     protected $objectInspectors = [];
+
+    /**
+     * @var array<string, callable>
+     */
     protected $resourceInspectors = [];
 
+
+    /**
+     * @var array<int, string|null>
+     */
     protected $objectIds = [];
+
+    /**
+     * @var array<int, object>
+     */
     protected $objectRefs = [];
 
-    protected $arrayIds = [];
+
+    /**
+     * @var int
+     */
     protected $arrayObjectId = 0;
+
+    /**
+     * @var array<string, array>
+     */
     protected $arrayCookies = [];
+
+    /**
+     * @var string|null
+     */
     protected $arrayCookieKey;
 
 
@@ -307,7 +333,6 @@ class Inspector
         $this->objectIds = [];
         $this->objectRefs = [];
 
-        $this->arrayIds = [];
         $this->arrayObjectId = 0;
         $this->arrayCookies = [];
         $this->arrayCookieKey = null;
@@ -318,6 +343,8 @@ class Inspector
 
     /**
      * Convert scalar to string
+     *
+     * @param scalar|resource|null $value
      */
     public static function scalarToString($value): string
     {
@@ -355,6 +382,9 @@ class Inspector
 
     /**
      * Invoke wrapper
+     *
+     * @param mixed $value
+     * @return mixed
      */
     public function __invoke($value, callable $entityCallback = null, bool $asList = false)
     {
@@ -367,6 +397,9 @@ class Inspector
 
     /**
      * Inspect and report
+     *
+     * @param mixed $value
+     * @return mixed
      */
     public function inspect($value, callable $entityCallback = null)
     {
@@ -381,6 +414,9 @@ class Inspector
 
     /**
      * Inspect values list
+     *
+     * @param array<mixed> $values
+     * @return array<int|string, mixed>
      */
     public function inspectList(array $values, callable $entityCallback = null): array
     {
@@ -397,6 +433,9 @@ class Inspector
 
     /**
      * Inspect single value
+     *
+     * @param mixed $value
+     * @return mixed
      */
     public function inspectValue(&$value)
     {
@@ -436,6 +475,8 @@ class Inspector
 
     /**
      * Convert string into Entity
+     *
+     * @return Entity|string
      */
     public function inspectString(string $string)
     {
@@ -473,6 +514,8 @@ class Inspector
 
     /**
      * Convert resource into Entity
+     *
+     * @param resource $resource
      */
     public function inspectResource($resource): Entity
     {
@@ -494,6 +537,9 @@ class Inspector
 
     /**
      * Name single flag from set
+     *
+     * @param mixed $flag
+     * @param array<string> $options
      */
     public function inspectFlag($flag, array $options): ?Entity
     {
@@ -519,6 +565,8 @@ class Inspector
 
     /**
      * Create flag list
+     *
+     * @param array<string> $options
      */
     public function inspectFlagSet(?int $flags, array $options): Entity
     {
@@ -570,6 +618,8 @@ class Inspector
 
     /**
      * Convert array into Entity
+     *
+     * @param array<mixed> $array
      */
     public function inspectArray(array &$array): ?Entity
     {
@@ -743,6 +793,10 @@ class Inspector
 
     /**
      * Inspect object parents
+     *
+     * @template T of object
+     * @param ReflectionObject $reflection
+     * @return array<string, ReflectionClass<T>>
      */
     protected function inspectObjectParents(ReflectionObject $reflection, Entity $entity): array
     {
@@ -775,6 +829,9 @@ class Inspector
 
     /**
      * Find object property provider
+     *
+     * @template T of object
+     * @param array<string, ReflectionClass<T>> $reflections
      */
     protected function inspectObjectProperties(object $object, array $reflections, Entity $entity): void
     {
@@ -831,6 +888,10 @@ class Inspector
 
     /**
      * Inspect class members
+     *
+     * @template T of object
+     * @param ReflectionClass<T> $reflection
+     * @param array<string> $blackList
      */
     public function inspectClassMembers(object $object, ReflectionClass $reflection, Entity $entity, array $blackList = [], bool $asMeta = false): void
     {
@@ -891,6 +952,8 @@ class Inspector
 
     /**
      * Dirty way to get a hash for an array
+     *
+     * @param array<mixed> $array
      */
     public static function hashArray(array $array): ?string
     {

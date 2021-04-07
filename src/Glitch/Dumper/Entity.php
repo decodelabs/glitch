@@ -16,34 +16,125 @@ use ReflectionClass;
 
 class Entity
 {
+    /**
+     * @var string
+     */
     protected $type;
+
+    /**
+     * @var string|null
+     */
     protected $name;
+
+    /**
+     * @var string|null
+     */
     protected $id;
+
+    /**
+     * @var bool
+     */
     protected $open = true;
 
+
+    /**
+     * @var int|null
+     */
     protected $objectId;
+
+    /**
+     * @var string|null
+     */
     protected $hash;
+
+    /**
+     * @var string|null
+     */
     protected $class;
+
+    /**
+     * @var string|null
+     */
     protected $className;
+
+    /**
+     * @var array<string>|null
+     */
     protected $parents;
+
+    /**
+     * @var array<string>|null
+     */
     protected $interfaces;
+
+    /**
+     * @var array<string>|null
+     */
     protected $traits;
+
+    /**
+     * @var string|null
+     */
     protected $file;
+
+    /**
+     * @var int|null
+     */
     protected $startLine;
+
+    /**
+     * @var int|null
+     */
     protected $endLine;
 
+
+    /**
+     * @var string|null
+     */
     protected $text;
+
+    /**
+     * @var string|null
+     */
     protected $definition;
 
+
+    /**
+     * @var int|null
+     */
     protected $length;
+
+    /**
+     * @var array<string, mixed>|null
+     */
     protected $meta;
 
+
+    /**
+     * @var array<int|string, mixed>|null
+     */
     protected $values;
+
+    /**
+     * @var bool
+     */
     protected $showValueKeys = true;
 
+
+    /**
+     * @var array<string, mixed>|null
+     */
     protected $properties;
+
+    /**
+     * @var Trace|null
+     */
     protected $stackTrace;
 
+
+    /**
+     * @var array<string, bool>
+     */
     protected $sections = [
         'info' => false,
         'meta' => false,
@@ -65,6 +156,8 @@ class Entity
 
     /**
      * Import from dump yield
+     *
+     * @param mixed $value
      */
     public function importDumpValue(object $object, string $target, $value, Inspector $inspector): void
     {
@@ -347,6 +440,8 @@ class Entity
 
     /**
      * Get parent classes
+     *
+     * @return array<string>|null
      */
     public function getParentClasses(): ?array
     {
@@ -369,6 +464,8 @@ class Entity
 
     /**
      * Get interfaces
+     *
+     * @return array<string>|null
      */
     public function getInterfaces(): ?array
     {
@@ -391,6 +488,8 @@ class Entity
 
     /**
      * Get traits
+     *
+     * @return array<string>|null
      */
     public function getTraits(): ?array
     {
@@ -513,6 +612,8 @@ class Entity
 
     /**
      * Set meta value
+     *
+     * @param mixed $value
      */
     public function setMeta(string $key, $value): Entity
     {
@@ -524,6 +625,8 @@ class Entity
 
     /**
      * Get meta value
+     *
+     * @return mixed
      */
     public function getMeta(string $key)
     {
@@ -532,11 +635,13 @@ class Entity
 
     /**
      * Set meta list
+     *
+     * @param array<int|string, mixed> $meta
      */
     public function setMetaList(array $meta): Entity
     {
         foreach ($meta as $key => $value) {
-            $this->setMeta($key, $value);
+            $this->setMeta((string)$key, $value);
         }
 
         return $this;
@@ -544,6 +649,8 @@ class Entity
 
     /**
      * Get all meta data
+     *
+     * @return array<string, mixed>
      */
     public function getMetaList(): ?array
     {
@@ -584,6 +691,9 @@ class Entity
 
     /**
      * Set value by key
+     *
+     * @param int|string $key
+     * @param mixed $value
      */
     public function setValue($key, $value): Entity
     {
@@ -595,6 +705,9 @@ class Entity
 
     /**
      * Get value by key
+     *
+     * @param int|string $key
+     * @return mixed
      */
     public function getValue($key)
     {
@@ -603,6 +716,8 @@ class Entity
 
     /**
      * Set single value
+     *
+     * @param mixed $value
      */
     public function setSingleValue($value): Entity
     {
@@ -613,6 +728,8 @@ class Entity
 
     /**
      * Get single value
+     *
+     * @return mixed
      */
     public function getSingleValue()
     {
@@ -621,6 +738,8 @@ class Entity
 
     /**
      * Set values list
+     *
+     * @param array<int|string, mixed>|null $values
      */
     public function setValues(?array $values): Entity
     {
@@ -636,6 +755,8 @@ class Entity
 
     /**
      * Get values list
+     *
+     * @return array<int|string, mixed>|null
      */
     public function getValues(): ?array
     {
@@ -644,6 +765,8 @@ class Entity
 
     /**
      * Has value
+     *
+     * @param int|string $key
      */
     public function hasValue($key): bool
     {
@@ -652,6 +775,8 @@ class Entity
 
     /**
      * Remove value
+     *
+     * @param int|string $key
      */
     public function removeValue($key): Entity
     {
@@ -690,11 +815,13 @@ class Entity
 
     /**
      * Set properties
+     *
+     * @param array<int|string, mixed> $properties
      */
     public function setProperties(array $properties): Entity
     {
         foreach ($properties as $key => $value) {
-            $this->setProperty($key, $value);
+            $this->setProperty((string)$key, $value);
         }
 
         return $this;
@@ -702,6 +829,8 @@ class Entity
 
     /**
      * Get properties
+     *
+     * @return array<string, mixed>|null
      */
     public function getProperties(): ?array
     {
@@ -711,6 +840,8 @@ class Entity
 
     /**
      * Set property
+     *
+     * @param mixed $value
      */
     public function setProperty(string $key, $value): Entity
     {
@@ -721,6 +852,8 @@ class Entity
 
     /**
      * Get property
+     *
+     * @return mixed
      */
     public function getProperty(string $key)
     {
@@ -780,6 +913,8 @@ class Entity
 
     /**
      * Check value for Entity validity
+     *
+     * @param mixed $value
      */
     protected function checkValidity($value, string $type = null): void
     {
@@ -815,6 +950,8 @@ class Entity
 
     /**
      * Check value type
+     *
+     * @param mixed $value
      */
     protected function checkTypeValidity($value, string $type): bool
     {
@@ -902,6 +1039,8 @@ class Entity
 
     /**
      * Set section visibility map
+     *
+     * @param array<string, bool> $sections
      */
     public function setSectionsVisible(array $sections): Entity
     {
@@ -914,6 +1053,8 @@ class Entity
 
     /**
      * Get section visibility
+     *
+     * @return array<string, bool>
      */
     public function getSectionVisibility(): array
     {

@@ -25,6 +25,9 @@ namespace
     if (!function_exists('dd')) {
         /**
          * Super quick global dump & die
+         *
+         * @param mixed $var
+         * @param mixed ...$vars
          */
         function dd($var, ...$vars): void
         {
@@ -35,6 +38,9 @@ namespace
     if (!function_exists('dd2')) {
         /**
          * Last gasp dumper when testing Glitch
+         *
+         * @param mixed $var
+         * @param mixed ...$vars
          */
         function dd2($var, ...$vars): void
         {
@@ -49,6 +55,9 @@ namespace
     if (!function_exists('dump')) {
         /**
          * Quick dump
+         *
+         * @param mixed $var
+         * @param mixed ...$vars
          */
         function dump($var, ...$vars): void
         {

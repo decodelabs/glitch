@@ -1,3 +1,6 @@
+## v0.17.2 (2021-04-07)
+* Updated for full PHPStan conformance
+
 ## v0.17.1 (2021-04-02)
 * Fixed error handler error_reporting level check
 * Add ReflectionUnionType support

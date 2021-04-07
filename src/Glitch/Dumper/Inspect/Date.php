@@ -154,6 +154,8 @@ class Date
 
     /**
      * Inspect DatePeriod
+     *
+     * @param DatePeriod<DateTime> $period
      */
     public static function inspectDatePeriod(DatePeriod $period, Entity $entity, Inspector $inspector): void
     {
@@ -163,7 +165,9 @@ class Date
                 self::formatInterval($period->getDateInterval(), false),
                 $period->getStartDate()->format('Y-m-d H:i:s'),
                 $period->include_start_date ? ' inc' : '',
-                ($end = $period->getEndDate()) ? ' to ' . $end->format('Y-m-d H:i:s') : ', ' . $period->recurrences . ' time(s)'
+                null !== ($end = $period->getEndDate()) ?
+                    ' to ' . $end->format('Y-m-d H:i:s') :
+                    ', ' . $period->recurrences . ' time(s)'
             ));
 
         $inspector->inspectClassMembers(

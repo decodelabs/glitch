@@ -17,7 +17,9 @@ use DecodeLabs\Glitch\Packet;
 use DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Stack\Trace;
+use DecodeLabs\Glitch\Stat;
 
+use Exception;
 use Throwable;
 
 trait Base
@@ -37,7 +39,14 @@ trait Base
     */
     //const RENDER_STACK = true;
 
+    /**
+     * @var Context
+     */
     protected $context;
+
+    /**
+     * @var bool
+     */
     protected $productionOverride = false;
 
     /**
@@ -154,6 +163,8 @@ trait Base
 
     /**
      * Render basic stat list
+     *
+     * @param array<Stat> $stats
      */
     protected function renderStats(array $stats): string
     {
@@ -273,6 +284,8 @@ trait Base
 
     /**
      * Flatten buffer for final render
+     *
+     * @param array<string> $buffer
      */
     protected function exportBuffer(array $buffer, bool $final): Packet
     {
@@ -282,6 +295,8 @@ trait Base
 
     /**
      * Flatten dump buffer for final render
+     *
+     * @param array<string> $buffer
      */
     protected function exportDumpBuffer(array $buffer, bool $final): Packet
     {
@@ -290,6 +305,8 @@ trait Base
 
     /**
      * Flatten dump buffer for final render
+     *
+     * @param array<string> $buffer
      */
     protected function exportExceptionBuffer(array $buffer): Packet
     {
@@ -300,6 +317,8 @@ trait Base
 
     /**
      * Render a scalar value
+     *
+     * @param scalar|resource|null $value
      */
     protected function renderScalar($value, ?string $class = null, bool $asIdentifier = false): string
     {
@@ -438,7 +457,11 @@ trait Base
         $output = $this->esc($line);
 
         $output = preg_replace_callback('/[[:cntrl:]]/u', function ($matches) {
-            $hex = implode(unpack("H*", $matches[0]));
+            if (false === ($packed = unpack("H*", $matches[0]))) {
+                throw new Exception('Unable to unpack control characters');
+            }
+
+            $hex = implode($packed);
             $output = $this->normalizeHex($hex);
             return $this->wrapControlCharacter($output);
         }, $output) ?? $output;
@@ -508,6 +531,8 @@ trait Base
 
     /**
      * Passthrough resource
+     *
+     * @param resource $value
      */
     protected function renderResource($value, ?string $class = null): string
     {
@@ -782,6 +807,8 @@ trait Base
 
     /**
      * Render an individual entity
+     *
+     * @param array<string, bool>|null $overrides
      */
     protected function renderEntity(Entity $entity, int $level = 0, array $overrides = null): string
     {
@@ -1404,8 +1431,11 @@ trait Base
                 $line[] = "\n   ";
 
                 if (null !== ($file = $frame->getCallingFile())) {
-                    $line[] = $this->renderSourceFile($this->context->normalizePath($file));
-                    $line[] = $this->renderSourceLine($frame->getCallingLine());
+                    $line[] = $this->renderSourceFile((string)$this->context->normalizePath($file));
+
+                    if (null !== ($callingLine = $frame->getCallingLine())) {
+                        $line[] = $this->renderSourceLine($callingLine);
+                    }
                 } else {
                     $line[] = $this->renderSourceFile('internal', 'internal');
                 }
@@ -1474,6 +1504,8 @@ trait Base
 
     /**
      * Render list
+     *
+     * @param array<int|string, mixed> $items
      */
     protected function renderList(array $items, string $style, bool $includeKeys = true, string $class = null, int $level = 0): string
     {
@@ -1495,6 +1527,7 @@ trait Base
 
         foreach ($items as $key => $value) {
             $line = [];
+            $key = (string)$key;
 
             if ($includeKeys) {
                 $mod = 'public';
@@ -1539,6 +1572,8 @@ trait Base
 
     /**
      * Render basic list
+     *
+     * @param array<string> $lines
      */
     protected function renderBasicList(array $lines, ?string $class = null): string
     {
@@ -1569,14 +1604,16 @@ trait Base
 
     /**
      * Test if array is associative
+     *
+     * @param array<mixed> $array
      */
-    protected function arrayIsAssoc(array $arr): bool
+    protected function arrayIsAssoc(array $array): bool
     {
-        if (empty($arr)) {
+        if (empty($array)) {
             return false;
         }
 
-        return array_keys($arr) !== range(0, count($arr) - 1);
+        return array_keys($array) !== range(0, count($array) - 1);
     }
 
 

@@ -15,13 +15,28 @@ use Countable;
 use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Stat;
 
+use Iterator;
 use IteratorAggregate;
 
+/**
+ * @implements IteratorAggregate<mixed>
+ */
 class Dump implements IteratorAggregate, Countable
 {
+    /**
+     * @var array<string, Stat>
+     */
     protected $stats = [];
+
+    /**
+     * @var array<mixed>
+     */
     protected $entities = [];
 
+
+    /**
+     * @var Trace
+     */
     protected $trace;
 
     /**
@@ -64,6 +79,8 @@ class Dump implements IteratorAggregate, Countable
 
     /**
      * Get all named statistics
+     *
+     * @return array<string, Stat>
      */
     public function getStats(): array
     {
@@ -91,6 +108,8 @@ class Dump implements IteratorAggregate, Countable
 
     /**
      * Add an entity to the list
+     *
+     * @param mixed $entity
      */
     public function addEntity($entity): Dump
     {
@@ -100,6 +119,8 @@ class Dump implements IteratorAggregate, Countable
 
     /**
      * Get list of entities
+     *
+     * @return array<mixed>
      */
     public function getEntities(): array
     {
@@ -117,8 +138,10 @@ class Dump implements IteratorAggregate, Countable
 
     /**
      * Loop all entities
+     *
+     * @return Iterator<mixed>
      */
-    public function getIterator()
+    public function getIterator(): Iterator
     {
         return new ArrayIterator($this->entities);
     }
