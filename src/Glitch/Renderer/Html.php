@@ -21,11 +21,14 @@ use DecodeLabs\Glitch\Packet;
 use DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Stack\Trace;
+use DecodeLabs\Glitch\Stat;
 
 use Throwable;
 
 class Html implements Renderer
 {
+    use Base;
+
     public const RENDER_IN_PRODUCTION = false;
     public const SPACES = 0;
     public const RENDER_CLOSED = true;
@@ -84,8 +87,9 @@ class Html implements Renderer
         505 => 'HTTP Version Not Supported'
     ];
 
-    use Base;
-
+    /**
+     * @var string|null
+     */
     protected $customCssFile = null;
 
     /**
@@ -425,6 +429,8 @@ class Html implements Renderer
 
     /**
      * Render environment vars
+     *
+     * @param array<Stat> $stats
      */
     protected function renderEnvironment(array $stats): string
     {
@@ -507,8 +513,11 @@ class Html implements Renderer
             $sig[] = "\n   ";
 
             if (null !== ($file = $frame->getCallingFile())) {
-                $sig[] = $this->renderSourceFile($this->context->normalizePath($file));
-                $sig[] = $this->renderSourceLine($frame->getCallingLine());
+                $sig[] = $this->renderSourceFile((string)$this->context->normalizePath($file));
+
+                if (null !== ($callingLine = $frame->getCallingLine())) {
+                    $sig[] = $this->renderSourceLine($callingLine);
+                }
             } else {
                 $sig[] = $this->renderSourceFile('internal', 'internal');
             }
@@ -568,6 +577,8 @@ class Html implements Renderer
 
     /**
      * Implode buffer and wrap it in JS iframe injector
+     *
+     * @param array<string> $buffer
      */
     protected function exportBuffer(array $buffer, bool $final): Packet
     {
@@ -702,6 +713,8 @@ class Html implements Renderer
 
     /**
      * Passthrough resource
+     *
+     * @param resource $value
      */
     protected function renderResource($value, ?string $class = null): string
     {
@@ -1004,6 +1017,8 @@ class Html implements Renderer
 
     /**
      * Render basic list
+     *
+     * @param array<string> $lines
      */
     protected function renderBasicList(array $lines, ?string $class = null): string
     {

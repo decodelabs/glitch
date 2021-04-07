@@ -15,20 +15,35 @@ use DecodeLabs\Glitch\Dumper\Inspector;
 use ReflectionObject;
 use SimpleXMLElement;
 use Throwable;
+use XMLParser;
 use XMLWriter;
 
 class Xml
 {
     /**
      * Inspect Xml resource
+     *
+     * @param resource|XMLParser $resource
      */
     public static function inspectXmlResource($resource, Entity $entity, Inspector $inspector): void
     {
         $entity
-            ->setMeta('current_byte_index', $inspector(xml_get_current_byte_index($resource)))
-            ->setMeta('current_column_number', $inspector(xml_get_current_column_number($resource)))
-            ->setMeta('current_line_number', $inspector(xml_get_current_line_number($resource)))
-            ->setMeta('error_code', $inspector(xml_get_error_code($resource)));
+            ->setMeta('current_byte_index', $inspector(
+                /** @phpstan-ignore-next-line */
+                xml_get_current_byte_index($resource)
+            ))
+            ->setMeta('current_column_number', $inspector(
+                /** @phpstan-ignore-next-line */
+                xml_get_current_column_number($resource)
+            ))
+            ->setMeta('current_line_number', $inspector(
+                /** @phpstan-ignore-next-line */
+                xml_get_current_line_number($resource)
+            ))
+            ->setMeta('error_code', $inspector(
+                /** @phpstan-ignore-next-line */
+                xml_get_error_code($resource)
+            ));
     }
 
     /**

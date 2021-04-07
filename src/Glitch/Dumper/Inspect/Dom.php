@@ -77,7 +77,7 @@ class Dom
     public static function inspectDocument(DOMDocument $document, Entity $entity, Inspector $inspector): void
     {
         $entity
-            ->setDefinition($document->saveXML())
+            ->setDefinition((string)$document->saveXML())
             ->setSectionVisible('definition', false)
 
             ->setMeta('encoding', $inspector($document->encoding))
@@ -112,8 +112,14 @@ class Dom
      */
     public static function inspectDocumentType(DOMDocumentType $type, Entity $entity, Inspector $inspector): void
     {
+        if (null === ($owner = $type->ownerDocument)) {
+            $xml = null;
+        } else {
+            $xml = (string)$owner->saveXML($type);
+        }
+
         $entity
-            ->setDefinition($type->ownerDocument->saveXML($type))
+            ->setDefinition($xml)
 
             ->setProperty('name', $inspector($type->name))
             ->setProperty('entities', $inspector($type->entities))
@@ -161,6 +167,8 @@ class Dom
 
     /**
      * Inspect node map
+     *
+     * @param DOMNamedNodeMap<mixed> $map
      */
     public static function inspectNamedNodeMap(DOMNamedNodeMap $map, Entity $entity, Inspector $inspector): void
     {
@@ -207,6 +215,8 @@ class Dom
 
     /**
      * Inspect node list
+     *
+     * @param DOMNodeList<DOMNode> $list
      */
     public static function inspectNodeList(DOMNodeList $list, Entity $entity, Inspector $inspector): void
     {

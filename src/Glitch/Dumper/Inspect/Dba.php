@@ -16,6 +16,8 @@ class Dba
 {
     /**
      * Inspect DBA resource
+     *
+     * @param resource $resource
      */
     public static function inspectDba($resource, Entity $entity, Inspector $inspector): void
     {

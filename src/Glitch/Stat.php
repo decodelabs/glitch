@@ -11,13 +11,30 @@ namespace DecodeLabs\Glitch;
 
 class Stat
 {
+    /**
+     * @var string
+     */
     protected $name;
+
+    /**
+     * @var string
+     */
     protected $key;
+
+    /**
+     * @var mixed
+     */
     protected $value;
+
+    /**
+     * @var callable|null
+     */
     protected $renderer;
 
     /**
      * Construct with main info
+     *
+     * @param mixed $value
      */
     public function __construct(string $key, string $name, $value)
     {

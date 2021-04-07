@@ -16,6 +16,8 @@ class Stream
 {
     /**
      * Inspect stream resource
+     *
+     * @param resource $resource
      */
     public static function inspectStream($resource, Entity $entity, Inspector $inspector): void
     {
@@ -25,10 +27,12 @@ class Stream
 
     /**
      * Inspect stream context resource
+     *
+     * @param resource $resource
      */
     public static function inspectStreamContext($resource, Entity $entity, Inspector $inspector): void
     {
-        if (!$params = @stream_context_get_params($resource)) {
+        if (!$params = stream_context_get_params($resource)) {
             return;
         }
 

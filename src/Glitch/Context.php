@@ -31,23 +31,74 @@ class Context implements LoggerAwareInterface
 {
     public const VERSION = 'v0.17.1';
 
+    /**
+     * @var float
+     */
     protected $startTime;
+
+    /**
+     * @var string
+     */
     protected $runMode = 'development';
+
+    /**
+     * @var array<string, string>
+     */
     protected $pathAliases = [];
 
+
+    /**
+     * @var array<string, callable>
+     */
     protected $statGatherers = [];
 
+
+    /**
+     * @var array<string, callable>
+     */
     protected $objectInspectors = [];
+
+    /**
+     * @var array<string, callable>
+     */
     protected $resourceInspectors = [];
 
+
+    /**
+     * @var bool
+     */
     protected $dumpedInBuffer = false;
 
+
+    /**
+     * @var LoggerInterface|null
+     */
     protected $logger;
+
+    /**
+     * @var callable|null
+     */
     protected $logListener;
+
+    /**
+     * @var Renderer|null
+     */
     protected $dumpRenderer;
+
+    /**
+     * @var Transport|null
+     */
     protected $transport;
 
+
+    /**
+     * @var callable|null
+     */
     protected $headerBufferSender;
+
+    /**
+     * @var callable|null
+     */
     protected $errorPageRenderer;
 
 
@@ -165,6 +216,9 @@ class Context implements LoggerAwareInterface
 
     /**
      * Send variables to dump, carry on execution
+     *
+     * @param mixed $var
+     * @param mixed ...$vars
      */
     public function dump($var, ...$vars): void
     {
@@ -173,6 +227,9 @@ class Context implements LoggerAwareInterface
 
     /**
      * Send variables to dump, exit and render
+     *
+     * @param mixed $var
+     * @param mixed ...$vars
      */
     public function dumpDie($var, ...$vars): void
     {
@@ -190,6 +247,8 @@ class Context implements LoggerAwareInterface
 
     /**
      * Send variables to dump, carry on execution
+     *
+     * @param array<mixed> $values
      */
     public function dumpValues(array $values, int $rewind = 0, bool $exit = true): void
     {
@@ -305,6 +364,8 @@ class Context implements LoggerAwareInterface
 
     /**
      * Shortcut to incomplete context method
+     *
+     * @param mixed $data
      */
     public function incomplete($data = null, int $rewind = 0): void
     {
@@ -493,6 +554,8 @@ class Context implements LoggerAwareInterface
 
     /**
      * Register list of path replacement aliases
+     *
+     * @param array<string, string> $aliases
      */
     public function registerPathAliases(array $aliases): Context
     {
@@ -517,6 +580,8 @@ class Context implements LoggerAwareInterface
 
     /**
      * Inspect list of registered path aliases
+     *
+     * @return array<string, string>
      */
     public function getPathAliases(): array
     {
@@ -561,6 +626,8 @@ class Context implements LoggerAwareInterface
 
     /**
      * Get stat gatherers
+     *
+     * @return array<string, callable>
      */
     public function getStatGatherers(): array
     {
@@ -608,7 +675,7 @@ class Context implements LoggerAwareInterface
     /**
      * Format filesize bytes as human readable
      */
-    public static function formatFilesize($bytes)
+    public static function formatFilesize(int $bytes): string
     {
         $units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB'];
 
@@ -632,6 +699,8 @@ class Context implements LoggerAwareInterface
 
     /**
      * Get list of registered inspectors
+     *
+     * @return array<string, callable>
      */
     public function getObjectInspectors(): array
     {
@@ -650,6 +719,8 @@ class Context implements LoggerAwareInterface
 
     /**
      * Get list of registered inspectors
+     *
+     * @return array<string, callable>
      */
     public function getResourceInspectors(): array
     {

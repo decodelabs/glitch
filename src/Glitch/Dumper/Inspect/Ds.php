@@ -20,6 +20,8 @@ class Ds
 {
     /**
      * Inspect Collection
+     *
+     * @param Collection<int|string, mixed> $collection
      */
     public static function inspectCollection(Collection $collection, Entity $entity, Inspector $inspector): void
     {
@@ -37,6 +39,8 @@ class Ds
 
     /**
      * Inspect Pair
+     *
+     * @param Pair<int|string, mixed> $pair
      */
     public static function inspectPair(Pair $pair, Entity $entity, Inspector $inspector): void
     {
@@ -46,6 +50,8 @@ class Ds
 
     /**
      * Inspect Set
+     *
+     * @param Set<mixed> $set
      */
     public static function inspectSet(Set $set, Entity $entity, Inspector $inspector): void
     {

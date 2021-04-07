@@ -29,32 +29,44 @@ class Spl
 {
     /**
      * Inspect array object
+     *
+     * @template TKey
+     * @template TValue
+     *
+     * @param ArrayObject<TKey, TValue> $array
      */
-    public static function inspectArrayObject(ArrayObject $arr, Entity $entity, Inspector $inspector): void
+    public static function inspectArrayObject(ArrayObject $array, Entity $entity, Inspector $inspector): void
     {
         $entity
-            ->setProperty('!flags', $inspector->inspectFlagSet($arr->getFlags(), [
+            ->setProperty('!flags', $inspector->inspectFlagSet($array->getFlags(), [
                 'ArrayObject::STD_PROP_LIST',
                 'ArrayObject::ARRAY_AS_PROPS'
             ]))
-            ->setValues($inspector->inspectList($arr->getArrayCopy()));
+            ->setValues($inspector->inspectList($array->getArrayCopy()));
     }
 
     /**
      * Inspect array iterator
+     *
+     * @template TKey
+     * @template TValue
+     * @param ArrayIterator<TKey, TValue> $iterator
      */
-    public static function inspectArrayIterator(ArrayIterator $arr, Entity $entity, Inspector $inspector): void
+    public static function inspectArrayIterator(ArrayIterator $iterator, Entity $entity, Inspector $inspector): void
     {
         $entity
-            ->setProperty('!flags', $inspector->inspectFlagSet($arr->getFlags(), [
+            ->setProperty('!flags', $inspector->inspectFlagSet($iterator->getFlags(), [
                 'ArrayIterator::STD_PROP_LIST',
                 'ArrayIterator::ARRAY_AS_PROPS'
             ]))
-            ->setValues($inspector->inspectList($arr->getArrayCopy()));
+            ->setValues($inspector->inspectList($iterator->getArrayCopy()));
     }
 
     /**
      * Inspect SPL Doubly Linked List
+     *
+     * @template TValue
+     * @param SplDoublyLinkedList<TValue> $list
      */
     public static function inspectSplDoublyLinkedList(SplDoublyLinkedList $list, Entity $entity, Inspector $inspector): void
     {
@@ -71,6 +83,10 @@ class Spl
 
     /**
      * Inspect SPL Heap
+     *
+     * @template TPriority
+     * @template TValue
+     * @param SplHeap<TPriority, TValue> $heap
      */
     public static function inspectSplHeap(SplHeap $heap, Entity $entity, Inspector $inspector): void
     {
@@ -82,6 +98,10 @@ class Spl
 
     /**
      * Inspect SPL PriorityQueue
+     *
+     * @template TPriority
+     * @template TValue
+     * @param SplPriorityQueue<TPriority, TValue> $queue
      */
     public static function inspectSplPriorityQueue(SplPriorityQueue $queue, Entity $entity, Inspector $inspector): void
     {
@@ -98,16 +118,23 @@ class Spl
 
     /**
      * Inspect SPL Fixed Array
+     *
+     * @template TValue
+     * @param SplFixedArray<TValue> $array
      */
-    public static function inspectSplFixedArray(SplFixedArray $arr, Entity $entity, Inspector $inspector): void
+    public static function inspectSplFixedArray(SplFixedArray $array, Entity $entity, Inspector $inspector): void
     {
         $entity
-            ->setLength($arr->getSize())
-            ->setValues($inspector->inspectList($arr->toArray()));
+            ->setLength($array->getSize())
+            ->setValues($inspector->inspectList($array->toArray()));
     }
 
     /**
      * Inspect SPL ObjectStorage
+     *
+     * @template TObject of object
+     * @template TData
+     * @param SplObjectStorage<TObject, TData> $store
      */
     public static function inspectSplObjectStorage(SplObjectStorage $store, Entity $entity, Inspector $inspector): void
     {
