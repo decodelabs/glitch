@@ -29,7 +29,7 @@ use Throwable;
 
 class Context implements LoggerAwareInterface
 {
-    public const VERSION = 'v0.17.2';
+    public const VERSION = 'v0.17.3';
 
     /**
      * @var float
@@ -262,7 +262,7 @@ class Context implements LoggerAwareInterface
             }
         }
 
-        $trace = Trace::create($rewind);
+        $trace = Trace::create($rewind + 1);
         $first = $trace->getFirstFrame();
 
         if ($first !== null && $first->getVeneerProxy() !== null) {
