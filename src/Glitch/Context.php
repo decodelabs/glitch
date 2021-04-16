@@ -262,7 +262,7 @@ class Context implements LoggerAwareInterface
             }
         }
 
-        $trace = Trace::create($rewind);
+        $trace = Trace::create($rewind + 1);
         $first = $trace->getFirstFrame();
 
         if ($first !== null && $first->getVeneerProxy() !== null) {
