@@ -1,3 +1,6 @@
+## v0.17.3 (2021-04-16)
+* Fixed dump stack rewind handling
+
 ## v0.17.2 (2021-04-07)
 * Updated for full PHPStan conformance
 
