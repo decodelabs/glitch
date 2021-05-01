@@ -327,6 +327,8 @@ class Inspector
 
     /**
      * Reset all references
+     *
+     * @return $this
      */
     public function reset(): Inspector
     {

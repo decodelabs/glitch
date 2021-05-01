@@ -60,6 +60,8 @@ trait Base
 
     /**
      * Override production rendering
+     *
+     * @return $this
      */
     public function setProductionOverride(bool $flag): Renderer
     {

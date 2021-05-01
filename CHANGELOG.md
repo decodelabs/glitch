@@ -1,3 +1,6 @@
+## v0.17.4 (2021-05-01)
+* Improved return type hints
+
 ## v0.17.3 (2021-04-16)
 * Fixed dump stack rewind handling
 

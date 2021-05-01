@@ -94,6 +94,8 @@ class Html implements Renderer
 
     /**
      * Set custom css file
+     *
+     * @return $this
      */
     public function setCustomCssFile(?string $path): Html
     {
