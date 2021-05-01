@@ -63,6 +63,8 @@ class Stat
 
     /**
      * Add a named renderer
+     *
+     * @return $this
      */
     public function setRenderer(?callable $renderer): Stat
     {

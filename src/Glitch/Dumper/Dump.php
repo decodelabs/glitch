@@ -50,6 +50,8 @@ class Dump implements IteratorAggregate, Countable
 
     /**
      * Set named statistic
+     *
+     * @return $this
      */
     public function addStats(Stat ...$stats): Dump
     {
@@ -70,6 +72,8 @@ class Dump implements IteratorAggregate, Countable
 
     /**
      * Remove named statistic
+     *
+     * @return $this
      */
     public function removeStat(string $key): Dump
     {
@@ -89,6 +93,8 @@ class Dump implements IteratorAggregate, Countable
 
     /**
      * Clear all named statistics
+     *
+     * @return $this
      */
     public function clearStats(): Dump
     {
@@ -110,6 +116,7 @@ class Dump implements IteratorAggregate, Countable
      * Add an entity to the list
      *
      * @param mixed $entity
+     * @return $this
      */
     public function addEntity($entity): Dump
     {

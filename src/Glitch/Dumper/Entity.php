@@ -282,6 +282,8 @@ class Entity
 
     /**
      * Override type
+     *
+     * @return $this
      */
     public function setType(string $type): Entity
     {
@@ -302,6 +304,8 @@ class Entity
 
     /**
      * Set entity instance name
+     *
+     * @return $this
      */
     public function setName(?string $name): Entity
     {
@@ -320,6 +324,8 @@ class Entity
 
     /**
      * Set default open state
+     *
+     * @return $this
      */
     public function setOpen(bool $open): Entity
     {
@@ -338,6 +344,8 @@ class Entity
 
     /**
      * Set object id
+     *
+     * @return $this
      */
     public function setId(?string $id): Entity
     {
@@ -357,6 +365,8 @@ class Entity
 
     /**
      * Set object id
+     *
+     * @return $this
      */
     public function setObjectId(?int $id): Entity
     {
@@ -374,6 +384,8 @@ class Entity
 
     /**
      * Set object / array hash
+     *
+     * @return $this
      */
     public function setHash(?string $hash): Entity
     {
@@ -392,6 +404,8 @@ class Entity
 
     /**
      * Set object class
+     *
+     * @return $this
      */
     public function setClass(?string $class): Entity
     {
@@ -409,6 +423,8 @@ class Entity
 
     /**
      * Set object class name
+     *
+     * @return $this
      */
     public function setClassName(?string $className): Entity
     {
@@ -427,6 +443,8 @@ class Entity
 
     /**
      * Set parent classes
+     *
+     * @return $this
      */
     public function setParentClasses(string ...$parents): Entity
     {
@@ -451,6 +469,8 @@ class Entity
 
     /**
      * Set interfaces
+     *
+     * @return $this
      */
     public function setInterfaces(string ...$interfaces): Entity
     {
@@ -475,6 +495,8 @@ class Entity
 
     /**
      * Set traits
+     *
+     * @return $this
      */
     public function setTraits(string ...$traits): Entity
     {
@@ -500,6 +522,8 @@ class Entity
 
     /**
      * Set source file
+     *
+     * @return $this
      */
     public function setFile(?string $file): Entity
     {
@@ -517,6 +541,8 @@ class Entity
 
     /**
      * Set source line
+     *
+     * @return $this
      */
     public function setStartLine(?int $line): Entity
     {
@@ -534,6 +560,8 @@ class Entity
 
     /**
      * Set source end line
+     *
+     * @return $this
      */
     public function setEndLine(?int $line): Entity
     {
@@ -554,6 +582,8 @@ class Entity
 
     /**
      * Set object text
+     *
+     * @return $this
      */
     public function setText(?string $text): Entity
     {
@@ -573,6 +603,8 @@ class Entity
 
     /**
      * Set definition code
+     *
+     * @return $this
      */
     public function setDefinition(?string $definition): Entity
     {
@@ -592,6 +624,8 @@ class Entity
 
     /**
      * Set item length
+     *
+     * @return $this
      */
     public function setLength(?int $length): Entity
     {
@@ -614,6 +648,7 @@ class Entity
      * Set meta value
      *
      * @param mixed $value
+     * @return $this
      */
     public function setMeta(string $key, $value): Entity
     {
@@ -637,6 +672,7 @@ class Entity
      * Set meta list
      *
      * @param array<int|string, mixed> $meta
+     * @return $this
      */
     public function setMetaList(array $meta): Entity
     {
@@ -671,6 +707,8 @@ class Entity
 
     /**
      * Remove meta value
+     *
+     * @return $this
      */
     public function removeMeta(string $key): Entity
     {
@@ -680,6 +718,8 @@ class Entity
 
     /**
      * Clear meta list
+     *
+     * @return $this
      */
     public function clearMeta(): Entity
     {
@@ -694,6 +734,7 @@ class Entity
      *
      * @param int|string $key
      * @param mixed $value
+     * @return $this
      */
     public function setValue($key, $value): Entity
     {
@@ -718,6 +759,7 @@ class Entity
      * Set single value
      *
      * @param mixed $value
+     * @return $this
      */
     public function setSingleValue($value): Entity
     {
@@ -740,6 +782,7 @@ class Entity
      * Set values list
      *
      * @param array<int|string, mixed>|null $values
+     * @return $this
      */
     public function setValues(?array $values): Entity
     {
@@ -777,6 +820,7 @@ class Entity
      * Remove value
      *
      * @param int|string $key
+     * @return $this
      */
     public function removeValue($key): Entity
     {
@@ -786,6 +830,8 @@ class Entity
 
     /**
      * Clear values
+     *
+     * @return $this
      */
     public function clearValues(): Entity
     {
@@ -796,6 +842,8 @@ class Entity
 
     /**
      * Set show keys
+     *
+     * @return $this
      */
     public function setShowKeys(bool $show): Entity
     {
@@ -817,6 +865,7 @@ class Entity
      * Set properties
      *
      * @param array<int|string, mixed> $properties
+     * @return $this
      */
     public function setProperties(array $properties): Entity
     {
@@ -842,6 +891,7 @@ class Entity
      * Set property
      *
      * @param mixed $value
+     * @return $this
      */
     public function setProperty(string $key, $value): Entity
     {
@@ -874,6 +924,8 @@ class Entity
 
     /**
      * Remove property
+     *
+     * @return $this
      */
     public function removeProperty(string $key): Entity
     {
@@ -883,6 +935,8 @@ class Entity
 
     /**
      * Remove all properties
+     *
+     * @return $this
      */
     public function clearProperties(): Entity
     {
@@ -894,6 +948,8 @@ class Entity
 
     /**
      * Set stack trace
+     *
+     * @return $this
      */
     public function setStackTrace(Trace $trace): Entity
     {
@@ -995,6 +1051,8 @@ class Entity
 
     /**
      * Hide entity section
+     *
+     * @return $this
      */
     public function hideSection(string $name): Entity
     {
@@ -1007,6 +1065,8 @@ class Entity
 
     /**
      * Show entity section
+     *
+     * @return $this
      */
     public function showSection(string $name): Entity
     {
@@ -1019,6 +1079,8 @@ class Entity
 
     /**
      * Set entity section visible
+     *
+     * @return $this
      */
     public function setSectionVisible(string $name, bool $visible): Entity
     {
@@ -1041,6 +1103,7 @@ class Entity
      * Set section visibility map
      *
      * @param array<string, bool> $sections
+     * @return $this
      */
     public function setSectionsVisible(array $sections): Entity
     {

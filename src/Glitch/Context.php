@@ -116,6 +116,8 @@ class Context implements LoggerAwareInterface
 
     /**
      * Set active run mode
+     *
+     * @return $this
      */
     public function setRunMode(string $mode): Context
     {
@@ -170,6 +172,8 @@ class Context implements LoggerAwareInterface
 
     /**
      * Set PSR logger
+     *
+     * @return $this
      */
     public function setLogger(LoggerInterface $logger): Context
     {
@@ -188,6 +192,8 @@ class Context implements LoggerAwareInterface
 
     /**
      * Add a logger listener callback
+     *
+     * @return $this
      */
     public function setLogListener(?callable $listener): Context
     {
@@ -346,6 +352,8 @@ class Context implements LoggerAwareInterface
 
     /**
      * Override app start time
+     *
+     * @return $this
      */
     public function setStartTime(float $time): Context
     {
@@ -378,6 +386,8 @@ class Context implements LoggerAwareInterface
 
     /**
      * Register as error handler
+     *
+     * @return $this
      */
     public function registerAsErrorHandler(): Context
     {
@@ -493,6 +503,8 @@ class Context implements LoggerAwareInterface
 
     /**
      * Set header buffer sender
+     *
+     * @return $this
      */
     public function setHeaderBufferSender(?callable $sender): Context
     {
@@ -512,6 +524,8 @@ class Context implements LoggerAwareInterface
 
     /**
      * Set error page renderer
+     *
+     * @return $this
      */
     public function setErrorPageRenderer(?callable $renderer): Context
     {
@@ -532,6 +546,8 @@ class Context implements LoggerAwareInterface
 
     /**
      * Register path replacement alias
+     *
+     * @return $this
      */
     public function registerPathAlias(string $name, string $path): Context
     {
@@ -556,6 +572,7 @@ class Context implements LoggerAwareInterface
      * Register list of path replacement aliases
      *
      * @param array<string, string> $aliases
+     * @return $this
      */
     public function registerPathAliases(array $aliases): Context
     {
@@ -617,6 +634,8 @@ class Context implements LoggerAwareInterface
 
     /**
      * Register stat gatherer
+     *
+     * @return $this
      */
     public function registerStatGatherer(string $name, callable $gatherer): Context
     {
@@ -690,6 +709,8 @@ class Context implements LoggerAwareInterface
 
     /**
      * Register callable inspector for a specific class
+     *
+     * @return $this
      */
     public function registerObjectInspector(string $class, callable $inspector): Context
     {
@@ -710,6 +731,8 @@ class Context implements LoggerAwareInterface
 
     /**
      * Register callable inspector for a specific resource type
+     *
+     * @return $this
      */
     public function registerResourceInspector(string $type, callable $inspector): Context
     {
@@ -753,6 +776,8 @@ class Context implements LoggerAwareInterface
 
     /**
      * Set dump renderer
+     *
+     * @return $this
      */
     public function setRenderer(Renderer $renderer): Context
     {
@@ -762,6 +787,8 @@ class Context implements LoggerAwareInterface
 
     /**
      * Fallback to text renderer
+     *
+     * @return $this
      */
     public function useTextRenderer(): Context
     {
@@ -807,6 +834,8 @@ class Context implements LoggerAwareInterface
 
     /**
      * Set transport
+     *
+     * @return $this
      */
     public function setTransport(Transport $transport): Context
     {
