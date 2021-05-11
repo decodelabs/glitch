@@ -1,3 +1,6 @@
+## v0.17.5 (2021-05-11)
+* Added Veneer IDE support stub
+
 ## v0.17.4 (2021-05-01)
 * Improved return type hints
 
