@@ -28,7 +28,10 @@
         "symplify/easy-coding-standard": "^8.3",
 
         "symfony/var-dumper": "^5.1",
-        "php-ds/php-ds": "~1.2"
+        "php-ds/php-ds": "~1.2",
+
+        "decodelabs/atlas": "^0.9",
+        "decodelabs/terminus": "^0.7"
     },
     "autoload": {
         "psr-4": {
