@@ -30,9 +30,8 @@ class Spl
     /**
      * Inspect array object
      *
-     * @template TKey
+     * @template TKey of int|string
      * @template TValue
-     *
      * @param ArrayObject<TKey, TValue> $array
      */
     public static function inspectArrayObject(ArrayObject $array, Entity $entity, Inspector $inspector): void
@@ -48,7 +47,7 @@ class Spl
     /**
      * Inspect array iterator
      *
-     * @template TKey
+     * @template TKey of int|string
      * @template TValue
      * @param ArrayIterator<TKey, TValue> $iterator
      */

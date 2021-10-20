@@ -1,3 +1,7 @@
+## v0.17.6 (2021-10-20)
+* Updated Veneer dependency
+* Fixed Spl inspect PHPStan type check
+
 ## v0.17.5 (2021-05-11)
 * Added Veneer IDE support stub
 
