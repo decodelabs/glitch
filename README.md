@@ -1,11 +1,11 @@
 # Glitch
 
-[![PHP from Packagist](https://img.shields.io/packagist/php-v/decodelabs/glitch?style=flat-square)](https://packagist.org/packages/decodelabs/glitch)
-[![Latest Version](https://img.shields.io/packagist/v/decodelabs/glitch.svg?style=flat-square)](https://packagist.org/packages/decodelabs/glitch)
-[![Total Downloads](https://img.shields.io/packagist/dt/decodelabs/glitch.svg?style=flat-square)](https://packagist.org/packages/decodelabs/glitch)
-[![Build Status](https://img.shields.io/travis/com/decodelabs/glitch/main.svg?style=flat-square)](https://app.travis-ci.com/github/decodelabs/glitch)
-[![PHPStan](https://img.shields.io/badge/PHPStan-enabled-44CC11.svg?longCache=true&style=flat-square)](https://github.com/phpstan/phpstan)
-[![License](https://img.shields.io/packagist/l/decodelabs/glitch?style=flat-square)](https://packagist.org/packages/decodelabs/glitch)
+[![PHP from Packagist](https://img.shields.io/packagist/php-v/decodelabs/glitch?style=flat)](https://packagist.org/packages/decodelabs/glitch)
+[![Latest Version](https://img.shields.io/packagist/v/decodelabs/glitch.svg?style=flat)](https://packagist.org/packages/decodelabs/glitch)
+[![Total Downloads](https://img.shields.io/packagist/dt/decodelabs/glitch.svg?style=flat)](https://packagist.org/packages/decodelabs/glitch)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/decodelabs/glitch/PHP%20Composer)](https://github.com/decodelabs/glitch/actions/workflows/php.yml)
+[![PHPStan](https://img.shields.io/badge/PHPStan-enabled-44CC11.svg?longCache=true&style=flat)](https://github.com/phpstan/phpstan)
+[![License](https://img.shields.io/packagist/l/decodelabs/glitch?style=flat)](https://packagist.org/packages/decodelabs/glitch)
 
 ### Better tools for when things go wrong
 

@@ -12,6 +12,7 @@
         "php": "^7.2|^8.0",
         "symfony/polyfill-mbstring": "^1.7",
 
+        "decodelabs/coercion": "^0.1",
         "decodelabs/veneer": "^0.8",
         "decodelabs/glitch-support": "^0.3",
         "decodelabs/exceptional": "^0.3",
@@ -22,10 +23,10 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^8",
-        "phpstan/phpstan": "^0.12.45",
+        "phpstan/phpstan": "^1",
         "phpstan/extension-installer": "^1.0",
-        "decodelabs/phpstan-decodelabs": "^0.4",
-        "symplify/easy-coding-standard": "^8.3",
+        "decodelabs/phpstan-decodelabs": "^0.5",
+        "symplify/easy-coding-standard": "^10",
 
         "symfony/var-dumper": "^5.1",
         "php-ds/php-ds": "~1.2",

@@ -282,6 +282,7 @@ class Reflection
         if (is_array($value)) {
             $output .= '[...]';
         } else {
+            /** @var bool|float|int|resource|string|null $value */
             $output .= Inspector::scalarToString($value);
         }
 
@@ -301,6 +302,7 @@ class Reflection
         if (is_array($value)) {
             $output .= '[...]';
         } else {
+            /** @var bool|float|int|resource|string|null $value */
             $output .= Inspector::scalarToString($value);
         }
 
@@ -381,7 +383,9 @@ class Reflection
         $output .= '$' . $parameter->getName();
 
         if ($parameter->isDefaultValueAvailable()) {
-            $output .= '=' . (Inspector::scalarToString($parameter->getDefaultValue()) ?? '??');
+            /** @var bool|float|int|resource|string|null $value */
+            $value = $parameter->getDefaultValue();
+            $output .= '=' . Inspector::scalarToString($value);
         }
 
         return $output;

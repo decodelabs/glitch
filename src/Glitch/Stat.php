@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Glitch;
 
+use DecodeLabs\Coercion;
+
 class Stat
 {
     /**
@@ -86,7 +88,7 @@ class Stat
         if ($output === null) {
             return null;
         } else {
-            return (string)$output;
+            return Coercion::toStringOrNull($output);
         }
     }
 }

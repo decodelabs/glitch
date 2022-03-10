@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Glitch\Dumper\Inspect;
 
+use DecodeLabs\Coercion;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
 
@@ -50,7 +51,14 @@ class Pdo
     {
         foreach (self::ATTRS as $name) {
             try {
-                $entity->setMeta($name, $inspector($pdo->getAttribute(constant('PDO::ATTR_' . $name))));
+                $entity->setMeta(
+                    $name,
+                    $inspector(
+                        $pdo->getAttribute(
+                            Coercion::toInt(constant('PDO::ATTR_' . $name))
+                        )
+                    )
+                );
             } catch (Throwable $e) {
             }
         }

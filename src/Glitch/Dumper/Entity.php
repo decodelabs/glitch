@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Glitch\Dumper;
 
+use DecodeLabs\Coercion;
 use DecodeLabs\Exceptional;
 use DecodeLabs\Glitch\Stack\Trace;
 
@@ -234,7 +235,11 @@ class Entity
                     return;
                 }
 
-                $value = $inspector->inspectList($value, $closer);
+                $value = $inspector->inspectList(
+                    Coercion::toArray($value),
+                    $closer
+                );
+
                 $type = 'array';
                 break;
 
@@ -253,6 +258,7 @@ class Entity
                 break;
 
             case 'classMembers':
+                /** @var array<string> $value */
                 $this->checkValidity($value, 'string[]');
 
                 $inspector->inspectClassMembers(

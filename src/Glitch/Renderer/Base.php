@@ -237,6 +237,7 @@ trait Base
             if ($value instanceof Entity) {
                 $output[] = $this->renderEntity($value);
             } else {
+                /** @var bool|float|int|resource|string|null $value */
                 $output[] = $this->renderScalar($value);
             }
         }
@@ -320,7 +321,7 @@ trait Base
     /**
      * Render a scalar value
      *
-     * @param scalar|resource|null $value
+     * @param bool|float|int|resource|string|null $value
      */
     protected function renderScalar($value, ?string $class = null, bool $asIdentifier = false): string
     {
@@ -1561,6 +1562,7 @@ trait Base
                     $this->renderList($value, $style, $isAssoc, $isAssoc ? 'map' : 'inline', $level + 1) .
                     $this->renderGrammar('}');
             } else {
+                /** @var bool|float|int|resource|string|null $value */
                 $line[] = $this->renderScalar($value, $asIdentifier ? 'identifier' : null, $asIdentifier);
             }
 

@@ -13,6 +13,7 @@ use Composer\Autoload\ClassLoader;
 use DecodeLabs\Exceptional;
 use DecodeLabs\Exceptional\Exception as ExceptionalException;
 use DecodeLabs\Glitch\Dumper\Dump;
+use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
 use DecodeLabs\Glitch\Renderer\Cli as CliRenderer;
 use DecodeLabs\Glitch\Renderer\Html as HtmlRenderer;
@@ -332,6 +333,7 @@ class Context implements LoggerAwareInterface
             $gatherer($dump, $this);
         }
 
+        /** @var Entity $entity */
         $entity = $inspector->inspectValue($exception);
 
         $inspector->reset();

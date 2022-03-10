@@ -11,7 +11,7 @@ namespace DecodeLabs\Glitch\Dumper;
 
 use Countable;
 
-use DecodeLabs\Exceptional;
+use DecodeLabs\Coercion;
 use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Dumpable;
 use DecodeLabs\Glitch\Dumper\Inspect\Core as InspectCore;
@@ -33,10 +33,12 @@ use DecodeLabs\Glitch\Inspectable;
 
 use ReflectionClass;
 use ReflectionObject;
-use Throwable;
 
 class Inspector
 {
+    /**
+     * @var array<string, array<string>>
+     */
     public const OBJECTS = [
         // Core
         'Throwable' => [InspectCore::class, 'inspectException'],
@@ -126,6 +128,9 @@ class Inspector
         'XMLWriter' => [InspectXml::class, 'inspectXmlWriter']
     ];
 
+    /**
+     * @var array<string, array<string>|null>
+     */
     public const RESOURCES = [
         // Bzip
         'bzip2' => null,
@@ -288,7 +293,7 @@ class Inspector
     protected $arrayObjectId = 0;
 
     /**
-     * @var array<string, array>
+     * @var array<string, array<string|int|null>>
      */
     protected $arrayCookies = [];
 
@@ -304,13 +309,13 @@ class Inspector
     public function __construct(Context $context)
     {
         foreach (static::OBJECTS as $class => $inspector) {
-            if ($inspector !== null) {
+            if (is_callable($inspector)) {
                 $this->objectInspectors[$class] = $inspector;
             }
         }
 
         foreach (static::RESOURCES as $type => $inspector) {
-            if ($inspector !== null) {
+            if (is_callable($inspector)) {
                 $this->resourceInspectors[$type] = $inspector;
             }
         }
@@ -369,15 +374,7 @@ class Inspector
 
 
             default:
-                try {
-                    return (string)$value;
-                } catch (Throwable $e) {
-                    throw Exceptional::UnexpectedValue(
-                        'Value is not a scalar',
-                        null,
-                        $value
-                    );
-                }
+                return (string)$value;
         }
     }
 
@@ -461,15 +458,7 @@ class Inspector
                 return $this->inspectObject($value);
 
             default:
-                try {
-                    return $this->inspectString((string)$value);
-                } catch (Throwable $e) {
-                    throw Exceptional::UnexpectedValue(
-                        'Unknown entity type',
-                        null,
-                        $value
-                    );
-                }
+                return $this->inspectString(Coercion::forceString($value));
         }
     }
 
@@ -573,7 +562,7 @@ class Inspector
     public function inspectFlagSet(?int $flags, array $options): Entity
     {
         $entity = (new Entity('flags'))
-            ->setName($name ?? 'bitset');
+            ->setName('bitset');
 
         $set = [];
 
@@ -613,7 +602,7 @@ class Inspector
     {
         return (new Entity('const'))
             ->setName($const)
-            ->setLength(constant($const));
+            ->setLength(Coercion::toIntOrNull(constant($const)));
     }
 
 
@@ -633,6 +622,7 @@ class Inspector
 
         if (isset($array[$this->arrayCookieKey])) {
             $isRef = true;
+            /** @var string $id */
             $id = $array[$this->arrayCookieKey];
             [$hash, $objectId] = $this->arrayCookies[$id];
         } else {
@@ -649,6 +639,11 @@ class Inspector
 
             $this->arrayCookies[$id] = [$hash, $objectId];
         }
+
+        /**
+         * @var string|null $hash
+         * @var int|null $objectId
+         */
 
         $entity = (new Entity($isRef ? 'arrayReference' : 'array'))
             ->setClass('array')
@@ -796,9 +791,8 @@ class Inspector
     /**
      * Inspect object parents
      *
-     * @template T of object
      * @param ReflectionObject $reflection
-     * @return array<string, ReflectionClass<T>>
+     * @return array<string, ReflectionClass<object>>
      */
     protected function inspectObjectParents(ReflectionObject $reflection, Entity $entity): array
     {
