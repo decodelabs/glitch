@@ -30,7 +30,7 @@ use Throwable;
 
 class Context implements LoggerAwareInterface
 {
-    public const VERSION = 'v0.17.6';
+    public const VERSION = 'v0.17.7';
 
     /**
      * @var float
