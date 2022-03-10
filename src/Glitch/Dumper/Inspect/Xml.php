@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace DecodeLabs\Glitch\Dumper\Inspect;
+namespace DecodeLabs\Glitch\Dumper\Inspect {
 
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
@@ -81,6 +81,15 @@ class Xml
             $xml = $writer->outputMemory(false);
             $entity->setText($xml);
         } catch (Throwable $e) {
+        }
+    }
+}
+}
+
+namespace {
+    if (!class_exists('XMLParser')) {
+        class XMLParser
+        {
         }
     }
 }

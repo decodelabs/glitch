@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace DecodeLabs\Glitch\Dumper\Inspect;
+namespace DecodeLabs\Glitch\Dumper\Inspect {
 
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
@@ -44,5 +44,14 @@ class Gd
         $entity
             ->setMeta('width', $inspector(imagefontwidth($font)))
             ->setMeta('height', $inspector(imagefontheight($font)));
+    }
+}
+}
+
+namespace {
+    if (!class_exists('GdImage')) {
+        class GdImage
+        {
+        }
     }
 }

@@ -34,8 +34,11 @@ class Spl
      * @template TValue
      * @param ArrayObject<TKey, TValue> $array
      */
-    public static function inspectArrayObject(ArrayObject $array, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectArrayObject(
+        ArrayObject $array,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setProperty('!flags', $inspector->inspectFlagSet($array->getFlags(), [
                 'ArrayObject::STD_PROP_LIST',
@@ -51,8 +54,11 @@ class Spl
      * @template TValue
      * @param ArrayIterator<TKey, TValue> $iterator
      */
-    public static function inspectArrayIterator(ArrayIterator $iterator, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectArrayIterator(
+        ArrayIterator $iterator,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setProperty('!flags', $inspector->inspectFlagSet($iterator->getFlags(), [
                 'ArrayIterator::STD_PROP_LIST',
@@ -67,8 +73,11 @@ class Spl
      * @template TValue
      * @param SplDoublyLinkedList<TValue> $list
      */
-    public static function inspectSplDoublyLinkedList(SplDoublyLinkedList $list, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectSplDoublyLinkedList(
+        SplDoublyLinkedList $list,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setProperty('!iteratorMode', $inspector->inspectFlagSet($list->getIteratorMode(), [
                 'SplDoublyLinkedList::IT_MODE_LIFO',
@@ -83,12 +92,14 @@ class Spl
     /**
      * Inspect SPL Heap
      *
-     * @template TPriority
      * @template TValue
-     * @param SplHeap<TPriority, TValue> $heap
+     * @param SplHeap<TValue> $heap
      */
-    public static function inspectSplHeap(SplHeap $heap, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectSplHeap(
+        SplHeap $heap,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setLength(count($heap))
             ->setValues($inspector->inspectList(iterator_to_array(clone $heap)));
@@ -102,8 +113,11 @@ class Spl
      * @template TValue
      * @param SplPriorityQueue<TPriority, TValue> $queue
      */
-    public static function inspectSplPriorityQueue(SplPriorityQueue $queue, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectSplPriorityQueue(
+        SplPriorityQueue $queue,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setLength($queue->count())
             ->setProperty('*extractFlags', $inspector->inspectFlagSet($queue->getExtractFlags(), [
@@ -121,8 +135,11 @@ class Spl
      * @template TValue
      * @param SplFixedArray<TValue> $array
      */
-    public static function inspectSplFixedArray(SplFixedArray $array, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectSplFixedArray(
+        SplFixedArray $array,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setLength($array->getSize())
             ->setValues($inspector->inspectList($array->toArray()));
@@ -135,8 +152,11 @@ class Spl
      * @template TData
      * @param SplObjectStorage<TObject, TData> $store
      */
-    public static function inspectSplObjectStorage(SplObjectStorage $store, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectSplObjectStorage(
+        SplObjectStorage $store,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $values = [];
 
         foreach (clone $store as $object) {
@@ -158,8 +178,11 @@ class Spl
     /**
      * Inspect SPL FileInfo
      */
-    public static function inspectSplFileInfo(SplFileInfo $file, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectSplFileInfo(
+        SplFileInfo $file,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setText(Glitch::normalizePath($file->getPathname()))
             ->setMeta('type', $inspector($type = $file->getType()));
@@ -179,8 +202,11 @@ class Spl
     /**
      * Inspect SPL FileObject
      */
-    public static function inspectSplFileObject(SplFileObject $file, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectSplFileObject(
+        SplFileObject $file,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         self::inspectSplFileInfo($file, $entity, $inspector);
 
         $entity

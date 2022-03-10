@@ -74,7 +74,7 @@ class Cli implements Renderer
     ];
 
     /**
-     * @var array<array>
+     * @var array<array<string|null>>
      */
     protected $formatStack = [];
 
@@ -562,7 +562,7 @@ class Cli implements Renderer
     /**
      * Apply stacked args
      *
-     * @param array<mixed> $args
+     * @param array<string|null> $args
      */
     protected function applyStackedFormat(array $args): string
     {

@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace DecodeLabs\Glitch\Dumper\Inspect;
+namespace DecodeLabs\Glitch\Dumper\Inspect {
 
 use CurlHandle;
 use DecodeLabs\Glitch\Dumper\Entity;
@@ -26,5 +26,14 @@ class Curl
             /** @phpstan-ignore-next-line */
             curl_getinfo($resource)
         ));
+    }
+}
+}
+
+namespace {
+    if (!class_exists('CurlHandle')) {
+        class CurlHandle
+        {
+        }
     }
 }

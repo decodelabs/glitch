@@ -393,6 +393,7 @@ class Html implements Renderer
             if ($value instanceof Entity) {
                 $output[] = $this->renderEntity($value);
             } else {
+                /** @var bool|float|int|resource|string|null $value */
                 $output[] = $this->renderScalar($value);
             }
 
