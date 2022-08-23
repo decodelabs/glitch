@@ -81,7 +81,7 @@ class Core
      * @template TValue
      * @template TSend
      * @template TReturn
-     * @param Generator<TKey, TValue, TSend, TReturn> $generator
+     * @phpstan-param Generator<TKey, TValue, TSend, TReturn> $generator
      */
     public static function inspectGenerator(Generator $generator, Entity $entity, Inspector $inspector): void
     {

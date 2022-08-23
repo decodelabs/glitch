@@ -139,7 +139,7 @@ class Dom
             ->setProperty('tagName', $inspector($element->tagName))
             ->setProperty('attributes', $inspector($element->attributes))
             ->setProperty('childNodes', $inspector->inspectObject($element->childNodes, false))
-            ;
+        ;
     }
 
     /**
