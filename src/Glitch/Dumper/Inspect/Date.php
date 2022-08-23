@@ -35,7 +35,7 @@ class Date
             ->setMeta('timezone', $inspector($date->format('e')))
             ->setMeta('utc', $inspector($date->format('P')))
             ->setMeta('fromNow', $inspector(self::formatInterval($fromNow)))
-            ;
+        ;
     }
 
 

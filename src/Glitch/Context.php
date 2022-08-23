@@ -173,13 +173,10 @@ class Context implements LoggerAwareInterface
 
     /**
      * Set PSR logger
-     *
-     * @return $this
      */
-    public function setLogger(LoggerInterface $logger): Context
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
-        return $this;
     }
 
     /**
