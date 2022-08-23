@@ -1,3 +1,4 @@
+## v0.18.0 (2022-08-23)
 * Removed PHP7 compatibility
 * Updated PSR Log interface to v3
 * Updated ECS to v11
