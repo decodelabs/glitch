@@ -9,30 +9,28 @@
         "email": "tom@inflatablecookie.com"
     }],
     "require": {
-        "php": "^7.2|^8.0",
+        "php": "^8.0",
         "symfony/polyfill-mbstring": "^1.7",
 
-        "decodelabs/coercion": "^0.1",
-        "decodelabs/veneer": "^0.8",
-        "decodelabs/glitch-support": "^0.3",
-        "decodelabs/exceptional": "^0.3",
-        "decodelabs/enlighten": "^0.8",
+        "decodelabs/coercion": "^0.2",
+        "decodelabs/veneer": "^0.9",
+        "decodelabs/glitch-support": "^0.4",
+        "decodelabs/exceptional": "^0.4.1",
+        "decodelabs/enlighten": "^0.9",
 
-        "psr/log": "^1.0",
+        "psr/log": "^3.0",
         "components/jquery": "~3.3"
     },
     "require-dev": {
-        "phpunit/phpunit": "^8",
+        "phpunit/phpunit": "^9",
         "phpstan/phpstan": "^1",
         "phpstan/extension-installer": "^1.0",
-        "decodelabs/phpstan-decodelabs": "^0.5",
-        "symplify/easy-coding-standard": "^10",
+        "symplify/easy-coding-standard": "^11",
+
+        "decodelabs/phpstan-decodelabs": "^0.6.1",
 
         "symfony/var-dumper": "^5.1",
-        "php-ds/php-ds": "~1.2",
-
-        "decodelabs/atlas": "^0.9",
-        "decodelabs/terminus": "^0.7"
+        "php-ds/php-ds": "~1.2"
     },
     "autoload": {
         "psr-4": {
@@ -44,7 +42,12 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-develop": "0.17.x-dev"
+            "dev-develop": "0.18.x-dev"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true
         }
     },
     "scripts": {
