@@ -9,6 +9,17 @@ on:
   pull_request: null
 
 jobs:
+  byte_level:
+    name: "0️⃣ Byte-level"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout code"
+        uses: "actions/checkout@v3"
+
+      - name: "Find non-printable ASCII characters"
+        run: |
+          ! LC_ALL=C.UTF-8 find . -type f -name "*.php" -print0 | xargs -0 -- grep -PHn "[^ -~]" | grep -v '// @ignore-non-ascii$'
+
   syntax_errors:
     name: "1️⃣ Syntax errors"
     runs-on: "ubuntu-latest"
@@ -35,6 +46,7 @@ jobs:
   unit_tests:
     name: "2️⃣ Unit and functional tests"
     needs:
+      - "byte_level"
       - "syntax_errors"
     strategy:
       matrix:
@@ -77,6 +89,7 @@ jobs:
   static_analysis:
     name: "3️⃣ Static Analysis"
     needs:
+      - "byte_level"
       - "syntax_errors"
     runs-on: "ubuntu-latest"
     steps:
@@ -105,6 +118,7 @@ jobs:
   coding_standards:
     name: "4️⃣ Coding Standards"
     needs:
+      - "byte_level"
       - "syntax_errors"
     runs-on: "ubuntu-latest"
     steps:
@@ -132,6 +146,7 @@ jobs:
   exported_files:
     name: "5️⃣ Exported files"
     needs:
+      - "byte_level"
       - "syntax_errors"
     runs-on: "ubuntu-latest"
     steps:

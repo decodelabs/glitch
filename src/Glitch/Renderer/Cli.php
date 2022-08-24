@@ -289,7 +289,7 @@ class Cli implements Renderer
 
         foreach ($parts as $part) {
             $output[] = $this->format($this->renderStringLine($part), 'red', null, 'bold') .
-                $this->format('⏎', 'white', null, 'dim');
+                $this->format('⏎', 'white', null, 'dim'); // @ignore-non-ascii
         }
 
         $output[] = $this->format($quotes, 'white', null, 'dim');
