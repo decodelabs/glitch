@@ -1,9 +1,11 @@
+.editorconfig export-ignore
 .gitattributes export-ignore
+.github/ export-ignore
 .gitignore export-ignore
 CHANGELOG.md export-ignore
 ecs.php export-ignore
 phpstan.neon export-ignore
 phpunit.xml.dist export-ignore
-README.md export-ignore
-/docs export-ignore
-/tests export-ignore
+docs/ export-ignore
+tests/ export-ignore
+stubs/ export-ignore
