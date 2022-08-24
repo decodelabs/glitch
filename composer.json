@@ -58,6 +58,12 @@
         "lint": "parallel-lint src/ stubs/ ecs.php",
         "eclint": "eclint check src/ stubs/ ecs.php",
         "eclint-fix": "eclint fix src/ stubs/ ecs.php",
-        "check": "composer update && composer analyze && composer ecs && composer lint && composer eclint"
+        "check": [
+            "@composer update",
+            "@analyze",
+            "@ecs",
+            "@lint",
+            "@eclint"
+        ]
     }
 }
