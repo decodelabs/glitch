@@ -1,3 +1,6 @@
+## v0.18.1 (2022-08-24)
+* Added concrete types to all members
+
 ## v0.18.0 (2022-08-23)
 * Removed PHP7 compatibility
 * Updated PSR Log interface to v3
