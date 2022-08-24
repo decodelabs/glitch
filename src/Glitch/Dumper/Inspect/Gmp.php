@@ -19,8 +19,11 @@ class Gmp
     /**
      * Inspect Gmp
      */
-    public static function inspectGmp(GmpResource $gmp, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectGmp(
+        GmpResource $gmp,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity->setText(gmp_strval($gmp));
     }
 }

@@ -20,8 +20,11 @@ namespace DecodeLabs\Glitch\Dumper\Inspect {
          *
          * @param resource|CurlHandle $resource
          */
-        public static function inspectCurl($resource, Entity $entity, Inspector $inspector): void
-        {
+        public static function inspectCurl(
+            $resource,
+            Entity $entity,
+            Inspector $inspector
+        ): void {
             $entity->setMetaList($inspector->inspectList(
                 /** @phpstan-ignore-next-line */
                 curl_getinfo($resource)

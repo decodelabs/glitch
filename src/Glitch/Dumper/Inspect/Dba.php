@@ -19,8 +19,11 @@ class Dba
      *
      * @param resource $resource
      */
-    public static function inspectDba($resource, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectDba(
+        $resource,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $list = dba_list();
         $entity->setMeta('file', $inspector->inspectValue($list[(int)$resource]));
     }

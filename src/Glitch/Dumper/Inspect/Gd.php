@@ -21,8 +21,11 @@ namespace DecodeLabs\Glitch\Dumper\Inspect {
          *
          * @param resource|GdImage $resource
          */
-        public static function inspectGd($resource, Entity $entity, Inspector $inspector): void
-        {
+        public static function inspectGd(
+            $resource,
+            Entity $entity,
+            Inspector $inspector
+        ): void {
             $entity
                 ->setMeta('width', $inspector(
                     /** @phpstan-ignore-next-line */
@@ -36,11 +39,12 @@ namespace DecodeLabs\Glitch\Dumper\Inspect {
 
         /**
          * Inspect GD font resource
-         *
-         * @param int $font
          */
-        public static function inspectGdFont(int $font, Entity $entity, Inspector $inspector): void
-        {
+        public static function inspectGdFont(
+            int $font,
+            Entity $entity,
+            Inspector $inspector
+        ): void {
             $entity
                 ->setMeta('width', $inspector(imagefontwidth($font)))
                 ->setMeta('height', $inspector(imagefontheight($font)));

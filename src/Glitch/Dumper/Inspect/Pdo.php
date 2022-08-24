@@ -47,8 +47,11 @@ class Pdo
     /**
      * Inspect PDO connection
      */
-    public static function inspectPdo(PDOAdapter $pdo, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectPdo(
+        PDOAdapter $pdo,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         foreach (self::ATTRS as $name) {
             try {
                 $entity->setMeta(
@@ -72,8 +75,11 @@ class Pdo
     /**
      * Inspect PDO statement
      */
-    public static function inspectPdoStatement(PDOStatement $statement, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectPdoStatement(
+        PDOStatement $statement,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         ob_start();
         $statement->debugDumpParams();
 

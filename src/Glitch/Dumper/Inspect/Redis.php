@@ -19,8 +19,11 @@ class Redis
     /**
      * Inspect Redis connection
      */
-    public static function inspectRedis(RedisResource $redis, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectRedis(
+        RedisResource $redis,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $isConnected = $redis->isConnected();
         $entity->setMeta('connected', $inspector($isConnected));
 

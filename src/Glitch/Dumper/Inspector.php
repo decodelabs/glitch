@@ -268,39 +268,33 @@ class Inspector
     /**
      * @var array<string, callable>
      */
-    protected $objectInspectors = [];
+    protected array $objectInspectors = [];
 
     /**
      * @var array<string, callable>
      */
-    protected $resourceInspectors = [];
+    protected array $resourceInspectors = [];
 
 
     /**
      * @var array<int, string|null>
      */
-    protected $objectIds = [];
+    protected array $objectIds = [];
 
     /**
      * @var array<int, object>
      */
-    protected $objectRefs = [];
+    protected array $objectRefs = [];
 
 
-    /**
-     * @var int
-     */
-    protected $arrayObjectId = 0;
+    protected int $arrayObjectId = 0;
 
     /**
      * @var array<string, array<string|int|null>>
      */
-    protected $arrayCookies = [];
+    protected array $arrayCookies = [];
 
-    /**
-     * @var string|null
-     */
-    protected $arrayCookieKey;
+    protected ?string $arrayCookieKey = null;
 
 
     /**
@@ -335,7 +329,7 @@ class Inspector
      *
      * @return $this
      */
-    public function reset(): Inspector
+    public function reset(): static
     {
         $this->objectIds = [];
         $this->objectRefs = [];
@@ -381,12 +375,12 @@ class Inspector
 
     /**
      * Invoke wrapper
-     *
-     * @param mixed $value
-     * @return mixed
      */
-    public function __invoke($value, callable $entityCallback = null, bool $asList = false)
-    {
+    public function __invoke(
+        mixed $value,
+        callable $entityCallback = null,
+        bool $asList = false
+    ): mixed {
         if ($asList) {
             return $this->inspectList((array)$value, $entityCallback);
         } else {
@@ -396,12 +390,11 @@ class Inspector
 
     /**
      * Inspect and report
-     *
-     * @param mixed $value
-     * @return mixed
      */
-    public function inspect($value, callable $entityCallback = null)
-    {
+    public function inspect(
+        mixed $value,
+        callable $entityCallback = null
+    ): mixed {
         $output = $this->inspectValue($value);
 
         if ($output instanceof Entity && $entityCallback) {
@@ -417,8 +410,10 @@ class Inspector
      * @param array<mixed> $values
      * @return array<int|string, mixed>
      */
-    public function inspectList(array $values, callable $entityCallback = null): array
-    {
+    public function inspectList(
+        array $values,
+        callable $entityCallback = null
+    ): array {
         $output = [];
 
         foreach ($values as $key => $value) {
@@ -432,11 +427,8 @@ class Inspector
 
     /**
      * Inspect single value
-     *
-     * @param mixed $value
-     * @return mixed
      */
-    public function inspectValue(&$value)
+    public function inspectValue(mixed &$value): mixed
     {
         switch (true) {
             case $value === null:
@@ -466,10 +458,8 @@ class Inspector
 
     /**
      * Convert string into Entity
-     *
-     * @return Entity|string
      */
-    public function inspectString(string $string)
+    public function inspectString(string $string): Entity|string
     {
         $isPossibleClass = preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $string);
         $loadClasses = false !== strpos($string, '\\');
@@ -529,11 +519,12 @@ class Inspector
     /**
      * Name single flag from set
      *
-     * @param mixed $flag
      * @param array<string> $options
      */
-    public function inspectFlag($flag, array $options): ?Entity
-    {
+    public function inspectFlag(
+        mixed $flag,
+        array $options
+    ): ?Entity {
         if (!is_string($flag) && !is_int($flag)) {
             return null;
         }
@@ -559,8 +550,10 @@ class Inspector
      *
      * @param array<string> $options
      */
-    public function inspectFlagSet(?int $flags, array $options): Entity
-    {
+    public function inspectFlagSet(
+        ?int $flags,
+        array $options
+    ): Entity {
         $entity = (new Entity('flags'))
             ->setName('bitset');
 
@@ -677,8 +670,10 @@ class Inspector
     /**
      * Convert object into Entity
      */
-    public function inspectObject(object $object, bool $properties = true): ?Entity
-    {
+    public function inspectObject(
+        object $object,
+        bool $properties = true
+    ): ?Entity {
         $objectId = spl_object_id($object);
         $reflection = null;
         $className = get_class($object);
@@ -774,8 +769,10 @@ class Inspector
     /**
      * Normalize virtual class name
      */
-    protected function normalizeClassName(string $class, ReflectionObject $reflection): string
-    {
+    protected function normalizeClassName(
+        string $class,
+        ReflectionObject $reflection
+    ): string {
         if (0 === strpos($class, "class@anonymous\x00")) {
             if ($parent = $reflection->getParentClass()) {
                 $class = $parent->getShortName() . '@anonymous';
@@ -791,11 +788,12 @@ class Inspector
     /**
      * Inspect object parents
      *
-     * @param ReflectionObject $reflection
      * @return array<string, ReflectionClass<object>>
      */
-    protected function inspectObjectParents(ReflectionObject $reflection, Entity $entity): array
-    {
+    protected function inspectObjectParents(
+        ReflectionObject $reflection,
+        Entity $entity
+    ): array {
         // Parents
         $reflectionBase = $reflection;
         $parents = [];
@@ -829,8 +827,11 @@ class Inspector
      * @template T of object
      * @param array<string, ReflectionClass<T>> $reflections
      */
-    protected function inspectObjectProperties(object $object, array $reflections, Entity $entity): void
-    {
+    protected function inspectObjectProperties(
+        object $object,
+        array $reflections,
+        Entity $entity
+    ): void {
         $className = get_class($object);
 
         // Export
@@ -889,8 +890,13 @@ class Inspector
      * @param ReflectionClass<T> $reflection
      * @param array<string> $blackList
      */
-    public function inspectClassMembers(object $object, ReflectionClass $reflection, Entity $entity, array $blackList = [], bool $asMeta = false): void
-    {
+    public function inspectClassMembers(
+        object $object,
+        ReflectionClass $reflection,
+        Entity $entity,
+        array $blackList = [],
+        bool $asMeta = false
+    ): void {
         foreach ($reflection->getProperties() as $property) {
             if ($property->isStatic()) {
                 continue;

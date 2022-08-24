@@ -25,8 +25,11 @@ class Date
     /**
      * Inspect DateTime
      */
-    public static function inspectDateTime(DateTime $date, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectDateTime(
+        DateTime $date,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $fromNow = (new DateTime())->diff($date);
 
         $entity
@@ -42,8 +45,11 @@ class Date
     /**
      * Inspect DateInterval
      */
-    public static function inspectDateInterval(DateInterval $interval, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectDateInterval(
+        DateInterval $interval,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setText(self::formatInterval($interval));
 
@@ -60,8 +66,10 @@ class Date
     /**
      * Format DateInterval
      */
-    protected static function formatInterval(DateInterval $interval, bool $nominal = true): string
-    {
+    protected static function formatInterval(
+        DateInterval $interval,
+        bool $nominal = true
+    ): string {
         $format = '';
 
         if ($interval->y === 0 && $interval->m === 0 &&
@@ -117,8 +125,11 @@ class Date
     /**
      * Inspect DateTimeZone
      */
-    public static function inspectDateTimeZone(DateTimeZone $timezone, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectDateTimeZone(
+        DateTimeZone $timezone,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setText($timezone->getName());
 
@@ -134,8 +145,10 @@ class Date
     /**
      * Format seconds interval
      */
-    protected static function formatSeconds(?int $seconds, ?float $micro): string
-    {
+    protected static function formatSeconds(
+        ?int $seconds,
+        ?float $micro
+    ): string {
         $t = rtrim((string)$micro, '0');
         $len = strlen($t);
 
@@ -157,8 +170,11 @@ class Date
      *
      * @param DatePeriod<DateTime> $period
      */
-    public static function inspectDatePeriod(DatePeriod $period, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectDatePeriod(
+        DatePeriod $period,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setText(sprintf(
                 'every %s, from %s%s%s',

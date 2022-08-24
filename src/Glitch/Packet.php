@@ -11,15 +11,8 @@ namespace DecodeLabs\Glitch;
 
 class Packet
 {
-    /**
-     * @var string
-     */
-    protected $body;
-
-    /**
-     * @var string
-     */
-    protected $contentType;
+    protected string $body;
+    protected string $contentType;
 
     /**
      * Init with body and content type

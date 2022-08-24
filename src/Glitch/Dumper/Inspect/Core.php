@@ -28,8 +28,11 @@ class Core
     /**
      * Inspect generic exception
      */
-    public static function inspectException(Throwable $exception, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectException(
+        Throwable $exception,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setType('exception')
             ->setText($exception->getMessage())
@@ -51,8 +54,11 @@ class Core
     /**
      * Inspect Closure
      */
-    public static function inspectClosure(Closure $closure, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectClosure(
+        Closure $closure,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $reflection = new ReflectionFunction($closure);
 
         if (false === ($file = $reflection->getFileName())) {
@@ -83,8 +89,11 @@ class Core
      * @template TReturn
      * @phpstan-param Generator<TKey, TValue, TSend, TReturn> $generator
      */
-    public static function inspectGenerator(Generator $generator, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectGenerator(
+        Generator $generator,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         try {
             $reflection = new ReflectionGenerator($generator);
         } catch (Exception $e) {
@@ -115,8 +124,11 @@ class Core
     /**
      * Inspect __PHP_Incomplete_Class
      */
-    public static function inspectIncompleteClass(__PHP_Incomplete_Class $class, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectIncompleteClass(
+        __PHP_Incomplete_Class $class,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $vars = (array)$class;
         $entity->setDefinition($vars['__PHP_Incomplete_Class_Name']);
         unset($vars['__PHP_Incomplete_Class_Name']);

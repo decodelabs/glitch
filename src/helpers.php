@@ -10,6 +10,7 @@ declare(strict_types=1);
 /**
  * global helpers
  */
+
 namespace
 {
     use DecodeLabs\Glitch;
@@ -25,12 +26,11 @@ namespace
     if (!function_exists('dd')) {
         /**
          * Super quick global dump & die
-         *
-         * @param mixed $var
-         * @param mixed ...$vars
          */
-        function dd($var, ...$vars): void
-        {
+        function dd(
+            mixed $var,
+            mixed ...$vars
+        ): void {
             Glitch::dumpValues(func_get_args(), 1, true);
         }
     }
@@ -42,8 +42,10 @@ namespace
          * @param mixed $var
          * @param mixed ...$vars
          */
-        function dd2($var, ...$vars): void
-        {
+        function dd2(
+            mixed $var,
+            mixed ...$vars
+        ): void {
             foreach (func_get_args() as $arg) {
                 echo '<div><pre>' . print_r($arg, true) . '</pre></div>';
             }
@@ -59,8 +61,10 @@ namespace
          * @param mixed $var
          * @param mixed ...$vars
          */
-        function dump($var, ...$vars): void
-        {
+        function dump(
+            mixed $var,
+            mixed ...$vars
+        ): void {
             Glitch::dumpValues(func_get_args(), 1, false);
         }
     } elseif (class_exists(VarDumper::class)) {
@@ -77,7 +81,13 @@ namespace
                 $func = $frame->getFunctionName();
                 $type = $frame->getType();
 
-                if (($func == 'dd' || $func == 'dump') && $type == 'globalFunction') {
+                if (
+                    (
+                        $func == 'dd' ||
+                        $func == 'dump'
+                    ) &&
+                    $type == 'globalFunction'
+                ) {
                     $args = $frame->getArgs();
                     $skip = count($args) - 1;
                 } else {

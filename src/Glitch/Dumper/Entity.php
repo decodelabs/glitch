@@ -17,126 +17,64 @@ use ReflectionClass;
 
 class Entity
 {
-    /**
-     * @var string
-     */
-    protected $type;
+    protected string $type;
+    protected ?string $name = null;
+    protected ?string $id = null;
+    protected bool $open = true;
 
-    /**
-     * @var string|null
-     */
-    protected $name;
-
-    /**
-     * @var string|null
-     */
-    protected $id;
-
-    /**
-     * @var bool
-     */
-    protected $open = true;
-
-
-    /**
-     * @var int|null
-     */
-    protected $objectId;
-
-    /**
-     * @var string|null
-     */
-    protected $hash;
-
-    /**
-     * @var string|null
-     */
-    protected $class;
-
-    /**
-     * @var string|null
-     */
-    protected $className;
+    protected ?int $objectId = null;
+    protected ?string $hash = null;
+    protected ?string $class = null;
+    protected ?string $className = null;
 
     /**
      * @var array<string>|null
      */
-    protected $parents;
+    protected ?array $parents = null;
 
     /**
      * @var array<string>|null
      */
-    protected $interfaces;
+    protected ?array $interfaces = null;
 
     /**
      * @var array<string>|null
      */
-    protected $traits;
+    protected ?array $traits = null;
 
-    /**
-     * @var string|null
-     */
-    protected $file;
+    protected ?string $file = null;
+    protected ?int $startLine = null;
+    protected ?int $endLine = null;
 
-    /**
-     * @var int|null
-     */
-    protected $startLine;
+    protected ?string $text = null;
+    protected ?string $definition = null;
 
-    /**
-     * @var int|null
-     */
-    protected $endLine;
-
-
-    /**
-     * @var string|null
-     */
-    protected $text;
-
-    /**
-     * @var string|null
-     */
-    protected $definition;
-
-
-    /**
-     * @var int|null
-     */
-    protected $length;
+    protected ?int $length = null;
 
     /**
      * @var array<string, mixed>|null
      */
-    protected $meta;
-
+    protected ?array $meta = null;
 
     /**
      * @var array<int|string, mixed>|null
      */
-    protected $values;
+    protected ?array $values = null;
 
-    /**
-     * @var bool
-     */
-    protected $showValueKeys = true;
-
+    protected bool $showValueKeys = true;
 
     /**
      * @var array<string, mixed>|null
      */
-    protected $properties;
+    protected ?array $properties = null;
 
-    /**
-     * @var Trace|null
-     */
-    protected $stackTrace;
+    protected ?Trace $stackTrace = null;
 
 
     /**
      * @var array<string, bool>
      */
-    protected $sections = [
+    protected array $sections = [
         'info' => false,
         'meta' => false,
         'text' => true,
@@ -157,11 +95,13 @@ class Entity
 
     /**
      * Import from dump yield
-     *
-     * @param mixed $value
      */
-    public function importDumpValue(object $object, string $target, $value, Inspector $inspector): void
-    {
+    public function importDumpValue(
+        object $object,
+        string $target,
+        mixed $value,
+        Inspector $inspector
+    ): void {
         $parts = explode(':', $target, 2);
         $target = (string)array_shift($parts);
         $key = array_pop($parts);
@@ -291,7 +231,7 @@ class Entity
      *
      * @return $this
      */
-    public function setType(string $type): Entity
+    public function setType(string $type): static
     {
         $this->type = $type;
         $this->id = str_replace('.', '-', uniqid($type . '-', true));
@@ -313,7 +253,7 @@ class Entity
      *
      * @return $this
      */
-    public function setName(?string $name): Entity
+    public function setName(?string $name): static
     {
         $this->name = $name;
         return $this;
@@ -333,7 +273,7 @@ class Entity
      *
      * @return $this
      */
-    public function setOpen(bool $open): Entity
+    public function setOpen(bool $open): static
     {
         $this->open = $open;
         return $this;
@@ -353,7 +293,7 @@ class Entity
      *
      * @return $this
      */
-    public function setId(?string $id): Entity
+    public function setId(?string $id): static
     {
         $this->id = $id;
         return $this;
@@ -374,7 +314,7 @@ class Entity
      *
      * @return $this
      */
-    public function setObjectId(?int $id): Entity
+    public function setObjectId(?int $id): static
     {
         $this->objectId = $id;
         return $this;
@@ -393,7 +333,7 @@ class Entity
      *
      * @return $this
      */
-    public function setHash(?string $hash): Entity
+    public function setHash(?string $hash): static
     {
         $this->hash = $hash;
         return $this;
@@ -413,7 +353,7 @@ class Entity
      *
      * @return $this
      */
-    public function setClass(?string $class): Entity
+    public function setClass(?string $class): static
     {
         $this->class = $class;
         return $this;
@@ -432,7 +372,7 @@ class Entity
      *
      * @return $this
      */
-    public function setClassName(?string $className): Entity
+    public function setClassName(?string $className): static
     {
         $this->className = $className;
         return $this;
@@ -452,7 +392,7 @@ class Entity
      *
      * @return $this
      */
-    public function setParentClasses(string ...$parents): Entity
+    public function setParentClasses(string ...$parents): static
     {
         if (empty($parents)) {
             $parents = null;
@@ -478,7 +418,7 @@ class Entity
      *
      * @return $this
      */
-    public function setInterfaces(string ...$interfaces): Entity
+    public function setInterfaces(string ...$interfaces): static
     {
         if (empty($interfaces)) {
             $interfaces = null;
@@ -504,7 +444,7 @@ class Entity
      *
      * @return $this
      */
-    public function setTraits(string ...$traits): Entity
+    public function setTraits(string ...$traits): static
     {
         if (empty($traits)) {
             $traits = null;
@@ -531,7 +471,7 @@ class Entity
      *
      * @return $this
      */
-    public function setFile(?string $file): Entity
+    public function setFile(?string $file): static
     {
         $this->file = $file;
         return $this;
@@ -550,7 +490,7 @@ class Entity
      *
      * @return $this
      */
-    public function setStartLine(?int $line): Entity
+    public function setStartLine(?int $line): static
     {
         $this->startLine = $line;
         return $this;
@@ -569,7 +509,7 @@ class Entity
      *
      * @return $this
      */
-    public function setEndLine(?int $line): Entity
+    public function setEndLine(?int $line): static
     {
         $this->endLine = $line;
         return $this;
@@ -591,7 +531,7 @@ class Entity
      *
      * @return $this
      */
-    public function setText(?string $text): Entity
+    public function setText(?string $text): static
     {
         $this->text = $text;
         return $this;
@@ -612,7 +552,7 @@ class Entity
      *
      * @return $this
      */
-    public function setDefinition(?string $definition): Entity
+    public function setDefinition(?string $definition): static
     {
         $this->definition = $definition;
         return $this;
@@ -633,7 +573,7 @@ class Entity
      *
      * @return $this
      */
-    public function setLength(?int $length): Entity
+    public function setLength(?int $length): static
     {
         $this->length = $length;
         return $this;
@@ -653,11 +593,12 @@ class Entity
     /**
      * Set meta value
      *
-     * @param mixed $value
      * @return $this
      */
-    public function setMeta(string $key, $value): Entity
-    {
+    public function setMeta(
+        string $key,
+        mixed $value
+    ): static {
         $this->checkValidity($value);
 
         $this->meta[$key] = $value;
@@ -666,10 +607,8 @@ class Entity
 
     /**
      * Get meta value
-     *
-     * @return mixed
      */
-    public function getMeta(string $key)
+    public function getMeta(string $key): mixed
     {
         return $this->meta[$key] ?? null;
     }
@@ -680,7 +619,7 @@ class Entity
      * @param array<int|string, mixed> $meta
      * @return $this
      */
-    public function setMetaList(array $meta): Entity
+    public function setMetaList(array $meta): static
     {
         foreach ($meta as $key => $value) {
             $this->setMeta((string)$key, $value);
@@ -716,7 +655,7 @@ class Entity
      *
      * @return $this
      */
-    public function removeMeta(string $key): Entity
+    public function removeMeta(string $key): static
     {
         unset($this->meta[$key]);
         return $this;
@@ -727,7 +666,7 @@ class Entity
      *
      * @return $this
      */
-    public function clearMeta(): Entity
+    public function clearMeta(): static
     {
         $this->meta = [];
         return $this;
@@ -738,12 +677,12 @@ class Entity
     /**
      * Set value by key
      *
-     * @param int|string $key
-     * @param mixed $value
      * @return $this
      */
-    public function setValue($key, $value): Entity
-    {
+    public function setValue(
+        int|string $key,
+        mixed $value
+    ): static {
         $this->checkValidity($value);
 
         $this->values[$key] = $value;
@@ -752,22 +691,19 @@ class Entity
 
     /**
      * Get value by key
-     *
-     * @param int|string $key
-     * @return mixed
      */
-    public function getValue($key)
-    {
+    public function getValue(
+        int|string $key
+    ): mixed {
         return $this->values[$key] ?? null;
     }
 
     /**
      * Set single value
      *
-     * @param mixed $value
      * @return $this
      */
-    public function setSingleValue($value): Entity
+    public function setSingleValue(mixed $value): static
     {
         $this->setValues([$value]);
         $this->setShowKeys(false);
@@ -776,10 +712,8 @@ class Entity
 
     /**
      * Get single value
-     *
-     * @return mixed
      */
-    public function getSingleValue()
+    public function getSingleValue(): mixed
     {
         return $this->values[0] ?? null;
     }
@@ -790,7 +724,7 @@ class Entity
      * @param array<int|string, mixed>|null $values
      * @return $this
      */
-    public function setValues(?array $values): Entity
+    public function setValues(?array $values): static
     {
         if ($values !== null) {
             foreach ($values as $value) {
@@ -814,22 +748,21 @@ class Entity
 
     /**
      * Has value
-     *
-     * @param int|string $key
      */
-    public function hasValue($key): bool
-    {
+    public function hasValue(
+        int|string $key
+    ): bool {
         return isset($this->values[$key]);
     }
 
     /**
      * Remove value
      *
-     * @param int|string $key
      * @return $this
      */
-    public function removeValue($key): Entity
-    {
+    public function removeValue(
+        int|string $key
+    ): static {
         unset($this->values[$key]);
         return $this;
     }
@@ -839,7 +772,7 @@ class Entity
      *
      * @return $this
      */
-    public function clearValues(): Entity
+    public function clearValues(): static
     {
         $this->values = [];
         return $this;
@@ -851,7 +784,7 @@ class Entity
      *
      * @return $this
      */
-    public function setShowKeys(bool $show): Entity
+    public function setShowKeys(bool $show): static
     {
         $this->showValueKeys = $show;
         return $this;
@@ -873,7 +806,7 @@ class Entity
      * @param array<int|string, mixed> $properties
      * @return $this
      */
-    public function setProperties(array $properties): Entity
+    public function setProperties(array $properties): static
     {
         foreach ($properties as $key => $value) {
             $this->setProperty((string)$key, $value);
@@ -896,11 +829,12 @@ class Entity
     /**
      * Set property
      *
-     * @param mixed $value
      * @return $this
      */
-    public function setProperty(string $key, $value): Entity
-    {
+    public function setProperty(
+        string $key,
+        mixed $value
+    ): static {
         $this->checkValidity($value);
         $this->properties[$key] = $value;
         return $this;
@@ -908,10 +842,8 @@ class Entity
 
     /**
      * Get property
-     *
-     * @return mixed
      */
-    public function getProperty(string $key)
+    public function getProperty(string $key): mixed
     {
         return $this->properties[$key] ?? null;
     }
@@ -933,7 +865,7 @@ class Entity
      *
      * @return $this
      */
-    public function removeProperty(string $key): Entity
+    public function removeProperty(string $key): static
     {
         unset($this->properties[$key]);
         return $this;
@@ -944,7 +876,7 @@ class Entity
      *
      * @return $this
      */
-    public function clearProperties(): Entity
+    public function clearProperties(): static
     {
         $this->properties = [];
         return $this;
@@ -957,7 +889,7 @@ class Entity
      *
      * @return $this
      */
-    public function setStackTrace(Trace $trace): Entity
+    public function setStackTrace(Trace $trace): static
     {
         $this->stackTrace = $trace;
         return $this;
@@ -975,11 +907,11 @@ class Entity
 
     /**
      * Check value for Entity validity
-     *
-     * @param mixed $value
      */
-    protected function checkValidity($value, string $type = null): void
-    {
+    protected function checkValidity(
+        mixed $value,
+        string $type = null
+    ): void {
         if ($type !== null) {
             if (!$this->checkTypeValidity($value, $type)) {
                 throw Exceptional::UnexpectedValue(
@@ -1012,11 +944,11 @@ class Entity
 
     /**
      * Check value type
-     *
-     * @param mixed $value
      */
-    protected function checkTypeValidity($value, string $type): bool
-    {
+    protected function checkTypeValidity(
+        mixed $value,
+        string $type
+    ): bool {
         // Nullable
         if (substr($type, 0, 1) === '?') {
             if ($value === null) {
@@ -1060,7 +992,7 @@ class Entity
      *
      * @return $this
      */
-    public function hideSection(string $name): Entity
+    public function hideSection(string $name): static
     {
         if (isset($this->sections[$name])) {
             $this->sections[$name] = false;
@@ -1074,7 +1006,7 @@ class Entity
      *
      * @return $this
      */
-    public function showSection(string $name): Entity
+    public function showSection(string $name): static
     {
         if (isset($this->sections[$name])) {
             $this->sections[$name] = true;
@@ -1088,8 +1020,10 @@ class Entity
      *
      * @return $this
      */
-    public function setSectionVisible(string $name, bool $visible): Entity
-    {
+    public function setSectionVisible(
+        string $name,
+        bool $visible
+    ): static {
         if (isset($this->sections[$name])) {
             $this->sections[$name] = $visible;
         }
@@ -1111,7 +1045,7 @@ class Entity
      * @param array<string, bool> $sections
      * @return $this
      */
-    public function setSectionsVisible(array $sections): Entity
+    public function setSectionsVisible(array $sections): static
     {
         foreach ($sections as $section => $visible) {
             $this->setSectionVisible($section, (bool)$visible);

@@ -23,17 +23,13 @@ class Ds
      *
      * @param Collection<int|string, mixed> $collection
      */
-    public static function inspectCollection(Collection $collection, Entity $entity, Inspector $inspector): void
-    {
-        if (method_exists($collection, 'capacity')) {
-            $capacity = $collection->capacity();
-        } else {
-            $capacity = 0;
-        }
-
+    public static function inspectCollection(
+        Collection $collection,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setLength(count($collection))
-            ->setMeta('capacity', $inspector($capacity))
             ->setValues($inspector->inspectList($collection->toArray()));
     }
 
@@ -42,8 +38,11 @@ class Ds
      *
      * @param Pair<int|string, mixed> $pair
      */
-    public static function inspectPair(Pair $pair, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectPair(
+        Pair $pair,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setProperties($inspector->inspectList($pair->toArray()));
     }
@@ -53,8 +52,11 @@ class Ds
      *
      * @param Set<mixed> $set
      */
-    public static function inspectSet(Set $set, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectSet(
+        Set $set,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setLength(count($set))
             ->setMeta('capacity', $inspector($set->capacity()))

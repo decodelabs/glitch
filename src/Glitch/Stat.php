@@ -13,20 +13,9 @@ use DecodeLabs\Coercion;
 
 class Stat
 {
-    /**
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @var string
-     */
-    protected $key;
-
-    /**
-     * @var mixed
-     */
-    protected $value;
+    protected string $name;
+    protected string $key;
+    protected mixed $value;
 
     /**
      * @var callable|null
@@ -35,11 +24,12 @@ class Stat
 
     /**
      * Construct with main info
-     *
-     * @param mixed $value
      */
-    public function __construct(string $key, string $name, $value)
-    {
+    public function __construct(
+        string $key,
+        string $name,
+        mixed $value
+    ) {
         $this->key = $key;
         $this->name = $name;
         $this->value = $value;
@@ -68,7 +58,7 @@ class Stat
      *
      * @return $this
      */
-    public function setRenderer(?callable $renderer): Stat
+    public function setRenderer(?callable $renderer): static
     {
         $this->renderer = $renderer;
         return $this;
