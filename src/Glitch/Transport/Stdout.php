@@ -17,24 +17,30 @@ class Stdout implements Transport
     /**
      * Send dump straight to output
      */
-    public function sendDump(Packet $packet, bool $final): void
-    {
+    public function sendDump(
+        Packet $packet,
+        bool $final
+    ): void {
         $this->sendPacket($packet, $final);
     }
 
     /**
      * Send exception dump straight to output
      */
-    public function sendException(Packet $packet, bool $final): void
-    {
+    public function sendException(
+        Packet $packet,
+        bool $final
+    ): void {
         $this->sendPacket($packet, $final);
     }
 
     /**
      * Send packet
      */
-    protected function sendPacket(Packet $packet, bool $final): void
-    {
+    protected function sendPacket(
+        Packet $packet,
+        bool $final
+    ): void {
         echo $packet->getBody();
     }
 }

@@ -14,5 +14,8 @@ use DecodeLabs\Glitch\Dumper\Inspector;
 
 interface Inspectable
 {
-    public function glitchInspect(Entity $entity, Inspector $inspector): void;
+    public function glitchInspect(
+        Entity $entity,
+        Inspector $inspector
+    ): void;
 }

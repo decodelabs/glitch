@@ -30,66 +30,43 @@ use Throwable;
 
 class Context implements LoggerAwareInterface
 {
-    public const VERSION = 'v0.18.0';
+    public const VERSION = 'v0.18.1';
 
-    /**
-     * @var float
-     */
-    protected $startTime;
-
-    /**
-     * @var string
-     */
-    protected $runMode = 'development';
+    protected float $startTime;
+    protected string $runMode = 'development';
 
     /**
      * @var array<string, string>
      */
-    protected $pathAliases = [];
+    protected array $pathAliases = [];
 
 
     /**
      * @var array<string, callable>
      */
-    protected $statGatherers = [];
+    protected array $statGatherers = [];
 
 
     /**
      * @var array<string, callable>
      */
-    protected $objectInspectors = [];
+    protected array $objectInspectors = [];
 
     /**
      * @var array<string, callable>
      */
-    protected $resourceInspectors = [];
+    protected array $resourceInspectors = [];
 
 
-    /**
-     * @var bool
-     */
-    protected $dumpedInBuffer = false;
-
-
-    /**
-     * @var LoggerInterface|null
-     */
-    protected $logger;
+    protected bool $dumpedInBuffer = false;
+    protected ?LoggerInterface $logger = null;
 
     /**
      * @var callable|null
      */
     protected $logListener;
-
-    /**
-     * @var Renderer|null
-     */
-    protected $dumpRenderer;
-
-    /**
-     * @var Transport|null
-     */
-    protected $transport;
+    protected ?Renderer $dumpRenderer = null;
+    protected ?Transport $transport = null;
 
 
     /**
@@ -120,7 +97,7 @@ class Context implements LoggerAwareInterface
      *
      * @return $this
      */
-    public function setRunMode(string $mode): Context
+    public function setRunMode(string $mode): static
     {
         switch ($mode) {
             case 'production':
@@ -193,7 +170,7 @@ class Context implements LoggerAwareInterface
      *
      * @return $this
      */
-    public function setLogListener(?callable $listener): Context
+    public function setLogListener(?callable $listener): static
     {
         $this->logListener = $listener;
         return $this;
@@ -220,23 +197,21 @@ class Context implements LoggerAwareInterface
 
     /**
      * Send variables to dump, carry on execution
-     *
-     * @param mixed $var
-     * @param mixed ...$vars
      */
-    public function dump($var, ...$vars): void
-    {
+    public function dump(
+        mixed $var,
+        mixed ...$vars
+    ): void {
         $this->dumpValues(func_get_args(), 1, false);
     }
 
     /**
      * Send variables to dump, exit and render
-     *
-     * @param mixed $var
-     * @param mixed ...$vars
      */
-    public function dumpDie($var, ...$vars): void
-    {
+    public function dumpDie(
+        mixed $var,
+        mixed ...$vars
+    ): void {
         $this->dumpValues(func_get_args(), 1, true);
     }
 
@@ -254,8 +229,11 @@ class Context implements LoggerAwareInterface
      *
      * @param array<mixed> $values
      */
-    public function dumpValues(array $values, int $rewind = 0, bool $exit = true): void
-    {
+    public function dumpValues(
+        array $values,
+        int $rewind = 0,
+        bool $exit = true
+    ): void {
         if ($exit) {
             while (ob_get_level()) {
                 if ($this->dumpedInBuffer) {
@@ -302,8 +280,10 @@ class Context implements LoggerAwareInterface
     /**
      * Dump and render exception
      */
-    public function dumpException(Throwable $exception, bool $exit = true): void
-    {
+    public function dumpException(
+        Throwable $exception,
+        bool $exit = true
+    ): void {
         if ($exit) {
             while (ob_get_level()) {
                 if ($this->dumpedInBuffer) {
@@ -354,7 +334,7 @@ class Context implements LoggerAwareInterface
      *
      * @return $this
      */
-    public function setStartTime(float $time): Context
+    public function setStartTime(float $time): static
     {
         $this->startTime = $time;
         return $this;
@@ -371,11 +351,11 @@ class Context implements LoggerAwareInterface
 
     /**
      * Shortcut to incomplete context method
-     *
-     * @param mixed $data
      */
-    public function incomplete($data = null, int $rewind = 0): void
-    {
+    public function incomplete(
+        mixed $data = null,
+        int $rewind = 0
+    ): void {
         throw new IncompleteException(
             Trace::create($rewind + 1),
             $data
@@ -388,7 +368,7 @@ class Context implements LoggerAwareInterface
      *
      * @return $this
      */
-    public function registerAsErrorHandler(): Context
+    public function registerAsErrorHandler(): static
     {
         set_error_handler([$this, 'handleError']);
         set_exception_handler([$this, 'handleException']);
@@ -401,8 +381,12 @@ class Context implements LoggerAwareInterface
     /**
      * Default ErrorException wrapper
      */
-    public function handleError(int $level, string $message, string $file, int $line): bool
-    {
+    public function handleError(
+        int $level,
+        string $message,
+        string $file,
+        int $line
+    ): bool {
         if (!(error_reporting() & $level)) {
             return false;
         }
@@ -505,7 +489,7 @@ class Context implements LoggerAwareInterface
      *
      * @return $this
      */
-    public function setHeaderBufferSender(?callable $sender): Context
+    public function setHeaderBufferSender(?callable $sender): static
     {
         $this->headerBufferSender = $sender;
         return $this;
@@ -526,7 +510,7 @@ class Context implements LoggerAwareInterface
      *
      * @return $this
      */
-    public function setErrorPageRenderer(?callable $renderer): Context
+    public function setErrorPageRenderer(?callable $renderer): static
     {
         $this->errorPageRenderer = $renderer;
         return $this;
@@ -548,8 +532,10 @@ class Context implements LoggerAwareInterface
      *
      * @return $this
      */
-    public function registerPathAlias(string $name, string $path): Context
-    {
+    public function registerPathAlias(
+        string $name,
+        string $path
+    ): static {
         $path = rtrim($path, '/') . '/';
         $this->pathAliases[$name] = $path;
 
@@ -573,7 +559,7 @@ class Context implements LoggerAwareInterface
      * @param array<string, string> $aliases
      * @return $this
      */
-    public function registerPathAliases(array $aliases): Context
+    public function registerPathAliases(array $aliases): static
     {
         foreach ($aliases as $name => $path) {
             $path = rtrim($path, '/') . '/';
@@ -636,8 +622,10 @@ class Context implements LoggerAwareInterface
      *
      * @return $this
      */
-    public function registerStatGatherer(string $name, callable $gatherer): Context
-    {
+    public function registerStatGatherer(
+        string $name,
+        callable $gatherer
+    ): static {
         $this->statGatherers[$name] = $gatherer;
         return $this;
     }
@@ -655,8 +643,10 @@ class Context implements LoggerAwareInterface
     /**
      * Default stat gatherer
      */
-    public function gatherDefaultStats(Dump $dump, Context $context): void
-    {
+    public function gatherDefaultStats(
+        Dump $dump,
+        Context $context
+    ): void {
         $frame = $dump->getTrace()->getFirstFrame();
 
         $dump->addStats(
@@ -711,8 +701,10 @@ class Context implements LoggerAwareInterface
      *
      * @return $this
      */
-    public function registerObjectInspector(string $class, callable $inspector): Context
-    {
+    public function registerObjectInspector(
+        string $class,
+        callable $inspector
+    ): static {
         $this->objectInspectors[$class] = $inspector;
         return $this;
     }
@@ -733,8 +725,10 @@ class Context implements LoggerAwareInterface
      *
      * @return $this
      */
-    public function registerResourceInspector(string $type, callable $inspector): Context
-    {
+    public function registerResourceInspector(
+        string $type,
+        callable $inspector
+    ): static {
         $this->resourceInspectors[$type] = $inspector;
         return $this;
     }
@@ -778,7 +772,7 @@ class Context implements LoggerAwareInterface
      *
      * @return $this
      */
-    public function setRenderer(Renderer $renderer): Context
+    public function setRenderer(Renderer $renderer): static
     {
         $this->dumpRenderer = $renderer;
         return $this;
@@ -789,7 +783,7 @@ class Context implements LoggerAwareInterface
      *
      * @return $this
      */
-    public function useTextRenderer(): Context
+    public function useTextRenderer(): static
     {
         $this->dumpRenderer = new TextRenderer($this);
         return $this;
@@ -836,7 +830,7 @@ class Context implements LoggerAwareInterface
      *
      * @return $this
      */
-    public function setTransport(Transport $transport): Context
+    public function setTransport(Transport $transport): static
     {
         $this->transport = $transport;
         return $this;

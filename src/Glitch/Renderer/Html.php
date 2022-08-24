@@ -87,17 +87,14 @@ class Html implements Renderer
         505 => 'HTTP Version Not Supported'
     ];
 
-    /**
-     * @var string|null
-     */
-    protected $customCssFile = null;
+    protected ?string $customCssFile = null;
 
     /**
      * Set custom css file
      *
      * @return $this
      */
-    public function setCustomCssFile(?string $path): Html
+    public function setCustomCssFile(?string $path): static
     {
         $this->customCssFile = $path;
         return $this;
@@ -115,8 +112,10 @@ class Html implements Renderer
     /**
      * Convert Dump object to HTML string
      */
-    public function renderDump(Dump $dump, bool $final): Packet
-    {
+    public function renderDump(
+        Dump $dump,
+        bool $final
+    ): Packet {
         if (!$this->shouldRender()) {
             return $this->exportDumpBuffer([], $final);
         }
@@ -150,8 +149,11 @@ class Html implements Renderer
     /**
      * Inspect handled exception
      */
-    public function renderException(Throwable $exception, Entity $entity, Dump $dataDump): Packet
-    {
+    public function renderException(
+        Throwable $exception,
+        Entity $entity,
+        Dump $dataDump
+    ): Packet {
         $output = [];
 
         $class = 'exception';
@@ -496,8 +498,10 @@ class Html implements Renderer
     /**
      * Render final stack trace
      */
-    protected function renderTrace(Trace $trace, bool $open = false): string
-    {
+    protected function renderTrace(
+        Trace $trace,
+        bool $open = false
+    ): string {
         $output = [];
         $output[] = '<section class="stack">';
         $output[] = '<h3>Stack trace</h3>';
@@ -583,8 +587,10 @@ class Html implements Renderer
      *
      * @param array<string> $buffer
      */
-    protected function exportBuffer(array $buffer, bool $final): Packet
-    {
+    protected function exportBuffer(
+        array $buffer,
+        bool $final
+    ): Packet {
         $html = implode("\n", $buffer);
 
         if ($final && !$this->context->hasDumpedInBuffer()) {
@@ -625,24 +631,30 @@ class Html implements Renderer
     /**
      * Render a boolean scalar
      */
-    protected function renderBool(bool $value, ?string $class = null): string
-    {
+    protected function renderBool(
+        bool $value,
+        ?string $class = null
+    ): string {
         return '<span class="bool' . ($class !== null ? ' ' . $class : null) . '">' . ($value ? 'true' : 'false') . '</span>';
     }
 
     /**
      * Render a integer scalar
      */
-    protected function renderInt(int $value, ?string $class = null): string
-    {
+    protected function renderInt(
+        int $value,
+        ?string $class = null
+    ): string {
         return '<span class="int' . ($class !== null ? ' ' . $class : null) . '">' . $value . '</span>';
     }
 
     /**
      * Render a float scalar
      */
-    protected function renderFloat(float $value, ?string $class = null): string
-    {
+    protected function renderFloat(
+        float $value,
+        ?string $class = null
+    ): string {
         return '<span class="float' . ($class !== null ? ' ' . $class : null) . '">' . $this->normalizeFloat($value) . '</span>';
     }
 
@@ -651,16 +663,21 @@ class Html implements Renderer
     /**
      * Render a single identifier string
      */
-    protected function renderIdentifierString(string $string, ?string $class, int $forceSingleLineMax = null): string
-    {
+    protected function renderIdentifierString(
+        string $string,
+        ?string $class,
+        int $forceSingleLineMax = null
+    ): string {
         return '<span class="string ' . $class . '">' . $this->renderStringLine($string, $forceSingleLineMax) . '</span>';
     }
 
     /**
      * Render a standard multi line string
      */
-    protected function renderMultiLineString(string $string, string $class = null): string
-    {
+    protected function renderMultiLineString(
+        string $string,
+        string $class = null
+    ): string {
         $string = str_replace("\r", '', $string);
         $parts = explode("\n", $string);
         $count = count($parts);
@@ -679,8 +696,11 @@ class Html implements Renderer
     /**
      * Render a standard single line string
      */
-    protected function renderSingleLineString(string $string, string $class = null, int $forceSingleLineMax = null): string
-    {
+    protected function renderSingleLineString(
+        string $string,
+        string $class = null,
+        int $forceSingleLineMax = null
+    ): string {
         $output = '<span class="string s ' . $class . '"><span class="line">' . $this->renderStringLine($string, $forceSingleLineMax) . '</span>';
 
         if ($forceSingleLineMax === null) {
@@ -719,8 +739,10 @@ class Html implements Renderer
      *
      * @param resource $value
      */
-    protected function renderResource($value, ?string $class = null): string
-    {
+    protected function renderResource(
+        $value,
+        ?string $class = null
+    ): string {
         return '<span class="resource">resource</span>';
     }
 
@@ -752,8 +774,10 @@ class Html implements Renderer
     /**
      * Render file path
      */
-    protected function renderSourceFile(string $path, ?string $class = null): string
-    {
+    protected function renderSourceFile(
+        string $path,
+        ?string $class = null
+    ): string {
         return '<span class="file ' . $class . '">' . $path . '</span>';
     }
 
@@ -770,8 +794,10 @@ class Html implements Renderer
     /**
      * render a signature block
      */
-    protected function wrapSignature(string $signature, ?string $class = null): string
-    {
+    protected function wrapSignature(
+        string $signature,
+        ?string $class = null
+    ): string {
         return '<span class="signature source' . ($class ? ' ' . $class : null) . '">' . $signature . '</span>';
     }
 
@@ -802,16 +828,20 @@ class Html implements Renderer
     /**
      * Wrap signature function block
      */
-    protected function wrapSignatureFunction(string $function, ?string $class = null): string
-    {
+    protected function wrapSignatureFunction(
+        string $function,
+        ?string $class = null
+    ): string {
         return '<span class="function' . ($class ? ' ' . $class : null) . '">' . $function . '</span>';
     }
 
     /**
      * Wrap signature array
      */
-    protected function wrapSignatureArray(string $array, ?string $class = null): string
-    {
+    protected function wrapSignatureArray(
+        string $array,
+        ?string $class = null
+    ): string {
         return '<span class="ar' . ($class ? ' ' . $class : null) . '">' . $array . '</span>';
     }
 
@@ -827,8 +857,10 @@ class Html implements Renderer
     /**
      * Wrap entity
      */
-    protected function wrapEntity(string $entity, ?string $class = null): string
-    {
+    protected function wrapEntity(
+        string $entity,
+        ?string $class = null
+    ): string {
         return '<div class="entity group ' . $class . '">' . $entity . '</div>';
     }
 
@@ -836,8 +868,11 @@ class Html implements Renderer
     /**
      * Begin entity block
      */
-    protected function wrapEntityHeader(string $header, string $type, string $linkId): string
-    {
+    protected function wrapEntityHeader(
+        string $header,
+        string $type,
+        string $linkId
+    ): string {
         return '<div class="title t-' . $type . '" id="' . $linkId . '">' . $header . '</div>';
     }
 
@@ -854,8 +889,11 @@ class Html implements Renderer
     /**
      * Wrap entity name link
      */
-    protected function wrapEntityName(string $name, bool $open, string $linkId): string
-    {
+    protected function wrapEntityName(
+        string $name,
+        bool $open,
+        string $linkId
+    ): string {
         return '<a class="name code" data-open="body">' . $name . '</a>';
     }
 
@@ -870,8 +908,11 @@ class Html implements Renderer
     /**
      * Wrap entity name link reference
      */
-    protected function wrapEntityNameReference(string $name, bool $open, string $id): string
-    {
+    protected function wrapEntityNameReference(
+        string $name,
+        bool $open,
+        string $id
+    ): string {
         return '<a class="name code ref" href="#' . $id . '">' . $name . '</a>';
     }
 
@@ -903,8 +944,10 @@ class Html implements Renderer
     /**
      * Render info toggle button
      */
-    protected function renderEntityInfoButton(bool $isRef, bool $open): string
-    {
+    protected function renderEntityInfoButton(
+        bool $isRef,
+        bool $open
+    ): string {
         if ($isRef) {
             return '<a data-open="body" class="info badge"><i>i</i></a>';
         } else {
@@ -955,8 +998,10 @@ class Html implements Renderer
     /**
      * Render stack toggle button
      */
-    protected function renderEntityStackButton(string $type, bool $open): string
-    {
+    protected function renderEntityStackButton(
+        string $type,
+        bool $open
+    ): string {
         if ($type === 'stack') {
             return '<a data-open="body" class="stack badge"><i>s</i></a>';
         } else {
@@ -968,8 +1013,11 @@ class Html implements Renderer
     /**
      * Render object id tag
      */
-    protected function renderEntityOid(int $objectId, bool $isRef, string $id): string
-    {
+    protected function renderEntityOid(
+        int $objectId,
+        bool $isRef,
+        string $id
+    ): string {
         if ($isRef) {
             return '<a href="#' . $id . '" class="ref oid">' . $this->esc((string)$objectId) . '</a>';
         } else {
@@ -980,16 +1028,24 @@ class Html implements Renderer
     /**
      * Wrap entity body
      */
-    protected function wrapEntityBody(string $body, bool $open, string $linkId): string
-    {
+    protected function wrapEntityBody(
+        string $body,
+        bool $open,
+        string $linkId
+    ): string {
         return '<div class="inner body">' . $body . '</div>';
     }
 
     /**
      * Wrap entity body block
      */
-    protected function wrapEntityBodyBlock(string $block, string $type, bool $open, string $linkId, ?string $class = null): string
-    {
+    protected function wrapEntityBodyBlock(
+        string $block,
+        string $type,
+        bool $open,
+        string $linkId,
+        ?string $class = null
+    ): string {
         if ($class && $class !== $type) {
             $class .= ' ' . $type;
         } else {
@@ -1023,8 +1079,10 @@ class Html implements Renderer
      *
      * @param array<string> $lines
      */
-    protected function renderBasicList(array $lines, ?string $class = null): string
-    {
+    protected function renderBasicList(
+        array $lines,
+        ?string $class = null
+    ): string {
         $output = [];
         $output[] = '<ul class="' . $class . '">';
 

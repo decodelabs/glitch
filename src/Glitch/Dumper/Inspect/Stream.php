@@ -19,8 +19,11 @@ class Stream
      *
      * @param resource $resource
      */
-    public static function inspectStream($resource, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectStream(
+        $resource,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity->setMetaList($inspector->inspectList(stream_get_meta_data($resource)));
         self::inspectStreamContext($resource, $entity, $inspector);
     }
@@ -30,8 +33,11 @@ class Stream
      *
      * @param resource $resource
      */
-    public static function inspectStreamContext($resource, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectStreamContext(
+        $resource,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         if (!$params = stream_context_get_params($resource)) {
             return;
         }

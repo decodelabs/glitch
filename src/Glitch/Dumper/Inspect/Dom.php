@@ -36,8 +36,11 @@ class Dom
     /**
      * Inspect attr
      */
-    public static function inspectAttr(DOMAttr $attr, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectAttr(
+        DOMAttr $attr,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setProperty('name', $attr->name)
             ->setValues($inspector->inspectList([$attr->value]))
@@ -47,8 +50,11 @@ class Dom
     /**
      * Inspect CData section
      */
-    public static function inspectCdataSection(DOMCdataSection $section, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectCdataSection(
+        DOMCdataSection $section,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setText($section->data);
     }
@@ -56,8 +62,11 @@ class Dom
     /**
      * Inspect character data
      */
-    public static function inspectCharacterData(DOMCharacterData $data, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectCharacterData(
+        DOMCharacterData $data,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setText($data->data);
     }
@@ -65,8 +74,11 @@ class Dom
     /**
      * Inspect comment
      */
-    public static function inspectComment(DOMComment $comment, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectComment(
+        DOMComment $comment,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setText($comment->data);
     }
@@ -74,8 +86,11 @@ class Dom
     /**
      * Inspect document
      */
-    public static function inspectDocument(DOMDocument $document, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectDocument(
+        DOMDocument $document,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setDefinition((string)$document->saveXML())
             ->setSectionVisible('definition', false)
@@ -102,16 +117,22 @@ class Dom
     /**
      * Inspect document fragment
      */
-    public static function inspectDocumentFragment(DOMDocumentFragment $fragment, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectDocumentFragment(
+        DOMDocumentFragment $fragment,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         self::inspectNode($fragment, $entity, $inspector);
     }
 
     /**
      * Inspect document type
      */
-    public static function inspectDocumentType(DOMDocumentType $type, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectDocumentType(
+        DOMDocumentType $type,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         if (null === ($owner = $type->ownerDocument)) {
             $xml = null;
         } else {
@@ -133,8 +154,11 @@ class Dom
     /**
      * Inspect element
      */
-    public static function inspectElement(DOMElement $element, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectElement(
+        DOMElement $element,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setProperty('tagName', $inspector($element->tagName))
             ->setProperty('attributes', $inspector($element->attributes))
@@ -145,24 +169,33 @@ class Dom
     /**
      * Inspect entity
      */
-    public static function inspectEntity(DOMEntity $domEntity, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectEntity(
+        DOMEntity $domEntity,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         self::inspectNode($domEntity, $entity, $inspector);
     }
 
     /**
      * Inspect entity reference
      */
-    public static function inspectEntityReference(DOMEntityReference $reference, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectEntityReference(
+        DOMEntityReference $reference,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         self::inspectNode($reference, $entity, $inspector);
     }
 
     /**
      * Inspect implementation
      */
-    public static function inspectImplementation(DOMImplementation $implementation, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectImplementation(
+        DOMImplementation $implementation,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
     }
 
     /**
@@ -170,8 +203,11 @@ class Dom
      *
      * @param DOMNamedNodeMap<mixed> $map
      */
-    public static function inspectNamedNodeMap(DOMNamedNodeMap $map, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectNamedNodeMap(
+        DOMNamedNodeMap $map,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $values = [];
 
         foreach ($map as $key => $attr) {
@@ -186,8 +222,11 @@ class Dom
     /**
      * Inspect node
      */
-    public static function inspectNode(DOMNode $node, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectNode(
+        DOMNode $node,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setProperty('nodeName', $inspector($node->nodeName))
             ->setProperty('nodeType', $inspector->inspectFlag($node->nodeType, [
@@ -218,8 +257,11 @@ class Dom
      *
      * @param DOMNodeList<DOMNode> $list
      */
-    public static function inspectNodeList(DOMNodeList $list, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectNodeList(
+        DOMNodeList $list,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setLength($list->length)
             ->setValues($inspector->inspectList(iterator_to_array($list)))
@@ -229,16 +271,22 @@ class Dom
     /**
      * Inspect notation
      */
-    public static function inspectNotation(DOMNotation $notation, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectNotation(
+        DOMNotation $notation,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         self::inspectNode($notation, $entity, $inspector);
     }
 
     /**
      * Inspect PI
      */
-    public static function inspectProcessingInstruction(DOMProcessingInstruction $pi, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectProcessingInstruction(
+        DOMProcessingInstruction $pi,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setDefinition($pi->data);
     }
@@ -246,16 +294,22 @@ class Dom
     /**
      * Inspect text
      */
-    public static function inspectText(DOMText $text, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectText(
+        DOMText $text,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity->setText($text->wholeText);
     }
 
     /**
      * Inspect xpath
      */
-    public static function inspectXPath(DOMXPath $xpath, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectXPath(
+        DOMXPath $xpath,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setProperty('document', $inspector($xpath->document, function ($entity) {
                 $entity->setOpen(false);

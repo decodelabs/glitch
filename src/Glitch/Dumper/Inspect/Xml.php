@@ -25,8 +25,11 @@ namespace DecodeLabs\Glitch\Dumper\Inspect {
          *
          * @param resource|XMLParser $resource
          */
-        public static function inspectXmlResource($resource, Entity $entity, Inspector $inspector): void
-        {
+        public static function inspectXmlResource(
+            $resource,
+            Entity $entity,
+            Inspector $inspector
+        ): void {
             $entity
                 ->setMeta('current_byte_index', $inspector(
                     /** @phpstan-ignore-next-line */
@@ -49,8 +52,11 @@ namespace DecodeLabs\Glitch\Dumper\Inspect {
         /**
          * Inspect simple Xml
          */
-        public static function inspectSimpleXmlElement(SimpleXMLElement $element, Entity $entity, Inspector $inspector): void
-        {
+        public static function inspectSimpleXmlElement(
+            SimpleXMLElement $element,
+            Entity $entity,
+            Inspector $inspector
+        ): void {
             $ref = new ReflectionObject($element);
             $values = [];
 
@@ -75,8 +81,11 @@ namespace DecodeLabs\Glitch\Dumper\Inspect {
         /**
          * Inspect Xml writer
          */
-        public static function inspectXmlWriter(XMLWriter $writer, Entity $entity, Inspector $inspector): void
-        {
+        public static function inspectXmlWriter(
+            XMLWriter $writer,
+            Entity $entity,
+            Inspector $inspector
+        ): void {
             try {
                 $xml = $writer->outputMemory(false);
                 $entity->setText($xml);

@@ -34,8 +34,11 @@ class Reflection
      * @template T of object
      * @param ReflectionClass<T> $reflection
      */
-    public static function inspectReflectionClass(ReflectionClass $reflection, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectReflectionClass(
+        ReflectionClass $reflection,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity->setDefinition(Reflection::getClassDefinition($reflection));
 
         if (!$reflection->isInternal()) {
@@ -61,8 +64,11 @@ class Reflection
     /**
      * Inspect ReflectionClassConstant
      */
-    public static function inspectReflectionClassConstant(ReflectionClassConstant $reflection, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectReflectionClassConstant(
+        ReflectionClassConstant $reflection,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setDefinition(Reflection::getConstantDefinition($reflection))
             ->setProperties([
@@ -73,8 +79,11 @@ class Reflection
     /**
      * Inspect ReflectionZendExtension
      */
-    public static function inspectReflectionZendExtension(ReflectionZendExtension $reflection, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectReflectionZendExtension(
+        ReflectionZendExtension $reflection,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity->setProperties($inspector->inspectList([
             'version' => $reflection->getVersion(),
             'author' => $reflection->getAuthor(),
@@ -86,8 +95,11 @@ class Reflection
     /**
      * Inspect ReflectionExtension
      */
-    public static function inspectReflectionExtension(ReflectionExtension $reflection, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectReflectionExtension(
+        ReflectionExtension $reflection,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity->setProperties($inspector->inspectList([
             'version' => $reflection->getVersion(),
             'dependencies' => $reflection->getDependencies(),
@@ -103,8 +115,11 @@ class Reflection
     /**
      * Inspect ReflectionFunction
      */
-    public static function inspectReflectionFunction(ReflectionFunctionAbstract $reflection, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectReflectionFunction(
+        ReflectionFunctionAbstract $reflection,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         if (false === ($file = $reflection->getFileName())) {
             $file = null;
         }
@@ -127,8 +142,11 @@ class Reflection
     /**
      * Inspect ReflectionMethod
      */
-    public static function inspectReflectionMethod(ReflectionMethod $reflection, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectReflectionMethod(
+        ReflectionMethod $reflection,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         self::inspectReflectionFunction($reflection, $entity, $inspector);
 
         $entity->setProperties([
@@ -139,16 +157,22 @@ class Reflection
     /**
      * Inspect ReflectionParameter
      */
-    public static function inspectReflectionParameter(ReflectionParameter $reflection, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectReflectionParameter(
+        ReflectionParameter $reflection,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity->setDefinition(self::getParameterDefinition($reflection));
     }
 
     /**
      * Inspect ReflectionProperty
      */
-    public static function inspectReflectionProperty(ReflectionProperty $reflection, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectReflectionProperty(
+        ReflectionProperty $reflection,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $entity
             ->setDefinition(self::getPropertyDefinition($reflection))
             ->setProperties([
@@ -159,8 +183,11 @@ class Reflection
     /**
      * Inspect ReflectionType
      */
-    public static function inspectReflectionType(ReflectionType $reflection, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectReflectionType(
+        ReflectionType $reflection,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         if ($reflection instanceof ReflectionNamedType) {
             $entity->setProperties([
                 'name' => $reflection->getName(),
@@ -190,8 +217,11 @@ class Reflection
     /**
      * Inspect ReflectionGenerator
      */
-    public static function inspectReflectionGenerator(ReflectionGenerator $reflection, Entity $entity, Inspector $inspector): void
-    {
+    public static function inspectReflectionGenerator(
+        ReflectionGenerator $reflection,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
         $function = $reflection->getFunction();
 
         if (false === ($file = $function->getFileName())) {

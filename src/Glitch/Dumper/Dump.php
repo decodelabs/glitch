@@ -21,23 +21,21 @@ use IteratorAggregate;
 /**
  * @implements IteratorAggregate<mixed>
  */
-class Dump implements IteratorAggregate, Countable
+class Dump implements
+    IteratorAggregate,
+    Countable
 {
     /**
      * @var array<string, Stat>
      */
-    protected $stats = [];
+    protected array $stats = [];
 
     /**
      * @var array<mixed>
      */
-    protected $entities = [];
+    protected array $entities = [];
 
-
-    /**
-     * @var Trace
-     */
-    protected $trace;
+    protected Trace $trace;
 
     /**
      * Construct with stack trace of invoking call
@@ -53,7 +51,7 @@ class Dump implements IteratorAggregate, Countable
      *
      * @return $this
      */
-    public function addStats(Stat ...$stats): Dump
+    public function addStats(Stat ...$stats): static
     {
         foreach ($stats as $stat) {
             $this->stats[$stat->getKey()] = $stat;
@@ -75,7 +73,7 @@ class Dump implements IteratorAggregate, Countable
      *
      * @return $this
      */
-    public function removeStat(string $key): Dump
+    public function removeStat(string $key): static
     {
         unset($this->stats[$key]);
         return $this;
@@ -96,7 +94,7 @@ class Dump implements IteratorAggregate, Countable
      *
      * @return $this
      */
-    public function clearStats(): Dump
+    public function clearStats(): static
     {
         $this->stats = [];
         return $this;
@@ -115,10 +113,9 @@ class Dump implements IteratorAggregate, Countable
     /**
      * Add an entity to the list
      *
-     * @param mixed $entity
      * @return $this
      */
-    public function addEntity($entity): Dump
+    public function addEntity(mixed $entity): static
     {
         $this->entities[] = $entity;
         return $this;
