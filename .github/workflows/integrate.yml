@@ -16,6 +16,10 @@ jobs:
       - name: "Checkout code"
         uses: "actions/checkout@v3"
 
+      - name: "Check file permissions"
+        run: |
+          test "$(find . -type f -not -path './.git/*' -executable)" = ""
+
       - name: "Find non-printable ASCII characters"
         run: |
           ! LC_ALL=C.UTF-8 find . -type f -name "*.php" -print0 | xargs -0 -- grep -PHn "[^ -~]" | grep -v '// @ignore-non-ascii$'
@@ -132,6 +136,9 @@ jobs:
       - name: "Checkout code"
         uses: "actions/checkout@v3"
 
+      - name: "Check EditorConfig configuration"
+        run: "test -f .editorconfig"
+
       - name: "Check adherence to EditorConfig"
         uses: "greut/eclint-action@v0"
 
@@ -156,7 +163,7 @@ jobs:
       - name: "Check exported files"
         run: |
           EXPECTED="LICENSE,README.md,composer.json"
-          CURRENT="$(git archive HEAD | tar --list --exclude="src" --exclude="src/*" --exclude="bin" --exclude="bin/*" | paste -s -d ",")"
+          CURRENT="$(git archive HEAD | tar --list --exclude="src" --exclude="src/*" | paste -s -d ",")"
           echo "CURRENT =${CURRENT}"
           echo "EXPECTED=${EXPECTED}"
           test "${CURRENT}" = "${EXPECTED}"
