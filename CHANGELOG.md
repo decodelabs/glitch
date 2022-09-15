@@ -1,3 +1,5 @@
+## v0.18.2 (2022-09-15)
+* Added ProductionOverride to Renderer interface
 * Updated CI environment
 
 ## v0.18.1 (2022-08-24)
