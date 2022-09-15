@@ -8,7 +8,6 @@
 declare(strict_types=1);
 
 namespace DecodeLabs\Glitch\Dumper\Inspect {
-
     use CurlHandle;
     use DecodeLabs\Glitch\Dumper\Entity;
     use DecodeLabs\Glitch\Dumper\Inspector;
