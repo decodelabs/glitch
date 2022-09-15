@@ -11,8 +11,7 @@ declare(strict_types=1);
  * global helpers
  */
 
-namespace
-{
+namespace {
     use DecodeLabs\Glitch;
     use DecodeLabs\Glitch\Context;
     use DecodeLabs\Glitch\Stack\Frame;

@@ -35,7 +35,7 @@ trait Base
         'values' => true,
         'stack' => true
     ];
-    */
+     */
     //const RENDER_STACK = true;
 
     protected Context $context;
@@ -499,7 +499,7 @@ trait Base
         }, $output) ?? $output;
 
         if ($shorten) {
-            $output .= $this->renderGrammar('…');
+            $output .= $this->renderGrammar('…'); // @ignore-non-ascii
         }
 
         return $output;

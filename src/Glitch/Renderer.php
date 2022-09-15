@@ -16,6 +16,18 @@ use Throwable;
 
 interface Renderer
 {
+    /**
+     * Override production rendering
+     *
+     * @return $this
+     */
+    public function setProductionOverride(bool $flag): static;
+
+    /**
+     * Get production override
+     */
+    public function getProductionOverride(): bool;
+
     public function renderDump(
         Dump $dump,
         bool $final
