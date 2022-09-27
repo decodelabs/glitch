@@ -1,3 +1,7 @@
+## v0.18.3 (2022-09-27)
+* Updated Veneer dependency
+* Check if dump properties are initialized
+
 ## v0.18.2 (2022-09-15)
 * Added ProductionOverride to Renderer interface
 * Updated CI environment
