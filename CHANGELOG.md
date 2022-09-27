@@ -1,3 +1,7 @@
+## v0.18.4 (2022-09-27)
+* Updated Veneer stub
+* Updated composer check script
+
 ## v0.18.3 (2022-09-27)
 * Updated Veneer dependency
 * Check if dump properties are initialized
