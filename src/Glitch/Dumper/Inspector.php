@@ -936,7 +936,12 @@ class Inspector
                 continue;
             }
 
-            $value = $property->getValue($object);
+            if ($property->isInitialized($object)) {
+                $value = $property->getValue($object);
+            } else {
+                $value = null;
+            }
+
             $propValue = $this->inspectValue($value);
 
             if ($propValue instanceof Entity) {
