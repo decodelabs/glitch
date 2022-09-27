@@ -13,10 +13,10 @@
         "symfony/polyfill-mbstring": "^1.7",
 
         "decodelabs/coercion": "^0.2",
-        "decodelabs/veneer": "^0.10",
-        "decodelabs/glitch-support": "^0.4",
-        "decodelabs/exceptional": "^0.4.1",
         "decodelabs/enlighten": "^0.9",
+        "decodelabs/exceptional": "^0.4.1",
+        "decodelabs/glitch-support": "^0.4",
+        "decodelabs/veneer": "^0.10.7",
 
         "psr/log": "^3.0",
         "components/jquery": "~3.3"
@@ -29,6 +29,8 @@
         "symplify/easy-coding-standard": "^11",
 
         "decodelabs/phpstan-decodelabs": "^0.6.1",
+        "decodelabs/atlas": "^0.10.4",
+        "decodelabs/terminus": "^0.8.4",
 
         "symfony/var-dumper": "^5.1",
         "php-ds/php-ds": "~1.2"
@@ -53,16 +55,20 @@
     },
     "scripts": {
         "analyze": "phpstan analyze --no-progress",
+        "clear-phpstan": "phpstan clear-result-cache",
         "ecs": "ecs check --no-progress-bar",
         "ecs-fix": "ecs check --no-progress-bar --fix",
         "lint": "parallel-lint src/ stubs/ ecs.php",
         "eclint": "eclint check src/ stubs/ ecs.php",
         "eclint-fix": "eclint fix src/ stubs/ ecs.php",
         "non-ascii": "! LC_ALL=C.UTF-8 find src/ -type f -name \"*.php\" -print0 | xargs -0 -- grep -PHn \"[^ -~]\" | grep -v '// @ignore-non-ascii$'",
+        "veneer-stub": "vendor/bin/veneer-stub",
         "check": [
             "@composer update",
+            "@veneer-stub",
+            "@clear-phpstan",
             "@analyze",
-            "@ecs",
+            "@ecs-fix",
             "@lint",
             "@eclint",
             "@non-ascii"
