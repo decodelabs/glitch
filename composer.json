@@ -29,8 +29,6 @@
         "symplify/easy-coding-standard": "^11",
 
         "decodelabs/phpstan-decodelabs": "^0.6.1",
-        "decodelabs/atlas": "^0.10.4",
-        "decodelabs/terminus": "^0.8.4",
 
         "symfony/var-dumper": "^5.1",
         "php-ds/php-ds": "~1.2"
