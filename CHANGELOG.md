@@ -1,3 +1,6 @@
+## v0.18.5 (2022-10-03)
+* Fixed exact-match path normalization
+
 ## v0.18.4 (2022-09-27)
 * Updated Veneer stub
 * Updated composer check script
