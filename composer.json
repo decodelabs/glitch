@@ -16,7 +16,7 @@
         "decodelabs/enlighten": "^0.9",
         "decodelabs/exceptional": "^0.4.1",
         "decodelabs/glitch-support": "^0.4",
-        "decodelabs/veneer": "^0.10.7",
+        "decodelabs/veneer": "^0.10.10",
 
         "psr/log": "^3.0",
         "components/jquery": "~3.3"
@@ -29,8 +29,6 @@
         "symplify/easy-coding-standard": "^11",
 
         "decodelabs/phpstan-decodelabs": "^0.6.1",
-        "decodelabs/atlas": "^0.10.4",
-        "decodelabs/terminus": "^0.8.4",
 
         "symfony/var-dumper": "^5.1",
         "php-ds/php-ds": "~1.2"

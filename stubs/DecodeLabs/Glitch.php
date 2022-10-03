@@ -23,7 +23,6 @@ class Glitch implements Proxy
     const VENEER_TARGET = Inst::class;
     const VERSION = Inst::VERSION;
 
-
     public static Inst $instance;
 
     public static function setRunMode(string $mode): Inst {

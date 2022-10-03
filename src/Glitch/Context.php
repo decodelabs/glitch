@@ -30,7 +30,7 @@ use Throwable;
 
 class Context implements LoggerAwareInterface
 {
-    public const VERSION = 'v0.18.3';
+    public const VERSION = 'v0.18.5';
 
     protected float $startTime;
     protected string $runMode = 'development';
@@ -606,7 +606,7 @@ class Context implements LoggerAwareInterface
             $len = strlen($test);
 
             if ($testPath === $test) {
-                return rtrim($name, '*') . '://' . ltrim($path, '/');
+                return rtrim($name, '*') . '://';
             } elseif (substr($testPath, 0, $len) == $test) {
                 return rtrim($name, '*') . '://' . ltrim(substr($path, $len), '/');
             }
