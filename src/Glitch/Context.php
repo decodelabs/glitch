@@ -606,7 +606,7 @@ class Context implements LoggerAwareInterface
             $len = strlen($test);
 
             if ($testPath === $test) {
-                return rtrim($name, '*') . '://' . ltrim($path, '/');
+                return rtrim($name, '*') . '://';
             } elseif (substr($testPath, 0, $len) == $test) {
                 return rtrim($name, '*') . '://' . ltrim(substr($path, $len), '/');
             }
