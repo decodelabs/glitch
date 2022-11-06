@@ -1,3 +1,5 @@
+* Fixed PHP8.1 testing
+
 ## v0.18.5 (2022-10-03)
 * Fixed exact-match path normalization
 
