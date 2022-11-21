@@ -26,20 +26,9 @@ jobs:
       - name: "Checkout code"
         uses: "actions/checkout@v3"
 
-      - name: "Check file permissions"
-        run: |
-          test "$(find . -type f -not -path './.git/*' -executable)" = ""
-
-      - name: "Check exported files"
-        run: |
-          EXPECTED="LICENSE,README.md,composer.json"
-          CURRENT="$(git archive HEAD | tar --list --exclude="src" --exclude="src/*" | paste -s -d ",")"
-          echo "CURRENT =${CURRENT}"
-          echo "EXPECTED=${EXPECTED}"
-          test "${CURRENT}" = "${EXPECTED}"
-
       - name: Install Effigy
         run: |
+          composer global config --no-plugins allow-plugins.phpstan/extension-installer true
           composer global require decodelabs/effigy
 
       - name: "Install dependencies"
@@ -47,56 +36,21 @@ jobs:
         with:
           dependency-versions: "highest"
 
+      - name: "Check file permissions"
+        run: |
+          composer global exec effigy check-executable-permissions
+
+      - name: "Check exported files"
+        run: |
+          composer global exec effigy check-git-exports
+
       - name: "Find non-printable ASCII characters"
         run: |
-          composer global exec effigy non-ascii
+          composer global exec effigy check-non-ascii
 
       - name: "Check source code for syntax errors"
         run: |
           composer global exec effigy lint
-
-#  unit_tests:
-#    name: "2️⃣ Unit and functional tests"
-#    needs:
-#      - "file_consistency"
-#    strategy:
-#      matrix:
-#        php-version:
-#          - "8.0"
-#          - "8.1"
-#          - "8.2"
-#        dependencies:
-#          - "lowest"
-#          - "highest"
-#    runs-on: "ubuntu-latest"
-#    steps:
-#      - name: "Set up PHP"
-#        uses: "shivammathur/setup-php@v2"
-#        with:
-#          php-version: "${{ matrix.php-version }}"
-#          extensions: "${{ env.PHP_EXTENSIONS }}"
-#          ini-values: "post_max_size=256M"
-
-#      - name: "Checkout code"
-#        uses: "actions/checkout@v3"
-
-#      - name: "Install dependencies"
-#        uses: "ramsey/composer-install@v2"
-#        with:
-#          dependency-versions: "${{ matrix.dependencies }}"
-
-#      - name: "Execute unit tests"
-        # run: "composer run-script --no-interaction phpunit -- --verbose"
-#        run: "echo 'Tom has the key.'"
-        # @TODO Functional tests
-
-#      - name: Send coverage to Coveralls
-#        if: "matrix.php-version == '8.1' && matrix.dependencies == 'highest'"
-#        env:
-#          COVERALLS_REPO_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-#        run: |
-#          wget "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.2/php-coveralls.phar"
-#          php ./php-coveralls.phar -v
 
   static_analysis:
     name: "3️⃣ Static Analysis"
@@ -122,6 +76,7 @@ jobs:
 
       - name: Install Effigy
         run: |
+          composer global config --no-plugins allow-plugins.phpstan/extension-installer true
           composer global require decodelabs/effigy
 
       - name: "Validate Composer configuration"
@@ -161,6 +116,7 @@ jobs:
 
       - name: Install Effigy
         run: |
+          composer global config --no-plugins allow-plugins.phpstan/extension-installer true
           composer global require decodelabs/effigy
 
       - name: "Install dependencies"
@@ -171,5 +127,4 @@ jobs:
       - name: "Check coding style"
         run: |
           composer global exec effigy format -- --headless
-
 
