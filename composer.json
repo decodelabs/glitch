@@ -22,12 +22,6 @@
         "components/jquery": "~3.3"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9",
-        "phpstan/phpstan": "^1",
-        "phpstan/extension-installer": "^1.0",
-        "php-parallel-lint/php-parallel-lint": "^1.3",
-        "symplify/easy-coding-standard": "^11",
-
         "decodelabs/phpstan-decodelabs": "^0.6.1",
 
         "symfony/var-dumper": "^5.1",
@@ -45,31 +39,5 @@
         "branch-alias": {
             "dev-develop": "0.18.x-dev"
         }
-    },
-    "config": {
-        "allow-plugins": {
-            "phpstan/extension-installer": true
-        }
-    },
-    "scripts": {
-        "analyze": "phpstan analyze --no-progress",
-        "clear-phpstan": "phpstan clear-result-cache",
-        "ecs": "ecs check --no-progress-bar",
-        "ecs-fix": "ecs check --no-progress-bar --fix",
-        "lint": "parallel-lint src/ stubs/ ecs.php",
-        "eclint": "eclint check src/ stubs/ ecs.php",
-        "eclint-fix": "eclint fix src/ stubs/ ecs.php",
-        "non-ascii": "! LC_ALL=C.UTF-8 find src/ -type f -name \"*.php\" -print0 | xargs -0 -- grep -PHn \"[^ -~]\" | grep -v '// @ignore-non-ascii$'",
-        "veneer-stub": "vendor/bin/veneer-stub",
-        "check": [
-            "@composer update",
-            "@veneer-stub",
-            "@clear-phpstan",
-            "@analyze",
-            "@ecs-fix",
-            "@lint",
-            "@eclint",
-            "@non-ascii"
-        ]
     }
 }

@@ -1,3 +1,8 @@
+## v0.18.6 (2023-01-06)
+* Disabled object auto-count in dump
+* Migrated to use effigy in CI workflow
+* Fixed PHP8.1 testing
+
 ## v0.18.5 (2022-10-03)
 * Fixed exact-match path normalization
 

@@ -530,8 +530,11 @@ class Cli implements Renderer
         ?string $bgColor = null,
         string ...$options
     ): string {
-        $output = $this->setFormat(...($args = array_slice(func_get_args(), 1)));
+        $output = $this->setFormat($fgColor, $bgColor, ...$options);
         $output .= $message;
+
+        /** @var array<?string> $args */
+        $args = array_slice(func_get_args(), 1);
         $output .= $this->applyStackedFormat($args);
 
         return $output;
@@ -546,7 +549,7 @@ class Cli implements Renderer
         string ...$options
     ): string {
         array_unshift($this->formatStack, $args = func_get_args());
-        return $this->setFormat(...$args);
+        return $this->setFormat($fgColor, $bgColor, ...$options);
     }
 
     protected function setFormat(

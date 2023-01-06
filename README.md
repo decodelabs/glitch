@@ -3,15 +3,19 @@
 [![PHP from Packagist](https://img.shields.io/packagist/php-v/decodelabs/glitch?style=flat)](https://packagist.org/packages/decodelabs/glitch)
 [![Latest Version](https://img.shields.io/packagist/v/decodelabs/glitch.svg?style=flat)](https://packagist.org/packages/decodelabs/glitch)
 [![Total Downloads](https://img.shields.io/packagist/dt/decodelabs/glitch.svg?style=flat)](https://packagist.org/packages/decodelabs/glitch)
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/decodelabs/glitch/Integrate)](https://github.com/decodelabs/glitch/actions/workflows/integrate.yml)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/decodelabs/glitch/integrate.yml?branch=develop)](https://github.com/decodelabs/glitch/actions/workflows/integrate.yml)
 [![PHPStan](https://img.shields.io/badge/PHPStan-enabled-44CC11.svg?longCache=true&style=flat)](https://github.com/phpstan/phpstan)
 [![License](https://img.shields.io/packagist/l/decodelabs/glitch?style=flat)](https://packagist.org/packages/decodelabs/glitch)
 
 ### Better tools for when things go wrong
 
-Glitch is a standalone PHP package designed to improve error handling and inspection when developing your applications.
+Glitch is a standalone PHP package designed to dramatically improve error handling and inspection when developing your applications.
 
 The project aims to provide deep data inspection tools and an Exception handling interface.
+
+_Get news and updates on the [DecodeLabs blog](https://blog.decodelabs.com)._
+
+---
 
 ![v0.15.0 interface](docs/v0.15.0.png)
 
