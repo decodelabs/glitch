@@ -5,8 +5,8 @@
  */
 namespace DecodeLabs;
 
-use DecodeLabs\Veneer\Proxy;
-use DecodeLabs\Veneer\ProxyTrait;
+use DecodeLabs\Veneer\Proxy as Proxy;
+use DecodeLabs\Veneer\ProxyTrait as ProxyTrait;
 use DecodeLabs\Glitch\Context as Inst;
 use Psr\Log\LoggerInterface as Ref0;
 use DecodeLabs\Glitch\Stack\Trace as Ref1;

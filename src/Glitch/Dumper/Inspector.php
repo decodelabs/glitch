@@ -717,9 +717,11 @@ class Inspector
             ->setObjectId($objectId)
             ->setHash(spl_object_hash($object));
 
+        /*
         if ($object instanceof Countable) {
             $entity->setLength($object->count());
         }
+        */
 
         if (!$reflection) {
             return $entity;
