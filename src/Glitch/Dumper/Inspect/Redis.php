@@ -33,9 +33,9 @@ class Redis
                 ->setMeta('port', $inspector($redis->getPort()))
                 ->setMeta('auth', $inspector($redis->getAuth()))
                 ->setMeta('mode', $inspector->inspectFlag($redis->getMode(), [
-                    '\Redis::ATOMIC',
-                    '\Redis::MULTI',
-                    '\Redis::PIPELINE'
+                    '\\Redis::ATOMIC',
+                    '\\Redis::MULTI',
+                    '\\Redis::PIPELINE',
                 ]))
                 ->setMeta('dbNum', $inspector($redis->getDbNum()))
                 ->setMeta('timeout', $inspector($redis->getTimeout()))
