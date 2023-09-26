@@ -1,3 +1,4 @@
+## v0.18.7 (2023-09-26)
 * Converted phpstan doc comments to generic
 
 ## v0.18.6 (2023-01-06)
