@@ -32,7 +32,7 @@ class Spl
      *
      * @template TKey of int|string
      * @template TValue
-     * @phpstan-param ArrayObject<TKey, TValue> $array
+     * @param ArrayObject<TKey, TValue> $array
      */
     public static function inspectArrayObject(
         ArrayObject $array,
@@ -52,7 +52,7 @@ class Spl
      *
      * @template TKey of int|string
      * @template TValue
-     * @phpstan-param ArrayIterator<TKey, TValue> $iterator
+     * @param ArrayIterator<TKey, TValue> $iterator
      */
     public static function inspectArrayIterator(
         ArrayIterator $iterator,
@@ -71,7 +71,7 @@ class Spl
      * Inspect SPL Doubly Linked List
      *
      * @template TValue
-     * @phpstan-param SplDoublyLinkedList<TValue> $list
+     * @param SplDoublyLinkedList<TValue> $list
      */
     public static function inspectSplDoublyLinkedList(
         SplDoublyLinkedList $list,
@@ -93,7 +93,7 @@ class Spl
      * Inspect SPL Heap
      *
      * @template TValue
-     * @phpstan-param SplHeap<TValue> $heap
+     * @param SplHeap<TValue> $heap
      */
     public static function inspectSplHeap(
         SplHeap $heap,
@@ -111,7 +111,7 @@ class Spl
      *
      * @template TPriority
      * @template TValue
-     * @phpstan-param SplPriorityQueue<TPriority, TValue> $queue
+     * @param SplPriorityQueue<TPriority, TValue> $queue
      */
     public static function inspectSplPriorityQueue(
         SplPriorityQueue $queue,
@@ -133,7 +133,7 @@ class Spl
      * Inspect SPL Fixed Array
      *
      * @template TValue
-     * @phpstan-param SplFixedArray<TValue> $array
+     * @param SplFixedArray<TValue> $array
      */
     public static function inspectSplFixedArray(
         SplFixedArray $array,
@@ -150,7 +150,7 @@ class Spl
      *
      * @template TObject of object
      * @template TData
-     * @phpstan-param SplObjectStorage<TObject, TData> $store
+     * @param SplObjectStorage<TObject, TData> $store
      */
     public static function inspectSplObjectStorage(
         SplObjectStorage $store,
