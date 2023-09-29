@@ -391,12 +391,24 @@ class Context implements LoggerAwareInterface
             return false;
         }
 
-        throw Exceptional::Error([
+        $output = Exceptional::Error([
             'message' => $message,
             'file' => $file,
             'line' => $line,
             'severity' => $level
         ]);
+
+        if (
+            $this->isProduction() &&
+            in_array($level, [
+                E_NOTICE, E_USER_NOTICE, E_STRICT, E_DEPRECATED, E_USER_DEPRECATED
+            ], true)
+        ) {
+            $this->logException($output);
+            return true;
+        }
+
+        throw $output;
     }
 
     /**
