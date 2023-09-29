@@ -332,7 +332,7 @@ class Cli implements Renderer
 
 
     /**
-     * Render structure grammer
+     * Render structure grammar
      */
     protected function renderGrammar(string $grammar): string
     {
