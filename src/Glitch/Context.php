@@ -30,7 +30,7 @@ use Throwable;
 
 class Context implements LoggerAwareInterface
 {
-    public const VERSION = 'v0.18.7';
+    public const VERSION = 'v0.18.8';
 
     protected float $startTime;
     protected string $runMode = 'development';
@@ -391,12 +391,24 @@ class Context implements LoggerAwareInterface
             return false;
         }
 
-        throw Exceptional::Error([
+        $output = Exceptional::Error([
             'message' => $message,
             'file' => $file,
             'line' => $line,
             'severity' => $level
         ]);
+
+        if (
+            $this->isProduction() &&
+            in_array($level, [
+                E_NOTICE, E_USER_NOTICE, E_STRICT, E_DEPRECATED, E_USER_DEPRECATED
+            ], true)
+        ) {
+            $this->logException($output);
+            return true;
+        }
+
+        throw $output;
     }
 
     /**
