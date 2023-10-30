@@ -163,11 +163,19 @@ class Entity
                 $value = $inspector($value, $closer);
                 break;
 
-            case 'meta':
             case 'property':
                 $value = $inspector($value, $closer);
                 break;
 
+            case 'meta':
+                if ($key !== null) {
+                    $value = $inspector($value, $closer);
+                    break;
+                }
+
+                $method = 'setMetaList';
+
+                // no break
             case 'values':
             case 'properties':
             case 'metaList':
