@@ -40,8 +40,9 @@ class Dump implements
     /**
      * Construct with stack trace of invoking call
      */
-    public function __construct(Trace $trace)
-    {
+    public function __construct(
+        Trace $trace
+    ) {
         $this->trace = $trace;
     }
 
@@ -51,8 +52,9 @@ class Dump implements
      *
      * @return $this
      */
-    public function addStats(Stat ...$stats): static
-    {
+    public function addStats(
+        Stat ...$stats
+    ): static {
         foreach ($stats as $stat) {
             $this->stats[$stat->getKey()] = $stat;
         }
@@ -63,8 +65,9 @@ class Dump implements
     /**
      * Get named statistic
      */
-    public function getStat(string $key): ?Stat
-    {
+    public function getStat(
+        string $key
+    ): ?Stat {
         return $this->stats[$key] ?? null;
     }
 
@@ -73,8 +76,9 @@ class Dump implements
      *
      * @return $this
      */
-    public function removeStat(string $key): static
-    {
+    public function removeStat(
+        string $key
+    ): static {
         unset($this->stats[$key]);
         return $this;
     }
@@ -115,8 +119,9 @@ class Dump implements
      *
      * @return $this
      */
-    public function addEntity(mixed $entity): static
-    {
+    public function addEntity(
+        mixed $entity
+    ): static {
         $this->entities[] = $entity;
         return $this;
     }

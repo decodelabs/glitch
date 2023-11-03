@@ -300,8 +300,9 @@ class Inspector
     /**
      * Construct with context to generate object inspectors
      */
-    public function __construct(Context $context)
-    {
+    public function __construct(
+        Context $context
+    ) {
         foreach (static::OBJECTS as $class => $inspector) {
             if (is_callable($inspector)) {
                 $this->objectInspectors[$class] = $inspector;
@@ -347,8 +348,9 @@ class Inspector
      *
      * @param scalar|resource|null $value
      */
-    public static function scalarToString($value): string
-    {
+    public static function scalarToString(
+        $value
+    ): string {
         switch (true) {
             case $value === null:
                 return 'null';
@@ -428,8 +430,9 @@ class Inspector
     /**
      * Inspect single value
      */
-    public function inspectValue(mixed &$value): mixed
-    {
+    public function inspectValue(
+        mixed &$value
+    ): mixed {
         switch (true) {
             case $value === null:
             case is_bool($value):
@@ -459,8 +462,9 @@ class Inspector
     /**
      * Convert string into Entity
      */
-    public function inspectString(string $string): Entity|string
-    {
+    public function inspectString(
+        string $string
+    ): Entity|string {
         $isPossibleClass = preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $string);
         $loadClasses = false !== strpos($string, '\\');
 
@@ -498,8 +502,9 @@ class Inspector
      *
      * @param resource $resource
      */
-    public function inspectResource($resource): Entity
-    {
+    public function inspectResource(
+        $resource
+    ): Entity {
         $parts = explode('#', (string)$resource);
         $id = array_pop($parts);
 
@@ -591,8 +596,9 @@ class Inspector
     /**
      * Inspect const by string
      */
-    public function inspectConstant(string $const): Entity
-    {
+    public function inspectConstant(
+        string $const
+    ): Entity {
         return (new Entity('const'))
             ->setName($const)
             ->setLength(Coercion::toIntOrNull(constant($const)));
@@ -605,8 +611,9 @@ class Inspector
      *
      * @param array<mixed> $array
      */
-    public function inspectArray(array &$array): ?Entity
-    {
+    public function inspectArray(
+        array &$array
+    ): ?Entity {
         if (!isset($this->arrayCookieKey)) {
             $this->arrayCookieKey = uniqid('__glitch_array_cookie_', true);
         }
@@ -964,8 +971,9 @@ class Inspector
      *
      * @param array<mixed> $array
      */
-    public static function hashArray(array $array): ?string
-    {
+    public static function hashArray(
+        array $array
+    ): ?string {
         if (empty($array)) {
             return null;
         }

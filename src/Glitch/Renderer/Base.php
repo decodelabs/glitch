@@ -44,8 +44,9 @@ trait Base
     /**
      * Construct with Context
      */
-    public function __construct(Context $context)
-    {
+    public function __construct(
+        Context $context
+    ) {
         $this->context = $context;
     }
 
@@ -55,8 +56,9 @@ trait Base
      *
      * @return $this
      */
-    public function setProductionOverride(bool $flag): static
-    {
+    public function setProductionOverride(
+        bool $flag
+    ): static {
         $this->productionOverride = $flag;
         return $this;
     }
@@ -158,8 +160,9 @@ trait Base
     /**
      * Render dump header
      */
-    protected function renderHeader(string $class): string
-    {
+    protected function renderHeader(
+        string $class
+    ): string {
         return '';
     }
 
@@ -168,8 +171,9 @@ trait Base
      *
      * @param array<Stat> $stats
      */
-    protected function renderStats(array $stats): string
-    {
+    protected function renderStats(
+        array $stats
+    ): string {
         $output = [];
 
         foreach ($stats as $stat) {
@@ -187,8 +191,9 @@ trait Base
     /**
      * Render exception message
      */
-    protected function renderExceptionMessage(Throwable $exception): string
-    {
+    protected function renderExceptionMessage(
+        Throwable $exception
+    ): string {
         $message = $exception->getMessage();
         $code = $exception->getCode();
 
@@ -220,8 +225,9 @@ trait Base
     /**
      * Render a default message in production mode
      */
-    protected function renderProductionExceptionMessage(Throwable $exception): string
-    {
+    protected function renderProductionExceptionMessage(
+        Throwable $exception
+    ): string {
         return '';
     }
 
@@ -229,8 +235,9 @@ trait Base
     /**
      * Render main list of entities
      */
-    protected function renderDumpEntities(Dump $dump): string
-    {
+    protected function renderDumpEntities(
+        Dump $dump
+    ): string {
         $output = [];
 
         foreach ($dump->getEntities() as $value) {
@@ -249,8 +256,9 @@ trait Base
     /**
      * Render exception entity
      */
-    protected function renderExceptionEntity(Entity $entity): string
-    {
+    protected function renderExceptionEntity(
+        Entity $entity
+    ): string {
         return $this->renderEntity($entity, 0, [
             'info' => true,
             'meta' => false,
@@ -317,8 +325,9 @@ trait Base
      *
      * @param array<string> $buffer
      */
-    protected function exportExceptionBuffer(array $buffer): Packet
-    {
+    protected function exportExceptionBuffer(
+        array $buffer
+    ): Packet {
         return $this->exportBuffer($buffer, true);
     }
 
@@ -367,8 +376,9 @@ trait Base
     /**
      * Passthrough null
      */
-    protected function renderNull(?string $class = null): string
-    {
+    protected function renderNull(
+        ?string $class = null
+    ): string {
         return 'null';
     }
 
@@ -406,8 +416,9 @@ trait Base
     /**
      * Convert a float value to string ensuring decimals
      */
-    protected function normalizeFloat(float $number): string
-    {
+    protected function normalizeFloat(
+        float $number
+    ): string {
         $output = (string)$number;
 
         if (false === strpos($output, '.')) {
@@ -508,8 +519,9 @@ trait Base
     /**
      * render binary string chunk
      */
-    protected function renderBinaryStringChunk(string $chunk): string
-    {
+    protected function renderBinaryStringChunk(
+        string $chunk
+    ): string {
         return $chunk;
     }
 
@@ -517,8 +529,9 @@ trait Base
     /**
      * Normalize a hex value for output
      */
-    protected function normalizeHex(string $hex): string
-    {
+    protected function normalizeHex(
+        string $hex
+    ): string {
         switch ($hex) {
             case '07':
                 $output = '\\a';
@@ -556,8 +569,9 @@ trait Base
     /**
      * Render character
      */
-    protected function wrapControlCharacter(string $control): string
-    {
+    protected function wrapControlCharacter(
+        string $control
+    ): string {
         return $control;
     }
 
@@ -576,24 +590,27 @@ trait Base
     /**
      * Render grammar
      */
-    protected function renderGrammar(string $grammar): string
-    {
+    protected function renderGrammar(
+        string $grammar
+    ): string {
         return $grammar;
     }
 
     /**
      * Render pointer
      */
-    protected function renderPointer(string $pointer): string
-    {
+    protected function renderPointer(
+        string $pointer
+    ): string {
         return $pointer;
     }
 
     /**
      * Render line number
      */
-    protected function renderLineNumber(int $number): string
-    {
+    protected function renderLineNumber(
+        int $number
+    ): string {
         return str_pad((string)$number, 2);
     }
 
@@ -610,8 +627,9 @@ trait Base
     /**
      * Render source line
      */
-    protected function renderSourceLine(int $number): string
-    {
+    protected function renderSourceLine(
+        int $number
+    ): string {
         return (string)$number;
     }
 
@@ -622,8 +640,9 @@ trait Base
     /**
      * Split const name for rendering
      */
-    protected function renderConstName(string $const): string
-    {
+    protected function renderConstName(
+        string $const
+    ): string {
         $parts = explode('::', $const, 2);
         $const = (string)array_pop($parts);
 
@@ -668,8 +687,9 @@ trait Base
     /**
      * Render stack frame signature
      */
-    protected function renderStackFrameSignature(Frame $frame): string
-    {
+    protected function renderStackFrameSignature(
+        Frame $frame
+    ): string {
         $output = [];
 
         // Namespace
@@ -786,24 +806,27 @@ trait Base
     /**
      * Passthrough namespace
      */
-    protected function renderSignatureNamespace(string $namespace): string
-    {
+    protected function renderSignatureNamespace(
+        string $namespace
+    ): string {
         return $namespace;
     }
 
     /**
      * Passthrough class
      */
-    protected function renderSignatureClass(string $class): string
-    {
+    protected function renderSignatureClass(
+        string $class
+    ): string {
         return $class;
     }
 
     /**
      * Passthrough constant
      */
-    protected function renderSignatureConstant(string $constant): string
-    {
+    protected function renderSignatureConstant(
+        string $constant
+    ): string {
         return $constant;
     }
 
@@ -838,8 +861,9 @@ trait Base
     /**
      * Passthrough
      */
-    protected function renderSignatureObject(string $object): string
-    {
+    protected function renderSignatureObject(
+        string $object
+    ): string {
         return $object;
     }
 
@@ -1162,8 +1186,9 @@ trait Base
     /**
      * Passthrough reference name
      */
-    protected function wrapReferenceName(string $name): string
-    {
+    protected function wrapReferenceName(
+        string $name
+    ): string {
         return '&' . $name;
     }
 
@@ -1182,8 +1207,9 @@ trait Base
     /**
      * Wrap entity name if reference
      */
-    protected function renderEntityNamePart(string $name): string
-    {
+    protected function renderEntityNamePart(
+        string $name
+    ): string {
         return $name;
     }
 
@@ -1203,24 +1229,27 @@ trait Base
     /**
      * render entity length
      */
-    protected function renderEntityLength(int $length): string
-    {
+    protected function renderEntityLength(
+        int $length
+    ): string {
         return (string)$length;
     }
 
     /**
      * render entity class name
      */
-    protected function renderEntityClassName(string $class): string
-    {
+    protected function renderEntityClassName(
+        string $class
+    ): string {
         return $class;
     }
 
     /**
      * Wrap buttons
      */
-    protected function wrapEntityButtons(string $buttons): string
-    {
+    protected function wrapEntityButtons(
+        string $buttons
+    ): string {
         return $buttons;
     }
 
@@ -1238,40 +1267,45 @@ trait Base
     /**
      * Empty meta button stub
      */
-    protected function renderEntityMetaButton(bool $open): string
-    {
+    protected function renderEntityMetaButton(
+        bool $open
+    ): string {
         return '';
     }
 
     /**
      * Empty text button stub
      */
-    protected function renderEntityTextButton(bool $open): string
-    {
+    protected function renderEntityTextButton(
+        bool $open
+    ): string {
         return '';
     }
 
     /**
      * Empty definition button stub
      */
-    protected function renderEntityDefinitionButton(bool $open): string
-    {
+    protected function renderEntityDefinitionButton(
+        bool $open
+    ): string {
         return '';
     }
 
     /**
      * Empty properties button stub
      */
-    protected function renderEntityPropertiesButton(bool $open): string
-    {
+    protected function renderEntityPropertiesButton(
+        bool $open
+    ): string {
         return '';
     }
 
     /**
      * Empty values button stub
      */
-    protected function renderEntityValuesButton(bool $open): string
-    {
+    protected function renderEntityValuesButton(
+        bool $open
+    ): string {
         return '';
     }
 
@@ -1553,8 +1587,9 @@ trait Base
     /**
      * Wrap stack frame
      */
-    protected function wrapStackFrame(string $frame): string
-    {
+    protected function wrapStackFrame(
+        string $frame
+    ): string {
         return $frame;
     }
 
@@ -1588,8 +1623,9 @@ trait Base
     /**
      * Wrap entity footer
      */
-    protected function wrapEntityFooter(string $footer): string
-    {
+    protected function wrapEntityFooter(
+        string $footer
+    ): string {
         return $footer;
     }
 
@@ -1691,8 +1727,9 @@ trait Base
     /**
      * Apply indents
      */
-    protected function indent(string $lines): string
-    {
+    protected function indent(
+        string $lines
+    ): string {
         if ($spaces = static::SPACES ?? 2) {
             $space = str_repeat(' ', $spaces);
             $lines = $space . str_replace("\n", "\n" . $space, $lines);
@@ -1707,8 +1744,9 @@ trait Base
      *
      * @param array<mixed> $array
      */
-    protected function arrayIsAssoc(array $array): bool
-    {
+    protected function arrayIsAssoc(
+        array $array
+    ): bool {
         if (empty($array)) {
             return false;
         }
@@ -1720,8 +1758,9 @@ trait Base
     /**
      * Escape a value for output
      */
-    protected function esc(?string $value): string
-    {
+    protected function esc(
+        ?string $value
+    ): string {
         return $value ?? '';
     }
 }

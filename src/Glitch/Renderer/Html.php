@@ -94,8 +94,9 @@ class Html implements Renderer
      *
      * @return $this
      */
-    public function setCustomCssFile(?string $path): static
-    {
+    public function setCustomCssFile(
+        ?string $path
+    ): static {
         $this->customCssFile = $path;
         return $this;
     }
@@ -195,8 +196,9 @@ class Html implements Renderer
     /**
      * Render scripts and styles
      */
-    protected function renderHeader(string $class): string
-    {
+    protected function renderHeader(
+        string $class
+    ): string {
         $output = [];
         $output[] = '<!doctype html>';
         $output[] = '<html lang="en" class="' . $class . '">';
@@ -257,8 +259,9 @@ class Html implements Renderer
     /**
      * Build scss files
      */
-    protected function buildScss(string $cssPath): void
-    {
+    protected function buildScss(
+        string $cssPath
+    ): void {
         $vendor = $this->context->getVendorPath();
         $isDev = is_link($vendor . '/decodelabs/glitch');
 
@@ -329,8 +332,9 @@ class Html implements Renderer
     /**
      * Render exception message
      */
-    protected function renderExceptionMessage(Throwable $exception): string
-    {
+    protected function renderExceptionMessage(
+        Throwable $exception
+    ): string {
         $message = $exception->getMessage();
         $code = $exception->getCode();
         $file = $this->context->normalizePath($exception->getFile());
@@ -373,8 +377,9 @@ class Html implements Renderer
     /**
      * Render a default message in production mode
      */
-    protected function renderProductionExceptionMessage(Throwable $exception): string
-    {
+    protected function renderProductionExceptionMessage(
+        Throwable $exception
+    ): string {
         $output[] = '<section class="production message">There was a problem serving your request - please try again later</section>';
         $output[] = '<section class="production exception">' . (string)$exception . '</section>';
         return implode("\n", $output);
@@ -383,8 +388,9 @@ class Html implements Renderer
     /**
      * Render dump entity list
      */
-    protected function renderDumpEntities(Dump $dump): string
-    {
+    protected function renderDumpEntities(
+        Dump $dump
+    ): string {
         $output = [];
         $output[] = '<section class="dump entity">';
         $output[] = '<h3>Dump</h3>';
@@ -410,8 +416,9 @@ class Html implements Renderer
     /**
      * Render exception entity
      */
-    protected function renderExceptionEntity(Entity $entity): string
-    {
+    protected function renderExceptionEntity(
+        Entity $entity
+    ): string {
         $entity->setSectionVisible('info', true);
 
         $output = [];
@@ -437,8 +444,9 @@ class Html implements Renderer
      *
      * @param array<Stat> $stats
      */
-    protected function renderEnvironment(array $stats): string
-    {
+    protected function renderEnvironment(
+        array $stats
+    ): string {
         $array = [];
 
         foreach ($stats as $name => $stat) {
@@ -552,8 +560,9 @@ class Html implements Renderer
     /**
      * Render stack frame calling code from source file
      */
-    protected function renderFrameSource(Frame $frame): ?string
-    {
+    protected function renderFrameSource(
+        Frame $frame
+    ): ?string {
         if ($path = $frame->getCallingFile()) {
             $line = $frame->getCallingLine();
         } elseif ($path = $frame->getFile()) {
@@ -623,8 +632,9 @@ class Html implements Renderer
     /**
      * Render a null scalar
      */
-    protected function renderNull(?string $class = null): string
-    {
+    protected function renderNull(
+        ?string $class = null
+    ): string {
         return '<span class="null' . ($class !== null ? ' ' . $class : null) . '">null</span>';
     }
 
@@ -714,8 +724,9 @@ class Html implements Renderer
     /**
      * Render binary string chunk
      */
-    protected function renderBinaryStringChunk(string $chunk): string
-    {
+    protected function renderBinaryStringChunk(
+        string $chunk
+    ): string {
         return '<i>' . $chunk . '</i>';
     }
 
@@ -723,8 +734,9 @@ class Html implements Renderer
     /**
      * Render a detected ascii control character
      */
-    protected function wrapControlCharacter(string $control): string
-    {
+    protected function wrapControlCharacter(
+        string $control
+    ): string {
         $class = 'control';
 
         if ($control === '\\t') {
@@ -750,24 +762,27 @@ class Html implements Renderer
     /**
      * Render structure grammar
      */
-    protected function renderGrammar(string $grammar): string
-    {
+    protected function renderGrammar(
+        string $grammar
+    ): string {
         return '<span class="g">' . $this->esc($grammar) . '</span>';
     }
 
     /**
      * Render structure pointer
      */
-    protected function renderPointer(string $pointer): string
-    {
+    protected function renderPointer(
+        string $pointer
+    ): string {
         return '<span class="pointer">' . $this->esc($pointer) . '</span>';
     }
 
     /**
      * Render line number
      */
-    protected function renderLineNumber(int $number): string
-    {
+    protected function renderLineNumber(
+        int $number
+    ): string {
         return '<span class="number">' . $number . '</span>';
     }
 
@@ -784,8 +799,9 @@ class Html implements Renderer
     /**
      * Render source line
      */
-    protected function renderSourceLine(int $number): string
-    {
+    protected function renderSourceLine(
+        int $number
+    ): string {
         return '<span class="line">' . $number . '</span>';
     }
 
@@ -804,24 +820,27 @@ class Html implements Renderer
     /**
      * render signature namespace part
      */
-    protected function renderSignatureNamespace(string $namespace): string
-    {
+    protected function renderSignatureNamespace(
+        string $namespace
+    ): string {
         return '<span class="namespace">' . $this->esc($namespace) . '</span>';
     }
 
     /**
      * render signature class part
      */
-    protected function renderSignatureClass(string $class): string
-    {
+    protected function renderSignatureClass(
+        string $class
+    ): string {
         return '<span class="class">' . $this->esc($class) . '</span>';
     }
 
     /**
      * render signature constant part
      */
-    protected function renderSignatureConstant(string $constant): string
-    {
+    protected function renderSignatureConstant(
+        string $constant
+    ): string {
         return '<span class="constant">' . $this->esc($constant) . '</span>';
     }
 
@@ -848,8 +867,9 @@ class Html implements Renderer
     /**
      * render signature object name
      */
-    protected function renderSignatureObject(string $object): string
-    {
+    protected function renderSignatureObject(
+        string $object
+    ): string {
         return '<span class="class param">' . $this->esc($object) . '</span>';
     }
 
@@ -879,8 +899,9 @@ class Html implements Renderer
     /**
      * Wrap entity name if reference
      */
-    protected function wrapReferenceName(string $name): string
-    {
+    protected function wrapReferenceName(
+        string $name
+    ): string {
         return '<span class="ref">' . $name . '</span>';
     }
 
@@ -900,8 +921,9 @@ class Html implements Renderer
     /**
      * Wrap entity name if reference
      */
-    protected function renderEntityNamePart(string $name): string
-    {
+    protected function renderEntityNamePart(
+        string $name
+    ): string {
         return '<i>' . $this->esc($name) . '</i>';
     }
 
@@ -919,16 +941,18 @@ class Html implements Renderer
     /**
      * render entity length tag
      */
-    protected function renderEntityLength(int $length): string
-    {
+    protected function renderEntityLength(
+        int $length
+    ): string {
         return '<span class="length">' . $length . '</span>';
     }
 
     /**
      * render entity class name
      */
-    protected function renderEntityClassName(string $class): string
-    {
+    protected function renderEntityClassName(
+        string $class
+    ): string {
         return '<span class="class">' . $this->esc($class) . '</span>';
     }
 
@@ -936,8 +960,9 @@ class Html implements Renderer
     /**
      * Wrap buttons
      */
-    protected function wrapEntityButtons(string $buttons): string
-    {
+    protected function wrapEntityButtons(
+        string $buttons
+    ): string {
         return '<span class="buttons">' . $buttons . '</span>';
     }
 
@@ -958,40 +983,45 @@ class Html implements Renderer
     /**
      * Render meta toggle button
      */
-    protected function renderEntityMetaButton(bool $open): string
-    {
+    protected function renderEntityMetaButton(
+        bool $open
+    ): string {
         return '<a data-open="t-meta" class="meta badge"><i>m</i></a>';
     }
 
     /**
      * Render text toggle button
      */
-    protected function renderEntityTextButton(bool $open): string
-    {
+    protected function renderEntityTextButton(
+        bool $open
+    ): string {
         return '<a data-open="t-text" class="text primary badge"><i>t</i></a>';
     }
 
     /**
      * Render text toggle button
      */
-    protected function renderEntityDefinitionButton(bool $open): string
-    {
+    protected function renderEntityDefinitionButton(
+        bool $open
+    ): string {
         return '<a data-open="t-def" class="def primary badge"><i>d</i></a>';
     }
 
     /**
      * Render properties toggle button
      */
-    protected function renderEntityPropertiesButton(bool $open): string
-    {
+    protected function renderEntityPropertiesButton(
+        bool $open
+    ): string {
         return '<a data-open="t-props" class="props primary badge"><i>p</i></a>';
     }
 
     /**
      * Render values toggle button
      */
-    protected function renderEntityValuesButton(bool $open): string
-    {
+    protected function renderEntityValuesButton(
+        bool $open
+    ): string {
         return '<a data-open="t-values" class="values badge primary"><i>v</i></a>';
     }
 
@@ -1060,16 +1090,18 @@ class Html implements Renderer
     /**
      * Wrap entity footer
      */
-    protected function wrapEntityFooter(string $footer): string
-    {
+    protected function wrapEntityFooter(
+        string $footer
+    ): string {
         return '<div class="footer">' . $footer . '</div>';
     }
 
     /**
      * Wrap stack frame
      */
-    protected function wrapStackFrame(string $frame): string
-    {
+    protected function wrapStackFrame(
+        string $frame
+    ): string {
         return '<div class="stack-frame"><samp class="dump trace">' . $frame . '</samp></div>';
     }
 
@@ -1099,8 +1131,9 @@ class Html implements Renderer
     /**
      * Escape a value for HTML
      */
-    protected function esc(?string $value): string
-    {
+    protected function esc(
+        ?string $value
+    ): string {
         if ($value === null) {
             return '';
         }

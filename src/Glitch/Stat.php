@@ -58,8 +58,9 @@ class Stat
      *
      * @return $this
      */
-    public function setRenderer(?callable $renderer): static
-    {
+    public function setRenderer(
+        ?callable $renderer
+    ): static {
         $this->renderer = $renderer;
         return $this;
     }

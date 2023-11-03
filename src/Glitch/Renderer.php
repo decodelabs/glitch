@@ -21,7 +21,9 @@ interface Renderer
      *
      * @return $this
      */
-    public function setProductionOverride(bool $flag): static;
+    public function setProductionOverride(
+        bool $flag
+    ): static;
 
     /**
      * Get production override
