@@ -1,3 +1,5 @@
+* Made PHP8.1 minimum version
+
 ## v0.18.9 (2023-10-30)
 * Read unkeyed meta from glitchDump as list
 
