@@ -1,3 +1,4 @@
+## v0.18.10 (2023-11-18)
 * Improved DateTimeInterface support
 * Added enum dump support
 * Added Fiber dump support
