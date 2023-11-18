@@ -44,10 +44,12 @@ class Inspector
         'Throwable' => [InspectCore::class, 'inspectException'],
         'Closure' => [InspectCore::class, 'inspectClosure'],
         'Generator' => [InspectCore::class, 'inspectGenerator'],
+        'UnitEnum' => [InspectCore::class, 'inspectEnum'],
+        'Fiber' => [InspectCore::class, 'inspectFiber'],
         '__PHP_Incomplete_Class' => [InspectCore::class, 'inspectIncompleteClass'],
 
         // Date
-        'DateTime' => [InspectDate::class, 'inspectDateTime'],
+        'DateTimeInterface' => [InspectDate::class, 'inspectDateTime'],
         'Carbon\\Carbon' => [InspectDate::class, 'inspectDateTime'],
         'DateInterval' => [InspectDate::class, 'inspectDateInterval'],
         'Carbon\\CarbonInterval' => [InspectDate::class, 'inspectDateInterval'],

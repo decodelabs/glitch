@@ -1,3 +1,6 @@
+* Improved DateTimeInterface support
+* Added enum dump support
+* Added Fiber dump support
 * Made PHP8.1 minimum version
 
 ## v0.18.9 (2023-10-30)

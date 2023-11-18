@@ -12,6 +12,7 @@ namespace DecodeLabs\Glitch\Dumper\Inspect;
 use DateInterval;
 use DatePeriod;
 use DateTime;
+use DateTimeInterface;
 use DateTimeZone;
 
 use DecodeLabs\Exceptional;
@@ -23,10 +24,10 @@ use ReflectionObject;
 class Date
 {
     /**
-     * Inspect DateTime
+     * Inspect DateTimeInterface
      */
     public static function inspectDateTime(
-        DateTime $date,
+        DateTimeInterface $date,
         Entity $entity,
         Inspector $inspector
     ): void {
