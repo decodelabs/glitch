@@ -30,7 +30,7 @@ use Throwable;
 
 class Context implements LoggerAwareInterface
 {
-    public const VERSION = 'v0.18.9';
+    public const VERSION = 'v0.18.10';
 
     protected float $startTime;
     protected string $runMode = 'development';
@@ -97,8 +97,9 @@ class Context implements LoggerAwareInterface
      *
      * @return $this
      */
-    public function setRunMode(string $mode): static
-    {
+    public function setRunMode(
+        string $mode
+    ): static {
         switch ($mode) {
             case 'production':
             case 'testing':
@@ -151,8 +152,9 @@ class Context implements LoggerAwareInterface
     /**
      * Set PSR logger
      */
-    public function setLogger(LoggerInterface $logger): void
-    {
+    public function setLogger(
+        LoggerInterface $logger
+    ): void {
         $this->logger = $logger;
     }
 
@@ -170,8 +172,9 @@ class Context implements LoggerAwareInterface
      *
      * @return $this
      */
-    public function setLogListener(?callable $listener): static
-    {
+    public function setLogListener(
+        ?callable $listener
+    ): static {
         $this->logListener = $listener;
         return $this;
     }
@@ -188,8 +191,9 @@ class Context implements LoggerAwareInterface
     /**
      * Create a new stack trace
      */
-    public function stackTrace(int $rewind = 0): Trace
-    {
+    public function stackTrace(
+        int $rewind = 0
+    ): Trace {
         return Trace::create($rewind + 1);
     }
 
@@ -334,8 +338,9 @@ class Context implements LoggerAwareInterface
      *
      * @return $this
      */
-    public function setStartTime(float $time): static
-    {
+    public function setStartTime(
+        float $time
+    ): static {
         $this->startTime = $time;
         return $this;
     }
@@ -414,8 +419,9 @@ class Context implements LoggerAwareInterface
     /**
      * Last-ditch catch-all for exceptions
      */
-    public function handleException(Throwable $exception): void
-    {
+    public function handleException(
+        Throwable $exception
+    ): void {
         try {
             $this->logException($exception);
 
@@ -442,8 +448,9 @@ class Context implements LoggerAwareInterface
     /**
      * Log an exception... somewhere :)
      */
-    public function logException(Throwable $exception): void
-    {
+    public function logException(
+        Throwable $exception
+    ): void {
         if ($this->logger) {
             try {
                 $this->logger->critical($exception->getMessage(), [
@@ -483,8 +490,9 @@ class Context implements LoggerAwareInterface
     /**
      * Is this error code fatal?
      */
-    protected static function isErrorLevelFatal(int $level): bool
-    {
+    protected static function isErrorLevelFatal(
+        int $level
+    ): bool {
         $errors = E_ERROR;
         $errors |= E_PARSE;
         $errors |= E_CORE_ERROR;
@@ -501,8 +509,9 @@ class Context implements LoggerAwareInterface
      *
      * @return $this
      */
-    public function setHeaderBufferSender(?callable $sender): static
-    {
+    public function setHeaderBufferSender(
+        ?callable $sender
+    ): static {
         $this->headerBufferSender = $sender;
         return $this;
     }
@@ -522,8 +531,9 @@ class Context implements LoggerAwareInterface
      *
      * @return $this
      */
-    public function setErrorPageRenderer(?callable $renderer): static
-    {
+    public function setErrorPageRenderer(
+        ?callable $renderer
+    ): static {
         $this->errorPageRenderer = $renderer;
         return $this;
     }
@@ -571,8 +581,9 @@ class Context implements LoggerAwareInterface
      * @param array<string, string> $aliases
      * @return $this
      */
-    public function registerPathAliases(array $aliases): static
-    {
+    public function registerPathAliases(
+        array $aliases
+    ): static {
         foreach ($aliases as $name => $path) {
             $path = rtrim($path, '/') . '/';
             $this->pathAliases[$name] = $path;
@@ -605,8 +616,9 @@ class Context implements LoggerAwareInterface
     /**
      * Lookup and replace path prefix
      */
-    public function normalizePath(?string $path): ?string
-    {
+    public function normalizePath(
+        ?string $path
+    ): ?string {
         if ($path === null) {
             return null;
         }
@@ -695,8 +707,9 @@ class Context implements LoggerAwareInterface
     /**
      * Format filesize bytes as human readable
      */
-    public static function formatFilesize(int $bytes): string
-    {
+    public static function formatFilesize(
+        int $bytes
+    ): string {
         $units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB'];
 
         for ($i = 0; $bytes > 1024; $i++) {
@@ -784,8 +797,9 @@ class Context implements LoggerAwareInterface
      *
      * @return $this
      */
-    public function setRenderer(Renderer $renderer): static
-    {
+    public function setRenderer(
+        Renderer $renderer
+    ): static {
         $this->dumpRenderer = $renderer;
         return $this;
     }
@@ -842,8 +856,9 @@ class Context implements LoggerAwareInterface
      *
      * @return $this
      */
-    public function setTransport(Transport $transport): static
-    {
+    public function setTransport(
+        Transport $transport
+    ): static {
         $this->transport = $transport;
         return $this;
     }

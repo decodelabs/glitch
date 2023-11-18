@@ -17,8 +17,10 @@ class Packet
     /**
      * Init with body and content type
      */
-    public function __construct(string $body, string $contentType)
-    {
+    public function __construct(
+        string $body,
+        string $contentType
+    ) {
         $this->body = $body;
         $this->contentType = $contentType;
     }

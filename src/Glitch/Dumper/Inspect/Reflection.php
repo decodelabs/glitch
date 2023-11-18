@@ -252,8 +252,9 @@ class Reflection
      * @template T of object
      * @param ReflectionClass<T> $reflection
      */
-    public static function getClassDefinition(ReflectionClass $reflection): string
-    {
+    public static function getClassDefinition(
+        ReflectionClass $reflection
+    ): string {
         $output = 'class ';
         $name = $reflection->getName();
 
@@ -300,8 +301,9 @@ class Reflection
     /**
      * Export property definition
      */
-    public static function getPropertyDefinition(ReflectionProperty $reflection): string
-    {
+    public static function getPropertyDefinition(
+        ReflectionProperty $reflection
+    ): string {
         $output = implode(' ', ReflectionRoot::getModifierNames($reflection->getModifiers()));
         $name = $reflection->getName();
         $output .= ' $' . $name . ' = ';
@@ -323,8 +325,9 @@ class Reflection
     /**
      * Export class constant definition
      */
-    public static function getConstantDefinition(ReflectionClassConstant $reflection): string
-    {
+    public static function getConstantDefinition(
+        ReflectionClassConstant $reflection
+    ): string {
         $output = implode(' ', ReflectionRoot::getModifierNames($reflection->getModifiers()));
         $output .= ' const ' . $reflection->getName() . ' = ';
         $value = $reflection->getValue();
@@ -343,8 +346,9 @@ class Reflection
     /**
      * Export function definition
      */
-    public static function getFunctionDefinition(ReflectionFunctionAbstract $reflection): string
-    {
+    public static function getFunctionDefinition(
+        ReflectionFunctionAbstract $reflection
+    ): string {
         $output = '';
 
         if ($reflection instanceof ReflectionMethod) {
@@ -390,8 +394,9 @@ class Reflection
     /**
      * Export parameter definition
      */
-    public static function getParameterDefinition(ReflectionParameter $parameter): string
-    {
+    public static function getParameterDefinition(
+        ReflectionParameter $parameter
+    ): string {
         $output = '';
 
         if ($parameter->allowsNull()) {
@@ -425,8 +430,9 @@ class Reflection
     /**
      * Get type name
      */
-    protected static function getTypeName(ReflectionType $type): string
-    {
+    protected static function getTypeName(
+        ReflectionType $type
+    ): string {
         if ($type instanceof ReflectionNamedType) {
             return $type->getName() . ' ';
         }

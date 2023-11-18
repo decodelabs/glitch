@@ -87,8 +87,9 @@ class Entity
     /**
      * Construct with required info
      */
-    public function __construct(string $type)
-    {
+    public function __construct(
+        string $type
+    ) {
         $this->setType($type);
     }
 
@@ -239,8 +240,9 @@ class Entity
      *
      * @return $this
      */
-    public function setType(string $type): static
-    {
+    public function setType(
+        string $type
+    ): static {
         $this->type = $type;
         $this->id = str_replace('.', '-', uniqid($type . '-', true));
         return $this;
@@ -261,8 +263,9 @@ class Entity
      *
      * @return $this
      */
-    public function setName(?string $name): static
-    {
+    public function setName(
+        ?string $name
+    ): static {
         $this->name = $name;
         return $this;
     }
@@ -281,8 +284,9 @@ class Entity
      *
      * @return $this
      */
-    public function setOpen(bool $open): static
-    {
+    public function setOpen(
+        bool $open
+    ): static {
         $this->open = $open;
         return $this;
     }
@@ -301,8 +305,9 @@ class Entity
      *
      * @return $this
      */
-    public function setId(?string $id): static
-    {
+    public function setId(
+        ?string $id
+    ): static {
         $this->id = $id;
         return $this;
     }
@@ -322,8 +327,9 @@ class Entity
      *
      * @return $this
      */
-    public function setObjectId(?int $id): static
-    {
+    public function setObjectId(
+        ?int $id
+    ): static {
         $this->objectId = $id;
         return $this;
     }
@@ -341,8 +347,9 @@ class Entity
      *
      * @return $this
      */
-    public function setHash(?string $hash): static
-    {
+    public function setHash(
+        ?string $hash
+    ): static {
         $this->hash = $hash;
         return $this;
     }
@@ -361,8 +368,9 @@ class Entity
      *
      * @return $this
      */
-    public function setClass(?string $class): static
-    {
+    public function setClass(
+        ?string $class
+    ): static {
         $this->class = $class;
         return $this;
     }
@@ -380,8 +388,9 @@ class Entity
      *
      * @return $this
      */
-    public function setClassName(?string $className): static
-    {
+    public function setClassName(
+        ?string $className
+    ): static {
         $this->className = $className;
         return $this;
     }
@@ -400,8 +409,9 @@ class Entity
      *
      * @return $this
      */
-    public function setParentClasses(string ...$parents): static
-    {
+    public function setParentClasses(
+        string ...$parents
+    ): static {
         if (empty($parents)) {
             $parents = null;
         }
@@ -426,8 +436,9 @@ class Entity
      *
      * @return $this
      */
-    public function setInterfaces(string ...$interfaces): static
-    {
+    public function setInterfaces(
+        string ...$interfaces
+    ): static {
         if (empty($interfaces)) {
             $interfaces = null;
         }
@@ -452,8 +463,9 @@ class Entity
      *
      * @return $this
      */
-    public function setTraits(string ...$traits): static
-    {
+    public function setTraits(
+        string ...$traits
+    ): static {
         if (empty($traits)) {
             $traits = null;
         }
@@ -479,8 +491,9 @@ class Entity
      *
      * @return $this
      */
-    public function setFile(?string $file): static
-    {
+    public function setFile(
+        ?string $file
+    ): static {
         $this->file = $file;
         return $this;
     }
@@ -498,8 +511,9 @@ class Entity
      *
      * @return $this
      */
-    public function setStartLine(?int $line): static
-    {
+    public function setStartLine(
+        ?int $line
+    ): static {
         $this->startLine = $line;
         return $this;
     }
@@ -517,8 +531,9 @@ class Entity
      *
      * @return $this
      */
-    public function setEndLine(?int $line): static
-    {
+    public function setEndLine(
+        ?int $line
+    ): static {
         $this->endLine = $line;
         return $this;
     }
@@ -539,8 +554,9 @@ class Entity
      *
      * @return $this
      */
-    public function setText(?string $text): static
-    {
+    public function setText(
+        ?string $text
+    ): static {
         $this->text = $text;
         return $this;
     }
@@ -560,8 +576,9 @@ class Entity
      *
      * @return $this
      */
-    public function setDefinition(?string $definition): static
-    {
+    public function setDefinition(
+        ?string $definition
+    ): static {
         $this->definition = $definition;
         return $this;
     }
@@ -581,8 +598,9 @@ class Entity
      *
      * @return $this
      */
-    public function setLength(?int $length): static
-    {
+    public function setLength(
+        ?int $length
+    ): static {
         $this->length = $length;
         return $this;
     }
@@ -616,8 +634,9 @@ class Entity
     /**
      * Get meta value
      */
-    public function getMeta(string $key): mixed
-    {
+    public function getMeta(
+        string $key
+    ): mixed {
         return $this->meta[$key] ?? null;
     }
 
@@ -627,8 +646,9 @@ class Entity
      * @param array<int|string, mixed> $meta
      * @return $this
      */
-    public function setMetaList(array $meta): static
-    {
+    public function setMetaList(
+        array $meta
+    ): static {
         foreach ($meta as $key => $value) {
             $this->setMeta((string)$key, $value);
         }
@@ -649,8 +669,9 @@ class Entity
     /**
      * Has meta value
      */
-    public function hasMeta(string $key): bool
-    {
+    public function hasMeta(
+        string $key
+    ): bool {
         if ($this->meta === null) {
             return false;
         }
@@ -663,8 +684,9 @@ class Entity
      *
      * @return $this
      */
-    public function removeMeta(string $key): static
-    {
+    public function removeMeta(
+        string $key
+    ): static {
         unset($this->meta[$key]);
         return $this;
     }
@@ -711,8 +733,9 @@ class Entity
      *
      * @return $this
      */
-    public function setSingleValue(mixed $value): static
-    {
+    public function setSingleValue(
+        mixed $value
+    ): static {
         $this->setValues([$value]);
         $this->setShowKeys(false);
         return $this;
@@ -732,8 +755,9 @@ class Entity
      * @param array<int|string, mixed>|null $values
      * @return $this
      */
-    public function setValues(?array $values): static
-    {
+    public function setValues(
+        ?array $values
+    ): static {
         if ($values !== null) {
             foreach ($values as $value) {
                 $this->checkValidity($value);
@@ -792,8 +816,9 @@ class Entity
      *
      * @return $this
      */
-    public function setShowKeys(bool $show): static
-    {
+    public function setShowKeys(
+        bool $show
+    ): static {
         $this->showValueKeys = $show;
         return $this;
     }
@@ -814,8 +839,9 @@ class Entity
      * @param array<int|string, mixed> $properties
      * @return $this
      */
-    public function setProperties(array $properties): static
-    {
+    public function setProperties(
+        array $properties
+    ): static {
         foreach ($properties as $key => $value) {
             $this->setProperty((string)$key, $value);
         }
@@ -851,16 +877,18 @@ class Entity
     /**
      * Get property
      */
-    public function getProperty(string $key): mixed
-    {
+    public function getProperty(
+        string $key
+    ): mixed {
         return $this->properties[$key] ?? null;
     }
 
     /**
      * Has property
      */
-    public function hasProperty(string $key): bool
-    {
+    public function hasProperty(
+        string $key
+    ): bool {
         if (empty($this->properties)) {
             return false;
         }
@@ -873,8 +901,9 @@ class Entity
      *
      * @return $this
      */
-    public function removeProperty(string $key): static
-    {
+    public function removeProperty(
+        string $key
+    ): static {
         unset($this->properties[$key]);
         return $this;
     }
@@ -897,8 +926,9 @@ class Entity
      *
      * @return $this
      */
-    public function setStackTrace(Trace $trace): static
-    {
+    public function setStackTrace(
+        Trace $trace
+    ): static {
         $this->stackTrace = $trace;
         return $this;
     }
@@ -1000,8 +1030,9 @@ class Entity
      *
      * @return $this
      */
-    public function hideSection(string $name): static
-    {
+    public function hideSection(
+        string $name
+    ): static {
         if (isset($this->sections[$name])) {
             $this->sections[$name] = false;
         }
@@ -1014,8 +1045,9 @@ class Entity
      *
      * @return $this
      */
-    public function showSection(string $name): static
-    {
+    public function showSection(
+        string $name
+    ): static {
         if (isset($this->sections[$name])) {
             $this->sections[$name] = true;
         }
@@ -1042,8 +1074,9 @@ class Entity
     /**
      * Is section visible
      */
-    public function isSectionVisible(string $name): bool
-    {
+    public function isSectionVisible(
+        string $name
+    ): bool {
         return $this->sections[$name] ?? false;
     }
 
@@ -1053,8 +1086,9 @@ class Entity
      * @param array<string, bool> $sections
      * @return $this
      */
-    public function setSectionsVisible(array $sections): static
-    {
+    public function setSectionsVisible(
+        array $sections
+    ): static {
         foreach ($sections as $section => $visible) {
             $this->setSectionVisible($section, (bool)$visible);
         }

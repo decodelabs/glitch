@@ -84,8 +84,9 @@ class Cli implements Renderer
      *
      * @param array<Stat> $stats
      */
-    protected function renderStats(array $stats): string
-    {
+    protected function renderStats(
+        array $stats
+    ): string {
         $output = [];
 
         foreach ($stats as $stat) {
@@ -128,8 +129,9 @@ class Cli implements Renderer
     /**
      * Render exception message
      */
-    protected function renderExceptionMessage(Throwable $exception): string
-    {
+    protected function renderExceptionMessage(
+        Throwable $exception
+    ): string {
         $message = $exception->getMessage();
         $code = $exception->getCode();
 
@@ -178,8 +180,9 @@ class Cli implements Renderer
     /**
      * Render a null scalar
      */
-    protected function renderNull(?string $class = null): string
-    {
+    protected function renderNull(
+        ?string $class = null
+    ): string {
         return $this->format('null', 'magenta', null, 'bold');
     }
 
@@ -317,16 +320,18 @@ class Cli implements Renderer
     /**
      * Render binary string chunk
      */
-    protected function renderBinaryStringChunk(string $chunk): string
-    {
+    protected function renderBinaryStringChunk(
+        string $chunk
+    ): string {
         return $this->format($chunk, 'magenta') . ' ';
     }
 
     /**
      * Render a detected ascii control character
      */
-    protected function wrapControlCharacter(string $control): string
-    {
+    protected function wrapControlCharacter(
+        string $control
+    ): string {
         return $this->format($control, 'white', 'red', 'bold');
     }
 
@@ -334,24 +339,27 @@ class Cli implements Renderer
     /**
      * Render structure grammar
      */
-    protected function renderGrammar(string $grammar): string
-    {
+    protected function renderGrammar(
+        string $grammar
+    ): string {
         return $this->format($grammar, 'white', null, 'dim');
     }
 
     /**
      * Render structure pointer
      */
-    protected function renderPointer(string $pointer): string
-    {
+    protected function renderPointer(
+        string $pointer
+    ): string {
         return $this->format($pointer, 'white', null, 'dim');
     }
 
     /**
      * Render line number
      */
-    protected function renderLineNumber(int $number): string
-    {
+    protected function renderLineNumber(
+        int $number
+    ): string {
         return $this->format(str_pad((string)$number, 2), 'blue', null, 'bold');
     }
 
@@ -368,8 +376,9 @@ class Cli implements Renderer
     /**
      * Render source line
      */
-    protected function renderSourceLine(int $number): string
-    {
+    protected function renderSourceLine(
+        int $number
+    ): string {
         return $this->format((string)$number, 'magenta', null, 'bold');
     }
 
@@ -377,24 +386,27 @@ class Cli implements Renderer
     /**
      * render signature namespace part
      */
-    protected function renderSignatureNamespace(string $namespace): string
-    {
+    protected function renderSignatureNamespace(
+        string $namespace
+    ): string {
         return $this->format($namespace, 'cyan');
     }
 
     /**
      * render signature class part
      */
-    protected function renderSignatureClass(string $class): string
-    {
+    protected function renderSignatureClass(
+        string $class
+    ): string {
         return $this->format($class, 'cyan', null, 'bold');
     }
 
     /**
      * render signature constant part
      */
-    protected function renderSignatureConstant(string $constant): string
-    {
+    protected function renderSignatureConstant(
+        string $constant
+    ): string {
         return $this->format($constant, 'magenta');
     }
 
@@ -423,16 +435,18 @@ class Cli implements Renderer
     /**
      * render signature object name
      */
-    protected function renderSignatureObject(string $object): string
-    {
+    protected function renderSignatureObject(
+        string $object
+    ): string {
         return $this->format($object, 'green');
     }
 
     /**
      * Wrap entity name if reference
      */
-    protected function wrapReferenceName(string $name): string
-    {
+    protected function wrapReferenceName(
+        string $name
+    ): string {
         return
             $this->format('&', 'white', null, 'dim') .
             //$this->format($name, 'green', null, 'bold');
@@ -442,24 +456,27 @@ class Cli implements Renderer
     /**
      * Wrap entity name if reference
      */
-    protected function renderEntityNamePart(string $name): string
-    {
+    protected function renderEntityNamePart(
+        string $name
+    ): string {
         return $this->format($name, 'green', null, 'bold');
     }
 
     /**
      * render entity length tag
      */
-    protected function renderEntityLength(int $length): string
-    {
+    protected function renderEntityLength(
+        int $length
+    ): string {
         return $this->format((string)$length, 'cyan', null, 'bold');
     }
 
     /**
      * render entity class name
      */
-    protected function renderEntityClassName(string $class): string
-    {
+    protected function renderEntityClassName(
+        string $class
+    ): string {
         return $this->format($class, 'white');
     }
 
@@ -608,8 +625,9 @@ class Cli implements Renderer
      *
      * @param array<string|null> $args
      */
-    protected function applyStackedFormat(array $args): string
-    {
+    protected function applyStackedFormat(
+        array $args
+    ): string {
         $output = $this->resetFormat(...$args);
 
         if (isset($this->formatStack[0])) {
