@@ -44,7 +44,7 @@ namespace {
         function dd2(
             mixed $var,
             mixed ...$vars
-        ): void {
+        ): never {
             foreach (func_get_args() as $arg) {
                 echo '<div><pre>' . print_r($arg, true) . '</pre></div>';
             }

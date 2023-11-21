@@ -1,3 +1,5 @@
+* Added never return type to dd()
+
 ## v0.18.10 (2023-11-18)
 * Improved DateTimeInterface support
 * Added enum dump support
