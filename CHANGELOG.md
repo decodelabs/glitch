@@ -1,3 +1,7 @@
+## v0.18.11 (2023-12-12)
+* Added CORS headers to HTTP transport
+* Added never return type to dd()
+
 ## v0.18.10 (2023-11-18)
 * Improved DateTimeInterface support
 * Added enum dump support

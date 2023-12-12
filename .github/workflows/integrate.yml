@@ -9,7 +9,7 @@ on:
   pull_request: null
 
 env:
-  PHP_EXTENSIONS: "intl"
+  PHP_EXTENSIONS: "intl, :php-psr"
 
 jobs:
   file_consistency:

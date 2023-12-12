@@ -47,6 +47,9 @@ class Http implements Transport
             header('Content-Type: ' . $packet->getContentType() . '; charset=UTF-8');
             header('Cache-Control: no-cache, no-store, must-revalidate');
             header('Pragma: no-cache');
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS, HEAD');
+            header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-HTTP-Method-Override, Accept, Accept-Encoding, Accept-Language, Connection, Host, Origin, Referer, User-Agent');
 
             if ($headerBufferSender = Glitch::getHeaderBufferSender()) {
                 $headerBufferSender();
