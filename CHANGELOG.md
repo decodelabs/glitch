@@ -1,3 +1,4 @@
+## v0.18.11 (2023-12-12)
 * Added CORS headers to HTTP transport
 * Added never return type to dd()
 
