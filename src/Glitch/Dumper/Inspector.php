@@ -477,23 +477,23 @@ class Inspector
                 ->setText(bin2hex($string))
                 ->setLength(strlen($string));
 
-        // Class name
+            // Class name
         } elseif ($isPossibleClass && class_exists($string, $loadClasses)) {
             return (new Entity('class'))
                 ->setClassName($string);
 
-        // Interface name
+            // Interface name
         } elseif ($isPossibleClass && interface_exists($string, $loadClasses)) {
             return (new Entity('interface'))
                 ->setClassName($string);
 
-        // Trait name
+            // Trait name
         } elseif ($isPossibleClass && trait_exists($string, $loadClasses)) {
             return (new Entity('trait'))
                 ->setClassName($string);
 
 
-        // Standard string
+            // Standard string
         } else {
             return $string;
         }
@@ -852,17 +852,17 @@ class Inspector
             }
             return;
 
-        // Inspectable
+            // Inspectable
         } elseif ($object instanceof Inspectable || method_exists($object, 'glitchInspect')) {
             $object->glitchInspect($entity, $this);
             return;
 
-        // Object inspector
+            // Object inspector
         } elseif (isset($this->objectInspectors[$className])) {
             call_user_func($this->objectInspectors[$className], $object, $entity, $this);
             return;
 
-        // Debug info
+            // Debug info
         } elseif (method_exists($object, '__debugInfo')) {
             $entity->setValues($this->inspectList($info = $object->__debugInfo()));
             return;
