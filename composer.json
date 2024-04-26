@@ -24,7 +24,7 @@
     "require-dev": {
         "decodelabs/phpstan-decodelabs": "^0.6.1",
 
-        "symfony/var-dumper": "^5.1",
+        "symfony/var-dumper": "^5|^6",
         "php-ds/php-ds": "~1.2"
     },
     "autoload": {
