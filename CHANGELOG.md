@@ -1,3 +1,6 @@
+## v0.18.13 (2024-04-29)
+* Converted theme to Vite
+
 ## v0.18.12 (2024-04-29)
 * Updated dependency list
 * Fixed Veneer stubs in gitattributes

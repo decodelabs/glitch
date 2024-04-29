@@ -1,10 +1,10 @@
-$font-base-size: 16px !default !global;
-$font-min-size: 10px !default !global;
+$font-base-size: 16px !default;
+$font-min-size: 10px !default;
 
-$font-scale: false !default !global;
-$font-scale-threshold: 3000px !default !global;
-$font-scale-region: 300px !default !global;
-$font-scale-crossover: null !default !global;
+$font-scale: false !default;
+$font-scale-threshold: 3000px !default;
+$font-scale-region: 300px !default;
+$font-scale-crossover: null !default;
 
 @if global-variable-exists(page-max-width) {
     $font-scale-crossover: $page-max-width !default;
@@ -12,14 +12,12 @@ $font-scale-crossover: null !default !global;
     $font-scale-crossover: 1080px !default;
 }
 
-
-
 // FONT SCALING
 @mixin applyRelativeFontSizing($maxWidth: $font-scale-threshold) {
-    $divisions: ($font-base-size / 1px) - ($font-min-size / 1px);
+    $divisions: calc($font-base-size / 1px) - calc($font-min-size / 1px);
 
     @if $font-scale-crossover != false {
-        $expDivisions: floor(($maxWidth - $font-scale-crossover) / $font-scale-region);
+        $expDivisions: floor(calc(($maxWidth - $font-scale-crossover) / $font-scale-region));
 
         html {
             font-size: $font-base-size + $expDivisions - 1;
@@ -33,7 +31,7 @@ $font-scale-crossover: null !default !global;
             }
         }
 
-        $divisionWidth: (($font-scale-crossover - 600px) / $divisions);
+        $divisionWidth: calc(($font-scale-crossover - 600px) / $divisions);
 
         @for $i from 1 through $divisions {
             @media only screen and (max-width: #{$font-scale-crossover - (($i - 1) * $divisionWidth)}) {
@@ -43,7 +41,7 @@ $font-scale-crossover: null !default !global;
             }
         }
     } @else {
-        $divisionWidth: ($maxWidth - 600px / $divisions);
+        $divisionWidth: calc($maxWidth - 600px / $divisions);
 
         @for $i from 1 through $divisions {
             @media only screen and (max-width: #{$maxWidth - ($i * $divisionWidth)}) {
@@ -54,8 +52,6 @@ $font-scale-crossover: null !default !global;
         }
     }
 }
-
-
 
 html {
     font-size: $font-base-size;
