@@ -1,3 +1,6 @@
+* Removed jQuery package
+* Fixed Zest editor config
+
 ## v0.18.13 (2024-04-29)
 * Converted theme to Vite
 

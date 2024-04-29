@@ -18,8 +18,7 @@
         "decodelabs/glitch-support": "^0.4",
         "decodelabs/veneer": "^0.10.10",
 
-        "psr/log": "^3.0",
-        "components/jquery": "~3.3"
+        "psr/log": "^3.0"
     },
     "require-dev": {
         "decodelabs/phpstan-decodelabs": "^0.6.1",
