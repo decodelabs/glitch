@@ -8,4 +8,3 @@ phpstan.neon export-ignore
 phpunit.xml.dist export-ignore
 docs/ export-ignore
 tests/ export-ignore
-stubs/ export-ignore
