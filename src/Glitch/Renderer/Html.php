@@ -22,6 +22,7 @@ use DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Stat;
+use DecodeLabs\Zest\Manifest;
 
 use Throwable;
 
@@ -43,8 +44,6 @@ class Html implements Renderer
     ];
 
     public const RENDER_STACK = true;
-
-    public const DEV = false;
 
     public const HTTP_STATUSES = [
         100 => 'Continue',
@@ -209,44 +208,75 @@ class Html implements Renderer
 
         // Meta
         $output[] = '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">';
+        $css = $js = [];
+
+        // Zest
+        if (
+            class_exists(Manifest::class) &&
+            file_exists(__DIR__ . '/assets/.vite/manifest.json.php')
+        ) {
+            $manifest = Manifest::load(__DIR__ . '/assets/.vite/manifest.json');
+
+            foreach ($manifest->getCssData() as $file => $attrs) {
+                $css[$file] = $attrs;
+            }
+
+            foreach ($manifest->getHeadJsData() as $file => $attrs) {
+                $js[$file] = $attrs;
+            }
+
+            foreach ($manifest->getBodyJsData() as $file => $attrs) {
+                $js[$file] = $attrs;
+            }
+        } else {
+            $css[__DIR__ . '/assets/style.css'] = [
+                'id' => 'style-glitch'
+            ];
+
+            $js[__DIR__ . '/assets/main.js'] = [
+                'id' => 'script-glitch',
+                'type' => 'module'
+            ];
+
+            //$css['glitch'] = $vendor . '/decodelabs/glitch/src/Glitch/Renderer/assets/style.css';
+        }
 
 
         // Css
-        $sassCss = $vendor . '/decodelabs/glitch/src/Glitch/Renderer/assets/glitch.css';
-        $this->buildScss($sassCss);
-
-
-        $css = [
-            'glitch' => $sassCss
-        ];
-
         if (isset($this->customCssFile)) {
-            $css['custom'] = $this->customCssFile;
+            $css[$this->customCssFile] = [
+                'id' => 'style-custom'
+            ];
         }
 
-        foreach ($css as $name => $cssPath) {
+        foreach ($css as $cssPath => $attrs) {
             if (file_exists($cssPath)) {
-                $output[] = '<style id="style-' . $name . '">';
+                $output[] = '<style' . $this->prepareAttrs($attrs) . '>';
                 $output[] = file_get_contents($cssPath);
                 $output[] = '</style>';
+            } elseif (
+                str_starts_with($cssPath, 'http://') ||
+                str_starts_with($cssPath, 'https://')
+            ) {
+                $output[] = '<link rel="stylesheet" href="' . $cssPath . '"' . $this->prepareAttrs($attrs) . ' />';
             }
         }
 
         // Js
-        if ($this->shouldRender()) {
-            $js = [
-                'jQuery' => $vendor . '/components/jquery/jquery.min.js',
-                'glitch' => __DIR__ . '/assets/glitch.js'
-            ];
-
-            foreach ($js as $name => $jsPath) {
-                if (file_exists($jsPath)) {
-                    $output[] = '<script id="script-' . $name . '">';
-                    $output[] = file_get_contents($jsPath);
-                    $output[] = '</script>';
-                }
+        //if ($this->shouldRender()) {
+        foreach ($js as $jsPath => $attrs) {
+            if (file_exists($jsPath)) {
+                $output[] = '<script' . $this->prepareAttrs($attrs) . '>';
+                $output[] = file_get_contents($jsPath);
+                $output[] = '</script>';
+            } elseif (
+                str_starts_with($jsPath, 'http://') ||
+                str_starts_with($jsPath, 'https://')
+            ) {
+                $output[] = '<script src="' . $jsPath . '"' . $this->prepareAttrs($attrs) . '></script>';
             }
         }
+        //}
 
 
         $output[] = '</head>';
@@ -257,77 +287,25 @@ class Html implements Renderer
     }
 
     /**
-     * Build scss files
+     * @param array<string, mixed> $attrs
+     * @return string
      */
-    protected function buildScss(
-        string $cssPath
-    ): void {
-        $vendor = $this->context->getVendorPath();
-        $isDev = is_link($vendor . '/decodelabs/glitch');
+    protected function prepareAttrs(
+        array $attrs
+    ): string {
+        $output = [];
 
-        if (!static::DEV || !$isDev) {
-            return;
+        foreach ($attrs as $key => $value) {
+            $output[] = $key . '="' . $value . '"';
         }
 
-
-        $enlightenPath = $vendor . '/decodelabs/enlighten/src/resources/styles.css';
-        $_sourcePath = $vendor . '/decodelabs/glitch/src/Glitch/Renderer/assets/scss/auto/_source.scss';
-        file_put_contents($_sourcePath, file_get_contents($enlightenPath));
-
-
-
-        $scssPath = substr($cssPath, 0, -3) . 'scss';
-
-        if (!file_exists($scssPath)) {
-            return;
+        if (!empty($output)) {
+            return ' ' . implode(' ', $output);
         }
 
-        $build = false;
-
-        if (file_exists($cssPath)) {
-            $cssTime = filemtime($cssPath);
-            $scssTime = filemtime($scssPath);
-
-            if ($scssTime > $cssTime) {
-                $build = true;
-            }
-        } else {
-            $cssTime = 0;
-            $build = true;
-        }
-
-        if (!$build) {
-            if (false === ($test = scandir(__DIR__ . '/assets/scss/'))) {
-                $test = [];
-            }
-
-            foreach ($test as $testFileName) {
-                if ($testFileName === '.' || $testFileName === '..') {
-                    continue;
-                }
-
-                $testFilePath = __DIR__ . '/assets/scss/' . $testFileName;
-
-                if (is_file($testFilePath)) {
-                    $scssTime = filemtime($testFilePath);
-
-                    if ($scssTime > $cssTime) {
-                        $build = true;
-                        break;
-                    }
-                }
-            }
-        }
-
-
-        if ($build) {
-            exec('cd ' . $vendor . '; sassc --style=compressed ' . $scssPath . ' ' . $cssPath . ' 2>&1', $execOut);
-
-            if (!empty($execOut)) {
-                die('<pre>' . print_r($execOut, true));
-            }
-        }
+        return '';
     }
+
 
     /**
      * Render exception message
