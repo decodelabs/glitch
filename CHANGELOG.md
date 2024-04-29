@@ -1,4 +1,6 @@
+## v0.18.12 (2024-04-29)
 * Updated dependency list
+* Fixed Veneer stubs in gitattributes
 
 ## v0.18.11 (2023-12-12)
 * Added CORS headers to HTTP transport
