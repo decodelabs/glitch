@@ -22,6 +22,7 @@ use ReflectionFiber;
 use ReflectionFunction;
 use ReflectionGenerator;
 use ReflectionObject;
+use SensitiveParameterValue;
 use Throwable;
 use UnitEnum;
 
@@ -176,6 +177,20 @@ class Core
             $entity->setShowKeys(false);
             $entity->setValue('return', $inspector($fiber->getReturn()));
         }
+    }
+
+    /**
+     * Inspect sensitive parameter value
+     */
+    public static function inspectSensitiveParameterValue(
+        SensitiveParameterValue $value,
+        Entity $entity,
+        Inspector $inspector
+    ): void {
+        $entity
+            ->setName('sensitive')
+            ->setSensitive(true)
+            ->setClassName(getType($value->getValue()));
     }
 
     /**

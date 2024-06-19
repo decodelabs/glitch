@@ -457,9 +457,10 @@ class Cli implements Renderer
      * Wrap entity name if reference
      */
     protected function renderEntityNamePart(
-        string $name
+        string $name,
+        bool $sensitive = false
     ): string {
-        return $this->format($name, 'green', null, 'bold');
+        return $this->format($name, $sensitive ? 'red' : 'green', null, 'bold');
     }
 
     /**

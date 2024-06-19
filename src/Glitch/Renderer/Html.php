@@ -891,16 +891,18 @@ class Html implements Renderer
     protected function wrapEntityName(
         string $name,
         bool $open,
-        string $linkId
+        string $linkId,
+        bool $sensitive = false
     ): string {
-        return '<a class="name code" data-open="body">' . $name . '</a>';
+        return '<a class="name code' . ($sensitive ? ' sensitive' : '') . '" data-open="body">' . $name . '</a>';
     }
 
     /**
      * Wrap entity name if reference
      */
     protected function renderEntityNamePart(
-        string $name
+        string $name,
+        bool $sensitive = false
     ): string {
         return '<i>' . $this->esc($name) . '</i>';
     }
@@ -911,9 +913,10 @@ class Html implements Renderer
     protected function wrapEntityNameReference(
         string $name,
         bool $open,
-        string $id
+        string $id,
+        bool $sensitive = false
     ): string {
-        return '<a class="name code ref" href="#' . $id . '">' . $name . '</a>';
+        return '<a class="name code ref' . ($sensitive ? ' sensitive' : '') . '" href="#' . $id . '">' . $name . '</a>';
     }
 
     /**

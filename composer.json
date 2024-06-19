@@ -11,11 +11,12 @@
     "require": {
         "php": "^8.1",
         "symfony/polyfill-mbstring": "^1.7",
+        "symfony/polyfill-php82": "^1.29",
 
         "decodelabs/coercion": "^0.2",
         "decodelabs/enlighten": "^0.9",
         "decodelabs/exceptional": "^0.4.1",
-        "decodelabs/glitch-support": "^0.4",
+        "decodelabs/glitch-support": "^0.4.6",
         "decodelabs/veneer": "^0.10.10",
 
         "psr/log": "^3.0"

@@ -967,7 +967,10 @@ trait Base
             $nameParts = explode('|', $name);
 
             foreach ($nameParts as $i => $part) {
-                $nameParts[$i] = $this->renderEntityNamePart(trim($part));
+                $nameParts[$i] = $this->renderEntityNamePart(
+                    trim($part),
+                    $entity->isSensitive()
+                );
             }
 
             $g = $this->renderGrammar('|');
@@ -978,9 +981,9 @@ trait Base
         // Name
         if ($isRef) {
             $name = $this->wrapReferenceName($name);
-            $header[] = $this->wrapEntityNameReference($name, $open, $id);
+            $header[] = $this->wrapEntityNameReference($name, $open, $id, $entity->isSensitive());
         } else {
-            $header[] = $this->wrapEntityName($name, $open, $linkId);
+            $header[] = $this->wrapEntityName($name, $open, $linkId, $entity->isSensitive());
         }
 
         // Class
@@ -1198,7 +1201,8 @@ trait Base
     protected function wrapEntityName(
         string $name,
         bool $open,
-        string $linkId
+        string $linkId,
+        bool $sensitive = false
     ): string {
         return $name;
     }
@@ -1208,7 +1212,8 @@ trait Base
      * Wrap entity name if reference
      */
     protected function renderEntityNamePart(
-        string $name
+        string $name,
+        bool $sensitive = false
     ): string {
         return $name;
     }
@@ -1220,7 +1225,8 @@ trait Base
     protected function wrapEntityNameReference(
         string $name,
         bool $open,
-        string $id
+        string $id,
+        bool $sensitive = false
     ): string {
         return $name;
     }

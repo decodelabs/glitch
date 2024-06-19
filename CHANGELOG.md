@@ -1,3 +1,6 @@
+* Custom rendering for SensitiveParameterValue
+* Added support for sensitive properties
+
 ## v0.18.14 (2024-04-29)
 * Removed jQuery package
 * Fixed Zest editor config
