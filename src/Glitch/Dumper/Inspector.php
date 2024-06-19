@@ -12,6 +12,7 @@ namespace DecodeLabs\Glitch\Dumper;
 use Countable;
 
 use DecodeLabs\Coercion;
+use DecodeLabs\Glitch\Attribute\SensitiveProperty;
 use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Dumpable;
 use DecodeLabs\Glitch\Dumper\Inspect\Core as InspectCore;
@@ -33,6 +34,7 @@ use DecodeLabs\Glitch\Inspectable;
 
 use ReflectionClass;
 use ReflectionObject;
+use SensitiveParameterValue;
 
 class Inspector
 {
@@ -46,6 +48,7 @@ class Inspector
         'Generator' => [InspectCore::class, 'inspectGenerator'],
         'UnitEnum' => [InspectCore::class, 'inspectEnum'],
         'Fiber' => [InspectCore::class, 'inspectFiber'],
+        'SensitiveParameterValue' => [InspectCore::class, 'inspectSensitiveParameterValue'],
         '__PHP_Incomplete_Class' => [InspectCore::class, 'inspectIncompleteClass'],
 
         // Date
@@ -846,14 +849,20 @@ class Inspector
         $className = get_class($object);
 
         // Export
-        if ($object instanceof Dumpable || method_exists($object, 'glitchDump')) {
+        if (
+            $object instanceof Dumpable ||
+            method_exists($object, 'glitchDump')
+        ) {
             foreach ($object->glitchDump() as $key => $value) {
                 $entity->importDumpValue($object, $key, $value, $this);
             }
             return;
 
             // Inspectable
-        } elseif ($object instanceof Inspectable || method_exists($object, 'glitchInspect')) {
+        } elseif (
+            $object instanceof Inspectable ||
+            method_exists($object, 'glitchInspect')
+        ) {
             $object->glitchInspect($entity, $this);
             return;
 
@@ -941,18 +950,29 @@ class Inspector
                 $name = $prefix . $name;
             }
 
-            if ($asMeta && $entity->hasMeta($name)) {
+            if (
+                $asMeta &&
+                $entity->hasMeta($name)
+            ) {
                 continue;
             } elseif ($entity->hasProperty($name)) {
                 continue;
             }
 
+
+            // Get value
             if ($property->isInitialized($object)) {
                 $value = $property->getValue($object);
             } else {
                 $value = null;
             }
 
+            // Check sensitive
+            if (!empty($property->getAttributes(SensitiveProperty::class))) {
+                $value = new SensitiveParameterValue($value);
+            }
+
+            // Inspect value
             $propValue = $this->inspectValue($value);
 
             if ($propValue instanceof Entity) {

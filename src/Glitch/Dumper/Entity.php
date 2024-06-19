@@ -26,6 +26,7 @@ class Entity
     protected ?string $hash = null;
     protected ?string $class = null;
     protected ?string $className = null;
+    protected bool $sensitive = false;
 
     /**
      * @var array<string>|null
@@ -297,6 +298,24 @@ class Entity
     public function isOpen(): bool
     {
         return $this->open;
+    }
+
+    /**
+     * Set sensitive
+     */
+    public function setSensitive(
+        bool $sensitive
+    ): static {
+        $this->sensitive = $sensitive;
+        return $this;
+    }
+
+    /**
+     * Is sensitive
+     */
+    public function isSensitive(): bool
+    {
+        return $this->sensitive;
     }
 
 
