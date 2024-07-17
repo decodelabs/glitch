@@ -1,3 +1,5 @@
+* Updated Veneer dependency
+
 ## v0.18.15 (2024-06-19)
 * Custom rendering for SensitiveParameterValue
 * Added support for sensitive properties
