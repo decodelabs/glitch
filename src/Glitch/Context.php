@@ -30,7 +30,7 @@ use Throwable;
 
 class Context implements LoggerAwareInterface
 {
-    public const VERSION = 'v0.18.15';
+    public const VERSION = 'v0.18.16';
 
     protected float $startTime;
     protected string $runMode = 'development';
