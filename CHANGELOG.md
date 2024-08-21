@@ -1,3 +1,7 @@
+* Converted consts to PascalCase
+* Made renderer consts protected
+* Improved Veneer support
+
 ## v0.18.16 (2024-07-17)
 * Updated Veneer dependency
 

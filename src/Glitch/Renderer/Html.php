@@ -12,7 +12,6 @@ namespace DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Enlighten\Highlighter;
 use DecodeLabs\Exceptional\Exception as ExceptionalException;
 use DecodeLabs\Glitch;
-use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
@@ -23,18 +22,17 @@ use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Stat;
 use DecodeLabs\Zest\Manifest;
-
 use Throwable;
 
 class Html implements Renderer
 {
     use Base;
 
-    public const RENDER_IN_PRODUCTION = false;
-    public const SPACES = 0;
-    public const RENDER_CLOSED = true;
+    protected const RenderInProduction = false;
+    protected const Spaces = 0;
+    protected const RenderClosed = true;
 
-    public const RENDER_SECTIONS = [
+    protected const RenderSections = [
         'info' => true,
         'meta' => true,
         'text' => true,
@@ -43,9 +41,9 @@ class Html implements Renderer
         'stack' => true
     ];
 
-    public const RENDER_STACK = true;
+    protected const RenderStack = true;
 
-    public const HTTP_STATUSES = [
+    protected const HttpStatuses = [
         100 => 'Continue',
         101 => 'Switching Protocols',
         200 => 'OK',
@@ -125,7 +123,7 @@ class Html implements Renderer
         $output[] = $this->renderHeader('dump');
 
         $output[] = '<header class="title">';
-        $output[] = '<h1>Glitch <span class="version">' . Glitch::VERSION . '</span></h1>';
+        $output[] = '<h1>Glitch <span class="version">' . Glitch::Version . '</span></h1>';
         $output[] = '</header>';
 
         $output[] = '<div class="cols">';
@@ -168,7 +166,7 @@ class Html implements Renderer
             $output[] = $this->renderProductionExceptionMessage($exception);
         } else {
             $output[] = '<header class="title">';
-            $output[] = '<h1>Glitch <span class="version">' . Glitch::VERSION . '</span></h1>';
+            $output[] = '<h1>Glitch <span class="version">' . Glitch::Version . '</span></h1>';
             $output[] = '</header>';
 
             $output[] = '<div class="cols">';
@@ -340,8 +338,8 @@ class Html implements Renderer
         }
 
         if ($httpCode) {
-            if (isset(static::HTTP_STATUSES[$httpCode])) {
-                $httpCode .= ' ' . static::HTTP_STATUSES[$httpCode];
+            if (isset(static::HttpStatuses[$httpCode])) {
+                $httpCode .= ' ' . static::HttpStatuses[$httpCode];
             }
 
             $output[] = '<div class="attr http"><span class="label">HTTP</span> ' . $httpCode . '</div>';

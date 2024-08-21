@@ -12,14 +12,13 @@ namespace DecodeLabs\Glitch\Dumper\Inspect;
 use DecodeLabs\Coercion;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
-
 use PDO as PDOAdapter;
 use PDOStatement;
 use Throwable;
 
 class Pdo
 {
-    public const ATTRS = [
+    protected const Attributes = [
         'AUTOCOMMIT',
         'PREFETCH',
         'TIMEOUT',
@@ -52,7 +51,7 @@ class Pdo
         Entity $entity,
         Inspector $inspector
     ): void {
-        foreach (self::ATTRS as $name) {
+        foreach (self::Attributes as $name) {
             try {
                 $entity->setMeta(
                     $name,

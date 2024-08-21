@@ -16,18 +16,17 @@ use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Packet;
 use DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Glitch\Stat;
-
 use Throwable;
 
 class Cli implements Renderer
 {
     use Base;
 
-    public const RENDER_IN_PRODUCTION = true;
-    public const SPACES = 2;
-    public const RENDER_CLOSED = false;
+    protected const RenderInProduction = true;
+    protected const Spaces = 2;
+    protected const RenderClosed = false;
 
-    public const RENDER_SECTIONS = [
+    protected const RenderSections = [
         'info' => false,
         'meta' => false,
         'text' => true,
@@ -36,9 +35,9 @@ class Cli implements Renderer
         'stack' => true
     ];
 
-    public const RENDER_STACK = false;
+    protected const RenderStack = false;
 
-    public const FG_COLORS = [
+    protected const FgColors = [
         'black' => 30,
         'red' => 31,
         'green' => 32,
@@ -51,7 +50,7 @@ class Cli implements Renderer
         'reset' => 39
     ];
 
-    public const BG_COLORS = [
+    protected const BgColors = [
         'black' => 40,
         'red' => 41,
         'green' => 42,
@@ -64,7 +63,7 @@ class Cli implements Renderer
         'reset' => 49
     ];
 
-    public const OPTIONS = [
+    protected const Options = [
         'bold' => [1, 22],
         'dim' => [2, 22],
         'underline' => [4, 24],
@@ -578,15 +577,15 @@ class Cli implements Renderer
         $setCodes = [];
 
         if ($fgColor !== null) {
-            $setCodes[] = static::FG_COLORS[$fgColor];
+            $setCodes[] = static::FgColors[$fgColor];
         }
 
         if ($bgColor !== null) {
-            $setCodes[] = static::BG_COLORS[$bgColor];
+            $setCodes[] = static::BgColors[$bgColor];
         }
 
         foreach ($options as $option) {
-            $setCodes[] = static::OPTIONS[$option][0];
+            $setCodes[] = static::Options[$option][0];
         }
 
         return sprintf("\033[%sm", implode(';', $setCodes));
@@ -597,11 +596,11 @@ class Cli implements Renderer
         ?string $bgColor = null,
         string ...$options
     ): string {
-        $setCodes[] = static::FG_COLORS['reset'];
-        $setCodes[] = static::BG_COLORS['reset'];
+        $setCodes[] = static::FgColors['reset'];
+        $setCodes[] = static::BgColors['reset'];
 
         foreach ($options as $option) {
-            $setCodes[] = static::OPTIONS[$option][1];
+            $setCodes[] = static::Options[$option][1];
         }
 
         return sprintf("\033[%sm", implode(';', $setCodes));

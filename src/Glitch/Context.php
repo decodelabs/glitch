@@ -30,7 +30,7 @@ use Throwable;
 
 class Context implements LoggerAwareInterface
 {
-    public const VERSION = 'v0.18.16';
+    public const Version = 'v0.18.16';
 
     protected float $startTime;
     protected string $runMode = 'development';
@@ -249,12 +249,6 @@ class Context implements LoggerAwareInterface
         }
 
         $trace = Trace::create($rewind + 1);
-        $first = $trace->getFirstFrame();
-
-        if ($first !== null && $first->getVeneerProxy() !== null) {
-            $trace->shift();
-        }
-
         $inspector = new Inspector($this);
         $dump = new Dump($trace);
 

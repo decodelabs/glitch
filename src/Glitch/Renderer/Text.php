@@ -16,11 +16,11 @@ class Text implements Renderer
 {
     use Base;
 
-    public const RENDER_IN_PRODUCTION = true;
-    public const SPACES = 2;
-    public const RENDER_CLOSED = false;
+    protected const RenderInProduction = true;
+    protected const Spaces = 2;
+    protected const RenderClosed = false;
 
-    public const RENDER_SECTIONS = [
+    protected const RenderSections = [
         'info' => true,
         'meta' => true,
         'text' => true,
@@ -29,7 +29,7 @@ class Text implements Renderer
         'stack' => true
     ];
 
-    public const RENDER_STACK = true;
+    protected const RenderStack = true;
 
 
     /**

@@ -19,9 +19,9 @@ class Glitch implements Proxy
 {
     use ProxyTrait;
 
-    const VENEER = 'DecodeLabs\\Glitch';
-    const VENEER_TARGET = Inst::class;
-    const VERSION = Inst::VERSION;
+    const Veneer = 'DecodeLabs\\Glitch';
+    const VeneerTarget = Inst::class;
+    const Version = Inst::Version;
 
     public static Inst $instance;
 

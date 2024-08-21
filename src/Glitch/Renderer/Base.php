@@ -17,17 +17,16 @@ use DecodeLabs\Glitch\Packet;
 use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Stat;
-
 use Exception;
 use Throwable;
 
 trait Base
 {
-    //const RENDER_IN_PRODUCTION = false;
-    //const SPACES = 2;
-    //const RENDER_CLOSED = true;
+    //protected const RenderInProduction = false;
+    //protected const Spaces = 2;
+    //protected const RenderClosed = true;
     /*
-    const RENDER_SECTIONS = [
+    protected const RenderSections = [
         'info' => true,
         'meta' => true,
         'text' => true,
@@ -36,7 +35,7 @@ trait Base
         'stack' => true
     ];
      */
-    //const RENDER_STACK = true;
+    //protected const RenderStack = true;
 
     protected Context $context;
     protected bool $productionOverride = false;
@@ -76,7 +75,7 @@ trait Base
      */
     protected function shouldRenderInProduction(): bool
     {
-        return static::RENDER_IN_PRODUCTION;
+        return static::RenderInProduction;
     }
 
 
@@ -112,7 +111,7 @@ trait Base
         $output[] = $this->renderStats($dump->getStats());
         $output[] = $this->renderDumpEntities($dump);
 
-        if ((static::RENDER_STACK ?? true)) {
+        if ((static::RenderStack ?? true)) {
             $output[] = $this->renderTrace($dump->getTrace(), false);
         }
 
@@ -693,19 +692,26 @@ trait Base
         $output = [];
 
         // Namespace
-        if (null !== ($class = $frame->getClassName())) {
+        if (null !== ($class = $frame->getClass())) {
             $class = $frame::normalizeClassName($class);
 
-            if (substr((string)$class, 0, 1) !== '~') {
-                $parts = explode('\\', $frame->getNamespace() . '\\');
-
-                foreach ($parts as $i => $part) {
-                    $parts[$i] = empty($part) ? null : $this->renderSignatureNamespace($part);
-                }
-
-                $output[] = implode($this->renderGrammar('\\'), $parts);
+            if (substr((string)$class, 0, 1) === '~') {
+                $class = ltrim($class, '~');
+                $output[] = $this->renderPointer('~');
             }
 
+            $parts = explode('\\', $class);
+            $class = array_pop($parts);
+
+            if (!empty($parts)) {
+                $parts[] = '';
+            }
+
+            foreach ($parts as $i => $part) {
+                $parts[$i] = empty($part) ? null : $this->renderSignatureNamespace($part);
+            }
+
+            $output[] = implode($this->renderGrammar('\\'), $parts);
             $output[] = $this->renderSignatureClass($class);
         }
 
@@ -945,7 +951,7 @@ trait Base
         }
 
         foreach ($keys as $key) {
-            $overrides[$key] = $overrides[$key] ?? static::RENDER_SECTIONS[$key] ?? true;
+            $overrides[$key] = $overrides[$key] ?? static::RenderSections[$key] ?? true;
             $check = true;
 
             if ($key == 'stack') {
@@ -1057,7 +1063,7 @@ trait Base
 
 
         $hasBodyContent = $sections['text'] || $sections['def'] || $sections['props'] || $sections['values'] || $sections['stack'];
-        $renderClosed = static::RENDER_CLOSED ?? true;
+        $renderClosed = static::RenderClosed ?? true;
 
         if (!$open && !$renderClosed && $level > 4) {
             $hasBody = false;
@@ -1736,7 +1742,7 @@ trait Base
     protected function indent(
         string $lines
     ): string {
-        if ($spaces = static::SPACES ?? 2) {
+        if ($spaces = static::Spaces ?? 2) {
             $space = str_repeat(' ', $spaces);
             $lines = $space . str_replace("\n", "\n" . $space, $lines);
         }

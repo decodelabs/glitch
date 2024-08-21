@@ -31,7 +31,6 @@ use DecodeLabs\Glitch\Dumper\Inspect\Spl as InspectSpl;
 use DecodeLabs\Glitch\Dumper\Inspect\Stream as InspectStream;
 use DecodeLabs\Glitch\Dumper\Inspect\Xml as InspectXml;
 use DecodeLabs\Glitch\Inspectable;
-
 use ReflectionClass;
 use ReflectionObject;
 use SensitiveParameterValue;
@@ -41,7 +40,7 @@ class Inspector
     /**
      * @var array<string, array<string>>
      */
-    public const OBJECTS = [
+    protected const Objects = [
         // Core
         'Throwable' => [InspectCore::class, 'inspectException'],
         'Closure' => [InspectCore::class, 'inspectClosure'],
@@ -136,7 +135,7 @@ class Inspector
     /**
      * @var array<string, array<string>|null>
      */
-    public const RESOURCES = [
+    protected const Resources = [
         // Bzip
         'bzip2' => null,
 
@@ -308,13 +307,13 @@ class Inspector
     public function __construct(
         Context $context
     ) {
-        foreach (static::OBJECTS as $class => $inspector) {
+        foreach (static::Objects as $class => $inspector) {
             if (is_callable($inspector)) {
                 $this->objectInspectors[$class] = $inspector;
             }
         }
 
-        foreach (static::RESOURCES as $type => $inspector) {
+        foreach (static::Resources as $type => $inspector) {
             if (is_callable($inspector)) {
                 $this->resourceInspectors[$type] = $inspector;
             }
