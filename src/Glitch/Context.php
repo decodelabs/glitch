@@ -21,7 +21,6 @@ use DecodeLabs\Glitch\Renderer\Text as TextRenderer;
 use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Transport\Http as HttpTransport;
 use DecodeLabs\Glitch\Transport\Stdout as StdoutTransport;
-
 use ErrorException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -30,7 +29,7 @@ use Throwable;
 
 class Context implements LoggerAwareInterface
 {
-    public const VERSION = 'v0.18.16';
+    public const Version = 'v0.18.17';
 
     protected float $startTime;
     protected string $runMode = 'development';
@@ -249,12 +248,6 @@ class Context implements LoggerAwareInterface
         }
 
         $trace = Trace::create($rewind + 1);
-        $first = $trace->getFirstFrame();
-
-        if ($first !== null && $first->getVeneerProxy() !== null) {
-            $trace->shift();
-        }
-
         $inspector = new Inspector($this);
         $dump = new Dump($trace);
 
