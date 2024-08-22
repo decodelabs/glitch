@@ -389,12 +389,13 @@ class Context implements LoggerAwareInterface
             return false;
         }
 
-        $output = Exceptional::Error([
-            'message' => $message,
-            'file' => $file,
-            'line' => $line,
-            'severity' => $level
-        ]);
+        $output = Exceptional::Error(
+            message: $message,
+            file: $file,
+            line: $line,
+            code: $level,
+            params: [ 'severity' => $level ]
+        );
 
         if (
             $this->isProduction() &&
