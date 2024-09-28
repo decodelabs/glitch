@@ -1,4 +1,5 @@
 * Updated Exceptional call signature
+* Updated SASS styling
 
 ## v0.18.17 (2024-08-21)
 * Converted consts to PascalCase
