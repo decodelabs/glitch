@@ -1,5 +1,6 @@
 * Updated Exceptional call signature
-* Updated SASS styling
+* Restructured SASS styling
+* Upgraded Vite to v6
 
 ## v0.18.17 (2024-08-21)
 * Converted consts to PascalCase

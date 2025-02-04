@@ -1,3 +1,5 @@
+@use "@/sass/modules/colors" as *;
+
 .null,
 .bool,
 .int,
@@ -8,7 +10,8 @@
 .bool {
     font-style: italic;
 }
-.int, .float {
+.int,
+.float {
     color: var(--number);
 }
 
@@ -16,13 +19,13 @@
     color: var(--resource);
 }
 
-.g, .pointer {
+.g,
+.pointer {
     color: var(--grammar);
 }
 .pointer {
     opacity: 0.5;
 }
-
 
 .string {
     > .line {
@@ -43,7 +46,8 @@
     &.identifier {
         color: var(--identifier);
 
-        &:before, &:after {
+        &:before,
+        &:after {
             display: none;
         }
     }
@@ -56,7 +60,8 @@
 
     &.s {
         > .line {
-            &:before, &:after {
+            &:before,
+            &:after {
                 content: '"';
                 color: var(--grammar);
                 opacity: 0.5;
@@ -65,7 +70,8 @@
 
         &.def {
             > .line {
-                &:before, &:after {
+                &:before,
+                &:after {
                     display: none;
                 }
             }
@@ -77,7 +83,8 @@
         display: inline;
         white-space: pre-line;
 
-        &:before, &:after {
+        &:before,
+        &:after {
             content: '"""';
             color: var(--grammar);
             opacity: 0.6;
@@ -90,7 +97,7 @@
             white-space: pre;
 
             &:after {
-                content: '⏎';
+                content: "⏎";
                 color: var(--grammar);
                 opacity: 0.5;
                 font-size: 1.3em;
@@ -104,8 +111,9 @@
         }
 
         &.def {
-            &:before, &:after {
-                content: '$$$';
+            &:before,
+            &:after {
+                content: "$$$";
             }
 
             > .line {
@@ -128,7 +136,7 @@
                 > .line {
                     position: relative;
 
-                    &:nth-child(1n+11) {
+                    &:nth-child(1n + 11) {
                         display: none;
                     }
 
@@ -144,8 +152,9 @@
         }
 
         &.exception {
-            &:before, &:after {
-                content: '!!!';
+            &:before,
+            &:after {
+                content: "!!!";
             }
 
             div.line {
@@ -165,7 +174,7 @@
             margin-right: 2px;
 
             &:after {
-                content: '  ';
+                content: "  ";
             }
         }
     }

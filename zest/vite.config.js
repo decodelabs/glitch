@@ -39,5 +39,8 @@ export default defineConfig({
         host: 'localhost',
         port: 5531,
         strictPort: true,
+        cors: {
+            origin: "*"
+        }
     }
 })

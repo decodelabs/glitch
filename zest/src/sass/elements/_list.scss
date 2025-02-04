@@ -1,3 +1,5 @@
+@use "@/sass/modules/colors" as *;
+
 ul.list {
     list-style: none;
     padding: 0;
@@ -19,7 +21,7 @@ ul.list {
             white-space: pre;
 
             &:before {
-                content: 'ⓟ';
+                content: "ⓟ";
                 color: var(--list-property-icon-public);
                 opacity: 1;
                 display: none;
@@ -44,7 +46,6 @@ ul.list {
         max-width: 80em;
 
         > li {
-
             > .identifier {
                 color: var(--list-info);
 
@@ -52,7 +53,7 @@ ul.list {
                     color: var(--list-info-key);
 
                     &:before {
-                        content: 'ⓘ';
+                        content: "ⓘ";
                         color: var(--list-info-icon);
                         display: inline;
                     }
@@ -74,7 +75,7 @@ ul.list {
                     color: var(--list-meta-key);
 
                     &:before {
-                        content: 'ⓜ';
+                        content: "ⓜ";
                         color: var(--list-meta-icon);
                         display: inline;
                     }
@@ -90,7 +91,7 @@ ul.list {
                     color: var(--list-property-key);
 
                     &:before {
-                        content: 'ⓟ';
+                        content: "ⓟ";
                         color: var(--public);
                         display: inline;
                     }
@@ -105,7 +106,7 @@ ul.list {
                         color: var(--list-property-icon-public);
                     }
                     &.virtual:before {
-                        content: 'ⓧ';
+                        content: "ⓧ";
                         color: var(--list-property-icon-virtual);
                     }
                 }
@@ -116,7 +117,7 @@ ul.list {
     &.values {
         > li {
             &:before {
-                content: 'ⓥ';
+                content: "ⓥ";
                 color: var(--list-values-icon);
                 position: relative;
                 margin-top: 0.3em;
@@ -144,7 +145,7 @@ ul.list {
 
         > li {
             &:after {
-                content: ',';
+                content: ",";
                 color: var(--grammar);
                 opacity: 0.5;
                 margin-right: 1em;

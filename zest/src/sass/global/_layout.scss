@@ -1,4 +1,5 @@
 html {
+    visibility: visible;
     height: 100%;
 }
 
@@ -32,8 +33,6 @@ body {
     }
 }
 
-
-
 samp.dump {
     display: block;
     font-size: 0.75rem;
@@ -43,10 +42,9 @@ samp.dump {
 
     &.trace {
         padding: 1rem 0;
-        border-top: 1px solid #EEE;
+        border-top: 1px solid #eee;
     }
 }
-
 
 section.dump {
     samp.dump {
