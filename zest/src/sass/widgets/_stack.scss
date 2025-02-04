@@ -1,3 +1,5 @@
+@use "@/sass/modules/colors" as *;
+
 section.stack {
     flex: 1 1 100%;
     display: flex;
@@ -14,7 +16,6 @@ section.stack {
 div.stack-list > ul.stack {
     padding: 0.5em 0;
 }
-
 
 ul.stack {
     list-style: none;
@@ -60,7 +61,9 @@ ul.stack {
     samp.dump.trace {
         padding: 0.5rem 0.75rem 0.5rem 4em;
         cursor: s-resize;
-        transition: margin-top 0.2s, border-color 0.2s ease-out;
+        transition:
+            margin-top 0.2s,
+            border-color 0.2s ease-out;
         overflow-x: auto;
         border: none;
         position: relative;
@@ -97,7 +100,7 @@ ul.stack {
                 color: var(--frame-file);
 
                 + .line:before {
-                    content: ' : ';
+                    content: " : ";
                     color: var(--grammar);
                     opacity: 0.5;
                 }
@@ -119,7 +122,7 @@ ul.stack {
         font-size: 0.8em;
 
         &:before {
-            content: '';
+            content: "";
             display: block;
             width: 100%;
             border-top: 1px solid rgba(#333, 0.8) !important;
@@ -132,7 +135,6 @@ div.stack-list ul.stack div.stack-frame samp.dump.trace {
     padding-bottom: 0;
     cursor: default;
 }
-
 
 html.dump {
     ul.stack div.stack-frame.w-source {

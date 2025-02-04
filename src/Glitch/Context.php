@@ -29,7 +29,7 @@ use Throwable;
 
 class Context implements LoggerAwareInterface
 {
-    public const Version = 'v0.18.17';
+    public const Version = 'v0.18.18';
 
     protected float $startTime;
     protected string $runMode = 'development';
@@ -389,12 +389,13 @@ class Context implements LoggerAwareInterface
             return false;
         }
 
-        $output = Exceptional::Error([
-            'message' => $message,
-            'file' => $file,
-            'line' => $line,
-            'severity' => $level
-        ]);
+        $output = Exceptional::Error(
+            message: $message,
+            file: $file,
+            line: $line,
+            code: $level,
+            params: [ 'severity' => $level ]
+        );
 
         if (
             $this->isProduction() &&

@@ -15,7 +15,7 @@
         "postcss": "^8.4.29",
         "postcss-preset-env": "^9.5",
         "sass": "^1.66.1",
-        "vite": "^5"
+        "vite": "^6"
     },
     "postcss": {
         "plugins": {

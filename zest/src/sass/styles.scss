@@ -1,21 +1,19 @@
-@import "elements/variables";
-@import "elements/colours";
-@import "elements/fonts";
-@import "elements/reboot";
+@use "global/fonts";
+@use "global/colors";
+@use "global/reboot";
+@use "global/layout";
 
-@import "elements/auto/source";
+// Elements
+@use "elements/header";
+@use "elements/list";
+@use "elements/section";
 
-@import "elements/container";
-@import "elements/header";
-@import "elements/cols";
-
-@import "elements/section";
-@import "elements/exceptionMessage";
-@import "elements/entity";
-@import "elements/stack";
-
-@import "elements/list";
-@import "elements/signature";
-
-@import "elements/badge";
-@import "elements/scalars";
+// Widgets
+@use "widgets/badge";
+@use "widgets/cols";
+@use "widgets/entity";
+@use "widgets/exceptionMessage";
+@use "widgets/scalars";
+@use "widgets/signature";
+@use "widgets/source";
+@use "widgets/stack";

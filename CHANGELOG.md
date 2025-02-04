@@ -1,3 +1,8 @@
+## v0.18.18 (2025-02-04)
+* Updated Exceptional call signature
+* Restructured SASS styling
+* Upgraded Vite to v6
+
 ## v0.18.17 (2024-08-21)
 * Converted consts to PascalCase
 * Made renderer consts protected

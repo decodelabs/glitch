@@ -1,10 +1,16 @@
+@use "sass:color";
+@use "@/sass/modules/colors" as *;
+
 header.title {
     color: white;
     padding: 0.5rem 0.9rem;
 
-    background: linear-gradient(to bottom, rgba(darken(#555, 15%), 0.85), rgba(darken(#555, 15%), 0.95));
-    border-bottom: 2px solid desaturate(darken(#222, 20%), 20%);
-
+    background: linear-gradient(
+        to bottom,
+        rgba(color.adjust(#555, $lightness: -15%), 0.85),
+        rgba(color.adjust(#555, $lightness: -15%), 0.95)
+    );
+    border-bottom: 2px solid color.adjust(#222, $lightness: -20%, $saturation: -20%);
 
     h1 {
         margin: 0;
@@ -23,39 +29,51 @@ header.title {
 
 html.dump {
     header.title {
-        background: linear-gradient(to bottom, rgba(darken($blue, 15%), 0.85), rgba(darken($blue, 15%), 0.95));
-        border-bottom: 2px solid desaturate(darken($blue, 20%), 20%);
+        background: linear-gradient(
+            to bottom,
+            rgba(color.adjust($blue, $lightness: -15%), 0.85),
+            rgba(color.adjust($blue, $lightness: -15%), 0.95)
+        );
+        border-bottom: 2px solid color.adjust($blue, $lightness: -20%, $saturation: -20%);
     }
 
     &.dark {
         header.title {
-            border-bottom: 2px solid desaturate(darken($blue, 25%), 20%);
+            border-bottom: 2px solid color.adjust($blue, $lightness: -25%, $saturation: -20%);
         }
     }
 }
 
 html.exception {
     header.title {
-        background: linear-gradient(to bottom, rgba(darken($red, 5%), 0.85), rgba(darken($red, 5%), 0.95));
-        border-bottom: 2px solid desaturate(darken($red, 10%), 20%);
+        background: linear-gradient(
+            to bottom,
+            rgba(color.adjust($red, $lightness: -5%), 0.85),
+            rgba(color.adjust($red, $lightness: -5%), 0.95)
+        );
+        border-bottom: 2px solid color.adjust($red, $lightness: -10%, $saturation: -20%);
     }
 
     &.dark {
         header.title {
-            border-bottom: 2px solid desaturate(darken($red, 20%), 20%);
+            border-bottom: 2px solid color.adjust($red, $lightness: -20%, $saturation: -20%);
         }
     }
 }
 
 html.incomplete {
     header.title {
-        background: linear-gradient(to bottom, rgba(darken($orange, 5%), 0.85), rgba(darken($orange, 5%), 0.95));
-        border-bottom: 2px solid desaturate(darken($orange, 10%), 20%);
+        background: linear-gradient(
+            to bottom,
+            rgba(color.adjust($orange, $lightness: -5%), 0.85),
+            rgba(color.adjust($orange, $lightness: -5%), 0.95)
+        );
+        border-bottom: 2px solid color.adjust($orange, $lightness: -10%, $saturation: -20%);
     }
 
     &.dark {
         header.title {
-            border-bottom: 2px solid desaturate(darken($orange, 20%), 20%);
+            border-bottom: 2px solid color.adjust($orange, $lightness: -20%, $saturation: -20%);
         }
     }
 }

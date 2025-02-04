@@ -17,7 +17,7 @@
         "decodelabs/enlighten": "^0.9",
         "decodelabs/exceptional": "^0.4.1",
         "decodelabs/glitch-support": "^0.4.6",
-        "decodelabs/veneer": "^0.11.1",
+        "decodelabs/veneer": "^0.11.6",
 
         "psr/log": "^3.0"
     },
@@ -42,5 +42,10 @@
         }
     },
     "repositories": {
+    },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        }
     }
 }

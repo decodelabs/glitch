@@ -38,10 +38,7 @@ class Stream
         Entity $entity,
         Inspector $inspector
     ): void {
-        if (!$params = stream_context_get_params($resource)) {
-            return;
-        }
-
+        $params = stream_context_get_params($resource);
         $entity->setMetaList($inspector->inspectList($params));
     }
 }
