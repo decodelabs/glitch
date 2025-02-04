@@ -1,3 +1,4 @@
+## v0.18.18 (2025-02-04)
 * Updated Exceptional call signature
 * Restructured SASS styling
 * Upgraded Vite to v6
