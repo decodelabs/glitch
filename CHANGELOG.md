@@ -1,3 +1,6 @@
+## v0.18.20 (2025-02-07)
+* Removed ref to E_STRICT
+
 ## v0.18.19 (2025-02-07)
 * Fixed implicit nullable arguments
 

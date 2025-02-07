@@ -29,7 +29,7 @@ use Throwable;
 
 class Context implements LoggerAwareInterface
 {
-    public const Version = 'v0.18.19';
+    public const Version = 'v0.18.20';
 
     protected float $startTime;
     protected string $runMode = 'development';
@@ -400,7 +400,7 @@ class Context implements LoggerAwareInterface
         if (
             $this->isProduction() &&
             in_array($level, [
-                E_NOTICE, E_USER_NOTICE, E_STRICT, E_DEPRECATED, E_USER_DEPRECATED
+                E_NOTICE, E_USER_NOTICE, E_DEPRECATED, E_USER_DEPRECATED
             ], true)
         ) {
             $this->logException($output);
