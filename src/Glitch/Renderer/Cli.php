@@ -221,7 +221,7 @@ class Cli implements Renderer
     protected function renderIdentifierString(
         string $string,
         ?string $class,
-        int $forceSingleLineMax = null
+        ?int $forceSingleLineMax = null
     ): string {
         $options = [];
 
@@ -280,7 +280,7 @@ class Cli implements Renderer
      */
     protected function renderMultiLineString(
         string $string,
-        string $class = null
+        ?string $class = null
     ): string {
         $string = str_replace("\r", '', $string);
         $parts = explode("\n", $string);
@@ -304,8 +304,8 @@ class Cli implements Renderer
      */
     protected function renderSingleLineString(
         string $string,
-        string $class = null,
-        int $forceSingleLineMax = null
+        ?string $class = null,
+        ?int $forceSingleLineMax = null
     ): string {
         $output = $this->format('"', 'white', null, 'dim');
         $output .= $this->stackFormat('red', null, 'bold');

@@ -967,7 +967,7 @@ class Entity
      */
     protected function checkValidity(
         mixed $value,
-        string $type = null
+        ?string $type = null
     ): void {
         if ($type !== null) {
             if (!$this->checkTypeValidity($value, $type)) {

@@ -1,3 +1,6 @@
+## v0.18.19 (2025-02-07)
+* Fixed implicit nullable arguments
+
 ## v0.18.18 (2025-02-04)
 * Updated Exceptional call signature
 * Restructured SASS styling

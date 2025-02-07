@@ -652,7 +652,7 @@ class Html implements Renderer
     protected function renderIdentifierString(
         string $string,
         ?string $class,
-        int $forceSingleLineMax = null
+        ?int $forceSingleLineMax = null
     ): string {
         return '<span class="string ' . $class . '">' . $this->renderStringLine($string, $forceSingleLineMax) . '</span>';
     }
@@ -662,7 +662,7 @@ class Html implements Renderer
      */
     protected function renderMultiLineString(
         string $string,
-        string $class = null
+        ?string $class = null
     ): string {
         $string = str_replace("\r", '', $string);
         $parts = explode("\n", $string);
@@ -684,8 +684,8 @@ class Html implements Renderer
      */
     protected function renderSingleLineString(
         string $string,
-        string $class = null,
-        int $forceSingleLineMax = null
+        ?string $class = null,
+        ?int $forceSingleLineMax = null
     ): string {
         $output = '<span class="string s ' . $class . '"><span class="line">' . $this->renderStringLine($string, $forceSingleLineMax) . '</span>';
 

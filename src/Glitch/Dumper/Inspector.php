@@ -384,7 +384,7 @@ class Inspector
      */
     public function __invoke(
         mixed $value,
-        callable $entityCallback = null,
+        ?callable $entityCallback = null,
         bool $asList = false
     ): mixed {
         if ($asList) {
@@ -399,7 +399,7 @@ class Inspector
      */
     public function inspect(
         mixed $value,
-        callable $entityCallback = null
+        ?callable $entityCallback = null
     ): mixed {
         $output = $this->inspectValue($value);
 
@@ -418,7 +418,7 @@ class Inspector
      */
     public function inspectList(
         array $values,
-        callable $entityCallback = null
+        ?callable $entityCallback = null
     ): array {
         $output = [];
 
