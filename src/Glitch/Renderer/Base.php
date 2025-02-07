@@ -433,7 +433,7 @@ trait Base
     protected function renderString(
         string $string,
         ?string $class = null,
-        int $forceSingleLineMax = null,
+        ?int $forceSingleLineMax = null,
         bool $asIdentifier = false
     ): string {
         if ($asIdentifier) {
@@ -455,7 +455,7 @@ trait Base
     protected function renderIdentifierString(
         string $string,
         ?string $class,
-        int $forceSingleLineMax = null
+        ?int $forceSingleLineMax = null
     ): string {
         return $string;
     }
@@ -465,7 +465,7 @@ trait Base
      */
     protected function renderMultiLineString(
         string $string,
-        string $class = null
+        ?string $class = null
     ): string {
         return $string;
     }
@@ -475,8 +475,8 @@ trait Base
      */
     protected function renderSingleLineString(
         string $string,
-        string $class = null,
-        int $forceSingleLineMax = null
+        ?string $class = null,
+        ?int $forceSingleLineMax = null
     ): string {
         return $string;
     }
@@ -487,7 +487,7 @@ trait Base
      */
     protected function renderStringLine(
         string $line,
-        int $maxLength = null
+        ?int $maxLength = null
     ): string {
         $shorten = false;
 
@@ -885,7 +885,7 @@ trait Base
     protected function renderEntity(
         Entity $entity,
         int $level = 0,
-        array $overrides = null
+        ?array $overrides = null
     ): string {
         $id = $linkId = (string)$entity->getId();
         $name = $entity->getName() ?? $entity->getType();
@@ -1651,7 +1651,7 @@ trait Base
         array $items,
         string $style,
         bool $includeKeys = true,
-        string $class = null,
+        ?string $class = null,
         int $level = 0
     ): string {
         $lines = [];
