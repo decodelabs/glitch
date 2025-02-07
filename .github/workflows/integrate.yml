@@ -19,7 +19,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.1"
+          php-version: "8.3"
           extensions: "${{ env.PHP_EXTENSIONS }}"
           ini-values: "post_max_size=256M"
 
@@ -101,7 +101,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.1"
+          php-version: "8.3"
           extensions: "${{ env.PHP_EXTENSIONS }}"
           ini-values: "post_max_size=256M"
 
