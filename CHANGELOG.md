@@ -1,3 +1,5 @@
+* Added PHP8.4 to CI workflow
+
 ## v0.18.20 (2025-02-07)
 * Removed ref to E_STRICT
 
