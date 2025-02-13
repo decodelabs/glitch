@@ -20,7 +20,10 @@ namespace {
     use Symfony\Component\VarDumper\VarDumper;
 
     // Register the Veneer proxy
-    Veneer::register(Context::class, Glitch::class);
+    Veneer\Manager::getGlobalManager()->register(
+        Context::class,
+        Glitch::class
+    );
 
     if (!function_exists('dd')) {
         /**
@@ -72,13 +75,15 @@ namespace {
              * We have to do some silly juggling here to combine all the dump args into one
              * Symfony blindly calls dump for each var, which doesn't work for us
              * Instead we grab all args from the stack trace and then skip the following calls
+             *
+             * @var int $skip
              */
             static $skip;
 
             if (!$skip) {
                 $frame = Frame::create(2);
-                $func = $frame->getFunctionName();
-                $type = $frame->getType();
+                $func = $frame->function;
+                $type = $frame->type;
 
                 if (
                     (
@@ -87,7 +92,7 @@ namespace {
                     ) &&
                     $type == 'globalFunction'
                 ) {
-                    $args = $frame->getArgs();
+                    $args = $frame->arguments;
                     $skip = count($args) - 1;
                 } else {
                     $args = func_get_args();

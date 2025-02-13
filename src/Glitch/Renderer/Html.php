@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Glitch\Renderer;
 
+use DecodeLabs\Coercion;
 use DecodeLabs\Enlighten\Highlighter;
 use DecodeLabs\Exceptional\Exception as ExceptionalException;
 use DecodeLabs\Glitch;
@@ -18,21 +19,22 @@ use DecodeLabs\Glitch\Dumper\Inspector;
 use DecodeLabs\Glitch\IncompleteException;
 use DecodeLabs\Glitch\Packet;
 use DecodeLabs\Glitch\Renderer;
+use DecodeLabs\Glitch\RendererTrait;
+use DecodeLabs\Glitch\Renderer\Html\ZestManifest;
 use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Stat;
-use DecodeLabs\Zest\Manifest;
 use Throwable;
 
 class Html implements Renderer
 {
-    use Base;
+    use RendererTrait;
 
-    protected const RenderInProduction = false;
-    protected const Spaces = 0;
-    protected const RenderClosed = true;
+    public const bool RenderInProduction = false;
+    public const int Spaces = 0;
+    public const bool RenderClosed = true;
 
-    protected const RenderSections = [
+    public const array RenderSections = [
         'info' => true,
         'meta' => true,
         'text' => true,
@@ -41,7 +43,7 @@ class Html implements Renderer
         'stack' => true
     ];
 
-    protected const RenderStack = true;
+    public const bool RenderStack = true;
 
     protected const HttpStatuses = [
         100 => 'Continue',
@@ -123,7 +125,7 @@ class Html implements Renderer
         $output[] = $this->renderHeader('dump');
 
         $output[] = '<header class="title">';
-        $output[] = '<h1>Glitch <span class="version">' . Glitch::Version . '</span></h1>';
+        $output[] = '<h1>Glitch <span class="version">' . Glitch::getVersion() . '</span></h1>';
         $output[] = '</header>';
 
         $output[] = '<div class="cols">';
@@ -166,7 +168,7 @@ class Html implements Renderer
             $output[] = $this->renderProductionExceptionMessage($exception);
         } else {
             $output[] = '<header class="title">';
-            $output[] = '<h1>Glitch <span class="version">' . Glitch::Version . '</span></h1>';
+            $output[] = '<h1>Glitch <span class="version">' . Glitch::getVersion() . '</span></h1>';
             $output[] = '</header>';
 
             $output[] = '<div class="cols">';
@@ -201,43 +203,16 @@ class Html implements Renderer
         $output[] = '<html lang="en" class="' . $class . '">';
         $output[] = '<head>';
 
-        $vendor = $this->context->getVendorPath();
-
 
         // Meta
         $output[] = '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">';
         $css = $js = [];
 
+
         // Zest
-        if (
-            class_exists(Manifest::class) &&
-            file_exists(__DIR__ . '/assets/.vite/manifest.json.php')
-        ) {
-            $manifest = Manifest::load(__DIR__ . '/assets/.vite/manifest.json');
-
-            foreach ($manifest->getCssData() as $file => $attrs) {
-                $css[$file] = $attrs;
-            }
-
-            foreach ($manifest->getHeadJsData() as $file => $attrs) {
-                $js[$file] = $attrs;
-            }
-
-            foreach ($manifest->getBodyJsData() as $file => $attrs) {
-                $js[$file] = $attrs;
-            }
-        } else {
-            $css[__DIR__ . '/assets/style.css'] = [
-                'id' => 'style-glitch'
-            ];
-
-            $js[__DIR__ . '/assets/main.js'] = [
-                'id' => 'script-glitch',
-                'type' => 'module'
-            ];
-
-            //$css['glitch'] = $vendor . '/decodelabs/glitch/src/Glitch/Renderer/assets/style.css';
-        }
+        $manifest = new ZestManifest();
+        $css = $manifest->getCssData();
+        $js = $manifest->getJsData();
 
 
         // Css
@@ -285,7 +260,7 @@ class Html implements Renderer
     }
 
     /**
-     * @param array<string, mixed> $attrs
+     * @param array<string,mixed> $attrs
      * @return string
      */
     protected function prepareAttrs(
@@ -294,7 +269,7 @@ class Html implements Renderer
         $output = [];
 
         foreach ($attrs as $key => $value) {
-            $output[] = $key . '="' . $value . '"';
+            $output[] = $key . '="' . Coercion::forceString($value) . '"';
         }
 
         if (!empty($output)) {
@@ -317,7 +292,7 @@ class Html implements Renderer
         $line = $exception->getLine();
 
         if ($exception instanceof ExceptionalException) {
-            $httpCode = $exception->getHttpStatus();
+            $httpCode = $exception->http;
         } else {
             $httpCode = null;
         }
@@ -338,8 +313,8 @@ class Html implements Renderer
         }
 
         if ($httpCode) {
-            if (isset(static::HttpStatuses[$httpCode])) {
-                $httpCode .= ' ' . static::HttpStatuses[$httpCode];
+            if (isset(self::HttpStatuses[$httpCode])) {
+                $httpCode .= ' ' . self::HttpStatuses[$httpCode];
             }
 
             $output[] = '<div class="attr http"><span class="label">HTTP</span> ' . $httpCode . '</div>';
@@ -356,9 +331,9 @@ class Html implements Renderer
     protected function renderProductionExceptionMessage(
         Throwable $exception
     ): string {
-        $output[] = '<section class="production message">There was a problem serving your request - please try again later</section>';
-        $output[] = '<section class="production exception">' . (string)$exception . '</section>';
-        return implode("\n", $output);
+        return
+            '<section class="production message">There was a problem serving your request - please try again later</section>'."\n".
+            '<section class="production exception">' . (string)$exception . '</section>';
     }
 
     /**
@@ -462,7 +437,9 @@ class Html implements Renderer
         $inspector = new Inspector($this->context);
 
         foreach ($array as $key => $value) {
-            $array[$key] = $inspector($value, function ($entity) {
+            $array[$key] = $inspector($value, function (
+                Entity $entity
+            ) {
                 $entity->setOpen(false);
             });
         }
@@ -503,10 +480,10 @@ class Html implements Renderer
             $sig[] = $this->wrapSignature($this->renderStackFrameSignature($frame));
             $sig[] = "\n   ";
 
-            if (null !== ($file = $frame->getCallingFile())) {
+            if (null !== ($file = $frame->callingFile)) {
                 $sig[] = $this->renderSourceFile((string)$this->context->normalizePath($file));
 
-                if (null !== ($callingLine = $frame->getCallingLine())) {
+                if (null !== ($callingLine = $frame->callingLine)) {
                     $sig[] = $this->renderSourceLine($callingLine);
                 }
             } else {
@@ -539,10 +516,10 @@ class Html implements Renderer
     protected function renderFrameSource(
         Frame $frame
     ): ?string {
-        if ($path = $frame->getCallingFile()) {
-            $line = $frame->getCallingLine();
-        } elseif ($path = $frame->getFile()) {
-            $line = $frame->getLine();
+        if ($path = $frame->callingFile) {
+            $line = $frame->callingLine;
+        } elseif ($path = $frame->file) {
+            $line = $frame->line;
         } else {
             return null;
         }
@@ -578,7 +555,10 @@ class Html implements Renderer
     ): Packet {
         $html = implode("\n", $buffer);
 
-        if ($final && !$this->context->hasDumpedInBuffer()) {
+        if (
+            $final &&
+            !$this->context->hasDumpedInBuffer()
+        ) {
             $output = $html;
         } else {
             $id = uniqid('glitch-dump');
@@ -1055,7 +1035,10 @@ class Html implements Renderer
         string $linkId,
         ?string $class = null
     ): string {
-        if ($class && $class !== $type) {
+        if (
+            $class &&
+            $class !== $type
+        ) {
             $class .= ' ' . $type;
         } else {
             $class = $type;

@@ -11,16 +11,17 @@ namespace DecodeLabs\Glitch\Renderer;
 
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Renderer;
+use DecodeLabs\Glitch\RendererTrait;
 
 class Text implements Renderer
 {
-    use Base;
+    use RendererTrait;
 
-    protected const RenderInProduction = true;
-    protected const Spaces = 2;
-    protected const RenderClosed = false;
+    public const bool RenderInProduction = true;
+    public const int Spaces = 2;
+    public const bool RenderClosed = false;
 
-    protected const RenderSections = [
+    public const array RenderSections = [
         'info' => true,
         'meta' => true,
         'text' => true,
@@ -29,7 +30,7 @@ class Text implements Renderer
         'stack' => true
     ];
 
-    protected const RenderStack = true;
+    public const bool RenderStack = true;
 
 
     /**

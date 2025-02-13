@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Glitch;
 
+use Closure;
 use Composer\Autoload\ClassLoader;
 use DecodeLabs\Exceptional;
 use DecodeLabs\Exceptional\Exception as ExceptionalException;
@@ -18,6 +19,7 @@ use DecodeLabs\Glitch\Dumper\Inspector;
 use DecodeLabs\Glitch\Renderer\Cli as CliRenderer;
 use DecodeLabs\Glitch\Renderer\Html as HtmlRenderer;
 use DecodeLabs\Glitch\Renderer\Text as TextRenderer;
+use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Transport\Http as HttpTransport;
 use DecodeLabs\Glitch\Transport\Stdout as StdoutTransport;
@@ -29,8 +31,6 @@ use Throwable;
 
 class Context implements LoggerAwareInterface
 {
-    public const Version = 'v0.18.20';
-
     protected float $startTime;
     protected string $runMode = 'development';
 
@@ -39,12 +39,10 @@ class Context implements LoggerAwareInterface
      */
     protected array $pathAliases = [];
 
-
     /**
      * @var array<string, callable>
      */
     protected array $statGatherers = [];
-
 
     /**
      * @var array<string, callable>
@@ -60,23 +58,11 @@ class Context implements LoggerAwareInterface
     protected bool $dumpedInBuffer = false;
     protected ?LoggerInterface $logger = null;
 
-    /**
-     * @var callable|null
-     */
-    protected $logListener;
+    protected ?Closure $logListener;
     protected ?Renderer $dumpRenderer = null;
     protected ?Transport $transport = null;
-
-
-    /**
-     * @var callable|null
-     */
-    protected $headerBufferSender;
-
-    /**
-     * @var callable|null
-     */
-    protected $errorPageRenderer;
+    protected ?Closure $headerBufferSender;
+    protected ?Closure $errorPageRenderer;
 
 
     /**
@@ -88,6 +74,18 @@ class Context implements LoggerAwareInterface
         $this->pathAliases['glitch'] = dirname(__DIR__);
 
         $this->registerStatGatherer('default', [$this, 'gatherDefaultStats']);
+    }
+
+    /**
+     * Get version
+     */
+    public function getVersion(): string
+    {
+        $file = dirname(__DIR__, 2).'/CHANGELOG.md';
+        $contents = file_get_contents($file, length: 500);
+
+        preg_match('/## ([v0-9.]+)/', (string)$contents, $matches);
+        return $matches[1] ?? 'v0.x-dev';
     }
 
 
@@ -107,7 +105,10 @@ class Context implements LoggerAwareInterface
                 break;
 
             default:
-                throw Exceptional::InvalidArgument('Invalid run mode', null, $mode);
+                throw Exceptional::InvalidArgument(
+                    message: 'Invalid run mode',
+                    data: $mode
+                );
         }
 
         return $this;
@@ -134,8 +135,9 @@ class Context implements LoggerAwareInterface
      */
     public function isTesting(): bool
     {
-        return $this->runMode == 'testing'
-            || $this->runMode == 'development';
+        return
+            $this->runMode == 'testing' ||
+            $this->runMode == 'development';
     }
 
     /**
@@ -174,6 +176,10 @@ class Context implements LoggerAwareInterface
     public function setLogListener(
         ?callable $listener
     ): static {
+        if($listener) {
+            $listener = Closure::fromCallable($listener);
+        }
+
         $this->logListener = $listener;
         return $this;
     }
@@ -295,7 +301,7 @@ class Context implements LoggerAwareInterface
             $exception instanceof IncompleteException ||
             $exception instanceof ExceptionalException
         ) {
-            $trace = $exception->getStackTrace();
+            $trace = $exception->stackTrace;
         } else {
             $trace = Trace::fromException($exception);
         }
@@ -371,7 +377,6 @@ class Context implements LoggerAwareInterface
         set_error_handler([$this, 'handleError']);
         set_exception_handler([$this, 'handleException']);
         register_shutdown_function([$this, 'handleShutdown']);
-        ini_set('display_errors', '0');
 
         return $this;
     }
@@ -394,7 +399,7 @@ class Context implements LoggerAwareInterface
             file: $file,
             line: $line,
             code: $level,
-            params: [ 'severity' => $level ]
+            severity: $level
         );
 
         if (
@@ -419,7 +424,10 @@ class Context implements LoggerAwareInterface
         try {
             $this->logException($exception);
 
-            if ($this->isProduction() && $this->errorPageRenderer) {
+            if (
+                $this->isProduction() &&
+                $this->errorPageRenderer
+            ) {
                 try {
                     ($this->errorPageRenderer)($exception, $this);
                     return;
@@ -506,6 +514,10 @@ class Context implements LoggerAwareInterface
     public function setHeaderBufferSender(
         ?callable $sender
     ): static {
+        if($sender) {
+            $sender = Closure::fromCallable($sender);
+        }
+
         $this->headerBufferSender = $sender;
         return $this;
     }
@@ -528,6 +540,10 @@ class Context implements LoggerAwareInterface
     public function setErrorPageRenderer(
         ?callable $renderer
     ): static {
+        if($renderer) {
+            $renderer = Closure::fromCallable($renderer);
+        }
+
         $this->errorPageRenderer = $renderer;
         return $this;
     }
@@ -556,7 +572,10 @@ class Context implements LoggerAwareInterface
         $this->pathAliases[$name] = $path;
 
         try {
-            if (($realPath = realpath($path)) && $realPath . '/' !== $path) {
+            if (
+                ($realPath = realpath($path)) &&
+                $realPath . '/' !== $path
+            ) {
                 $this->pathAliases[$name . '*'] = $realPath . '/';
             }
         } catch (Throwable $e) {
@@ -583,7 +602,10 @@ class Context implements LoggerAwareInterface
             $this->pathAliases[$name] = $path;
 
             try {
-                if (($realPath = realpath($path)) && $realPath . '/' !== $path) {
+                if (
+                    ($realPath = realpath($path)) &&
+                    $realPath . '/' !== $path
+                ) {
                     $this->pathAliases[$name . '*'] = $realPath . '/';
                 }
             } catch (Throwable $e) {
@@ -670,30 +692,30 @@ class Context implements LoggerAwareInterface
         $dump->addStats(
             // Time
             (new Stat('time', 'Running time', microtime(true) - $this->getStartTime()))
-                ->setRenderer(function ($time) {
+                ->setRenderer(function (float $time) {
                     return number_format($time * 1000, 2) . ' ms';
                 }),
 
             // Memory
             (new Stat('memory', 'Memory usage', memory_get_usage()))
-                ->setRenderer(function ($memory) {
+                ->setRenderer(function (int $memory) {
                     return self::formatFilesize($memory);
                 }),
 
             // Peak memory
             (new Stat('peakMemory', 'Peak memory usage', memory_get_peak_usage()))
-                ->setRenderer(function ($memory) {
+                ->setRenderer(function (int $memory) {
                     return self::formatFilesize($memory);
                 }),
 
             // Location
             (new Stat('location', 'Dump location', $frame))
-                ->setRenderer(function ($frame) {
-                    if (null === ($file = $frame->getCallingFile())) {
+                ->setRenderer(function (Frame $frame) {
+                    if (null === ($file = $frame->callingFile)) {
                         return null;
                     }
 
-                    return $this->normalizePath($file) . ' : ' . $frame->getCallingLine();
+                    return $this->normalizePath($file) . ' : ' . $frame->callingLine;
                 })
         );
     }
@@ -770,19 +792,15 @@ class Context implements LoggerAwareInterface
      */
     public function getVendorPath(): string
     {
-        static $output;
+        $ref = new ReflectionClass(ClassLoader::class);
 
-        if (!isset($output)) {
-            $ref = new ReflectionClass(ClassLoader::class);
-
-            if (false === ($file = $ref->getFileName())) {
-                throw Exceptional::Runtime('Unable to work out vendor path');
-            }
-
-            $output = dirname(dirname($file));
+        if (false === ($file = $ref->getFileName())) {
+            throw Exceptional::Runtime(
+                message: 'Unable to work out vendor path'
+            );
         }
 
-        return $output;
+        return dirname(dirname($file));
     }
 
 

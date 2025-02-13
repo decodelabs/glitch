@@ -7,12 +7,14 @@
 
 declare(strict_types=1);
 
-namespace DecodeLabs\Glitch\Renderer;
+namespace DecodeLabs\Glitch;
 
+use DecodeLabs\Coercion;
 use DecodeLabs\Exceptional\Exception as ExceptionalException;
 use DecodeLabs\Glitch\Context;
 use DecodeLabs\Glitch\Dumper\Dump;
 use DecodeLabs\Glitch\Dumper\Entity;
+use DecodeLabs\Glitch\Dumper\LazyType;
 use DecodeLabs\Glitch\Packet;
 use DecodeLabs\Glitch\Stack\Frame;
 use DecodeLabs\Glitch\Stack\Trace;
@@ -20,23 +22,11 @@ use DecodeLabs\Glitch\Stat;
 use Exception;
 use Throwable;
 
-trait Base
+/**
+ * @phpstan-require-implements Renderer
+ */
+trait RendererTrait
 {
-    //protected const RenderInProduction = false;
-    //protected const Spaces = 2;
-    //protected const RenderClosed = true;
-    /*
-    protected const RenderSections = [
-        'info' => true,
-        'meta' => true,
-        'text' => true,
-        'props' => true,
-        'values' => true,
-        'stack' => true
-    ];
-     */
-    //protected const RenderStack = true;
-
     protected Context $context;
     protected bool $productionOverride = false;
 
@@ -75,7 +65,7 @@ trait Base
      */
     protected function shouldRenderInProduction(): bool
     {
-        return static::RenderInProduction;
+        return Coercion::toBool(static::RenderInProduction);
     }
 
 
@@ -111,7 +101,7 @@ trait Base
         $output[] = $this->renderStats($dump->getStats());
         $output[] = $this->renderDumpEntities($dump);
 
-        if ((static::RenderStack ?? true)) {
+        if (static::RenderStack) {
             $output[] = $this->renderTrace($dump->getTrace(), false);
         }
 
@@ -197,7 +187,7 @@ trait Base
         $code = $exception->getCode();
 
         if ($exception instanceof ExceptionalException) {
-            $httpCode = $exception->getHttpStatus();
+            $httpCode = $exception->http;
         } else {
             $httpCode = null;
         }
@@ -692,7 +682,7 @@ trait Base
         $output = [];
 
         // Namespace
-        if (null !== ($class = $frame->getClass())) {
+        if (null !== ($class = $frame->class)) {
             $class = $frame::normalizeClassName($class);
 
             if (substr((string)$class, 0, 1) === '~') {
@@ -716,12 +706,12 @@ trait Base
         }
 
         // Type
-        if ($frame->getInvokeType() !== null) {
-            $output[] = $this->renderGrammar($frame->getInvokeType());
+        if ($frame->invokeType !== null) {
+            $output[] = $this->renderGrammar($frame->invokeType);
         }
 
         // Function
-        $function = $frame->getFunctionName();
+        $function = $frame->function;
 
         if ($function === null || false !== strpos($function, '{closure}')) {
             $output[] = $this->wrapSignatureFunction($this->renderSignatureClosure(), 'closure');
@@ -752,7 +742,7 @@ trait Base
         $output[] = $this->renderGrammar('(');
         $args = [];
 
-        foreach ($frame->getArgs() as $arg) {
+        foreach ($frame->arguments as $arg) {
             if (is_object($arg)) {
                 $args[] = $this->renderSignatureObject($frame::normalizeClassName(get_class($arg)));
             } elseif (is_array($arg)) {
@@ -951,14 +941,22 @@ trait Base
         }
 
         foreach ($keys as $key) {
-            $overrides[$key] = $overrides[$key] ?? static::RenderSections[$key] ?? true;
+            $overrides[$key] =
+                $overrides[$key] ??
+                /** @var array<string,bool> */
+                static::RenderSections[$key] ??
+                true;
+
             $check = true;
 
             if ($key == 'stack') {
                 $check = $type !== 'stack';
             }
 
-            if (!$overrides[$key] && $check) {
+            if (
+                !$overrides[$key] &&
+                $check
+            ) {
                 $sections[$key] = false;
             }
         }
@@ -983,6 +981,11 @@ trait Base
             $name = implode(' ' . $g . ' ', $nameParts);
         }
 
+        // Lazy
+        if($entity->isLazy()) {
+            $header[] = $this->renderPointer(
+                ($entity->getLazyType() ?? LazyType::Unknown)->value);
+        }
 
         // Name
         if ($isRef) {
@@ -1048,7 +1051,11 @@ trait Base
         }
 
         // Bracket
-        if (($hasBody = in_array(true, $sections, true)) || $forceBody) {
+        if (
+            // @phpstan-ignore-next-line
+            ($hasBody = in_array(true, $sections, true)) ||
+            $forceBody
+        ) {
             $header[] = $this->renderGrammar('{');
         }
 
@@ -1062,10 +1069,20 @@ trait Base
         $output[] = $this->wrapEntityHeader(implode(' ', array_filter($header)), $type, $linkId);
 
 
-        $hasBodyContent = $sections['text'] || $sections['def'] || $sections['props'] || $sections['values'] || $sections['stack'];
-        $renderClosed = static::RenderClosed ?? true;
+        $hasBodyContent =
+            $sections['text'] ||
+            $sections['def'] ||
+            $sections['props'] ||
+            $sections['values'] ||
+            $sections['stack'];
 
-        if (!$open && !$renderClosed && $level > 4) {
+        $renderClosed = static::RenderClosed;
+
+        if (
+            !$open &&
+            !$renderClosed &&
+            $level > 4
+        ) {
             $hasBody = false;
         }
 
@@ -1081,7 +1098,10 @@ trait Base
                     $classes[] = 'w-t-info';
                 }
 
-                if ($renderClosed || $visibility['info']) {
+                if (
+                    $renderClosed ||
+                    $visibility['info']
+                ) {
                     $body[] = $this->renderInfoBlock($entity, $level, $visibility['info']);
                 }
             }
@@ -1092,7 +1112,10 @@ trait Base
                     $classes[] = 'w-t-meta';
                 }
 
-                if ($renderClosed || $visibility['meta']) {
+                if (
+                    $renderClosed ||
+                    $visibility['meta']
+                ) {
                     $body[] = $this->renderMetaBlock($entity, $level, $visibility['meta']);
                 }
             }
@@ -1103,7 +1126,10 @@ trait Base
                     $classes[] = 'w-t-text';
                 }
 
-                if ($renderClosed || $visibility['text']) {
+                if (
+                    $renderClosed ||
+                    $visibility['text']
+                ) {
                     $body[] = $this->renderTextBlock($entity, $level, $visibility['text']);
                 }
             }
@@ -1114,7 +1140,10 @@ trait Base
                     $classes[] = 'w-t-def';
                 }
 
-                if ($renderClosed || $visibility['definition']) {
+                if (
+                    $renderClosed ||
+                    $visibility['definition']
+                ) {
                     $body[] = $this->renderDefinitionBlock($entity, $level, $visibility['definition']);
                 }
             }
@@ -1125,7 +1154,10 @@ trait Base
                     $classes[] = 'w-t-props';
                 }
 
-                if ($renderClosed || $visibility['properties']) {
+                if (
+                    $renderClosed ||
+                    $visibility['properties']
+                ) {
                     $body[] = $this->renderPropertiesBlock($entity, $level, $visibility['properties']);
                 }
             }
@@ -1136,7 +1168,10 @@ trait Base
                     $classes[] = 'w-t-values';
                 }
 
-                if ($renderClosed || $visibility['values']) {
+                if (
+                    $renderClosed ||
+                    $visibility['values']
+                ) {
                     $body[] = $this->renderValuesBlock($entity, $level, $visibility['values']);
                 }
             }
@@ -1147,22 +1182,35 @@ trait Base
                     $classes[] = 'w-t-stack';
                 }
 
-                if ($renderClosed || $visibility['stack']) {
+                if (
+                    $renderClosed ||
+                    $visibility['stack']
+                ) {
                     $body[] = $this->renderStackBlock($entity, $level, $visibility['stack']);
                 }
             }
 
-            $output[] = $this->wrapEntityBody(implode("\n", array_filter($body)), $open && $hasBodyContent, $linkId);
+            $output[] = $this->wrapEntityBody(
+                body: implode("\n", array_filter($body)),
+                open: $open && $hasBodyContent,
+                linkId: $linkId
+            );
         }
 
         // Footer
-        if ($hasBody || $forceBody) {
+        if (
+            $hasBody ||
+            $forceBody
+        ) {
             $output[] = $this->wrapEntityFooter($this->renderGrammar('}'));
         }
 
         if ($open && ($hasBody && !empty($classes))) {
             $classes[] = 'w-body';
-        } elseif ($isRef && $sections['info']) {
+        } elseif (
+            $isRef &&
+            $sections['info']
+        ) {
             $classes[] = 'w-t-info';
         }
 
@@ -1418,7 +1466,10 @@ trait Base
         }
 
         // Hash
-        if (($hash = $entity->getHash()) || $type == 'array') {
+        if (
+            ($hash = $entity->getHash()) ||
+            $type == 'array'
+        ) {
             $info['hash'] = $hash;
         }
 
@@ -1560,10 +1611,10 @@ trait Base
                 $line[] = $this->wrapSignature($this->renderStackFrameSignature($frame));
                 $line[] = "\n   ";
 
-                if (null !== ($file = $frame->getCallingFile())) {
+                if (null !== ($file = $frame->callingFile)) {
                     $line[] = $this->renderSourceFile((string)$this->context->normalizePath($file));
 
-                    if (null !== ($callingLine = $frame->getCallingLine())) {
+                    if (null !== ($callingLine = $frame->callingLine)) {
                         $line[] = $this->renderSourceLine($callingLine);
                     }
                 } else {
@@ -1742,7 +1793,7 @@ trait Base
     protected function indent(
         string $lines
     ): string {
-        if ($spaces = static::Spaces ?? 2) {
+        if ($spaces = static::Spaces) {
             $space = str_repeat(' ', $spaces);
             $lines = $space . str_replace("\n", "\n" . $space, $lines);
         }

@@ -34,6 +34,7 @@ use DecodeLabs\Glitch\Inspectable;
 use ReflectionClass;
 use ReflectionObject;
 use SensitiveParameterValue;
+use Throwable;
 
 class Inspector
 {
@@ -370,9 +371,6 @@ class Inspector
                 return '"' . $value . '"';
 
             case is_resource($value):
-                return (string)$value;
-
-
             default:
                 return (string)$value;
         }
@@ -403,7 +401,10 @@ class Inspector
     ): mixed {
         $output = $this->inspectValue($value);
 
-        if ($output instanceof Entity && $entityCallback) {
+        if (
+            $output instanceof Entity &&
+            $entityCallback
+        ) {
             $entityCallback($output, $value, $this);
         }
 
@@ -433,6 +434,10 @@ class Inspector
 
     /**
      * Inspect single value
+     *
+     * @template T
+     * @param T $value
+     * @param-out T $value
      */
     public function inspectValue(
         mixed &$value
@@ -451,6 +456,7 @@ class Inspector
                 return $this->inspectResource($value);
 
             case is_array($value):
+                // @phpstan-ignore-next-line
                 return $this->inspectArray($value);
 
             case is_object($value):
@@ -575,7 +581,14 @@ class Inspector
                 continue;
             }
 
-            if (($flags & $value) === $value || ($flags === 0 && $value === 0)) {
+            if (
+                ($flags & $value) === $value ||
+
+                (
+                    $flags === 0 &&
+                    $value === 0
+                )
+            ) {
                 $constEnt = $this->inspectConstant($const);
 
                 if ($flags === $value) {
@@ -705,7 +718,10 @@ class Inspector
         $isRef = isset($this->objectIds[$objectId]);
 
         // Add parent namespace to name if it's also an interface
-        if ($name === $shortName && $reflection) {
+        if (
+            $name === $shortName &&
+            $reflection
+        ) {
             $parts = explode('\\', $className);
             array_pop($parts);
             $parentNs = array_pop($parts);
@@ -772,7 +788,27 @@ class Inspector
             $className => $reflection
         ] + $parents;
 
-        if ($properties) {
+        $isLazy = $reflection->isUninitializedLazyObject($object);
+
+        if ($isLazy) {
+            try {
+                ob_start();
+                var_dump($object);
+                $export = (string)ob_get_clean();
+
+                if(str_starts_with($export, 'lazy ghost')) {
+                    $lazy = LazyType::Ghost;
+                } else if(str_starts_with($export, 'lazy proxy')) {
+                    $lazy = LazyType::Proxy;
+                } else {
+                    $lazy = LazyType::Unknown;
+                }
+            } catch (Throwable $e) {
+                $lazy = LazyType::Unknown;
+            }
+
+            $entity->setLazyType($lazy);
+        } elseif ($properties) {
             $this->inspectObjectProperties($object, $reflections, $entity);
         }
 
@@ -852,8 +888,19 @@ class Inspector
             $object instanceof Dumpable ||
             method_exists($object, 'glitchDump')
         ) {
-            foreach ($object->glitchDump() as $key => $value) {
-                $entity->importDumpValue($object, $key, $value, $this);
+            $export = $object->glitchDump();
+
+            if(!is_iterable($export)) {
+                $export = [];
+            }
+
+            foreach ($export as $key => $value) {
+                $entity->importDumpValue(
+                    object: $object,
+                    target: Coercion::toString($key),
+                    value: $value,
+                    inspector: $this
+                );
             }
             return;
 
@@ -872,7 +919,9 @@ class Inspector
 
             // Debug info
         } elseif (method_exists($object, '__debugInfo')) {
-            $entity->setValues($this->inspectList($info = $object->__debugInfo()));
+            $entity->setValues($this->inspectList(
+                Coercion::toArray($object->__debugInfo())
+            ));
             return;
         }
 
