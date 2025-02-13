@@ -16,6 +16,22 @@ use Throwable;
 
 interface Renderer
 {
+    public const bool RenderInProduction = false;
+    public const int Spaces = 2;
+    public const bool RenderClosed = true;
+
+    /** @var array<string,bool> */
+    public const array RenderSections = [
+        'info' => true,
+        'meta' => true,
+        'text' => true,
+        'props' => true,
+        'values' => true,
+        'stack' => true
+    ];
+
+    public const bool RenderStack = true;
+
     /**
      * Override production rendering
      *

@@ -1,3 +1,13 @@
+## v0.19.0 (2025-02-13)
+* Added support for lazy objects
+* Updated Stack Frame handling
+* Fixed extended features in Reflection rendering
+* Tidied boolean logic
+* Fixed Exceptional syntax
+* Upgraded PHPStan to v2
+* Added PHP8.4 to CI workflow
+* Made PHP8.4 minimum version
+
 ## v0.18.20 (2025-02-07)
 * Removed ref to E_STRICT
 

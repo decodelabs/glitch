@@ -2,16 +2,20 @@ parameters:
     paths:
         - src/
     level: max
+
+    excludePaths:
+        - src/Glitch/Renderer/Html/ZestManifest.php
+
     ignoreErrors:
-        -
-            message: '#has invalid typehint type CurlHandle#'
-            path: src/Glitch/Dumper/Inspect/Curl.php
-        -
-            message: '#Else branch is unreachable because ternary operator condition is always true#'
-            path: src/Glitch/Dumper/Inspect/Date.php
-        -
-            message: '#has invalid typehint type GdImage#'
-            path: src/Glitch/Dumper/Inspect/Gd.php
-        -
-            message: '#Result of method ReflectionExtension\:\:isPersistent\(\) \(void\) is used#'
-            path: src/Glitch/Dumper/Inspect/Reflection.php
+        #-
+        #    message: '#has invalid typehint type CurlHandle#'
+        #    path: src/Glitch/Dumper/Inspect/Curl.php
+        #-
+        #    message: '#Else branch is unreachable because ternary operator condition is always true#'
+        #    path: src/Glitch/Dumper/Inspect/Date.php
+        #-
+        #    message: '#has invalid typehint type GdImage#'
+        #    path: src/Glitch/Dumper/Inspect/Gd.php
+        #-
+        #    message: '#Result of method ReflectionExtension\:\:isPersistent\(\) \(void\) is used#'
+        #    path: src/Glitch/Dumper/Inspect/Reflection.php

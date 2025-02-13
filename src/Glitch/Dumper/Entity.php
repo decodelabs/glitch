@@ -27,6 +27,7 @@ class Entity
     protected ?string $class = null;
     protected ?string $className = null;
     protected bool $sensitive = false;
+    protected ?LazyType $lazy = null;
 
     /**
      * @var array<string>|null
@@ -113,7 +114,7 @@ class Entity
         if (substr($target, 0, 1) === '^') {
             $target = substr($target, 1);
 
-            $closer = function ($entity) {
+            $closer = function (Entity $entity) {
                 $entity->setOpen(false);
             };
         } else {
@@ -221,7 +222,7 @@ class Entity
 
             default:
                 throw Exceptional::UnexpectedValue(
-                    'Invalid dump yield key : ' . $target
+                    message: 'Invalid dump yield key : ' . $target
                 );
         }
 
@@ -380,6 +381,40 @@ class Entity
     {
         return $this->hash;
     }
+
+
+
+
+    /**
+     * Set object as lazy
+     *
+     * @return $this
+     */
+    public function setLazyType(
+        ?LazyType $lazy
+    ): static
+    {
+        $this->lazy = $lazy;
+        return $this;
+    }
+
+    /**
+     * Get lazy type
+     */
+    public function getLazyType(): ?LazyType
+    {
+        return $this->lazy;
+    }
+
+    /**
+     * Is object lazy?
+     */
+    public function isLazy(): bool
+    {
+        return $this->lazy !== null;
+    }
+
+
 
 
     /**
@@ -972,7 +1007,7 @@ class Entity
         if ($type !== null) {
             if (!$this->checkTypeValidity($value, $type)) {
                 throw Exceptional::UnexpectedValue(
-                    'Invalid dump yield value type (' . $type . ')'
+                    message: 'Invalid dump yield value type (' . $type . ')'
                 );
             }
         }
@@ -992,9 +1027,8 @@ class Entity
 
             default:
                 throw Exceptional::UnexpectedValue(
-                    'Invalid sub-entity type - must be scalar or Entity',
-                    null,
-                    $value
+                    message: 'Invalid sub-entity type - must be scalar or Entity',
+                    data: $value
                 );
         }
     }

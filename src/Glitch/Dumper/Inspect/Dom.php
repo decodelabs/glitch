@@ -311,7 +311,9 @@ class Dom
         Inspector $inspector
     ): void {
         $entity
-            ->setProperty('document', $inspector($xpath->document, function ($entity) {
+            ->setProperty('document', $inspector($xpath->document, function (
+                Entity $entity
+            ) {
                 $entity->setOpen(false);
             }));
     }

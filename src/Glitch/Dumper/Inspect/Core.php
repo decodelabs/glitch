@@ -12,6 +12,7 @@ namespace DecodeLabs\Glitch\Dumper\Inspect;
 use __PHP_Incomplete_Class;
 use BackedEnum;
 use Closure;
+use DecodeLabs\Coercion;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
 use DecodeLabs\Glitch\Stack\Trace;
@@ -40,7 +41,9 @@ class Core
             ->setType('exception')
             ->setText($exception->getMessage())
             ->setProperty('*code', $inspector($exception->getCode()))
-            ->setProperty('!previous', $inspector($exception->getPrevious(), function ($entity) {
+            ->setProperty('!previous', $inspector($exception->getPrevious(), function (
+                Entity $entity
+            ) {
                 $entity->setOpen(false);
             }))
             ->setFile($exception->getFile())
@@ -161,7 +164,9 @@ class Core
                 'line' => $reflection->getExecutingLine(),
             ]);
 
-            $entity->setStackTrace(Trace::fromArray($reflection->getTrace()));
+            /** @var array<array<string,mixed>> */
+            $trace = $reflection->getTrace();
+            $entity->setStackTrace(Trace::fromArray($trace));
         }
 
         $entity->setMetaList([
@@ -202,7 +207,7 @@ class Core
         Inspector $inspector
     ): void {
         $vars = (array)$class;
-        $entity->setDefinition($vars['__PHP_Incomplete_Class_Name']);
+        $entity->setDefinition(Coercion::toStringOrNull($vars['__PHP_Incomplete_Class_Name']));
         unset($vars['__PHP_Incomplete_Class_Name']);
         $entity->setValues($inspector->inspectList($vars));
     }

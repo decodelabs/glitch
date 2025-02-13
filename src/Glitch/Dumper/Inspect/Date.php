@@ -14,11 +14,9 @@ use DatePeriod;
 use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
-
 use DecodeLabs\Exceptional;
 use DecodeLabs\Glitch\Dumper\Entity;
 use DecodeLabs\Glitch\Dumper\Inspector;
-
 use ReflectionObject;
 
 class Date
@@ -73,15 +71,23 @@ class Date
     ): string {
         $format = '';
 
-        if ($interval->y === 0 && $interval->m === 0 &&
-            ($interval->h >= 24 || $interval->i >= 60 || $interval->s >= 60)
+        if (
+            $interval->y === 0 &&
+            $interval->m === 0 &&
+            (
+                $interval->h >= 24 ||
+                $interval->i >= 60 ||
+                $interval->s >= 60
+            )
         ) {
             $date1 = new DateTime();
             $date2 = clone $date1;
 
             /** @phpstan-ignore-next-line */
             if (false === $date2->add($interval)) {
-                throw Exceptional::Runtime('Unable to create date from interval');
+                throw Exceptional::Runtime(
+                    message: 'Unable to create date from interval'
+                );
             }
 
             $interval = date_diff($date1, $date2);
@@ -169,7 +175,7 @@ class Date
     /**
      * Inspect DatePeriod
      *
-     * @param DatePeriod<DateTime> $period
+     * @param DatePeriod<DateTimeInterface,?DateTimeInterface,int> $period
      */
     public static function inspectDatePeriod(
         DatePeriod $period,

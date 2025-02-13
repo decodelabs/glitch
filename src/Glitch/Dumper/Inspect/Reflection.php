@@ -25,6 +25,7 @@ use ReflectionProperty;
 use ReflectionType;
 use ReflectionUnionType;
 use ReflectionZendExtension;
+use UnitEnum;
 
 class Reflection
 {
@@ -104,6 +105,7 @@ class Reflection
             'version' => $reflection->getVersion(),
             'dependencies' => $reflection->getDependencies(),
             'iniEntries' => $reflection->getIniEntries(),
+            // @phpstan-ignore-next-line PHPStan bug
             'isPersistent' => $reflection->isPersistent(),
             'isTemporary' => $reflection->isTemporary(),
             'constants' => $reflection->getConstants(),
@@ -310,13 +312,7 @@ class Reflection
         $reflection->setAccessible(true);
         $props = $reflection->getDeclaringClass()->getDefaultProperties();
         $value = $props[$name] ?? null;
-
-        if (is_array($value)) {
-            $output .= '[...]';
-        } else {
-            /** @var bool|float|int|resource|string|null $value */
-            $output .= Inspector::scalarToString($value);
-        }
+        $output .= self::renderStaticValue($value);
 
         return $output;
     }
@@ -331,13 +327,7 @@ class Reflection
         $output = implode(' ', ReflectionRoot::getModifierNames($reflection->getModifiers()));
         $output .= ' const ' . $reflection->getName() . ' = ';
         $value = $reflection->getValue();
-
-        if (is_array($value)) {
-            $output .= '[...]';
-        } else {
-            /** @var bool|float|int|resource|string|null $value */
-            $output .= Inspector::scalarToString($value);
-        }
+        $output .= self::renderStaticValue($value);
 
         return $output;
     }
@@ -420,10 +410,28 @@ class Reflection
         if ($parameter->isDefaultValueAvailable()) {
             /** @var bool|float|int|resource|string|null $value */
             $value = $parameter->getDefaultValue();
-            $output .= '=' . Inspector::scalarToString($value);
+            $output .= '=' . static::renderStaticValue($value);
         }
 
         return $output;
+    }
+
+    protected static function renderStaticValue(
+        mixed $value
+    ): string {
+        if (is_array($value)) {
+            return '[...]';
+        }
+
+        if ($value instanceof UnitEnum) {
+            return get_class($value).'::'.$value->name;
+        }
+
+        if(!is_scalar($value)) {
+            $value = gettype($value);
+        }
+
+        return Inspector::scalarToString($value);
     }
 
 
