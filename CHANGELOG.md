@@ -1,3 +1,6 @@
+## v0.19.1 (2025-02-18)
+* Removed CHANGELOG.md from export-ignore
+
 ## v0.19.0 (2025-02-13)
 * Added support for lazy objects
 * Updated Stack Frame handling
