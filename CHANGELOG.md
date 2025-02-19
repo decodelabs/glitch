@@ -1,3 +1,7 @@
+## v0.19.2 (2025-02-19)
+* Improved super-early stage environment
+* Improved callable handling
+
 ## v0.19.1 (2025-02-18)
 * Removed CHANGELOG.md from export-ignore
 
