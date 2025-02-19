@@ -35,22 +35,22 @@ class Context implements LoggerAwareInterface
     protected string $runMode = 'development';
 
     /**
-     * @var array<string, string>
+     * @var array<string,string>
      */
     protected array $pathAliases = [];
 
     /**
-     * @var array<string, callable>
+     * @var array<string,Closure>
      */
     protected array $statGatherers = [];
 
     /**
-     * @var array<string, callable>
+     * @var array<string,Closure>
      */
     protected array $objectInspectors = [];
 
     /**
-     * @var array<string, callable>
+     * @var array<string,Closure>
      */
     protected array $resourceInspectors = [];
 
@@ -164,7 +164,7 @@ class Context implements LoggerAwareInterface
      */
     public function getLogger(): ?LoggerInterface
     {
-        return $this->logger;
+        return $this->logger ?? null;
     }
 
 
@@ -187,9 +187,9 @@ class Context implements LoggerAwareInterface
     /**
      * Get registered logger listener
      */
-    public function getLogListener(): ?callable
+    public function getLogListener(): ?Closure
     {
-        return $this->logListener;
+        return $this->logListener ?? null;
     }
 
 
@@ -453,7 +453,7 @@ class Context implements LoggerAwareInterface
     public function logException(
         Throwable $exception
     ): void {
-        if ($this->logger) {
+        if (isset($this->logger)) {
             try {
                 $this->logger->critical($exception->getMessage(), [
                     'exception' => $exception
@@ -462,7 +462,7 @@ class Context implements LoggerAwareInterface
             }
         }
 
-        if ($this->logListener) {
+        if (isset($this->logListener)) {
             try {
                 ($this->logListener)($exception);
             } catch (Throwable $e) {
@@ -525,9 +525,9 @@ class Context implements LoggerAwareInterface
     /**
      * Get header buffer sender
      */
-    public function getHeaderBufferSender(): ?callable
+    public function getHeaderBufferSender(): ?Closure
     {
-        return $this->headerBufferSender;
+        return $this->headerBufferSender ?? null;
     }
 
 
@@ -551,9 +551,9 @@ class Context implements LoggerAwareInterface
     /**
      * Get error page renderer
      */
-    public function getErrorPageRenderer(): ?callable
+    public function getErrorPageRenderer(): ?Closure
     {
-        return $this->errorPageRenderer;
+        return $this->errorPageRenderer ?? null;
     }
 
 
@@ -666,18 +666,18 @@ class Context implements LoggerAwareInterface
         string $name,
         callable $gatherer
     ): static {
-        $this->statGatherers[$name] = $gatherer;
+        $this->statGatherers[$name] = Closure::fromCallable($gatherer);
         return $this;
     }
 
     /**
      * Get stat gatherers
      *
-     * @return array<string, callable>
+     * @return array<string,Closure>
      */
     public function getStatGatherers(): array
     {
-        return $this->statGatherers;
+        return $this->statGatherers ?? [];
     }
 
     /**
@@ -746,18 +746,18 @@ class Context implements LoggerAwareInterface
         string $class,
         callable $inspector
     ): static {
-        $this->objectInspectors[$class] = $inspector;
+        $this->objectInspectors[$class] = Closure::fromCallable($inspector);
         return $this;
     }
 
     /**
      * Get list of registered inspectors
      *
-     * @return array<string, callable>
+     * @return array<string,Closure>
      */
     public function getObjectInspectors(): array
     {
-        return $this->objectInspectors;
+        return $this->objectInspectors ?? [];
     }
 
 
@@ -770,18 +770,18 @@ class Context implements LoggerAwareInterface
         string $type,
         callable $inspector
     ): static {
-        $this->resourceInspectors[$type] = $inspector;
+        $this->resourceInspectors[$type] = Closure::fromCallable($inspector);
         return $this;
     }
 
     /**
      * Get list of registered inspectors
      *
-     * @return array<string, callable>
+     * @return array<string,Closure>
      */
     public function getResourceInspectors(): array
     {
-        return $this->resourceInspectors;
+        return $this->resourceInspectors ?? [];
     }
 
 
