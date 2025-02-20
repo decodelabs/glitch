@@ -269,7 +269,7 @@ class Html implements Renderer
         $output = [];
 
         foreach ($attrs as $key => $value) {
-            $output[] = $key . '="' . Coercion::forceString($value) . '"';
+            $output[] = $key . '="' . Coercion::toString($value) . '"';
         }
 
         if (!empty($output)) {

@@ -1,3 +1,6 @@
+## v0.19.3 (2025-02-20)
+* Upgraded Coercion dependency
+
 ## v0.19.2 (2025-02-19)
 * Improved super-early stage environment
 * Improved callable handling

@@ -79,7 +79,7 @@ class Stat
         if ($output === null) {
             return null;
         } else {
-            return Coercion::toStringOrNull($output);
+            return Coercion::tryString($output);
         }
     }
 }

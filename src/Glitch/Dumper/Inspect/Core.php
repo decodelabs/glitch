@@ -207,7 +207,7 @@ class Core
         Inspector $inspector
     ): void {
         $vars = (array)$class;
-        $entity->setDefinition(Coercion::toStringOrNull($vars['__PHP_Incomplete_Class_Name']));
+        $entity->setDefinition(Coercion::tryString($vars['__PHP_Incomplete_Class_Name']));
         unset($vars['__PHP_Incomplete_Class_Name']);
         $entity->setValues($inspector->inspectList($vars));
     }
