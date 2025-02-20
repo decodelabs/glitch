@@ -187,7 +187,7 @@ class Entity
                 }
 
                 $value = $inspector->inspectList(
-                    Coercion::toArray($value),
+                    Coercion::asArray($value),
                     $closer
                 );
 

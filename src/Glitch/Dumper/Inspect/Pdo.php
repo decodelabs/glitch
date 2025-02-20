@@ -57,7 +57,7 @@ class Pdo
                     $name,
                     $inspector(
                         $pdo->getAttribute(
-                            Coercion::toInt(constant('PDO::ATTR_' . $name))
+                            Coercion::asInt(constant('PDO::ATTR_' . $name))
                         )
                     )
                 );

@@ -463,7 +463,7 @@ class Inspector
                 return $this->inspectObject($value);
 
             default:
-                return $this->inspectString(Coercion::forceString($value));
+                return $this->inspectString(Coercion::toString($value));
         }
     }
 
@@ -618,7 +618,7 @@ class Inspector
     ): Entity {
         return (new Entity('const'))
             ->setName($const)
-            ->setLength(Coercion::toIntOrNull(constant($const)));
+            ->setLength(Coercion::tryInt(constant($const)));
     }
 
 
@@ -897,7 +897,7 @@ class Inspector
             foreach ($export as $key => $value) {
                 $entity->importDumpValue(
                     object: $object,
-                    target: Coercion::toString($key),
+                    target: Coercion::asString($key),
                     value: $value,
                     inspector: $this
                 );
@@ -920,7 +920,7 @@ class Inspector
             // Debug info
         } elseif (method_exists($object, '__debugInfo')) {
             $entity->setValues($this->inspectList(
-                Coercion::toArray($object->__debugInfo())
+                Coercion::asArray($object->__debugInfo())
             ));
             return;
         }

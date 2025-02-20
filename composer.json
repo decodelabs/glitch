@@ -13,7 +13,7 @@
         "symfony/polyfill-mbstring": "^1.31",
         "symfony/polyfill-php82": "^1.31",
 
-        "decodelabs/coercion": "^0.2.15",
+        "decodelabs/coercion": "^0.3",
         "decodelabs/enlighten": "^0.9.2",
         "decodelabs/exceptional": "^0.5.2",
         "decodelabs/glitch-support": "^0.5.1",
