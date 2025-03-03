@@ -1,3 +1,6 @@
+## v0.19.4 (2025-03-03)
+* Fixed ErrorPageRenderer null access
+
 ## v0.19.3 (2025-02-20)
 * Upgraded Coercion dependency
 
