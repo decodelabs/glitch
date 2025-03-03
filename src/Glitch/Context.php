@@ -81,7 +81,7 @@ class Context implements LoggerAwareInterface
      */
     public function getVersion(): string
     {
-        $file = dirname(__DIR__, 2).'/CHANGELOG.md';
+        $file = dirname(__DIR__, 2) . '/CHANGELOG.md';
         $contents = file_get_contents($file, length: 500);
 
         preg_match('/## ([v0-9.]+)/', (string)$contents, $matches);
@@ -176,7 +176,7 @@ class Context implements LoggerAwareInterface
     public function setLogListener(
         ?callable $listener
     ): static {
-        if($listener) {
+        if ($listener) {
             $listener = Closure::fromCallable($listener);
         }
 
@@ -405,7 +405,10 @@ class Context implements LoggerAwareInterface
         if (
             $this->isProduction() &&
             in_array($level, [
-                E_NOTICE, E_USER_NOTICE, E_DEPRECATED, E_USER_DEPRECATED
+                E_NOTICE,
+                E_USER_NOTICE,
+                E_DEPRECATED,
+                E_USER_DEPRECATED
             ], true)
         ) {
             $this->logException($output);
@@ -426,7 +429,7 @@ class Context implements LoggerAwareInterface
 
             if (
                 $this->isProduction() &&
-                $this->errorPageRenderer
+                isset($this->errorPageRenderer)
             ) {
                 try {
                     ($this->errorPageRenderer)($exception, $this);
@@ -514,7 +517,7 @@ class Context implements LoggerAwareInterface
     public function setHeaderBufferSender(
         ?callable $sender
     ): static {
-        if($sender) {
+        if ($sender) {
             $sender = Closure::fromCallable($sender);
         }
 
@@ -540,7 +543,7 @@ class Context implements LoggerAwareInterface
     public function setErrorPageRenderer(
         ?callable $renderer
     ): static {
-        if($renderer) {
+        if ($renderer) {
             $renderer = Closure::fromCallable($renderer);
         }
 
