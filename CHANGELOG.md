@@ -1,3 +1,5 @@
+* Updated npm dependencies
+
 ## v0.19.4 (2025-03-03)
 * Fixed ErrorPageRenderer null access
 
