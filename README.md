@@ -13,8 +13,6 @@ Glitch is a standalone PHP package designed to dramatically improve error handli
 
 The project aims to provide deep data inspection tools and an Exception handling interface.
 
-_Get news and updates on the [DecodeLabs blog](https://blog.decodelabs.com)._
-
 ---
 
 ![v0.15.0 interface](docs/v0.15.0.png)
