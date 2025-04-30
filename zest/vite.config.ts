@@ -40,5 +40,9 @@ export default defineConfig({
         cors: {
             origin: "*"
         }
+    },
+
+    optimizeDeps: {
+        include: ["jquery"]
     }
 })
