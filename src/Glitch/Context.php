@@ -680,7 +680,7 @@ class Context implements LoggerAwareInterface
      */
     public function getStatGatherers(): array
     {
-        return $this->statGatherers ?? [];
+        return $this->statGatherers;
     }
 
     /**

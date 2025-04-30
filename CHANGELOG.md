@@ -1,5 +1,6 @@
 * Updated npm dependencies
 * Updated zest to typescript
+* Fixed PHPStan issue
 
 ## v0.19.4 (2025-03-03)
 * Fixed ErrorPageRenderer null access
