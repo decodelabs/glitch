@@ -22,9 +22,6 @@ class Stat
      */
     protected $renderer;
 
-    /**
-     * Construct with main info
-     */
     public function __construct(
         string $key,
         string $name,
@@ -36,17 +33,11 @@ class Stat
     }
 
 
-    /**
-     * Get key
-     */
     public function getKey(): string
     {
         return $this->key;
     }
 
-    /**
-     * Get name
-     */
     public function getName(): string
     {
         return $this->name;
@@ -54,8 +45,6 @@ class Stat
 
 
     /**
-     * Add a named renderer
-     *
      * @return $this
      */
     public function setRenderer(
@@ -65,9 +54,6 @@ class Stat
         return $this;
     }
 
-    /**
-     * Render to string using stack of named renderers
-     */
     public function render(): ?string
     {
         if (isset($this->renderer)) {

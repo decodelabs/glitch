@@ -14,9 +14,6 @@ use DecodeLabs\Glitch\Transport;
 
 class Stdout implements Transport
 {
-    /**
-     * Send dump straight to output
-     */
     public function sendDump(
         Packet $packet,
         bool $final
@@ -24,9 +21,6 @@ class Stdout implements Transport
         $this->sendPacket($packet, $final);
     }
 
-    /**
-     * Send exception dump straight to output
-     */
     public function sendException(
         Packet $packet,
         bool $final
@@ -34,9 +28,6 @@ class Stdout implements Transport
         $this->sendPacket($packet, $final);
     }
 
-    /**
-     * Send packet
-     */
     protected function sendPacket(
         Packet $packet,
         bool $final

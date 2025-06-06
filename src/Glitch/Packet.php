@@ -14,9 +14,6 @@ class Packet
     protected string $body;
     protected string $contentType;
 
-    /**
-     * Init with body and content type
-     */
     public function __construct(
         string $body,
         string $contentType
@@ -25,17 +22,11 @@ class Packet
         $this->contentType = $contentType;
     }
 
-    /**
-     * Get body
-     */
     public function getBody(): string
     {
         return $this->body;
     }
 
-    /**
-     * Get content type
-     */
     public function getContentType(): string
     {
         return $this->contentType;

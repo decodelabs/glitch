@@ -1,15 +1,24 @@
-a.badge {
+.badge {
     cursor: help;
     font-size: 0.9em;
     color: white !important;
     padding: 0 0.5em;
     border-radius: 0.25em;
-    transition: background-color 0.35s, opacity 0.2s;
+    margin: 0;
+
+    border: none;
+    transition:
+        background-color 0.35s,
+        opacity 0.2s;
     opacity: 0.3;
 
     i {
         font-style: normal;
         position: relative;
+    }
+
+    input {
+        display: none;
     }
 
     &.info {
@@ -41,14 +50,14 @@ a.badge {
             top: 0.05em;
         }
     }
-    &.def {
+    &.definition {
         background-color: var(--badge-definition);
 
         &:hover {
             background-color: var(--badge-definition-hover);
         }
     }
-    &.props {
+    &.properties {
         background-color: var(--badge-properties);
 
         &:hover {
@@ -75,14 +84,6 @@ a.badge {
     }
 }
 
-div.entity {
-    &.w-t-info > div.title a.info,
-    &.w-t-meta > div.title a.meta,
-    &.w-t-text > div.title a.text,
-    &.w-t-def > div.title a.def,
-    &.w-t-props > div.title a.props,
-    &.w-t-values > div.title a.values,
-    &.w-t-stack > div.title a.stack {
-        opacity: 1;
-    }
+div.container:has(> header > input:checked) > header .badge:has(input:checked) {
+    opacity: 1;
 }

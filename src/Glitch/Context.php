@@ -13,47 +13,33 @@ use Closure;
 use Composer\Autoload\ClassLoader;
 use DecodeLabs\Exceptional;
 use DecodeLabs\Exceptional\Exception as ExceptionalException;
-use DecodeLabs\Glitch\Dumper\Dump;
-use DecodeLabs\Glitch\Dumper\Entity;
-use DecodeLabs\Glitch\Dumper\Inspector;
+use DecodeLabs\Glitch\Dump;
 use DecodeLabs\Glitch\Renderer\Cli as CliRenderer;
 use DecodeLabs\Glitch\Renderer\Html as HtmlRenderer;
 use DecodeLabs\Glitch\Renderer\Text as TextRenderer;
-use DecodeLabs\Glitch\Stack\Frame;
-use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Transport\Http as HttpTransport;
 use DecodeLabs\Glitch\Transport\Stdout as StdoutTransport;
+use DecodeLabs\Monarch;
+use DecodeLabs\Monarch\ExceptionLogger;
+use DecodeLabs\Nuance\Reflection as NuanceReflection;
+use DecodeLabs\Remnant\Frame;
+use DecodeLabs\Remnant\Trace;
 use ErrorException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
 use Throwable;
 
-class Context implements LoggerAwareInterface
+class Context implements
+    LoggerAwareInterface,
+    ExceptionLogger
 {
     protected float $startTime;
-    protected string $runMode = 'development';
-
-    /**
-     * @var array<string,string>
-     */
-    protected array $pathAliases = [];
 
     /**
      * @var array<string,Closure>
      */
     protected array $statGatherers = [];
-
-    /**
-     * @var array<string,Closure>
-     */
-    protected array $objectInspectors = [];
-
-    /**
-     * @var array<string,Closure>
-     */
-    protected array $resourceInspectors = [];
-
 
     protected bool $dumpedInBuffer = false;
     protected ?LoggerInterface $logger = null;
@@ -65,103 +51,29 @@ class Context implements LoggerAwareInterface
     protected ?Closure $errorPageRenderer;
 
 
-    /**
-     * Construct
-     */
     public function __construct()
     {
         $this->startTime = microtime(true);
-        $this->pathAliases['glitch'] = dirname(__DIR__);
 
         $this->registerStatGatherer('default', [$this, 'gatherDefaultStats']);
+        Monarch::registerExceptionLogger($this);
     }
 
-    /**
-     * Get version
-     */
     public function getVersion(): string
     {
         $file = dirname(__DIR__, 2) . '/CHANGELOG.md';
-        $contents = file_get_contents($file, length: 500);
+        $contents = file_get_contents($file, length: 1000);
 
-        preg_match('/## ([v0-9.]+)/', (string)$contents, $matches);
+        preg_match('/### \[([v0-9.]+)/', (string)$contents, $matches);
         return $matches[1] ?? 'v0.x-dev';
     }
 
-
-    /**
-     * Set active run mode
-     *
-     * @return $this
-     */
-    public function setRunMode(
-        string $mode
-    ): static {
-        switch ($mode) {
-            case 'production':
-            case 'testing':
-            case 'development':
-                $this->runMode = $mode;
-                break;
-
-            default:
-                throw Exceptional::InvalidArgument(
-                    message: 'Invalid run mode',
-                    data: $mode
-                );
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get current run mode
-     */
-    public function getRunMode(): string
-    {
-        return $this->runMode;
-    }
-
-    /**
-     * Is Glitch in development mode?
-     */
-    public function isDevelopment(): bool
-    {
-        return $this->runMode == 'development';
-    }
-
-    /**
-     * Is Glitch in testing mode?
-     */
-    public function isTesting(): bool
-    {
-        return
-            $this->runMode == 'testing' ||
-            $this->runMode == 'development';
-    }
-
-    /**
-     * Is Glitch in production mode?
-     */
-    public function isProduction(): bool
-    {
-        return $this->runMode == 'production';
-    }
-
-
-
-    /**
-     * Set PSR logger
-     */
     public function setLogger(
         LoggerInterface $logger
     ): void {
         $this->logger = $logger;
     }
 
-    /**
-     * Get registered
-     */
     public function getLogger(): ?LoggerInterface
     {
         return $this->logger ?? null;
@@ -169,8 +81,6 @@ class Context implements LoggerAwareInterface
 
 
     /**
-     * Add a logger listener callback
-     *
      * @return $this
      */
     public function setLogListener(
@@ -184,18 +94,12 @@ class Context implements LoggerAwareInterface
         return $this;
     }
 
-    /**
-     * Get registered logger listener
-     */
     public function getLogListener(): ?Closure
     {
         return $this->logListener ?? null;
     }
 
 
-    /**
-     * Create a new stack trace
-     */
     public function stackTrace(
         int $rewind = 0
     ): Trace {
@@ -204,9 +108,6 @@ class Context implements LoggerAwareInterface
 
 
 
-    /**
-     * Send variables to dump, carry on execution
-     */
     public function dump(
         mixed $var,
         mixed ...$vars
@@ -214,9 +115,6 @@ class Context implements LoggerAwareInterface
         $this->dumpValues(func_get_args(), 1, false);
     }
 
-    /**
-     * Send variables to dump, exit and render
-     */
     public function dumpDie(
         mixed $var,
         mixed ...$vars
@@ -224,9 +122,6 @@ class Context implements LoggerAwareInterface
         $this->dumpValues(func_get_args(), 1, true);
     }
 
-    /**
-     * Has dumped in output buffer
-     */
     public function hasDumpedInBuffer(): bool
     {
         return $this->dumpedInBuffer;
@@ -234,8 +129,6 @@ class Context implements LoggerAwareInterface
 
 
     /**
-     * Send variables to dump, carry on execution
-     *
      * @param array<mixed> $values
      */
     public function dumpValues(
@@ -254,7 +147,6 @@ class Context implements LoggerAwareInterface
         }
 
         $trace = Trace::create($rewind + 1);
-        $inspector = new Inspector($this);
         $dump = new Dump($trace);
 
         foreach ($this->statGatherers as $gatherer) {
@@ -262,17 +154,14 @@ class Context implements LoggerAwareInterface
         }
 
         foreach ($values as $value) {
-            $dump->addEntity($inspector->inspectValue($value));
+            $dump->addEntity($value);
         }
 
         if (ob_get_level()) {
             $this->dumpedInBuffer = true;
         }
 
-        $inspector->reset();
-        unset($inspector);
-
-        $packet = $this->getActiveRenderer()->renderDump($dump, $exit);
+        $packet = $this->getActiveRenderer()->renderDumpView($dump, $exit);
         $this->getTransport()->sendDump($packet, $exit);
 
         if ($exit) {
@@ -280,9 +169,6 @@ class Context implements LoggerAwareInterface
         }
     }
 
-    /**
-     * Dump and render exception
-     */
     public function dumpException(
         Throwable $exception,
         bool $exit = true
@@ -297,29 +183,19 @@ class Context implements LoggerAwareInterface
             }
         }
 
-        if (
-            $exception instanceof IncompleteException ||
-            $exception instanceof ExceptionalException
-        ) {
+        if ($exception instanceof ExceptionalException) {
             $trace = $exception->stackTrace;
         } else {
             $trace = Trace::fromException($exception);
         }
 
-        $inspector = new Inspector($this);
         $dump = new Dump($trace);
 
         foreach ($this->statGatherers as $gatherer) {
             $gatherer($dump, $this);
         }
 
-        /** @var Entity $entity */
-        $entity = $inspector->inspectValue($exception);
-
-        $inspector->reset();
-        unset($inspector);
-
-        $packet = $this->getRenderer()->renderException($exception, $entity, $dump);
+        $packet = $this->getRenderer()->renderExceptionView($exception, $dump);
         $this->getTransport()->sendException($packet, $exit);
 
         if ($exit) {
@@ -333,8 +209,6 @@ class Context implements LoggerAwareInterface
 
 
     /**
-     * Override app start time
-     *
      * @return $this
      */
     public function setStartTime(
@@ -344,32 +218,12 @@ class Context implements LoggerAwareInterface
         return $this;
     }
 
-    /**
-     * Get app start time
-     */
     public function getStartTime(): float
     {
         return $this->startTime;
     }
 
-
     /**
-     * Shortcut to incomplete context method
-     */
-    public function incomplete(
-        mixed $data = null,
-        int $rewind = 0
-    ): void {
-        throw new IncompleteException(
-            Trace::create($rewind + 1),
-            $data
-        );
-    }
-
-
-    /**
-     * Register as error handler
-     *
      * @return $this
      */
     public function registerAsErrorHandler(): static
@@ -381,9 +235,6 @@ class Context implements LoggerAwareInterface
         return $this;
     }
 
-    /**
-     * Default ErrorException wrapper
-     */
     public function handleError(
         int $level,
         string $message,
@@ -403,7 +254,7 @@ class Context implements LoggerAwareInterface
         );
 
         if (
-            $this->isProduction() &&
+            Monarch::isProduction() &&
             in_array($level, [
                 E_NOTICE,
                 E_USER_NOTICE,
@@ -418,9 +269,6 @@ class Context implements LoggerAwareInterface
         throw $output;
     }
 
-    /**
-     * Last-ditch catch-all for exceptions
-     */
     public function handleException(
         Throwable $exception
     ): void {
@@ -428,7 +276,7 @@ class Context implements LoggerAwareInterface
             $this->logException($exception);
 
             if (
-                $this->isProduction() &&
+                Monarch::isProduction() &&
                 isset($this->errorPageRenderer)
             ) {
                 try {
@@ -450,9 +298,6 @@ class Context implements LoggerAwareInterface
     }
 
 
-    /**
-     * Log an exception... somewhere :)
-     */
     public function logException(
         Throwable $exception
     ): void {
@@ -474,9 +319,6 @@ class Context implements LoggerAwareInterface
     }
 
 
-    /**
-     * Try and do something about fatal errors after shutdown
-     */
     public function handleShutdown(): void
     {
         $error = error_get_last();
@@ -492,9 +334,6 @@ class Context implements LoggerAwareInterface
         }
     }
 
-    /**
-     * Is this error code fatal?
-     */
     protected static function isErrorLevelFatal(
         int $level
     ): bool {
@@ -510,8 +349,6 @@ class Context implements LoggerAwareInterface
 
 
     /**
-     * Set header buffer sender
-     *
      * @return $this
      */
     public function setHeaderBufferSender(
@@ -525,9 +362,6 @@ class Context implements LoggerAwareInterface
         return $this;
     }
 
-    /**
-     * Get header buffer sender
-     */
     public function getHeaderBufferSender(): ?Closure
     {
         return $this->headerBufferSender ?? null;
@@ -536,8 +370,6 @@ class Context implements LoggerAwareInterface
 
 
     /**
-     * Set error page renderer
-     *
      * @return $this
      */
     public function setErrorPageRenderer(
@@ -551,118 +383,13 @@ class Context implements LoggerAwareInterface
         return $this;
     }
 
-    /**
-     * Get error page renderer
-     */
     public function getErrorPageRenderer(): ?Closure
     {
         return $this->errorPageRenderer ?? null;
     }
 
 
-
-
     /**
-     * Register path replacement alias
-     *
-     * @return $this
-     */
-    public function registerPathAlias(
-        string $name,
-        string $path
-    ): static {
-        $path = rtrim($path, '/') . '/';
-        $this->pathAliases[$name] = $path;
-
-        try {
-            if (
-                ($realPath = realpath($path)) &&
-                $realPath . '/' !== $path
-            ) {
-                $this->pathAliases[$name . '*'] = $realPath . '/';
-            }
-        } catch (Throwable $e) {
-        }
-
-        uasort($this->pathAliases, function ($a, $b) {
-            return strlen($b) - strlen($a);
-        });
-
-        return $this;
-    }
-
-    /**
-     * Register list of path replacement aliases
-     *
-     * @param array<string, string> $aliases
-     * @return $this
-     */
-    public function registerPathAliases(
-        array $aliases
-    ): static {
-        foreach ($aliases as $name => $path) {
-            $path = rtrim($path, '/') . '/';
-            $this->pathAliases[$name] = $path;
-
-            try {
-                if (
-                    ($realPath = realpath($path)) &&
-                    $realPath . '/' !== $path
-                ) {
-                    $this->pathAliases[$name . '*'] = $realPath . '/';
-                }
-            } catch (Throwable $e) {
-            }
-        }
-
-        uasort($this->pathAliases, function ($a, $b) {
-            return strlen($b) - strlen($a);
-        });
-
-        return $this;
-    }
-
-    /**
-     * Inspect list of registered path aliases
-     *
-     * @return array<string, string>
-     */
-    public function getPathAliases(): array
-    {
-        return $this->pathAliases;
-    }
-
-    /**
-     * Lookup and replace path prefix
-     */
-    public function normalizePath(
-        ?string $path
-    ): ?string {
-        if ($path === null) {
-            return null;
-        }
-
-        $path = str_replace('\\', '/', $path);
-        $testPath = rtrim($path, '/') . '/';
-
-        foreach ($this->pathAliases as $name => $test) {
-            $len = strlen($test);
-
-            if ($testPath === $test) {
-                return rtrim($name, '*') . '://';
-            } elseif (substr($testPath, 0, $len) == $test) {
-                return rtrim($name, '*') . '://' . ltrim(substr($path, $len), '/');
-            }
-        }
-
-        return $path;
-    }
-
-
-
-    /**
-     * Register stat gatherer
-     *
      * @return $this
      */
     public function registerStatGatherer(
@@ -674,8 +401,6 @@ class Context implements LoggerAwareInterface
     }
 
     /**
-     * Get stat gatherers
-     *
      * @return array<string,Closure>
      */
     public function getStatGatherers(): array
@@ -683,9 +408,6 @@ class Context implements LoggerAwareInterface
         return $this->statGatherers;
     }
 
-    /**
-     * Default stat gatherer
-     */
     public function gatherDefaultStats(
         Dump $dump,
         Context $context
@@ -702,13 +424,13 @@ class Context implements LoggerAwareInterface
             // Memory
             (new Stat('memory', 'Memory usage', memory_get_usage()))
                 ->setRenderer(function (int $memory) {
-                    return self::formatFilesize($memory);
+                    return NuanceReflection::formatFilesize($memory);
                 }),
 
             // Peak memory
             (new Stat('peakMemory', 'Peak memory usage', memory_get_peak_usage()))
                 ->setRenderer(function (int $memory) {
-                    return self::formatFilesize($memory);
+                    return NuanceReflection::formatFilesize($memory);
                 }),
 
             // Location
@@ -718,81 +440,12 @@ class Context implements LoggerAwareInterface
                         return null;
                     }
 
-                    return $this->normalizePath($file) . ' : ' . $frame->callingLine;
+                    return Monarch::$paths->prettify($file) . ' : ' . $frame->callingLine;
                 })
         );
     }
 
-    /**
-     * Format filesize bytes as human readable
-     */
-    public static function formatFilesize(
-        int $bytes
-    ): string {
-        $units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB'];
 
-        for ($i = 0; $bytes > 1024; $i++) {
-            $bytes /= 1024;
-        }
-
-        return round($bytes, 2) . ' ' . $units[$i];
-    }
-
-
-
-    /**
-     * Register callable inspector for a specific class
-     *
-     * @return $this
-     */
-    public function registerObjectInspector(
-        string $class,
-        callable $inspector
-    ): static {
-        $this->objectInspectors[$class] = Closure::fromCallable($inspector);
-        return $this;
-    }
-
-    /**
-     * Get list of registered inspectors
-     *
-     * @return array<string,Closure>
-     */
-    public function getObjectInspectors(): array
-    {
-        return $this->objectInspectors ?? [];
-    }
-
-
-    /**
-     * Register callable inspector for a specific resource type
-     *
-     * @return $this
-     */
-    public function registerResourceInspector(
-        string $type,
-        callable $inspector
-    ): static {
-        $this->resourceInspectors[$type] = Closure::fromCallable($inspector);
-        return $this;
-    }
-
-    /**
-     * Get list of registered inspectors
-     *
-     * @return array<string,Closure>
-     */
-    public function getResourceInspectors(): array
-    {
-        return $this->resourceInspectors ?? [];
-    }
-
-
-
-
-    /**
-     * Get composer vendor path
-     */
     public function getVendorPath(): string
     {
         $ref = new ReflectionClass(ClassLoader::class);
@@ -808,8 +461,6 @@ class Context implements LoggerAwareInterface
 
 
     /**
-     * Set dump renderer
-     *
      * @return $this
      */
     public function setRenderer(
@@ -820,8 +471,6 @@ class Context implements LoggerAwareInterface
     }
 
     /**
-     * Fallback to text renderer
-     *
      * @return $this
      */
     public function useTextRenderer(): static
@@ -830,9 +479,6 @@ class Context implements LoggerAwareInterface
         return $this;
     }
 
-    /**
-     * Get dump renderer
-     */
     public function getRenderer(): Renderer
     {
         if (!$this->dumpRenderer) {
@@ -846,14 +492,14 @@ class Context implements LoggerAwareInterface
         return $this->dumpRenderer;
     }
 
-    /**
-     * Get active renderer for current context
-     */
     public function getActiveRenderer(): Renderer
     {
         $renderer = $this->getRenderer();
 
-        if ($renderer instanceof HtmlRenderer && headers_sent()) {
+        if (
+            $renderer instanceof HtmlRenderer &&
+            headers_sent()
+        ) {
             foreach (headers_list() as $header) {
                 if (false !== stripos($header, 'content-type: text/plain')) {
                     $renderer = new TextRenderer($this);
@@ -867,8 +513,6 @@ class Context implements LoggerAwareInterface
 
 
     /**
-     * Set transport
-     *
      * @return $this
      */
     public function setTransport(
@@ -878,9 +522,6 @@ class Context implements LoggerAwareInterface
         return $this;
     }
 
-    /**
-     * Get transport
-     */
     public function getTransport(): Transport
     {
         if (!$this->transport) {

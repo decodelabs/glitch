@@ -1,4 +1,4 @@
-span.signature.source {
+.signature.source {
     span.name {
         &.function {
             font-weight: bold;
@@ -6,17 +6,18 @@ span.signature.source {
             &.closure {
                 font-style: italic;
 
-                &:before, &:after {
+                &:before,
+                &:after {
                     color: var(--grammar);
                     opacity: 0.9;
                 }
 
                 &:before {
-                    content: '{';
+                    content: "{";
                 }
 
                 &:after {
-                    content: '}';
+                    content: "}";
                 }
             }
         }
@@ -27,11 +28,11 @@ span.signature.source {
         }
     }
 
-    span.ar {
+    span.array {
         color: var(--number);
 
         .g:first-child:after {
-            content: '…';
+            content: "…";
             color: var(--grammar);
             opacity: 0.7;
         }

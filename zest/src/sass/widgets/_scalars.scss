@@ -15,6 +15,10 @@
     color: var(--number);
 }
 
+.int.length {
+    color: var(--length);
+}
+
 .resource {
     color: var(--resource);
 }
@@ -27,8 +31,9 @@
     opacity: 0.5;
 }
 
-.string {
-    > .line {
+.string,
+.identifier {
+    .line {
         color: var(--string);
         white-space: pre;
     }
@@ -42,24 +47,62 @@
     &:hover > .length {
         display: inline;
     }
+}
 
-    &.identifier {
-        color: var(--identifier);
+.identifier {
+    color: var(--identifier);
 
-        &:before,
-        &:after {
-            display: none;
+    &:before,
+    &:after {
+        display: none;
+    }
+
+    &.definition {
+        color: var(--definition);
+    }
+
+    &.object-id,
+    &.object-ref {
+        color: var(--id);
+        opacity: 0.7;
+        font-size: 0.8em;
+
+        &:before {
+            content: "#";
+            display: inline-block;
+            color: var(--grammar);
+            opacity: 0.5;
+            margin-right: 0.2em;
         }
     }
 
-    &.def {
-        > .line {
-            color: var(--definition);
+    &.object-ref {
+        color: var(--id-target);
+
+        &:before {
+            content: "&";
         }
     }
 
+    &.keyword {
+        color: var(--keyword);
+    }
+
+    &.item-name {
+        color: var(--type-name);
+    }
+
+    &.sensitive {
+        color: var(--keyword-sensitive);
+        font-style: italic;
+    }
+}
+
+.string {
     &.s {
-        > .line {
+        .line {
+            white-space: pre-wrap;
+
             &:before,
             &:after {
                 content: '"';
@@ -68,8 +111,8 @@
             }
         }
 
-        &.def {
-            > .line {
+        &.definition {
+            .line {
                 &:before,
                 &:after {
                     display: none;
@@ -78,7 +121,8 @@
         }
     }
 
-    &.m {
+    &.m,
+    &.b {
         padding-right: 1rem;
         display: inline;
         white-space: pre-line;
@@ -87,10 +131,26 @@
         &:after {
             content: '"""';
             color: var(--grammar);
-            opacity: 0.6;
+            opacity: 0.4;
         }
 
-        > .line {
+        &:before,
+        &:after,
+        > .length {
+            font-size: 0.8em;
+            line-height: 0.7;
+        }
+
+        &:before {
+            position: relative;
+            top: -0.15em;
+        }
+
+        > .length {
+            opacity: 0.75;
+        }
+
+        .line {
             margin-left: -0.1rem;
             padding-left: 0.3rem;
             border-left: 1px solid rgba($gray, 0.06);
@@ -110,43 +170,62 @@
             }
         }
 
-        &.def {
+        &.definition {
             &:before,
             &:after {
                 content: "$$$";
             }
 
-            > .line {
+            .line {
                 padding-left: 0.1rem;
             }
         }
 
         &.large {
-            &.show {
-                cursor: n-resize;
+            display: block;
+
+            input {
+                display: none;
             }
 
-            &:not(.show) {
+            .lines {
+                transition: all 0.35s ease-in-out;
+                overflow: clip;
+                position: relative;
+            }
+
+            .line {
+                transition: opacity 0.35s ease-in-out;
+            }
+
+            &:not(:has(input:checked)) {
                 cursor: s-resize;
 
                 &:after {
                     content: '""" show more';
                 }
 
-                > .line {
-                    position: relative;
+                .lines {
+                    max-height: 8em;
+                }
 
-                    &:nth-child(1n + 11) {
-                        display: none;
+                .line {
+                    &:nth-child(n + 4) {
+                        opacity: 0.5;
                     }
+                    &:nth-child(n + 5) {
+                        opacity: 0.25;
+                    }
+                }
+            }
 
-                    &:nth-child(9) {
-                        opacity: 0.6;
-                    }
+            &:has(input:checked) {
+                cursor: n-resize;
 
-                    &:nth-child(10) {
-                        opacity: 0.3;
-                    }
+                .lines {
+                    max-height: 35em;
+                    overflow: auto;
+                    background: #ffffff04;
                 }
             }
         }
@@ -160,6 +239,38 @@
             div.line {
                 font-size: 1.4em;
             }
+        }
+    }
+
+    &.b {
+        &:before,
+        &:after {
+            content: "@@@";
+        }
+
+        .lines {
+            width: max-content;
+            padding-right: 0.5em;
+        }
+
+        .line {
+            color: var(--binary);
+
+            &:after {
+                display: none;
+            }
+        }
+
+        &.large:not(:has(input:checked)) {
+            &:after {
+                content: "@@@ show more";
+            }
+        }
+    }
+
+    &.definition {
+        .line {
+            color: var(--definition);
         }
     }
 
@@ -181,5 +292,14 @@
 
     .g {
         opacity: 0.5;
+    }
+}
+
+.location {
+    .file {
+        color: var(--frame-file);
+    }
+    .line {
+        color: var(--frame-line);
     }
 }

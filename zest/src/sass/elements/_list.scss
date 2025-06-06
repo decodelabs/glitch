@@ -121,6 +121,7 @@ ul.list {
                 color: var(--list-values-icon);
                 position: relative;
                 margin-top: 0.3em;
+                margin-right: 0.75em;
                 font-size: 0.8em;
                 display: inline;
                 font-weight: bold;
@@ -135,6 +136,11 @@ ul.list {
                 }
             }
         }
+    }
+
+    &.flagset-values > li:before {
+        content: "ⓒ";
+        color: var(--constant);
     }
 
     &.inline {

@@ -5,7 +5,7 @@
     --source-tag: #f76673;
     --source-grammar: var(--grammar, #adb5bd);
     --source-keyword: var(--keyword, #47d368);
-    --source-cast: #3ce0af;
+    --source-cast: #8ed1bd;
     --source-operator: #adb5bd;
     --source-operator-special: #3ce0af;
     --source-string: var(--string, #ff828c);
@@ -16,8 +16,8 @@
     --source-html: #e83e8c;
     --source-name: #dee2e6;
     --source-member: #adb5bd;
-    --source-class: #8fe4f1;
-    --source-namespace: #4cd3e9;
+    --source-class: #5ce9d9;
+    --source-namespace: #67cbcd;
     --source-function: #c3dffd;
     --source-constant: var(--constant, #c7b5e7);
     --source-scalar: var(--scalar, #f07eb2);
@@ -108,7 +108,9 @@
     .class {
         color: var(--source-class);
     }
-    .namespace {
+    .namespace,
+    .name-qualified,
+    .name-fully-qualified {
         color: var(--source-namespace);
     }
     .function {

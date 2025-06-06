@@ -17,6 +17,37 @@ div.stack-list > ul.stack {
     padding: 0.5em 0;
 }
 
+.stack-frame {
+    border: 3px solid transparent;
+    transition: all 0.5s;
+    display: block;
+
+    input {
+        display: none;
+    }
+
+    samp.source {
+        max-height: 0;
+        transition: max-height 0.35s;
+    }
+
+    &:has(input:checked) {
+        box-shadow: 2px 0.5rem 0.5rem rgba(black, 0.2);
+        border-color: rgba(#222, 0.85);
+
+        margin-bottom: 1em;
+        margin-top: 1em;
+
+        samp.dump.trace {
+            cursor: n-resize;
+        }
+
+        samp.source {
+            max-height: 25rem;
+        }
+    }
+}
+
 ul.stack {
     list-style: none;
     padding: 1rem;
@@ -28,33 +59,7 @@ ul.stack {
         border-radius: 2px;
     }
 
-    div.stack-frame {
-        border: 3px solid transparent;
-        transition: all 0.5s;
-
-        samp.source {
-            height: 0;
-            transition: height 0.35s;
-        }
-
-        &.w-source {
-            box-shadow: 2px 0.5rem 0.5rem rgba(black, 0.2);
-            border-color: rgba(#222, 0.85);
-
-            margin-bottom: 1em;
-            margin-top: 1em;
-
-            samp.dump.trace {
-                cursor: n-resize;
-            }
-
-            samp.source {
-                height: auto;
-            }
-        }
-    }
-
-    &:first-child div.stack-frame.w-source {
+    &:first-child .stack-frame:has(input:checked) {
         margin-top: 0;
     }
 
@@ -97,20 +102,11 @@ ul.stack {
                 }
             }
             &.file {
-                color: var(--frame-file);
-
-                + .line:before {
-                    content: " : ";
-                    color: var(--grammar);
-                    opacity: 0.5;
-                }
-
                 &.internal {
                     font-style: italic;
                 }
             }
             &.line {
-                color: var(--frame-line);
                 padding-right: 1rem;
             }
         }
@@ -130,26 +126,26 @@ ul.stack {
     }
 }
 
-div.stack-list ul.stack div.stack-frame samp.dump.trace {
+div.stack-list ul.stack .stack-frame samp.dump.trace {
     padding-top: 0;
     padding-bottom: 0;
     cursor: default;
 }
 
 html.dump {
-    ul.stack div.stack-frame.w-source {
+    ul.stack .stack-frame:has(input:checked) {
         border-color: rgba($blue, 0.85);
     }
 }
 
 html.exception {
-    ul.stack div.stack-frame.w-source {
+    ul.stack .stack-frame:has(input:checked) {
         border-color: rgba($red, 0.85);
     }
 }
 
 html.incomplete {
-    ul.stack div.stack-frame.w-source {
+    ul.stack .stack-frame:has(input:checked) {
         border-color: rgba($orange, 0.85);
     }
 }

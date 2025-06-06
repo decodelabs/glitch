@@ -1,0 +1,131 @@
+@use "@/sass/modules/colors" as *;
+
+div.container {
+    --animation-time: 0.15s;
+    interpolate-size: allow-keywords;
+    display: inline-flex;
+    gap: 0.5em;
+
+    @supports (interpolate-size: allow-keywords) {
+        transition: display 0s;
+        transition-delay: var(--animation-time);
+        transition-behavior: allow-discrete;
+    }
+
+    > header {
+        display: inline-flex;
+        gap: 0.5em;
+        cursor: pointer;
+        align-items: center;
+
+        .name {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .buttons {
+            margin-left: 0.25em;
+            display: flex;
+            gap: 0.5em;
+            align-items: center;
+        }
+
+        > input {
+            display: none;
+        }
+    }
+
+    &.target,
+    &:target {
+        > header .name {
+            background: var(--keyword-target);
+            color: white;
+            padding: 0 0.5em;
+            border-radius: 0.25em;
+        }
+    }
+
+    > .body {
+        padding-left: 2em;
+        border-left: 1px solid rgba($gray, 0.06);
+        margin-right: -0.5em;
+        overflow: clip;
+
+        @supports (interpolate-size: allow-keywords) {
+            transition:
+                max-height var(--animation-time) ease-in-out,
+                max-width 0s,
+                position 0s;
+            transition-delay: 0s, var(--animation-time), var(--animation-time);
+            transition-behavior: allow-discrete;
+        }
+    }
+
+    &:not(:has(> header > input:checked)) .body {
+        //padding: 0;
+        //border: none;
+        max-height: 0;
+        max-width: 0;
+        position: absolute;
+    }
+
+    &:has(> header > input:checked) {
+        display: inline;
+        transition-delay: 0s;
+
+        > .body {
+            transition-delay: 0s, 0s, 0s;
+            max-height: max-content;
+        }
+    }
+
+    .section {
+        display: none;
+
+        &:has(> input:checked) {
+            transition-delay: 0s;
+            display: block;
+        }
+
+        > input {
+            display: none;
+        }
+
+        &.definition,
+        &.text {
+            &:before {
+                content: "ⓓ";
+                color: var(--list-definition-icon);
+                position: relative;
+                margin-right: 0.65em;
+                font-size: 0.8em;
+                font-weight: bold;
+            }
+
+            > .string.m {
+                > .line {
+                    border-left: 0.9rem solid rgba($red-bright, 0.06);
+                    padding-left: 0.5em;
+                }
+            }
+        }
+
+        &.text {
+            &:before {
+                content: "ⓣ";
+                color: var(--list-text-icon);
+            }
+
+            > .location {
+                display: block;
+                font-size: 0.8em;
+            }
+        }
+
+        &.stack {
+            ul.stack {
+                padding: 0.5em 0;
+            }
+        }
+    }
+}

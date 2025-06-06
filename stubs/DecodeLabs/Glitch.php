@@ -10,9 +10,9 @@ use DecodeLabs\Veneer\ProxyTrait as ProxyTrait;
 use DecodeLabs\Glitch\Context as Inst;
 use Psr\Log\LoggerInterface as Ref0;
 use Closure as Ref1;
-use DecodeLabs\Glitch\Stack\Trace as Ref2;
+use DecodeLabs\Remnant\Trace as Ref2;
 use Throwable as Ref3;
-use DecodeLabs\Glitch\Dumper\Dump as Ref4;
+use DecodeLabs\Glitch\Dump as Ref4;
 use DecodeLabs\Glitch\Renderer as Ref5;
 use DecodeLabs\Glitch\Transport as Ref6;
 
@@ -27,21 +27,6 @@ class Glitch implements Proxy
 
     public static function getVersion(): string {
         return static::$_veneerInstance->getVersion();
-    }
-    public static function setRunMode(string $mode): Inst {
-        return static::$_veneerInstance->setRunMode(...func_get_args());
-    }
-    public static function getRunMode(): string {
-        return static::$_veneerInstance->getRunMode();
-    }
-    public static function isDevelopment(): bool {
-        return static::$_veneerInstance->isDevelopment();
-    }
-    public static function isTesting(): bool {
-        return static::$_veneerInstance->isTesting();
-    }
-    public static function isProduction(): bool {
-        return static::$_veneerInstance->isProduction();
     }
     public static function setLogger(Ref0 $logger): void {}
     public static function getLogger(): ?Ref0 {
@@ -69,7 +54,6 @@ class Glitch implements Proxy
     public static function getStartTime(): float {
         return static::$_veneerInstance->getStartTime();
     }
-    public static function incomplete(mixed $data = NULL, int $rewind = 0): void {}
     public static function registerAsErrorHandler(): Inst {
         return static::$_veneerInstance->registerAsErrorHandler();
     }
@@ -91,18 +75,6 @@ class Glitch implements Proxy
     public static function getErrorPageRenderer(): ?Ref1 {
         return static::$_veneerInstance->getErrorPageRenderer();
     }
-    public static function registerPathAlias(string $name, string $path): Inst {
-        return static::$_veneerInstance->registerPathAlias(...func_get_args());
-    }
-    public static function registerPathAliases(array $aliases): Inst {
-        return static::$_veneerInstance->registerPathAliases(...func_get_args());
-    }
-    public static function getPathAliases(): array {
-        return static::$_veneerInstance->getPathAliases();
-    }
-    public static function normalizePath(?string $path): ?string {
-        return static::$_veneerInstance->normalizePath(...func_get_args());
-    }
     public static function registerStatGatherer(string $name, callable $gatherer): Inst {
         return static::$_veneerInstance->registerStatGatherer(...func_get_args());
     }
@@ -110,21 +82,6 @@ class Glitch implements Proxy
         return static::$_veneerInstance->getStatGatherers();
     }
     public static function gatherDefaultStats(Ref4 $dump, Inst $context): void {}
-    public static function formatFilesize(int $bytes): string {
-        return static::$_veneerInstance->formatFilesize(...func_get_args());
-    }
-    public static function registerObjectInspector(string $class, callable $inspector): Inst {
-        return static::$_veneerInstance->registerObjectInspector(...func_get_args());
-    }
-    public static function getObjectInspectors(): array {
-        return static::$_veneerInstance->getObjectInspectors();
-    }
-    public static function registerResourceInspector(string $type, callable $inspector): Inst {
-        return static::$_veneerInstance->registerResourceInspector(...func_get_args());
-    }
-    public static function getResourceInspectors(): array {
-        return static::$_veneerInstance->getResourceInspectors();
-    }
     public static function getVendorPath(): string {
         return static::$_veneerInstance->getVendorPath();
     }

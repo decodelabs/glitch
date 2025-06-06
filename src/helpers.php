@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace {
     use DecodeLabs\Glitch;
     use DecodeLabs\Glitch\Context;
-    use DecodeLabs\Glitch\Stack\Frame;
+    use DecodeLabs\Remnant\Frame;
     use DecodeLabs\Veneer;
 
     use Symfony\Component\VarDumper\VarDumper;
@@ -26,9 +26,6 @@ namespace {
     );
 
     if (!function_exists('dd')) {
-        /**
-         * Super quick global dump & die
-         */
         function dd(
             mixed $var,
             mixed ...$vars
@@ -39,8 +36,6 @@ namespace {
 
     if (!function_exists('dd2')) {
         /**
-         * Last gasp dumper when testing Glitch
-         *
          * @param mixed $var
          * @param mixed ...$vars
          */
@@ -58,8 +53,6 @@ namespace {
 
     if (!function_exists('dump')) {
         /**
-         * Quick dump
-         *
          * @param mixed $var
          * @param mixed ...$vars
          */

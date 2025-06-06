@@ -7,14 +7,12 @@
 
 declare(strict_types=1);
 
-namespace DecodeLabs\Glitch\Dumper;
+namespace DecodeLabs\Glitch;
 
 use ArrayIterator;
 use Countable;
-
-use DecodeLabs\Glitch\Stack\Trace;
 use DecodeLabs\Glitch\Stat;
-
+use DecodeLabs\Remnant\Trace;
 use Iterator;
 use IteratorAggregate;
 
@@ -37,9 +35,6 @@ class Dump implements
 
     protected Trace $trace;
 
-    /**
-     * Construct with stack trace of invoking call
-     */
     public function __construct(
         Trace $trace
     ) {
@@ -48,8 +43,6 @@ class Dump implements
 
 
     /**
-     * Set named statistic
-     *
      * @return $this
      */
     public function addStats(
@@ -62,9 +55,6 @@ class Dump implements
         return $this;
     }
 
-    /**
-     * Get named statistic
-     */
     public function getStat(
         string $key
     ): ?Stat {
@@ -72,8 +62,6 @@ class Dump implements
     }
 
     /**
-     * Remove named statistic
-     *
      * @return $this
      */
     public function removeStat(
@@ -84,8 +72,6 @@ class Dump implements
     }
 
     /**
-     * Get all named statistics
-     *
      * @return array<string, Stat>
      */
     public function getStats(): array
@@ -94,8 +80,6 @@ class Dump implements
     }
 
     /**
-     * Clear all named statistics
-     *
      * @return $this
      */
     public function clearStats(): static
@@ -105,9 +89,6 @@ class Dump implements
     }
 
 
-    /**
-     * Get active trace
-     */
     public function getTrace(): Trace
     {
         return $this->trace;
@@ -115,8 +96,6 @@ class Dump implements
 
 
     /**
-     * Add an entity to the list
-     *
      * @return $this
      */
     public function addEntity(
@@ -127,8 +106,6 @@ class Dump implements
     }
 
     /**
-     * Get list of entities
-     *
      * @return array<mixed>
      */
     public function getEntities(): array
@@ -136,9 +113,6 @@ class Dump implements
         return $this->entities;
     }
 
-    /**
-     * Count entities
-     */
     public function count(): int
     {
         return count($this->entities);
@@ -146,8 +120,6 @@ class Dump implements
 
 
     /**
-     * Loop all entities
-     *
      * @return Iterator<mixed>
      */
     public function getIterator(): Iterator

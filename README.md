@@ -15,7 +15,7 @@ The project aims to provide deep data inspection tools and an Exception handling
 
 ---
 
-![v0.15.0 interface](docs/v0.15.0.png)
+![v0.19 interface](docs/v0.19.png)
 
 
 ## Installation
@@ -27,13 +27,12 @@ composer require decodelabs/glitch
 
 ## Usage
 
-Glitch uses [Veneer](https://github.com/decodelabs/veneer) with its frontage registered at <code>DecodeLabs\\Glitch</code>.
+Glitch uses [Veneer](https://github.com/decodelabs/veneer) with its frontage registered at `DecodeLabs\\Glitch`.
 You can access all of the primary functionality through this frontage:
 
 ```php
 use DecodeLabs\Glitch;
 
-Glitch::getRunMode();
 Glitch::dump('hello');
 ```
 
@@ -51,40 +50,13 @@ use DecodeLabs\Glitch;
 Glitch::registerAsErrorHandler();
 ```
 
-
-Register base path aliases for easier reading of file names in dumps:
-
-```php
-use DecodeLabs\Glitch;
-
-Glitch::registerPathAlias('app', '/path/to/my/app');
-
-/*
-/path/to/my/app/models/MyModel.php
-
-becomes
-
-app://models/MyModel.php
-*/
-```
-
-Pass the <code>microtime()</code> of initial app launch for timing purposes:
+Pass the `microtime()` of initial app launch for timing purposes:
 
 ```php
 use DecodeLabs\Glitch;
 
 Glitch::setStartTime(microtime(true));
 ```
-
-
-Set run mode (<code>development | testing | production</code>) so Glitch can format output correctly:
-
-```php
-use DecodeLabs\Glitch;
-
-Glitch::setRunMode('development');
-```
-
 
 ## Dumps
 Dump anything and everything easily, using simple global functions.
@@ -118,9 +90,9 @@ function myFunction() {
 #### Renderers
 The resulting dump UI (when using the HTML renderer, the default option) is injected into an iframe at runtime so can be rendered into any HTML page without breaking anything. If the page is otherwise empty, the iframe will expand to fill the viewport if possible.
 
-The dump output is rendered by an instance of <code>DecodeLabs\Glitch\Renderer</code> which can be overridden on the default <code>Context</code> at startup. The <code>Html</code> renderer is loaded under http sapi, the <code>Cli</code> renderer is used when under the CLI sapi.
+The dump output is rendered by an instance of `DecodeLabs\Glitch\Renderer` which can be overridden on the default `Context` at startup. The `Html` renderer is loaded under http sapi, the `Cli` renderer is used when under the CLI sapi.
 
-Custom renderers may convert <code>Entities</code> to other output formats depending on where they should be sent, such as Xml or Json for example.
+Custom renderers may convert `Entities` to other output formats depending on where they should be sent, such as Xml or Json for example. The Renderer system uses [Nuance](/decodelabs/nuance) to inspect and render the data, please see that project for more information on how to create custom renderers.
 
 #### Custom colours
 The HTML renderer uses css variables to style individual element colours and can be overridden with custom values.
@@ -133,7 +105,7 @@ Create a custom css file with variable overrides:
 }
 ```
 
-See [colours.scss](./src/Glitch/Renderer/assets/scss/_colours.scss) for all of the current colour override options.
+See [colours.scss](./zest/src/sass/global/_colors.scss) for all of the current colour override options.
 
 Then load the file into the HTML renderer:
 
@@ -144,44 +116,15 @@ Glitch::getRenderer()->setCustomCssFile('path/to/my/file.css');
 ```
 
 #### Transports
-Once rendered, the dump information is delivered via an instance of <code>DecodeLabs\Glitch\Transport</code>, also overridable on the default <code>Context</code>. It is the responsibility of the <code>Transport</code> to deliver the rendered dump.
+Once rendered, the dump information is delivered via an instance of `DecodeLabs\Glitch\Transport`, also overridable on the default `Context`. It is the responsibility of the `Transport` to deliver the rendered dump.
 
-By default, the render is just echoed out to <code>STDOUT</code>, however custom transports may send information to other interfaces, browser extensions, logging systems, etc.
+By default, the render is just echoed out to `STDOUT`, however custom transports may send information to other interfaces, browser extensions, logging systems, etc.
 
 
 ### Custom dumps
-You can customise how your own class instances are dumped by implementing <code>DecodeLabs\Glitch\Dumpable</code> and / or providing a <code>glitchDump</code> method.
-The method should either yield or return a list of key / value pairs that populate the requisite fields of the dumper entity.
+You can customise how your own class instances are dumped by implementing `DecodeLabs\Nuance\Dumpable` interface.
 
-```php
-use DecodeLabs\Glitch;
-
-use DecodeLabs\Glitch\Dumpable;
-
-class MyClass implements Dumpable {
-
-    public $myValue = 'Some text';
-
-    private $otherObject;
-
-    protected $arrayValues = [
-        'row1' => [1, 2, 3]
-    ];
-
-    public function glitchDump(): iterable {
-        yield 'text' => $this->myValue;
-
-        // !private, *protected
-        yield 'property:!otherObject' => $this->otherObject;
-
-        yield 'values' => $this->arrayValues;
-    }
-}
-```
-
-The <code>Dumpable</code> interface is **NOT** _required_ - Glitch will check for the existence of the method regardless, which is useful if you do not want to rely on a dependency on the Glitch library just to provide better dump handling.
-
-However, the <code>Dumpable</code> interface is provided by [glitch-support](https://github.com/decodelabs/glitch-support) package which contains only the bear essentials for libraries to provide support to Glitch without including the entire library as a dependency.
+Please see the [Nuance documentation](https://github.com/decodelabs/nuance?tab=readme-ov-file#custom-dumps) for more information on how to do this.
 
 
 ## Licensing
