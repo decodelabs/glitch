@@ -22,9 +22,11 @@
             }
         }
 
-        &.class.param {
-            color: var(--source-class);
-            font-style: italic;
+        &.class {
+            &.param {
+                color: var(--source-class);
+                font-style: italic;
+            }
         }
     }
 
@@ -40,5 +42,13 @@
 
     span.string .line {
         padding-right: 0;
+    }
+
+    &.sensitive {
+        .class,
+        .namespace {
+            color: var(--keyword-sensitive);
+            font-style: italic;
+        }
     }
 }
