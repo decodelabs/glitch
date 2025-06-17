@@ -92,7 +92,7 @@ The resulting dump UI (when using the HTML renderer, the default option) is inje
 
 The dump output is rendered by an instance of `DecodeLabs\Glitch\Renderer` which can be overridden on the default `Context` at startup. The `Html` renderer is loaded under http sapi, the `Cli` renderer is used when under the CLI sapi.
 
-Custom renderers may convert `Entities` to other output formats depending on where they should be sent, such as Xml or Json for example. The Renderer system uses [Nuance](/decodelabs/nuance) to inspect and render the data, please see that project for more information on how to create custom renderers.
+Custom renderers may convert `Entities` to other output formats depending on where they should be sent, such as Xml or Json for example. The Renderer system uses [Nuance](https://github.com/decodelabs/nuance) to inspect and render the data, please see that project for more information on how to create custom renderers.
 
 #### Custom colours
 The HTML renderer uses css variables to style individual element colours and can be overridden with custom values.
