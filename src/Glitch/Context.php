@@ -13,7 +13,6 @@ use Closure;
 use Composer\Autoload\ClassLoader;
 use DecodeLabs\Exceptional;
 use DecodeLabs\Exceptional\Exception as ExceptionalException;
-use DecodeLabs\Glitch\Dump;
 use DecodeLabs\Glitch\Renderer\Cli as CliRenderer;
 use DecodeLabs\Glitch\Renderer\Html as HtmlRenderer;
 use DecodeLabs\Glitch\Renderer\Text as TextRenderer;

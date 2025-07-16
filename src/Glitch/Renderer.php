@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Glitch;
 
-use DecodeLabs\Glitch\Dump;
 use DecodeLabs\Nuance\Renderer as NuanceRenderer;
 
 use Throwable;

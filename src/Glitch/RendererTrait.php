@@ -11,14 +11,9 @@ namespace DecodeLabs\Glitch;
 
 use DecodeLabs\Coercion;
 use DecodeLabs\Exceptional\Exception as ExceptionalException;
-use DecodeLabs\Glitch\Context;
-use DecodeLabs\Glitch\Dump;
-use DecodeLabs\Glitch\Packet;
-use DecodeLabs\Glitch\Stat;
 use DecodeLabs\Monarch;
 use DecodeLabs\Nuance\Entity as NuanceEntity;
 use DecodeLabs\Remnant\Trace;
-use Exception;
 use Throwable;
 
 /**

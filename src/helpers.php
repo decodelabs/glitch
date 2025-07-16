@@ -69,7 +69,7 @@ namespace {
              * Symfony blindly calls dump for each var, which doesn't work for us
              * Instead we grab all args from the stack trace and then skip the following calls
              *
-             * @var int $skip
+             * @var int
              */
             static $skip;
 

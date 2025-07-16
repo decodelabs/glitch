@@ -11,7 +11,6 @@ namespace DecodeLabs\Glitch;
 
 use ArrayIterator;
 use Countable;
-use DecodeLabs\Glitch\Stat;
 use DecodeLabs\Remnant\Trace;
 use Iterator;
 use IteratorAggregate;

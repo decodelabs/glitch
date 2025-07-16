@@ -16,8 +16,8 @@ use DecodeLabs\Glitch;
 use DecodeLabs\Glitch\Dump;
 use DecodeLabs\Glitch\Packet;
 use DecodeLabs\Glitch\Renderer;
-use DecodeLabs\Glitch\RendererTrait;
 use DecodeLabs\Glitch\Renderer\Html\ZestManifest;
+use DecodeLabs\Glitch\RendererTrait;
 use DecodeLabs\Glitch\Stat;
 use DecodeLabs\Nuance\Entity\NativeObject\Throwable as ThrowableEntity;
 use DecodeLabs\Nuance\Entity\NativeString;
@@ -298,7 +298,7 @@ class Html extends NuanceHtmlRenderer implements Renderer
         Throwable $exception
     ): string {
         return
-            '<section class="production message">There was a problem serving your request - please try again later</section>'."\n".
+            '<section class="production message">There was a problem serving your request - please try again later</section>' . "\n" .
             '<section class="production exception">' . (string)$exception . '</section>';
     }
 
@@ -377,7 +377,7 @@ class Html extends NuanceHtmlRenderer implements Renderer
         foreach ($array as $key => $value) {
             $array[$key] = $entity = $this->inspector->inspect($value);
 
-            if($entity instanceof StructureEntity) {
+            if ($entity instanceof StructureEntity) {
                 $entity->open = false;
             }
         }

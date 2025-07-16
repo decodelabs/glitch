@@ -17,8 +17,8 @@ use DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Glitch\RendererTrait;
 use DecodeLabs\Glitch\Stat;
 use DecodeLabs\Nuance\Entity\NativeString;
-use DecodeLabs\Nuance\Structure\ClassList;
 use DecodeLabs\Nuance\Renderer\Cli as NuanceCliRenderer;
+use DecodeLabs\Nuance\Structure\ClassList;
 use Throwable;
 
 class Cli extends NuanceCliRenderer implements Renderer
