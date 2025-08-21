@@ -15,6 +15,11 @@ use DecodeLabs\Glitch\Transport;
 
 class Http implements Transport
 {
+    public function __construct(
+        protected Glitch $glitch
+    ) {
+    }
+
     public function sendDump(
         Packet $packet,
         bool $final
@@ -42,7 +47,7 @@ class Http implements Transport
             header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS, HEAD');
             header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-HTTP-Method-Override, Accept, Accept-Encoding, Accept-Language, Connection, Host, Origin, Referer, User-Agent');
 
-            if ($headerBufferSender = Glitch::getHeaderBufferSender()) {
+            if ($headerBufferSender = $this->glitch->getHeaderBufferSender()) {
                 $headerBufferSender();
             }
         }

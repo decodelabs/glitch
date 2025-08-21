@@ -27,13 +27,13 @@ composer require decodelabs/glitch
 
 ## Usage
 
-Glitch uses [Veneer](https://github.com/decodelabs/veneer) with its frontage registered at `DecodeLabs\\Glitch`.
-You can access all of the primary functionality through this frontage:
 
 ```php
 use DecodeLabs\Glitch;
+use DecodeLabs\Monarch;
 
-Glitch::dump('hello');
+$glitch = Monarch::getService(Glitch::class);
+$glitch->dump('hello');
 ```
 
 ### Setup
@@ -45,17 +45,13 @@ There are however some optional steps you can take to customise operation.
 Register as the default error handler:
 
 ```php
-use DecodeLabs\Glitch;
-
-Glitch::registerAsErrorHandler();
+$glitch->registerAsErrorHandler();
 ```
 
 Pass the `microtime()` of initial app launch for timing purposes:
 
 ```php
-use DecodeLabs\Glitch;
-
-Glitch::setStartTime(microtime(true));
+$glitch->setStartTime(microtime(true));
 ```
 
 ## Dumps
@@ -63,8 +59,6 @@ Dump anything and everything easily, using simple global functions.
 The functions mirror those used in Symfony/VarDumper, maintaining compatibility by using Symfony's VarDumper interface if it is already loaded.
 
 ```php
-use DecodeLabs\Glitch;
-
 class MyThing {}
 $myObject = new MyThing();
 
@@ -75,22 +69,10 @@ dump($myObject);
 dd($myObject);
 ```
 
-You can also mark functions as incomplete whilst in development:
-```php
-use DecodeLabs\Glitch;
-
-function myFunction() {
-    // This will throw a Glitch exception
-    Glitch::incomplete([
-        'info' => 'some test info'
-    ]);
-}
-```
-
 #### Renderers
 The resulting dump UI (when using the HTML renderer, the default option) is injected into an iframe at runtime so can be rendered into any HTML page without breaking anything. If the page is otherwise empty, the iframe will expand to fill the viewport if possible.
 
-The dump output is rendered by an instance of `DecodeLabs\Glitch\Renderer` which can be overridden on the default `Context` at startup. The `Html` renderer is loaded under http sapi, the `Cli` renderer is used when under the CLI sapi.
+The dump output is rendered by an instance of `DecodeLabs\Glitch\Renderer` which can be overridden on the default Service at startup. The `Html` renderer is loaded under http sapi, the `Cli` renderer is used when under the CLI sapi.
 
 Custom renderers may convert `Entities` to other output formats depending on where they should be sent, such as Xml or Json for example. The Renderer system uses [Nuance](https://github.com/decodelabs/nuance) to inspect and render the data, please see that project for more information on how to create custom renderers.
 
@@ -110,13 +92,11 @@ See [colours.scss](./zest/src/sass/global/_colors.scss) for all of the current c
 Then load the file into the HTML renderer:
 
 ```php
-use DecodeLabs\Glitch;
-
-Glitch::getRenderer()->setCustomCssFile('path/to/my/file.css');
+$glitch->getRenderer()->setCustomCssFile('path/to/my/file.css');
 ```
 
 #### Transports
-Once rendered, the dump information is delivered via an instance of `DecodeLabs\Glitch\Transport`, also overridable on the default `Context`. It is the responsibility of the `Transport` to deliver the rendered dump.
+Once rendered, the dump information is delivered via an instance of `DecodeLabs\Glitch\Transport`, also overridable on the default Service. It is the responsibility of the `Transport` to deliver the rendered dump.
 
 By default, the render is just echoed out to `STDOUT`, however custom transports may send information to other interfaces, browser extensions, logging systems, etc.
 

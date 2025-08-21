@@ -1,3 +1,4 @@
+/config
 /vendor
 composer.phar
 composer.lock

@@ -7,30 +7,19 @@
 
 declare(strict_types=1);
 
-/**
- * global helpers
- */
-
 namespace {
     use DecodeLabs\Glitch;
-    use DecodeLabs\Glitch\Context;
+    use DecodeLabs\Monarch;
     use DecodeLabs\Remnant\Frame;
-    use DecodeLabs\Veneer;
-
     use Symfony\Component\VarDumper\VarDumper;
-
-    // Register the Veneer proxy
-    Veneer\Manager::getGlobalManager()->register(
-        Context::class,
-        Glitch::class
-    );
 
     if (!function_exists('dd')) {
         function dd(
             mixed $var,
             mixed ...$vars
         ): void {
-            Glitch::dumpValues(func_get_args(), 1, true);
+            $glitch = Monarch::getService(Glitch::class);
+            $glitch->dumpValues(func_get_args(), 1, true);
         }
     }
 
@@ -60,7 +49,8 @@ namespace {
             mixed $var,
             mixed ...$vars
         ): void {
-            Glitch::dumpValues(func_get_args(), 1, false);
+            $glitch = Monarch::getService(Glitch::class);
+            $glitch->dumpValues(func_get_args(), 1, false);
         }
     } elseif (class_exists(VarDumper::class)) {
         VarDumper::setHandler(function ($var) {
@@ -91,7 +81,8 @@ namespace {
                     $args = func_get_args();
                 }
 
-                Glitch::dumpValues($args, 4, $func == 'dd');
+                $glitch = Monarch::getService(Glitch::class);
+                $glitch->dumpValues($args, 4, $func == 'dd');
             } else {
                 $skip--;
                 return;

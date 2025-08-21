@@ -11,6 +11,7 @@ namespace DecodeLabs\Glitch;
 
 use DecodeLabs\Coercion;
 use DecodeLabs\Exceptional\Exception as ExceptionalException;
+use DecodeLabs\Glitch;
 use DecodeLabs\Monarch;
 use DecodeLabs\Nuance\Entity as NuanceEntity;
 use DecodeLabs\Remnant\Trace;
@@ -21,13 +22,13 @@ use Throwable;
  */
 trait RendererTrait
 {
-    protected Context $context;
+    protected Glitch $glitch;
     protected bool $productionOverride = false;
 
     public function __construct(
-        Context $context
+        Glitch $glitch
     ) {
-        $this->context = $context;
+        $this->glitch = $glitch;
 
         parent::__construct();
     }

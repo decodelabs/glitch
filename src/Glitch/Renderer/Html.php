@@ -431,7 +431,7 @@ class Html extends NuanceHtmlRenderer implements Renderer
 
         if (
             $final &&
-            !$this->context->hasDumpedInBuffer()
+            !$this->glitch->hasDumpedInBuffer()
         ) {
             $output = $html;
         } else {

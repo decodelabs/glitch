@@ -7,18 +7,22 @@
 
 declare(strict_types=1);
 
-namespace DecodeLabs\Glitch;
+namespace DecodeLabs;
 
 use Closure;
 use Composer\Autoload\ClassLoader;
-use DecodeLabs\Exceptional;
 use DecodeLabs\Exceptional\Exception as ExceptionalException;
+use DecodeLabs\Glitch\Dump;
+use DecodeLabs\Glitch\Renderer;
 use DecodeLabs\Glitch\Renderer\Cli as CliRenderer;
 use DecodeLabs\Glitch\Renderer\Html as HtmlRenderer;
 use DecodeLabs\Glitch\Renderer\Text as TextRenderer;
+use DecodeLabs\Glitch\Stat;
+use DecodeLabs\Glitch\Transport;
 use DecodeLabs\Glitch\Transport\Http as HttpTransport;
 use DecodeLabs\Glitch\Transport\Stdout as StdoutTransport;
-use DecodeLabs\Monarch;
+use DecodeLabs\Kingdom\PureService;
+use DecodeLabs\Kingdom\PureServiceTrait;
 use DecodeLabs\Monarch\ExceptionLogger;
 use DecodeLabs\Nuance\Reflection as NuanceReflection;
 use DecodeLabs\Remnant\Frame;
@@ -29,11 +33,14 @@ use Psr\Log\LoggerInterface;
 use ReflectionClass;
 use Throwable;
 
-class Context implements
+class Glitch implements
     LoggerAwareInterface,
-    ExceptionLogger
+    ExceptionLogger,
+    PureService
 {
-    protected float $startTime;
+    use PureServiceTrait;
+
+    public float $startTime;
 
     /**
      * @var array<string,Closure>
@@ -54,13 +61,13 @@ class Context implements
     {
         $this->startTime = microtime(true);
 
-        $this->registerStatGatherer('default', [$this, 'gatherDefaultStats']);
+        $this->registerStatGatherer('default', $this->gatherDefaultStats(...));
         Monarch::registerExceptionLogger($this);
     }
 
-    public function getVersion(): string
+    public static function getVersion(): string
     {
-        $file = dirname(__DIR__, 2) . '/CHANGELOG.md';
+        $file = dirname(__DIR__) . '/CHANGELOG.md';
         $contents = file_get_contents($file, length: 1000);
 
         preg_match('/### \[([v0-9.]+)/', (string)$contents, $matches);
@@ -409,7 +416,6 @@ class Context implements
 
     public function gatherDefaultStats(
         Dump $dump,
-        Context $context
     ): void {
         $frame = $dump->getTrace()->getFirstFrame();
 
@@ -439,7 +445,7 @@ class Context implements
                         return null;
                     }
 
-                    return Monarch::$paths->prettify($file) . ' : ' . $frame->callingLine;
+                    return Monarch::getPaths()->prettify($file) . ' : ' . $frame->callingLine;
                 })
         );
     }
@@ -525,9 +531,9 @@ class Context implements
     {
         if (!$this->transport) {
             if (in_array(\PHP_SAPI, ['cli', 'phpdbg'])) {
-                $this->transport = new StdoutTransport();
+                $this->transport = new StdoutTransport($this);
             } else {
-                $this->transport = new HttpTransport();
+                $this->transport = new HttpTransport($this);
             }
         }
 
