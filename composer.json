@@ -40,7 +40,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-develop": "0.20.x-dev"
+            "dev-develop": "0.21.x-dev"
         }
     },
     "repositories": {
