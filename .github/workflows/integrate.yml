@@ -29,6 +29,7 @@ jobs:
       - name: Install Effigy
         run: |
           composer global config --no-plugins allow-plugins.phpstan/extension-installer true
+          composer global config --no-plugins allow-plugins.decodelabs/genesis true
           composer global require decodelabs/effigy
 
       - name: "Install dependencies"
@@ -75,6 +76,7 @@ jobs:
       - name: Install Effigy
         run: |
           composer global config --no-plugins allow-plugins.phpstan/extension-installer true
+          composer global config --no-plugins allow-plugins.decodelabs/genesis true
           composer global require decodelabs/effigy
 
       - name: "Validate Composer configuration"
@@ -115,6 +117,7 @@ jobs:
       - name: Install Effigy
         run: |
           composer global config --no-plugins allow-plugins.phpstan/extension-installer true
+          composer global config --no-plugins allow-plugins.decodelabs/genesis true
           composer global require decodelabs/effigy
 
       - name: "Install dependencies"
