@@ -7,16 +7,20 @@
         "build": "vite build",
         "preview": "vite preview"
     },
+    "engines": {
+        "npm": "please-use-pnpm",
+        "pnpm": ">= 2.0.0"
+    },
     "dependencies": {
         "jquery": "^3.7.1"
     },
     "devDependencies": {
-        "@rollup/plugin-inject": "^5.0.3",
-        "@types/node": "^22.14.0",
-        "postcss": "^8.4.29",
-        "postcss-preset-env": "^9.5",
-        "sass": "^1.66.1",
-        "vite": "^6"
+        "@rollup/plugin-inject": "^5.0.5",
+        "@types/node": "^22.18.4",
+        "postcss": "^8.5.6",
+        "postcss-preset-env": "^9.6.0",
+        "sass": "^1.92.1",
+        "vite": "^6.3.6"
     },
     "postcss": {
         "plugins": {
