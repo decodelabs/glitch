@@ -37,6 +37,10 @@ jobs:
         with:
           dependency-versions: "highest"
 
+      - name: "Check coding style"
+        run: |
+          composer global exec effigy format -- --check --headless
+
       - name: "Check file permissions"
         run: |
           composer global exec effigy check-executable-permissions
@@ -45,18 +49,14 @@ jobs:
         run: |
           composer global exec effigy check-git-exports
 
-      - name: "Find non-printable ASCII characters"
-        run: |
-          composer global exec effigy check-non-ascii
+      - name: "Check EditorConfig configuration"
+        run: "test -f .editorconfig"
 
-      - name: "Check source code for syntax errors"
-        run: |
-          composer global exec effigy lint
+      - name: "Check adherence to EditorConfig"
+        uses: "greut/eclint-action@v0"
 
   static_analysis:
-    name: "3️⃣ Static Analysis"
-    needs:
-      - "file_consistency"
+    name: "2️⃣ Static Analysis"
     runs-on: "ubuntu-latest"
     strategy:
       matrix:
@@ -90,42 +90,3 @@ jobs:
       - name: "Execute static analysis"
         run: |
           composer global exec effigy analyze -- --headless
-
-
-  coding_standards:
-    name: "4️⃣ Coding Standards"
-    needs:
-      - "file_consistency"
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: "Set up PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          php-version: "8.4"
-          extensions: "${{ env.PHP_EXTENSIONS }}"
-          ini-values: "post_max_size=256M"
-
-      - name: "Checkout code"
-        uses: "actions/checkout@v4"
-
-      - name: "Check EditorConfig configuration"
-        run: "test -f .editorconfig"
-
-      - name: "Check adherence to EditorConfig"
-        uses: "greut/eclint-action@v0"
-
-      - name: Install Effigy
-        run: |
-          composer global config --no-plugins allow-plugins.phpstan/extension-installer true
-          composer global config --no-plugins allow-plugins.decodelabs/genesis true
-          composer global require decodelabs/effigy
-
-      - name: "Install dependencies"
-        uses: "ramsey/composer-install@v3"
-        with:
-          dependency-versions: "highest"
-
-      - name: "Check coding style"
-        run: |
-          composer global exec effigy format -- --headless
-
