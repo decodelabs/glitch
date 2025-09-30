@@ -19,7 +19,10 @@ The project aims to provide deep data inspection tools and an Exception handling
 
 
 ## Installation
-Glitch should be installed via composer
+
+This package requires PHP 8.4 or higher.
+
+Install via Composer:
 
 ```bash
 composer require decodelabs/glitch
