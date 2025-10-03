@@ -23,7 +23,9 @@ use DecodeLabs\Nuance\Entity\NativeObject\Throwable as ThrowableEntity;
 use DecodeLabs\Nuance\Entity\NativeString;
 use DecodeLabs\Nuance\Entity\Structured as StructureEntity;
 use DecodeLabs\Nuance\Renderer\Html as NuanceHtmlRenderer;
+use DecodeLabs\Nuance\Structure\ClassList;
 use DecodeLabs\Remnant\Frame;
+use DecodeLabs\Remnant\Location;
 use DecodeLabs\Remnant\Trace;
 use Throwable;
 
@@ -255,7 +257,7 @@ class Html extends NuanceHtmlRenderer implements Renderer
     ): string {
         $message = $exception->getMessage();
         $code = $exception->getCode();
-        $file = $this->prettifyPath($exception->getFile());
+        $file = $exception->getFile();
         $line = $exception->getLine();
 
         if ($exception instanceof ExceptionalException) {
@@ -274,7 +276,7 @@ class Html extends NuanceHtmlRenderer implements Renderer
         ) . '</div>';
 
         if ($file) {
-            $output[] = '<span class="attr file"><span class="label">File</span> ' . $this->renderStackFrameLocation($file, $line) . '</span>';
+            $output[] = '<span class="attr file"><span class="label">File</span> ' . $this->renderStackFrameLocation(new Location($file, $line)) . '</span>';
         }
 
         if ($code) {
@@ -400,6 +402,27 @@ class Html extends NuanceHtmlRenderer implements Renderer
         $output = [];
         $output[] = '<section class="stack">';
         $output[] = '<h3>Stack trace</h3>';
+
+        $output[] = $this->el(
+            tag: 'div',
+            content: $this->el(
+                tag: 'label',
+                content: implode('', [
+                    'Filter: ',
+                    $this->el(
+                        tag: 'input',
+                        attributes: [
+                            'type' => 'checkbox',
+                            'id' => 'filter',
+                            'checked' => true,
+                        ]
+                    )
+                ])
+            ),
+            classes: ClassList::of('filter')
+        );
+
+
         $output[] = '<div><div class="frame">';
         $output[] = $this->renderStackTrace($trace);
         $output[] = '</div></div>';
@@ -459,32 +482,18 @@ class Html extends NuanceHtmlRenderer implements Renderer
     }
 
 
-    protected function wrapStackFrame(
-        string $frame
-    ): string {
-        return '<div class="stack-frame"><samp class="dump trace">' . $frame . '</samp></div>';
-    }
-
-
-
-
 
 
     public function renderStackFrameSource(
         Frame $frame
     ): ?string {
-        if ($path = $frame->callingFile) {
-            $line = $frame->callingLine;
-        } elseif ($path = $frame->file) {
-            $line = $frame->line;
-        } else {
+        if (
+            null === ($location = $frame->callSite ?? $frame->location) ||
+            $location->line === null
+        ) {
             return null;
         }
 
-        if ($line === null) {
-            return null;
-        }
-
-        return (new Highlighter())->extractFromFile($path, $line);
+        return (new Highlighter())->extractFromFile($location->file, $location->line);
     }
 }

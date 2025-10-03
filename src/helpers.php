@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace {
     use DecodeLabs\Glitch;
     use DecodeLabs\Monarch;
+    use DecodeLabs\Remnant\Anchor\FunctionIdentifier as FunctionIdentifierAnchor;
     use DecodeLabs\Remnant\Frame;
+    use DecodeLabs\Remnant\FunctionIdentifier\GlobalFunction as GlobalFunctionIdentifier;
     use Symfony\Component\VarDumper\VarDumper;
 
     if (!function_exists('dd')) {
@@ -19,7 +21,13 @@ namespace {
             mixed ...$vars
         ): void {
             $glitch = Monarch::getService(Glitch::class);
-            $glitch->dumpValues(func_get_args(), 1, true);
+            $glitch->dumpValues(
+                values: func_get_args(),
+                anchor: new FunctionIdentifierAnchor(
+                    new GlobalFunctionIdentifier('dd')
+                ),
+                exit: true
+            );
         }
     }
 
@@ -50,7 +58,13 @@ namespace {
             mixed ...$vars
         ): void {
             $glitch = Monarch::getService(Glitch::class);
-            $glitch->dumpValues(func_get_args(), 1, false);
+            $glitch->dumpValues(
+                values: func_get_args(),
+                anchor: new FunctionIdentifierAnchor(
+                    new GlobalFunctionIdentifier('dump')
+                ),
+                exit: false
+            );
         }
     } elseif (class_exists(VarDumper::class)) {
         VarDumper::setHandler(function ($var) {
@@ -65,24 +79,27 @@ namespace {
 
             if (!$skip) {
                 $frame = Frame::create(2);
-                $func = $frame->function;
-                $type = $frame->type;
 
                 if (
-                    (
-                        $func == 'dd' ||
-                        $func == 'dump'
-                    ) &&
-                    $type == 'globalFunction'
+                    $frame->function instanceof GlobalFunctionIdentifier &&
+                    $frame->function->isFunction('dd', 'dump')
                 ) {
-                    $args = $frame->arguments;
+                    $args = $frame->arguments->values;
                     $skip = count($args) - 1;
                 } else {
                     $args = func_get_args();
                 }
 
                 $glitch = Monarch::getService(Glitch::class);
-                $glitch->dumpValues($args, 4, $func == 'dd');
+
+                $glitch->dumpValues(
+                    values: $args,
+                    anchor: new FunctionIdentifierAnchor(
+                        new GlobalFunctionIdentifier('dd'),
+                        new GlobalFunctionIdentifier('dump'),
+                    ),
+                    exit: $frame->function->isFunction('dd')
+                );
             } else {
                 $skip--;
                 return;

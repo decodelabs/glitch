@@ -25,7 +25,12 @@ use DecodeLabs\Kingdom\PureService;
 use DecodeLabs\Kingdom\PureServiceTrait;
 use DecodeLabs\Monarch\ExceptionLogger;
 use DecodeLabs\Nuance\Reflection as NuanceReflection;
+use DecodeLabs\Remnant\Anchor;
+use DecodeLabs\Remnant\Anchor\FunctionIdentifier as FunctionIdentifierAnchor;
+use DecodeLabs\Remnant\Anchor\Rewind as RewindAnchor;
+use DecodeLabs\Remnant\ClassIdentifier\Native as NativeClassIdentifier;
 use DecodeLabs\Remnant\Frame;
+use DecodeLabs\Remnant\FunctionIdentifier\ObjectMethod as ObjectMethodFunctionIdentifier;
 use DecodeLabs\Remnant\Trace;
 use ErrorException;
 use Psr\Log\LoggerAwareInterface;
@@ -107,9 +112,21 @@ class Glitch implements
 
 
     public function stackTrace(
-        int $rewind = 0
+        ?Anchor $anchor = null
     ): Trace {
-        return Trace::create($rewind + 1);
+        if ($anchor === null) {
+            $anchor = new FunctionIdentifierAnchor(
+                new ObjectMethodFunctionIdentifier(
+                    new NativeClassIdentifier(__CLASS__),
+                    'stackTrace'
+                )
+            );
+        } elseif ($anchor instanceof RewindAnchor) {
+            $anchor = clone $anchor;
+            $anchor->offset += 1;
+        }
+
+        return Trace::create($anchor);
     }
 
 
@@ -118,14 +135,32 @@ class Glitch implements
         mixed $var,
         mixed ...$vars
     ): void {
-        $this->dumpValues(func_get_args(), 1, false);
+        $this->dumpValues(
+            values: func_get_args(),
+            anchor: new FunctionIdentifierAnchor(
+                new ObjectMethodFunctionIdentifier(
+                    new NativeClassIdentifier(__CLASS__),
+                    'dump'
+                )
+            ),
+            exit: false
+        );
     }
 
     public function dumpDie(
         mixed $var,
         mixed ...$vars
     ): void {
-        $this->dumpValues(func_get_args(), 1, true);
+        $this->dumpValues(
+            values: func_get_args(),
+            anchor: new FunctionIdentifierAnchor(
+                new ObjectMethodFunctionIdentifier(
+                    new NativeClassIdentifier(__CLASS__),
+                    'dumpDie'
+                )
+            ),
+            exit: true
+        );
     }
 
     public function hasDumpedInBuffer(): bool
@@ -139,7 +174,7 @@ class Glitch implements
      */
     public function dumpValues(
         array $values,
-        int $rewind = 0,
+        ?Anchor $anchor = null,
         bool $exit = true
     ): void {
         if ($exit) {
@@ -152,7 +187,19 @@ class Glitch implements
             }
         }
 
-        $trace = Trace::create($rewind + 1);
+        if ($anchor === null) {
+            $anchor = new FunctionIdentifierAnchor(
+                new ObjectMethodFunctionIdentifier(
+                    new NativeClassIdentifier(__CLASS__),
+                    'dumpValues'
+                )
+            );
+        } elseif ($anchor instanceof RewindAnchor) {
+            $anchor = clone $anchor;
+            $anchor->offset += 1;
+        }
+
+        $trace = Trace::create($anchor);
         $dump = new Dump($trace);
 
         foreach ($this->statGatherers as $gatherer) {
@@ -441,11 +488,7 @@ class Glitch implements
             // Location
             (new Stat('location', 'Dump location', $frame))
                 ->setRenderer(function (Frame $frame) {
-                    if (null === ($file = $frame->callingFile)) {
-                        return null;
-                    }
-
-                    return Monarch::getPaths()->prettify($file) . ' : ' . $frame->callingLine;
+                    return $frame->callSite?->__toString();
                 })
         );
     }

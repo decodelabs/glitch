@@ -84,6 +84,10 @@
         }
     }
 
+    &.argument-name {
+        color: var(--argument-name);
+    }
+
     &.keyword {
         color: var(--keyword);
     }
@@ -95,6 +99,10 @@
     &.sensitive {
         color: var(--keyword-sensitive);
         font-style: italic;
+    }
+
+    &.definition-key {
+        color: var(--definition-key);
     }
 }
 

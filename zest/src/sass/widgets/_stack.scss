@@ -11,6 +11,32 @@ section.stack {
         position: relative;
         flex: 1 1 100%;
     }
+
+    div.filter {
+        height: max-content;
+        flex: 0 0 auto;
+        padding: 0.25em 1em;
+
+        label {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: #ffffffaa;
+            margin: 0;
+
+            input {
+                margin-left: 0.5em;
+            }
+        }
+    }
+
+    &:has(input#filter:checked) {
+        label.stack-frame.filtered {
+            display: none;
+            opacity: 0;
+            transition-duration: 0.25s;
+        }
+    }
 }
 
 div.stack-list > ul.stack {
@@ -19,8 +45,17 @@ div.stack-list > ul.stack {
 
 .stack-frame {
     border: 3px solid transparent;
-    transition: all 0.5s;
+    transition:
+        all 0.5s,
+        opacity 0.5s,
+        display 0.5s;
     display: block;
+    transition-behavior: allow-discrete;
+    opacity: 1;
+
+    @starting-style {
+        opacity: 0;
+    }
 
     input {
         display: none;
@@ -109,6 +144,10 @@ ul.stack {
             &.line {
                 padding-right: 1rem;
             }
+        }
+
+        div.argument {
+            padding-left: 4ch;
         }
     }
 
