@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @package Glitch
- * @license http://opensource.org/licenses/MIT
+ * Glitch
+ * @license https://opensource.org/licenses/MIT
  */
 
 declare(strict_types=1);
@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace DecodeLabs\Glitch;
 
 use DecodeLabs\Nuance\Renderer as NuanceRenderer;
-
 use Throwable;
 
 interface Renderer extends NuanceRenderer

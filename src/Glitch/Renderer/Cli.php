@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @package Glitch
- * @license http://opensource.org/licenses/MIT
+ * Glitch
+ * @license https://opensource.org/licenses/MIT
  */
 
 declare(strict_types=1);
@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace DecodeLabs\Glitch\Renderer;
 
 use DecodeLabs\Exceptional\Exception as ExceptionalException;
-
 use DecodeLabs\Glitch\Dump;
 use DecodeLabs\Glitch\Packet;
 use DecodeLabs\Glitch\Renderer;
