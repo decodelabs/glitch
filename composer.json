@@ -30,7 +30,7 @@
         "psr/log": "^3.0.2"
     },
     "require-dev": {
-        "decodelabs/chorus": "^0.1",
+        "decodelabs/chorus": ">0",
         "decodelabs/phpstan-decodelabs": "^0.7",
 
         "symfony/var-dumper": "^5|^6|^7"
