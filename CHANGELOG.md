@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved doc comment headers
 - Added AGENTS.md
 - Integrated Chorus dev dependency
+- Updated zest dependencies
 
 ---
 
