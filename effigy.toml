@@ -1,2 +1,2 @@
 [bundle]
-base = "decodelabs-library"
+base = { type = "git", url = "git@github.com:decodelabs/decodelabs-library-effigy-bundle.git", ref = "main" }
