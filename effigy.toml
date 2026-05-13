@@ -1,2 +1,5 @@
+[manifest]
+minimum_effigy_version = "0.7.0"
+
 [bundle]
 base = { type = "git", url = "git@github.com:decodelabs/decodelabs-library-effigy-bundle.git", ref = "main" }
